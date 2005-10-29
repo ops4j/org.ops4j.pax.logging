@@ -34,6 +34,7 @@
 
         <path id="runtime-deps">
             <path refid="log4j"/>
+            <path refid="pax-logging-api" />
         </path>
 
         <path id="unittest-deps">
