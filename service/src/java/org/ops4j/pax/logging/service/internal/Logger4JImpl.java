@@ -18,11 +18,17 @@
 package org.ops4j.pax.logging.service.internal;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 public class Logger4JImpl
     implements org.ops4j.pax.logging.service.Logger
 {
     private org.apache.log4j.Logger m_Delegate;
+
+    public Logger4JImpl( Logger delegate )
+    {
+        m_Delegate = delegate;
+    }
 
     public boolean isTraceEnabled()
     {
@@ -85,4 +91,4 @@ public class Logger4JImpl
     }
 }
 
- 
+

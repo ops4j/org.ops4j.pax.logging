@@ -25,12 +25,10 @@ import org.osgi.util.tracker.ServiceTracker;
 public class Log4JProvider
     implements LogProvider
 {
-    private BundleContext m_BundleContext;
     private ServiceTracker m_Log4jServiceTracker;
 
     public Log4JProvider( BundleContext context )
     {
-        m_BundleContext = context;
         m_Log4jServiceTracker = new ServiceTracker( context, Log4JService.class.getName(), null );
         m_Log4jServiceTracker.open();
     }

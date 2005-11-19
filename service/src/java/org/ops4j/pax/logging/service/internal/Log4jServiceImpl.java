@@ -36,7 +36,7 @@ public class Log4jServiceImpl
     /**
      * Instantiates a Log4jService for a particular bundle requesting this
      * service instance.
-     * 
+     *
      * @param loggerName
      *            Bundle requesting this service instance.
      */
@@ -91,7 +91,7 @@ public class Log4jServiceImpl
 
     /**
      * Removes all the resources held by this service instance.
-     * 
+     *
      */
     public void dispose()
     {

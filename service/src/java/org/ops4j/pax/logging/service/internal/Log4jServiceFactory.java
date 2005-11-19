@@ -38,7 +38,7 @@ import org.osgi.service.cm.ManagedService;
 
 /**
  * ServiceFactory implementation to return LogService implementation instances.
- * 
+ *
  */
 public class Log4jServiceFactory
     implements ServiceFactory, ManagedService
@@ -62,7 +62,7 @@ public class Log4jServiceFactory
     private ConfigFactory m_ConfigFactory;
 
     /**
-     * Merged log4j properties from all the bundles. 
+     * Merged log4j properties from all the bundles.
      */
     private Properties m_MergedProperties;
 
@@ -79,7 +79,7 @@ public class Log4jServiceFactory
 
     /**
      * Constructor
-     * 
+     *
      * @param config
      *            the Configuration Factory to use
      */
@@ -191,7 +191,7 @@ public class Log4jServiceFactory
 
     /**
      * Disposes the LogService instance.
-     * 
+     *
      * @see org.osgi.framework.ServiceFactory#ungetService(org.osgi.framework.Bundle,
      *      org.osgi.framework.ServiceRegistration, java.lang.Object)
      */

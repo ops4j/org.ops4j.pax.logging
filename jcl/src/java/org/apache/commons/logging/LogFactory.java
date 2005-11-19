@@ -24,13 +24,7 @@
 package org.apache.commons.logging;
 
 import org.ops4j.pax.logging.providers.LogProvider;
-
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-
-import org.osgi.service.log.LogService;
-import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
 * This is an adaptation of the Jakarta Commons Logging API for
@@ -108,7 +102,6 @@ public class LogFactory
 
     private BundleContext  m_BundleContext;
     private LogProvider    m_LogProvider;
-    private ServiceTracker m_LogServiceTracker;
 
     static
     {
