@@ -34,11 +34,11 @@ public class Log4jServiceTestCase extends MockObjectTestCase
     {
         BasicConfigurator.configure();
         Log4jServiceImpl ls = new Log4jServiceImpl( Log4jServiceTestCase.class.getName() );
-        ls.log( LogService.LOG_DEBUG, "*******TESTING*********" );
-        ls.log( LogService.LOG_ERROR, "*******TESTING*********", new Exception() );
-        ls.log( LogService.LOG_INFO, "*******TESTING*********" );
-        ls.log( LogService.LOG_WARNING, "*******TESTING*********" );
-        ls.log( null, LogService.LOG_INFO, "*******TESTING*********" );
+//        ls.log( LogService.LOG_DEBUG, "*******TESTING*********" );
+//        ls.log( LogService.LOG_ERROR, "*******TESTING*********", new Exception() );
+//        ls.log( LogService.LOG_INFO, "*******TESTING*********" );
+//        ls.log( LogService.LOG_WARNING, "*******TESTING*********" );
+//        ls.log( null, LogService.LOG_INFO, "*******TESTING*********" );
         ls.dispose();
 
     }

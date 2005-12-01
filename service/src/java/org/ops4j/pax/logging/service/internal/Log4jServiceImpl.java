@@ -18,15 +18,14 @@
 package org.ops4j.pax.logging.service.internal;
 
 import org.apache.log4j.Logger;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.log.LogService;
+import org.ops4j.pax.logging.service.Log4JService;
 
 /**
  * Default logger service using log4j underneath implementing the LogService
  * interface.
  */
 public class Log4jServiceImpl
-    implements LogService
+    implements Log4JService
 {
     /**
      * Log4J logger
@@ -46,55 +45,16 @@ public class Log4jServiceImpl
     }
 
     /**
-     * @see org.osgi.service.log.LogService#log(int,java.lang.String)
-     */
-    public void log( int level, String message )
-    {
-        log( level, message, null );
-    }
-
-    /**
-     * @see org.osgi.service.log.LogService#log(int,java.lang.String,java.lang.Throwable)
-     */
-    public void log( int level, String message, Throwable exception )
-    {
-        log( null, level, message, exception );
-    }
-
-    /**
-     * @see org.osgi.service.log.LogService#log(org.osgi.framework.ServiceReference,int,java.lang.String)
-     */
-    public void log( ServiceReference sr, int level, String message )
-    {
-        log( sr, level, message, null );
-    }
-
-    /**
-     * @see org.osgi.service.log.LogService#log(org.osgi.framework.ServiceReference,int,java.lang.String,java.lang.Throwable)
-     */
-    public void log( ServiceReference sr, int level, String message, Throwable exception )
-    {
-        if ( level == LOG_DEBUG )
-        {
-            m_Logger.debug( message, exception );
-        } else if ( level == LOG_INFO )
-        {
-            m_Logger.info( message, exception );
-        } else if ( level == LOG_ERROR )
-        {
-            m_Logger.error( message, exception );
-        } else
-        {
-            m_Logger.warn( message, exception );
-        }
-    }
-
-    /**
      * Removes all the resources held by this service instance.
      *
      */
     public void dispose()
     {
         m_Logger = null;
+    }
+
+    public org.ops4j.pax.logging.service.Logger getLogger(String category)
+    {
+        return new Logger4JImpl( m_Logger );
     }
 }
