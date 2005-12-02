@@ -34,7 +34,7 @@
         </path>
 
         <path id="runtime-deps">
-            <path refid="log4j"/>
+            <!--path refid="log4j"/-->
         </path>
 
         <path id="unittest-deps">
