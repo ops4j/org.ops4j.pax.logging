@@ -19,13 +19,11 @@ package org.ops4j.pax.logging.service;
 
 import java.util.Hashtable;
 
+import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
+import org.ops4j.pax.logging.service.internal.Log4jServiceFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.log.LogService;
-
-import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
-import org.ops4j.pax.logging.service.internal.Log4jServiceFactory;
 
 /**
  * Starts the Log4j log services.
@@ -54,10 +52,10 @@ public class Activator
     {
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
         Log4jServiceFactory log4jServiceFactory = new Log4jServiceFactory( configFactory );
-        String name = LogService.class.getName();
+//        String name = LogService.class.getName();
         Hashtable properties = new Hashtable();
         properties.put( Log4jServiceFactory.LOG4J_CONFIG_FILE, "" );
-        m_RegistrationStdLogging = bundleContext.registerService( name, log4jServiceFactory, properties );
+//        m_RegistrationStdLogging = bundleContext.registerService( name, log4jServiceFactory, properties );
 
         String log4jServiceName = Log4JService.class.getName();
         m_RegistrationLog4J = bundleContext.registerService( log4jServiceName, log4jServiceFactory, properties );
