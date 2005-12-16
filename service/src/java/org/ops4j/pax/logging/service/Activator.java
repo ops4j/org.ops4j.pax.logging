@@ -17,16 +17,16 @@
  */
 package org.ops4j.pax.logging.service;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 
 import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
 import org.ops4j.pax.logging.service.internal.Log4jServiceFactory;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 
 /**
@@ -34,7 +34,7 @@ import org.osgi.service.cm.ManagedService;
  *
  */
 public class Activator
-    implements BundleActivator, ServiceFactory
+    implements BundleActivator, ManagedService
 {
     /**
      * Reference to the registered service
@@ -63,8 +63,7 @@ public class Activator
 
         String log4jServiceName = Log4JService.class.getName();
         m_RegistrationLog4J = bundleContext.registerService( log4jServiceName, m_Log4jServiceFactory, properties );
-        String managedServiceName = ManagedService.class.getName();
-        m_RegistrationManagedService = bundleContext.registerService( managedServiceName, this, properties );
+        m_RegistrationManagedService = bundleContext.registerService( Activator.class.getName(), this, properties );        
     }
 
     /**
@@ -77,14 +76,8 @@ public class Activator
         m_Log4jServiceFactory = null;
     }
 
-    public Object getService( Bundle bundle, ServiceRegistration registration )
+    public void updated( Dictionary dictionary ) throws ConfigurationException
     {
-        return m_Log4jServiceFactory;
-    }
-
-    public void ungetService( Bundle bundle, ServiceRegistration registration, Object service )
-    {
-        // Dont think we need to dispose of it since it will be the same instance returned
-        // the next time getService is called.
+        m_Log4jServiceFactory.updated( dictionary );        
     }
 }

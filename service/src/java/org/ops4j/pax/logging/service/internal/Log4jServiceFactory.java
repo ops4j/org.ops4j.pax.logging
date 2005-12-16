@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,6 +32,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
@@ -215,17 +217,29 @@ public class Log4jServiceFactory
         else
         {
             Object configFile = configuration.get( LOG4J_CONFIG_FILE );
-            if( configFile == null || "".equals( configFile.toString() ) )
-            {
-                // ML - Aug 15, 2005: Ignore the settings
-                return;
-            }
             try
             {
-                URL url = new URL( configFile.toString() );
-                InputStream is = url.openStream();
                 Properties properties = new Properties();
-                properties.load( is );
+                if( configFile == null || "".equals( configFile.toString() ) )
+                {
+                    Enumeration en = configuration.keys();
+                    while( en.hasMoreElements() )
+                    {
+                        String key = (String) en.nextElement();
+                        if( Constants.SERVICE_PID.equals( key ) )
+                        {
+                            continue;
+                        }
+                        String value = (String) configuration.get( key );
+                        properties.put( key, value );
+                    }
+                }
+                else
+                {
+                    URL url = new URL( configFile.toString() );
+                    InputStream is = url.openStream();
+                    properties.load( is );
+                }
                 m_ConfigFactory.configure( properties );
                 m_IsUsingGlobal = true;
             } catch ( MalformedURLException e )
