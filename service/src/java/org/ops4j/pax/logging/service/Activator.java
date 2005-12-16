@@ -23,7 +23,9 @@ import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
 import org.ops4j.pax.logging.service.internal.Log4jServiceFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.ManagedService;
 
 /**
  * Starts the Log4j log services.
@@ -35,8 +37,9 @@ public class Activator
     /**
      * Reference to the registered service
      */
-    private ServiceRegistration m_RegistrationStdLogging;
+//    private ServiceRegistration m_RegistrationStdLogging;
     private ServiceRegistration m_RegistrationLog4J;
+    private ServiceRegistration m_RegistrationManagedService;
 
     /**
      * Default constructor
@@ -55,10 +58,13 @@ public class Activator
 //        String name = LogService.class.getName();
         Hashtable properties = new Hashtable();
         properties.put( Log4jServiceFactory.LOG4J_CONFIG_FILE, "" );
+        properties.put( Constants.SERVICE_PID, Log4jServiceFactory.class.getName() );
 //        m_RegistrationStdLogging = bundleContext.registerService( name, log4jServiceFactory, properties );
 
         String log4jServiceName = Log4JService.class.getName();
         m_RegistrationLog4J = bundleContext.registerService( log4jServiceName, log4jServiceFactory, properties );
+        String managedServiceName = ManagedService.class.getName();
+        m_RegistrationManagedService = bundleContext.registerService( managedServiceName, log4jServiceFactory, properties );
     }
 
     /**
@@ -66,7 +72,8 @@ public class Activator
      */
     public void stop( BundleContext bundleContext ) throws Exception
     {
-        m_RegistrationStdLogging.unregister();
+//        m_RegistrationStdLogging.unregister();
         m_RegistrationLog4J.unregister();
+        m_RegistrationManagedService.unregister();
     }
 }
