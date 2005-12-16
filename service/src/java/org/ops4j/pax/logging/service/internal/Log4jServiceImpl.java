@@ -28,11 +28,6 @@ public class Log4jServiceImpl
     implements Log4JService
 {
     /**
-     * Log4J logger
-     */
-    private Logger m_Logger;
-
-    /**
      * Instantiates a Log4jService for a particular bundle requesting this
      * service instance.
      *
@@ -41,7 +36,6 @@ public class Log4jServiceImpl
      */
     public Log4jServiceImpl( String loggerName )
     {
-        m_Logger = Logger.getLogger( loggerName );
     }
 
     /**
@@ -50,11 +44,10 @@ public class Log4jServiceImpl
      */
     public void dispose()
     {
-        m_Logger = null;
     }
 
     public org.ops4j.pax.logging.service.Logger getLogger(String category)
     {
-        return new Logger4JImpl( m_Logger );
+        return new Logger4JImpl( Logger.getLogger( category ) );
     }
 }
