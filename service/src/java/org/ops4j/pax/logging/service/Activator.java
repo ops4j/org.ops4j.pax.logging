@@ -21,9 +21,11 @@ import java.util.Hashtable;
 
 import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
 import org.ops4j.pax.logging.service.internal.Log4jServiceFactory;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedService;
 
@@ -32,14 +34,14 @@ import org.osgi.service.cm.ManagedService;
  *
  */
 public class Activator
-    implements BundleActivator
+    implements BundleActivator, ServiceFactory
 {
     /**
      * Reference to the registered service
      */
-//    private ServiceRegistration m_RegistrationStdLogging;
     private ServiceRegistration m_RegistrationLog4J;
     private ServiceRegistration m_RegistrationManagedService;
+    private Log4jServiceFactory m_Log4jServiceFactory;
 
     /**
      * Default constructor
@@ -54,17 +56,15 @@ public class Activator
     public void start( BundleContext bundleContext ) throws Exception
     {
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
-        Log4jServiceFactory log4jServiceFactory = new Log4jServiceFactory( configFactory );
-//        String name = LogService.class.getName();
+        m_Log4jServiceFactory = new Log4jServiceFactory( configFactory );
         Hashtable properties = new Hashtable();
         properties.put( Log4jServiceFactory.LOG4J_CONFIG_FILE, "" );
         properties.put( Constants.SERVICE_PID, Log4jServiceFactory.class.getName() );
-//        m_RegistrationStdLogging = bundleContext.registerService( name, log4jServiceFactory, properties );
 
         String log4jServiceName = Log4JService.class.getName();
-        m_RegistrationLog4J = bundleContext.registerService( log4jServiceName, log4jServiceFactory, properties );
+        m_RegistrationLog4J = bundleContext.registerService( log4jServiceName, m_Log4jServiceFactory, properties );
         String managedServiceName = ManagedService.class.getName();
-        m_RegistrationManagedService = bundleContext.registerService( managedServiceName, log4jServiceFactory, properties );
+        m_RegistrationManagedService = bundleContext.registerService( managedServiceName, this, properties );
     }
 
     /**
@@ -72,8 +72,19 @@ public class Activator
      */
     public void stop( BundleContext bundleContext ) throws Exception
     {
-//        m_RegistrationStdLogging.unregister();
         m_RegistrationLog4J.unregister();
         m_RegistrationManagedService.unregister();
+        m_Log4jServiceFactory = null;
+    }
+
+    public Object getService( Bundle bundle, ServiceRegistration registration )
+    {
+        return m_Log4jServiceFactory;
+    }
+
+    public void ungetService( Bundle bundle, ServiceRegistration registration, Object service )
+    {
+        // Dont think we need to dispose of it since it will be the same instance returned
+        // the next time getService is called.
     }
 }
