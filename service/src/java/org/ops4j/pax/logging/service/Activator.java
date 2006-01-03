@@ -56,6 +56,8 @@ public class Activator
     public void start( BundleContext bundleContext ) throws Exception
     {
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
+        String loc = bundleContext.getBundle().getLocation();
+        System.out.println("loc " + loc);
         m_Log4jServiceFactory = new Log4jServiceFactory( configFactory );
         Hashtable properties = new Hashtable();
         properties.put( Log4jServiceFactory.LOG4J_CONFIG_FILE, "" );
@@ -63,7 +65,7 @@ public class Activator
 
         String log4jServiceName = Log4JService.class.getName();
         m_RegistrationLog4J = bundleContext.registerService( log4jServiceName, m_Log4jServiceFactory, properties );
-        m_RegistrationManagedService = bundleContext.registerService( Activator.class.getName(), this, properties );        
+        m_RegistrationManagedService = bundleContext.registerService(  ManagedService.class.getName(), this, properties );        
     }
 
     /**
