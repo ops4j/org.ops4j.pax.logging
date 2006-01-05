@@ -23,6 +23,7 @@
 
 package org.apache.commons.logging;
 
+import org.ops4j.pax.logging.providers.DefaultLogProvider;
 import org.ops4j.pax.logging.providers.LogProvider;
 import org.osgi.framework.BundleContext;
 
@@ -190,6 +191,7 @@ public class LogFactory
 
     private LogFactory()
     {
+        m_LogProvider = new DefaultLogProvider();
     }
 
     /**
