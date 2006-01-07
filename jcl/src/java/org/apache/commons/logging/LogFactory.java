@@ -47,7 +47,7 @@ import org.osgi.framework.BundleContext;
 * import org.apache.commons.logging.Log;
 *
 * import org.ops4j.pax.logging.providers.LogProvider;
-* import org.ops4j.pax.logging.providers.Log4JProvider;
+* import org.ops4j.pax.logging.providers.PaxLoggingProvider;
 *
 * public class Activator
 *     implements BundleActivator
@@ -57,7 +57,7 @@ import org.osgi.framework.BundleContext;
 *     {
 *         LogFactory factory = LogFactory.getInstance();
 *         factory.setBundleContext( context );
-*         Log4JProvider provider = new Log4JProvider( context );
+*         PaxLoggingProvider provider = new PaxLoggingProvider( context );
 *         factory.setProvider( provider );
 *     }
 *

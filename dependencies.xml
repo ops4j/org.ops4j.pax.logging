@@ -42,6 +42,10 @@
         <path id="jmock">
             <artifact uri="artifact:jar:jmock/jmock#1.0.1" />
         </path>
+
+        <path id="jetty">
+            <artifact uri="artifact:jar:jetty/org.mortbay.jetty#5.1.0" />
+        </path>
     </target>
 </project>
 

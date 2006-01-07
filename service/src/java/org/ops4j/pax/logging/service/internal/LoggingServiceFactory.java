@@ -75,14 +75,13 @@ public class LoggingServiceFactory
 
     static
     {
-        m_SystemLogger = Logger.getLogger( "Log4JBundle.service.factory" );
+        m_SystemLogger = Logger.getLogger( "pax.logging.system" );
     }
 
     /**
      * Constructor
      *
-     * @param config
-     *            the Configuration Factory to use
+     * @param config the Configuration Factory to use
      */
     public LoggingServiceFactory( ConfigFactory config )
     {
@@ -216,7 +215,8 @@ public class LoggingServiceFactory
      * in this configuration.
      * @see org.osgi.service.cm.ManagedService#updated(java.util.Dictionary)
      */
-    public void updated( Dictionary configuration ) throws ConfigurationException
+    public void updated( Dictionary configuration )
+        throws ConfigurationException
     {
         if( configuration == null )
         {
@@ -228,13 +228,13 @@ public class LoggingServiceFactory
             Object configFile = configuration.get( LOG4J_CONFIG_FILE );
             if( configFile == null || "".equals( configFile.toString() ) )
             {
-                // ML - Aug 15, 2005: Ignore the settings
                 return;
             }
+            InputStream is = null;
             try
             {
                 URL url = new URL( configFile.toString() );
-                InputStream is = url.openStream();
+                is = url.openStream();
                 Properties properties = new Properties();
                 properties.load( is );
                 m_ConfigFactory.configure( properties );
@@ -249,6 +249,18 @@ public class LoggingServiceFactory
                 ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE, "Cannot read log4j configuration from " + configFile );
                 ce.initCause( e );
                 throw ce;
+            } finally
+            {
+                if( is != null )
+                {
+                    try
+                    {
+                        is.close();
+                    } catch( IOException e )
+                    {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }

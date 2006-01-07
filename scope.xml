@@ -18,24 +18,32 @@
  * limitations under the License.
  */
  -->
-<project name="scope" >
+<project name="scope">
 
-    <property name="master.location" value="../../ant-tools/target/dist" />
-    <import file="${master.location}/master.xml" />
+    <property name="master.location" value="../../ant-tools/target/dist"/>
+    <import file="${master.location}/master.xml"/>
 
     <target name="project-defs">
 
         <!--modules-->
         <path id="pax-logging-api">
-            <pathelement location="${scope.basedir}/api/target/deliverables/jars/pax-logging-api-${project.version}.jar" />
+            <pathelement
+                location="${scope.basedir}/api/target/deliverables/jars/pax-logging-api-${project.version}.jar"/>
         </path>
 
         <path id="pax-logging-service">
-            <pathelement location="${scope.basedir}/service/target/deliverables/jars/pax-logging-service-${project.version}.jar" />
+            <pathelement
+                location="${scope.basedir}/service/target/deliverables/jars/pax-logging-service-${project.version}.jar"/>
         </path>
 
         <path id="pax-logging-jcl">
-            <pathelement location="${scope.basedir}/jcl/target/deliverables/jars/pax-logging-jcl-${project.version}.jar" />
+            <pathelement
+                location="${scope.basedir}/jcl/target/deliverables/jars/pax-logging-jcl-${project.version}.jar"/>
+        </path>
+
+        <path id="pax-logging-example">
+            <pathelement
+                location="${scope.basedir}/example/target/deliverables/jars/pax-logging-example-${project.version}.jar"/>
         </path>
     </target>
 

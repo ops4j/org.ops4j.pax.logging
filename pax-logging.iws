@@ -119,10 +119,52 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Log4JServiceLog.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/jcl/src/java/org/ops4j/pax/logging/providers/Log4JServiceLog.java">
+      <file leaf-file-name="build.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/example/build.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="324" column="50" selection-start="8210" selection-end="8210" vertical-scroll-proportion="1.2019802">
+            <state line="37" column="30" selection-start="1251" selection-end="1251" vertical-scroll-proportion="0.70253164">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Activator.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/example/src/java/org/ops4j/pax/logging/example/Activator.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="50" column="13" selection-start="1808" selection-end="1808" vertical-scroll-proportion="0.5506329">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PaxLoggingServiceLog.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jcl/src/java/org/ops4j/pax/logging/providers/PaxLoggingServiceLog.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="27" column="59" selection-start="941" selection-end="941" vertical-scroll-proportion="0.2278481">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PaxLoggingServiceImpl.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/PaxLoggingServiceImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="22" column="13" selection-start="783" selection-end="783" vertical-scroll-proportion="0.11392405">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PaxLoggerImpl.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/PaxLoggerImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="22" column="13" selection-start="742" selection-end="742" vertical-scroll-proportion="0.11392405">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -133,16 +175,25 @@
       <file leaf-file-name="OsgiLogServiceImpl.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/OsgiLogServiceImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="13" selection-start="895" selection-end="895" vertical-scroll-proportion="0.02970297">
+            <state line="27" column="13" selection-start="895" selection-end="895" vertical-scroll-proportion="0.17088607">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Activator.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="LoggingServiceFactory.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/LoggingServiceFactory.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="175" column="44" selection-start="6162" selection-end="6162" vertical-scroll-proportion="0.2516129">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Activator.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/Activator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="60" column="74" selection-start="1883" selection-end="1883" vertical-scroll-proportion="0.36237624">
+            <state line="31" column="13" selection-start="1048" selection-end="1048" vertical-scroll-proportion="-0.06329114">
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -150,64 +201,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Log4jServiceFactoryTestCase.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/service/src/unittests/org/ops4j/pax/logging/test/Log4jServiceFactoryTestCase.java">
+      <file leaf-file-name="build.properties" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/example/build.properties">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="40" column="44" selection-start="1335" selection-end="1335" vertical-scroll-proportion="0.2970297">
+            <state line="13" column="0" selection-start="703" selection-end="703" vertical-scroll-proportion="0.2516129">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Log4jServiceTestCase.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/service/src/unittests/org/ops4j/pax/logging/test/Log4jServiceTestCase.java">
+      <file leaf-file-name="build.properties" pinned="false" current="false" current-in-tab="false">
+        <entry file="file:///home/niclas/dev/codedragons/friends/server/core/build.properties">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="22" selection-start="823" selection-end="823" vertical-scroll-proportion="0.14851485">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ConfigFactory.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/ConfigFactory.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="25" column="17" selection-start="793" selection-end="793" vertical-scroll-proportion="0.26732674">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ConfigFactoryImpl.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/ConfigFactoryImpl.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="26" column="24" selection-start="824" selection-end="824" vertical-scroll-proportion="0.23762377">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PaxLogger.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/PaxLogger.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="17" selection-start="674" selection-end="674" vertical-scroll-proportion="0.11881188">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PaxLoggingService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/PaxLoggingService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="17" selection-start="673" selection-end="673" vertical-scroll-proportion="0.089108914">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LoggingServiceFactory.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/LoggingServiceFactory.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="166" column="53" selection-start="5706" selection-end="5706" vertical-scroll-proportion="-0.18367347">
+            <state line="16" column="64" selection-start="719" selection-end="768" vertical-scroll-proportion="0.30967742">
               <folding />
             </state>
           </provider>
@@ -249,8 +255,8 @@
     <jetstyle-conf />
   </component>
   <component name="ModuleEditorState">
-    <option name="LAST_EDITED_MODULE_NAME" value="jcl" />
-    <option name="LAST_EDITED_TAB_NAME" value="Dependencies" />
+    <option name="LAST_EDITED_MODULE_NAME" value="example" />
+    <option name="LAST_EDITED_TAB_NAME" value="Libraries (Classpath)" />
   </component>
   <component name="NamedScopeManager" />
   <component name="PackagesPane">
@@ -340,6 +346,12 @@
       <PATH_ELEMENT>
         <option name="myItemId" value="apache.commons.logging" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="pax-logging.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
       </PATH_ELEMENT>
     </PATH>
     <PATH>
@@ -615,6 +627,56 @@
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
       </PATH_ELEMENT>
       <PATH_ELEMENT>
+        <option name="myItemId" value="example" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="pax-logging.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="example" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/example" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="pax-logging.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="example" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/example" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/example/src" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/example/src/java" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="PsiDirectory:$PROJECT_DIR$/example/src/java/org/ops4j/pax/logging/example" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+      </PATH_ELEMENT>
+    </PATH>
+    <PATH>
+      <PATH_ELEMENT>
+        <option name="myItemId" value="pax-logging.ipr" />
+        <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+      </PATH_ELEMENT>
+      <PATH_ELEMENT>
         <option name="myItemId" value="api" />
         <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleNode" />
       </PATH_ELEMENT>
@@ -658,7 +720,7 @@
     <property name="MemberChooser.sorted" value="false" />
     <property name="RunManagerConfig.compileBeforeRunning" value="true" />
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="last_opened_file_path" value="/home/niclas/dev/ops4j/projects/silk/core/process/src/resources" />
+    <property name="last_opened_file_path" value="/home/niclas/dev/codedragons/friends/server/core" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="RunManagerConfig.showSettingsBeforeRunnig" value="true" />
   </component>
@@ -803,7 +865,7 @@
       <window_info id="Checkstyle" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="8" />
       <window_info id="SvgViewer" active="false" anchor="right" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.33" order="3" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.17278798" order="0" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="true" weight="0.32977462" order="1" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32977462" order="1" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.25" order="1" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.32977462" order="8" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="docked" type="docked" visible="false" weight="0.4" order="6" />
@@ -854,106 +916,101 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/service/src/resources/log4j.properties">
+    <entry file="file://$PROJECT_DIR$/dependencies.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="12" selection-start="12" selection-end="12" vertical-scroll-proportion="0.0">
+        <state line="46" column="45" selection-start="1387" selection-end="1387" vertical-scroll-proportion="0.87341774">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="25" selection-start="569" selection-end="569" vertical-scroll-proportion="0.30379745">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jcl/src/java/org/ops4j/pax/logging/providers/OsgiLogServiceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="17" selection-start="1185" selection-end="1185" vertical-scroll-proportion="0.30379745">
+          <folding>
+            <marker date="1136626621000" expanded="false" signature="0:653" placeholder="/.../" />
+            <marker date="1136626621000" expanded="false" signature="703:860" placeholder="..." />
+            <marker date="1136626621000" expanded="true" signature="1034:1166" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="1220:1248" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="1280:1314" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="1320:1575" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="1616:1701" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="1707:1962" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="2003:2088" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="2094:2349" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="2390:2475" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="2480:2733" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="2773:2858" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="2863:3118" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="3159:3244" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="3249:3502" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="3542:3627" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="3632:3741" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="3784:3972" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="3977:4116" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="4172:4360" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="4366:4475" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="4518:4706" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="4712:4851" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="4907:5095" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="5101:5209" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="5251:5438" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="5444:5582" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="5637:5824" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="5830:5938" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="5980:6170" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="6176:6314" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="6369:6559" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="6565:6674" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="6717:6905" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="6911:7050" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="7106:7294" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="7300:7409" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="7452:7640" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="7646:7785" placeholder="/**...*/" />
+            <marker date="1136626621000" expanded="true" signature="7841:8029" placeholder="{...}" />
+            <marker date="1136626621000" expanded="true" signature="8074:8171" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jcl/build.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="32" column="27" selection-start="1103" selection-end="1103" vertical-scroll-proportion="0.6075949">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/service/build.properties">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="0" selection-start="768" selection-end="768" vertical-scroll-proportion="0.41584158">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/PaxLoggerImpl.java">
+    <entry file="file:///home/niclas/dev/codedragons/friends/server/core/build.properties">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="41" selection-start="903" selection-end="903" vertical-scroll-proportion="0.02970297">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/PaxLoggingServiceImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="13" selection-start="783" selection-end="783" vertical-scroll-proportion="0.17821783">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/jcl/src/java/org/ops4j/pax/logging/providers/Log4JProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="72" selection-start="1060" selection-end="1060" vertical-scroll-proportion="0.35643566">
+        <state line="16" column="64" selection-start="719" selection-end="768" vertical-scroll-proportion="0.30967742">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/jcl/src/java/org/ops4j/pax/logging/providers/Log4JServiceLog.java">
+    <entry file="file://$PROJECT_DIR$/example/build.properties">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="324" column="50" selection-start="8210" selection-end="8210" vertical-scroll-proportion="1.2019802">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/OsgiLogServiceImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="13" selection-start="895" selection-end="895" vertical-scroll-proportion="0.02970297">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/service/src/unittests/org/ops4j/pax/logging/test/Log4jServiceFactoryTestCase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="44" selection-start="1335" selection-end="1335" vertical-scroll-proportion="0.2970297">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/service/src/unittests/org/ops4j/pax/logging/test/Log4jServiceTestCase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="22" selection-start="823" selection-end="823" vertical-scroll-proportion="0.14851485">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/ConfigFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="17" selection-start="793" selection-end="793" vertical-scroll-proportion="0.26732674">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/PaxLoggingService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="17" selection-start="673" selection-end="673" vertical-scroll-proportion="0.089108914">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/PaxLogger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="17" selection-start="674" selection-end="674" vertical-scroll-proportion="0.11881188">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/ConfigFactoryImpl.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="24" selection-start="824" selection-end="824" vertical-scroll-proportion="0.23762377">
+        <state line="13" column="0" selection-start="703" selection-end="703" vertical-scroll-proportion="0.2516129">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/Activator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="60" column="74" selection-start="1883" selection-end="1883" vertical-scroll-proportion="0.36237624">
+        <state line="31" column="13" selection-start="1048" selection-end="1048" vertical-scroll-proportion="-0.06329114">
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -962,7 +1019,57 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/LoggingServiceFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="166" column="53" selection-start="5706" selection-end="5706" vertical-scroll-proportion="-0.18367347">
+        <state line="175" column="44" selection-start="6162" selection-end="6162" vertical-scroll-proportion="0.2516129">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/OsgiLogServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="13" selection-start="895" selection-end="895" vertical-scroll-proportion="0.17088607">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/PaxLoggerImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="13" selection-start="742" selection-end="742" vertical-scroll-proportion="0.11392405">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/service/src/java/org/ops4j/pax/logging/service/internal/PaxLoggingServiceImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="13" selection-start="783" selection-end="783" vertical-scroll-proportion="0.11392405">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jcl/src/java/org/ops4j/pax/logging/providers/PaxLoggingServiceLog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="59" selection-start="941" selection-end="941" vertical-scroll-proportion="0.2278481">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example/src/java/org/ops4j/pax/logging/example/Activator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="50" column="13" selection-start="1808" selection-end="1808" vertical-scroll-proportion="0.5506329">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/example/build.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="30" selection-start="1251" selection-end="1251" vertical-scroll-proportion="0.70253164">
           <folding />
         </state>
       </provider>

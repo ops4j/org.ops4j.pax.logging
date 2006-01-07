@@ -22,24 +22,24 @@ import org.ops4j.pax.logging.service.PaxLoggingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class Log4JProvider
+public class PaxLoggingProvider
     implements LogProvider
 {
-    private ServiceTracker m_Log4jServiceTracker;
+    private ServiceTracker m_PaxLoggingServiceTracker;
 
-    public Log4JProvider( BundleContext context )
+    public PaxLoggingProvider( BundleContext context )
     {
-        m_Log4jServiceTracker = new ServiceTracker( context, PaxLoggingService.class.getName(), null );
-        m_Log4jServiceTracker.open();
+        m_PaxLoggingServiceTracker = new ServiceTracker( context, PaxLoggingService.class.getName(), null );
+        m_PaxLoggingServiceTracker.open();
     }
 
     public Log getLogger( String categoryName )
     {
-        return new Log4JServiceLog( m_Log4jServiceTracker, categoryName );
+        return new PaxLoggingServiceLog( m_PaxLoggingServiceTracker, categoryName );
     }
 
     public void release()
     {
-        m_Log4jServiceTracker.close();
+        m_PaxLoggingServiceTracker.close();
     }
 }

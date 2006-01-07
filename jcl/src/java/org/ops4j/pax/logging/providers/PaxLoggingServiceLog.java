@@ -17,29 +17,22 @@
 package org.ops4j.pax.logging.providers;
 
 import org.apache.commons.logging.Log;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.log.LogService;
+
+import org.ops4j.pax.logging.service.PaxLogger;
+import org.ops4j.pax.logging.service.PaxLoggingService;
+
 import org.osgi.util.tracker.ServiceTracker;
 
-public class LogServiceProvider
-    implements Log, LogProvider
+public class PaxLoggingServiceLog
+    implements Log
 {
     private ServiceTracker m_Tracker;
+    private String m_CategoryName;
 
-    public LogServiceProvider( BundleContext context )
+    public PaxLoggingServiceLog( ServiceTracker tracker, String categoryName )
     {
-        String logService = LogService.class.getName();
-        m_Tracker = new ServiceTracker( context, logService, null );
-    }
-
-    public Log getLogger( String categoryName )
-    {
-        return this;
-    }
-
-    public void release()
-    {
-        m_Tracker.close();
+        m_Tracker = tracker;
+        m_CategoryName = categoryName;
     }
 
     /**
@@ -51,8 +44,12 @@ public class LogServiceProvider
      */
     public boolean isDebugEnabled()
     {
-        LogService service = getLogService();
-        return service != null;
+        PaxLogger logger = getLogger();
+        if( logger == null )
+        {
+            return false;
+        }
+        return logger.isDebugEnabled();
     }
 
     /**
@@ -64,8 +61,12 @@ public class LogServiceProvider
      */
     public boolean isErrorEnabled()
     {
-        LogService service = getLogService();
-        return service != null;
+        PaxLogger logger = getLogger();
+        if( logger == null )
+        {
+            return false;
+        }
+        return logger.isErrorEnabled();
     }
 
     /**
@@ -77,8 +78,12 @@ public class LogServiceProvider
      */
     public boolean isFatalEnabled()
     {
-        LogService service = getLogService();
-        return service != null;
+        PaxLogger logger = getLogger();
+        if( logger == null )
+        {
+            return false;
+        }
+        return logger.isFatalEnabled();
     }
     /**
      * <p> Is info logging currently enabled? </p>
@@ -89,8 +94,12 @@ public class LogServiceProvider
      */
     public boolean isInfoEnabled()
     {
-        LogService service = getLogService();
-        return service != null;
+        PaxLogger logger = getLogger();
+        if( logger == null )
+        {
+            return false;
+        }
+        return logger.isInfoEnabled();
     }
     /**
      * <p> Is trace logging currently enabled? </p>
@@ -101,8 +110,12 @@ public class LogServiceProvider
      */
     public boolean isTraceEnabled()
     {
-        LogService service = getLogService();
-        return service != null;
+        PaxLogger logger = getLogger();
+        if( logger == null )
+        {
+            return false;
+        }
+        return logger.isTraceEnabled();
     }
     /**
      * <p> Is warn logging currently enabled? </p>
@@ -113,37 +126,42 @@ public class LogServiceProvider
      */
     public boolean isWarnEnabled()
     {
-        LogService service = getLogService();
-        return service != null;
+        PaxLogger logger = getLogger();
+        if( logger == null )
+        {
+            return false;
+        }
+        return logger.isWarnEnabled();
     }
     /**
      * <p> Log a message with trace log level. </p>
      *
      * @param message log this message
      */
-    public void trace(Object message)
+    public void trace( Object message )
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_DEBUG, message.toString() );
+        logger.trace( message.toString(), null );
     }
+
     /**
      * <p> Log an error with trace log level. </p>
      *
      * @param message log this message
      * @param t log this cause
      */
-    public void trace(Object message, Throwable t)
+    public void trace( Object message, Throwable t )
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_DEBUG, message.toString() );
+        logger.debug( message.toString(), t );
     }
 
     /**
@@ -151,14 +169,14 @@ public class LogServiceProvider
      *
      * @param message log this message
      */
-    public void debug(Object message)
+    public void debug( Object message )
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_DEBUG, message.toString() );
+        logger.debug( message.toString(), null );
     }
 
     /**
@@ -169,12 +187,12 @@ public class LogServiceProvider
      */
     public void debug(Object message, Throwable t)
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_DEBUG, message.toString() );
+        logger.debug( message.toString(), t );
     }
 
     /**
@@ -184,12 +202,12 @@ public class LogServiceProvider
      */
     public void info(Object message)
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_INFO, message.toString() );
+        logger.inform( message.toString(), null );
     }
 
     /**
@@ -200,12 +218,12 @@ public class LogServiceProvider
      */
     public void info(Object message, Throwable t)
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_INFO, message.toString() );
+        logger.inform( message.toString(), t );
     }
 
     /**
@@ -215,12 +233,12 @@ public class LogServiceProvider
      */
     public void warn(Object message)
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_WARNING, message.toString() );
+        logger.warn( message.toString(), null );
     }
 
     /**
@@ -231,12 +249,12 @@ public class LogServiceProvider
      */
     public void warn(Object message, Throwable t)
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_WARNING, message.toString() );
+        logger.warn( message.toString(), t );
     }
 
     /**
@@ -246,12 +264,12 @@ public class LogServiceProvider
      */
     public void error(Object message)
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_ERROR, message.toString() );
+        logger.error( message.toString(), null );
     }
 
     /**
@@ -262,12 +280,12 @@ public class LogServiceProvider
      */
     public void error(Object message, Throwable t)
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_ERROR, message.toString() );
+        logger.error( message.toString(), t );
     }
 
     /**
@@ -277,12 +295,12 @@ public class LogServiceProvider
      */
     public void fatal(Object message)
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_ERROR, message.toString() );
+        logger.fatal( message.toString(), null );
     }
 
     /**
@@ -293,17 +311,22 @@ public class LogServiceProvider
      */
     public void fatal(Object message, Throwable t)
     {
-        LogService service = getLogService();
-        if( service == null )
+        PaxLogger logger = getLogger();
+        if( logger == null )
         {
             return;
         }
-        service.log( LogService.LOG_ERROR, message.toString() );
+        logger.debug( message.toString(), t );
     }
 
-    private LogService getLogService()
+    private PaxLogger getLogger()
     {
-        LogService service = (LogService) m_Tracker.getService();
-        return service;
+        Object trackedservice = m_Tracker.getService();
+        PaxLoggingService service = (PaxLoggingService) trackedservice;
+        if( service == null )
+        {
+            return null;
+        }
+        return service.getLogger( m_CategoryName );
     }
 }
