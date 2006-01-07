@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,9 +31,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 
@@ -42,7 +41,7 @@ import org.osgi.service.cm.ManagedService;
  * ServiceFactory implementation to return LogService implementation instances.
  *
  */
-public class Log4jServiceFactory
+public class LoggingServiceFactory
     implements ServiceFactory, ManagedService
 {
     /**
@@ -55,7 +54,7 @@ public class Log4jServiceFactory
      */
     public static final String LOG4J_CONFIG_FILE = "Log4J-ConfigFile";
 
-    /** System Logger */
+    /** System PaxLogger */
     private static final Logger m_SystemLogger;
 
     /**
@@ -85,7 +84,7 @@ public class Log4jServiceFactory
      * @param config
      *            the Configuration Factory to use
      */
-    public Log4jServiceFactory( ConfigFactory config )
+    public LoggingServiceFactory( ConfigFactory config )
     {
         m_ConfigFactory = config;
     }
@@ -113,7 +112,17 @@ public class Log4jServiceFactory
         {
             loggerName = bundle.getLocation();
         }
-        return new Log4jServiceImpl( loggerName );
+        ServiceReference reference = registration.getReference();
+        String type = (String) reference.getProperty( "type" );
+        if( "osgi-log".equalsIgnoreCase( type ) )
+        {
+            return new OsgiLogServiceImpl( loggerName );
+        }
+        if( "pax-log".equalsIgnoreCase( type ) )
+        {
+            return new PaxLoggingServiceImpl();
+        }
+        throw new InternalError( "The Activator has not registered the correct types." );
     }
 
     /**
@@ -199,7 +208,7 @@ public class Log4jServiceFactory
      */
     public void ungetService( Bundle bundle, ServiceRegistration registration, Object service )
     {
-        ( (Log4jServiceImpl) service ).dispose();
+        ( (OsgiLogServiceImpl) service ).dispose();
     }
 
     /**
@@ -217,29 +226,17 @@ public class Log4jServiceFactory
         else
         {
             Object configFile = configuration.get( LOG4J_CONFIG_FILE );
+            if( configFile == null || "".equals( configFile.toString() ) )
+            {
+                // ML - Aug 15, 2005: Ignore the settings
+                return;
+            }
             try
             {
+                URL url = new URL( configFile.toString() );
+                InputStream is = url.openStream();
                 Properties properties = new Properties();
-                if( configFile == null || "".equals( configFile.toString() ) )
-                {
-                    Enumeration en = configuration.keys();
-                    while( en.hasMoreElements() )
-                    {
-                        String key = (String) en.nextElement();
-                        if( Constants.SERVICE_PID.equals( key ) )
-                        {
-                            continue;
-                        }
-                        String value = (String) configuration.get( key );
-                        properties.put( key, value );
-                    }
-                }
-                else
-                {
-                    URL url = new URL( configFile.toString() );
-                    InputStream is = url.openStream();
-                    properties.load( is );
-                }
+                properties.load( is );
                 m_ConfigFactory.configure( properties );
                 m_IsUsingGlobal = true;
             } catch ( MalformedURLException e )

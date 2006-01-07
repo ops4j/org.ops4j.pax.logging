@@ -18,8 +18,8 @@ package org.ops4j.pax.logging.providers;
 
 import org.apache.commons.logging.Log;
 
-import org.ops4j.pax.logging.service.Logger;
-import org.ops4j.pax.logging.service.Log4JService;
+import org.ops4j.pax.logging.service.PaxLogger;
+import org.ops4j.pax.logging.service.PaxLoggingService;
 
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -44,7 +44,7 @@ public class Log4JServiceLog
      */
     public boolean isDebugEnabled()
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return false;
@@ -61,7 +61,7 @@ public class Log4JServiceLog
      */
     public boolean isErrorEnabled()
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return false;
@@ -78,7 +78,7 @@ public class Log4JServiceLog
      */
     public boolean isFatalEnabled()
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return false;
@@ -94,7 +94,7 @@ public class Log4JServiceLog
      */
     public boolean isInfoEnabled()
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return false;
@@ -110,7 +110,7 @@ public class Log4JServiceLog
      */
     public boolean isTraceEnabled()
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return false;
@@ -126,7 +126,7 @@ public class Log4JServiceLog
      */
     public boolean isWarnEnabled()
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return false;
@@ -140,7 +140,7 @@ public class Log4JServiceLog
      */
     public void trace( Object message )
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -156,7 +156,7 @@ public class Log4JServiceLog
      */
     public void trace( Object message, Throwable t )
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -171,7 +171,7 @@ public class Log4JServiceLog
      */
     public void debug( Object message )
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -187,7 +187,7 @@ public class Log4JServiceLog
      */
     public void debug(Object message, Throwable t)
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -202,7 +202,7 @@ public class Log4JServiceLog
      */
     public void info(Object message)
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -218,7 +218,7 @@ public class Log4JServiceLog
      */
     public void info(Object message, Throwable t)
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -233,7 +233,7 @@ public class Log4JServiceLog
      */
     public void warn(Object message)
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -249,7 +249,7 @@ public class Log4JServiceLog
      */
     public void warn(Object message, Throwable t)
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -264,7 +264,7 @@ public class Log4JServiceLog
      */
     public void error(Object message)
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -280,7 +280,7 @@ public class Log4JServiceLog
      */
     public void error(Object message, Throwable t)
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -295,7 +295,7 @@ public class Log4JServiceLog
      */
     public void fatal(Object message)
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -311,7 +311,7 @@ public class Log4JServiceLog
      */
     public void fatal(Object message, Throwable t)
     {
-        Logger logger = getLogger();
+        PaxLogger logger = getLogger();
         if( logger == null )
         {
             return;
@@ -319,9 +319,11 @@ public class Log4JServiceLog
         logger.debug( message.toString(), t );
     }
 
-    private Logger getLogger()
+    private PaxLogger getLogger()
     {
-        Log4JService service = (Log4JService) m_Tracker.getService();
+        Object trackedservice = m_Tracker.getService();
+        System.out.println( trackedservice.getClass() );
+        PaxLoggingService service = (PaxLoggingService) trackedservice;
         if( service == null )
         {
             return null;

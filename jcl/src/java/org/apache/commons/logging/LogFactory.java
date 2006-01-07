@@ -251,6 +251,10 @@ public class LogFactory
     public Log getInstance( String name )
         throws LogConfigurationException
     {
+        if( m_LogProvider == null )
+        {
+            throw new LogConfigurationException( "A LogProvider has not been set in the LogFactory." );
+        }
         return m_LogProvider.getLogger( name );
     }
 

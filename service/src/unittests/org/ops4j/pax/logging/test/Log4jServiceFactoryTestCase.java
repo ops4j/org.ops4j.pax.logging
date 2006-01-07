@@ -17,18 +17,21 @@
  */
 package org.ops4j.pax.logging.test;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Dictionary;
+import java.util.Enumeration;
 
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.jmock.core.Invocation;
 import org.jmock.core.Stub;
 import org.ops4j.pax.logging.service.internal.ConfigFactory;
-import org.ops4j.pax.logging.service.internal.Log4jServiceFactory;
+import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceReference;
 
 public class Log4jServiceFactoryTestCase extends MockObjectTestCase
 {
@@ -37,31 +40,36 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         super( name );
     }
 
-    public void testMergingProperties() 
+    public void testMergingProperties()
         throws Exception
     {
-        Mock configFactory = new Mock( ConfigFactory.class );        
+        Mock configFactory = new Mock( ConfigFactory.class );
         BasicConfigureStub stub = new BasicConfigureStub();
-        configFactory.expects( atLeastOnce() ).method( "configure" ).with( NOT_NULL ).will( stub );        
+        configFactory.expects( atLeastOnce() ).method( "configure" ).with( NOT_NULL ).will( stub );
 
         ResourceStub resourceStub = new ResourceStub();
 
         Mock bundle1 = new Mock( Bundle.class );
         Hashtable dictionary = new Hashtable();
-        dictionary.put( Log4jServiceFactory.LOG4J_LOGGER_NAME, "bundle1" );
-        dictionary.put( Log4jServiceFactory.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
+        dictionary.put( LoggingServiceFactory.LOG4J_LOGGER_NAME, "bundle1" );
+        dictionary.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
         bundle1.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary ) );
         bundle1.expects( once() ).method( "getResource" ).will( resourceStub );
-        Log4jServiceFactory factory = new Log4jServiceFactory( (ConfigFactory)configFactory.proxy() );
-        factory.getService( (Bundle) bundle1.proxy(), null );
+        Bundle bundle = (Bundle) bundle1.proxy();
+        ServiceRegistration serviceRegistration = new TestServiceRegistration( bundle );
+        Dictionary props = new Properties();
+        props.put( "type", "pax-log" );
+        serviceRegistration.setProperties( props );
+        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory)configFactory.proxy() );
+        factory.getService( (Bundle) bundle1.proxy(), serviceRegistration );
 
         Mock bundle2 = new Mock( Bundle.class );
         Hashtable dictionary2 = new Hashtable();
-        dictionary2.put( Log4jServiceFactory.LOG4J_LOGGER_NAME, "bundle2" );
-        dictionary2.put( Log4jServiceFactory.LOG4J_CONFIG_FILE, "./bundle2_log4j.properties" );
+        dictionary2.put( LoggingServiceFactory.LOG4J_LOGGER_NAME, "bundle2" );
+        dictionary2.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "./bundle2_log4j.properties" );
         bundle2.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary2 ) );
         bundle2.expects( once() ).method( "getResource" ).will( resourceStub );
-        factory.getService( (Bundle) bundle2.proxy(), null );
+        factory.getService( (Bundle) bundle2.proxy(), serviceRegistration );
 
         configFactory.verify();
         bundle1.verify();
@@ -80,18 +88,23 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         // ML - Aug 15, 2005: Test using the basic configuration
         Mock bundle1 = new Mock( Bundle.class );
         Hashtable dictionary = new Hashtable();
-        dictionary.put( Log4jServiceFactory.LOG4J_LOGGER_NAME, "bundle1" );
-        dictionary.put( Log4jServiceFactory.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
+        dictionary.put( LoggingServiceFactory.LOG4J_LOGGER_NAME, "bundle1" );
+        dictionary.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
         bundle1.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary ) );
         bundle1.expects( once() ).method( "getResource" ).will( resourceStub );
-        Log4jServiceFactory factory = new Log4jServiceFactory( (ConfigFactory)configFactory.proxy() );
-        factory.getService( (Bundle) bundle1.proxy(), null );
+        Bundle bundle = (Bundle) bundle1.proxy();
+        ServiceRegistration serviceRegistration = new TestServiceRegistration( bundle );
+        Dictionary props = new Properties();
+        props.put( "type", "pax-log" );
+        serviceRegistration.setProperties( props );
+        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory)configFactory.proxy() );
+        factory.getService( bundle, serviceRegistration );
         factory.updated( null );
 
         // ML - Aug 15, 2005: Test using the global configuration
         String fileName = getClass().getClassLoader().getResource( "./global_log4j.properties" ).toString();
-        Hashtable configuration = new Hashtable();        
-        configuration.put( Log4jServiceFactory.LOG4J_CONFIG_FILE, fileName );
+        Hashtable configuration = new Hashtable();
+        configuration.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, fileName );
         stub.setGlobal( true );
         factory.updated( configuration );
 
@@ -223,5 +236,74 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
             return buffer.append( "Returns the default classloader URL" );
         }
 
+    }
+
+    private static class TestServiceRegistration
+        implements ServiceRegistration
+    {
+        private ServiceReference m_reference;
+
+        public TestServiceRegistration( Bundle bundle )
+        {
+            m_reference = new TestReference( bundle );
+        }
+
+        public ServiceReference getReference()
+        {
+            return m_reference;
+        }
+
+        public void setProperties( Dictionary dictionary )
+        {
+            ((TestReference) m_reference).setProperties( dictionary );
+        }
+
+        public void unregister()
+        {
+        }
+    }
+
+    private static class TestReference
+        implements ServiceReference
+    {
+        private Bundle m_bundle;
+        private Dictionary m_Properties;
+
+        public TestReference( Bundle bundle )
+        {
+            m_bundle = bundle;
+        }
+
+        void setProperties( Dictionary props )
+        {
+            m_Properties = props;
+        }
+
+        public Object getProperty( String string )
+        {
+            return m_Properties.get( string );
+        }
+
+        public String[] getPropertyKeys()
+        {
+            Enumeration list = m_Properties.keys();
+            String[] result = new String[ m_Properties.size() ];
+            int i = 0;
+            while( list.hasMoreElements() )
+            {
+                result[ i++ ] = (String) list.nextElement();
+            }
+            return result;
+        }
+
+        public Bundle getBundle()
+        {
+            return m_bundle;
+        }
+
+        public Bundle[] getUsingBundles()
+        {
+            return new Bundle[0];
+        }
     }
 }

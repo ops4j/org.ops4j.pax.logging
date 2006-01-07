@@ -194,7 +194,7 @@
   <component name="libraryTable">
     <library name="log4j-1.2.12">
       <CLASSES>
-        <root url="jar:///home/niclas/.dpml/data/cache/log4j/jars/log4j-1.2.12.jar!/" />
+        <root url="jar://$MAGIC_REPO$/log4j/jars/log4j-1.2.12.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
@@ -204,6 +204,8 @@
     <option name="INSTRUMENT_CLASSES" value="true" />
     <option name="COPY_FORMS_RUNTIME_TO_OUTPUT" value="true" />
   </component>
-  <UsedPathMacros />
+  <UsedPathMacros>
+    <macro name="MAGIC_REPO" />
+  </UsedPathMacros>
 </project>
 

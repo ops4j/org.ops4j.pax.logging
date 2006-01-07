@@ -17,33 +17,31 @@
  */
 package org.ops4j.pax.logging.service;
 
-import java.util.Dictionary;
 import java.util.Hashtable;
-
 import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
-import org.ops4j.pax.logging.service.internal.Log4jServiceFactory;
+import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
-
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.log.LogService;
 
 /**
  * Starts the Log4j log services.
- * 
+ *
  */
-public class Activator implements BundleActivator, ManagedService
+public class Activator
+    implements BundleActivator
 {
     /**
      * The Managed Service PID for the log4j configuration
      */
     public static final String LOG4J_CONFIGURATION_PID = "org.ops4j.pax.logging.log4j";
-    
+
     /**
      * Reference to the registered service
      */
-    private Log4jServiceFactory m_Log4jServiceFactory;
+    private ServiceRegistration m_RegistrationStdLogging;
+    private ServiceRegistration m_RegistrationPaxLogging;
 
     /**
      * Default constructor
@@ -55,36 +53,29 @@ public class Activator implements BundleActivator, ManagedService
     /**
      * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
      */
-    public void start( BundleContext bundleContext ) throws Exception
+    public void start( BundleContext bundleContext )
+        throws Exception
     {
         // register the Log4JService service
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
-        m_Log4jServiceFactory = new Log4jServiceFactory( configFactory );
-        Hashtable log4jServiceProp = new Hashtable();
-        log4jServiceProp.put( Log4jServiceFactory.LOG4J_CONFIG_FILE, "" );
-        String log4jServiceName = Log4JService.class.getName();
-        bundleContext.registerService( log4jServiceName, m_Log4jServiceFactory,
-                log4jServiceProp );
-        
-        // register a ManagedService for handling configuration of log4j service
-        Hashtable configProp = new Hashtable();
-        configProp.put( Constants.SERVICE_PID, LOG4J_CONFIGURATION_PID);
-        bundleContext.registerService( ManagedService.class.getName(), this,
-                configProp );
+        LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( configFactory );
+        String osgiLoggingName = LogService.class.getName();
+        Hashtable properties = new Hashtable();
+        properties.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "" );
+        properties.put( "type", "osgi-log" );
+        m_RegistrationStdLogging = bundleContext.registerService( osgiLoggingName, loggingServiceFactory, properties );
+        properties.put( "type", "pax-log" );
+        String paxLoggingName = PaxLoggingService.class.getName();
+        m_RegistrationPaxLogging = bundleContext.registerService( paxLoggingName, loggingServiceFactory, properties );
     }
 
     /**
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
-    public void stop( BundleContext bundleContext ) throws Exception
+    public void stop( BundleContext bundleContext )
+        throws Exception
     {
-    }
-
-    /**
-     * @see org.osgi.service.cm.ManagedService#updated(Dictionary)
-     */
-    public void updated( Dictionary dictionary ) throws ConfigurationException
-    {
-        m_Log4jServiceFactory.updated( dictionary );
+        m_RegistrationPaxLogging.unregister();
+        m_RegistrationStdLogging.unregister();
     }
 }

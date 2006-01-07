@@ -17,7 +17,7 @@ package org.ops4j.pax.logging.providers;
 
 import org.apache.commons.logging.Log;
 
-import org.ops4j.pax.logging.service.Log4JService;
+import org.ops4j.pax.logging.service.PaxLoggingService;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -29,7 +29,7 @@ public class Log4JProvider
 
     public Log4JProvider( BundleContext context )
     {
-        m_Log4jServiceTracker = new ServiceTracker( context, Log4JService.class.getName(), null );
+        m_Log4jServiceTracker = new ServiceTracker( context, PaxLoggingService.class.getName(), null );
         m_Log4jServiceTracker.open();
     }
 

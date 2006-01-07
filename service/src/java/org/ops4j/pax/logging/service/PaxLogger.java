@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Makas Tzavellas.
+ * Copyright 2005 Niclas Hedhman.
  *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
@@ -15,23 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.service.internal;
+package org.ops4j.pax.logging.service;
 
-import org.apache.log4j.PropertyConfigurator;
 
-import java.util.Properties;
-
-/**
- * Implementation of the ConfigFactory interface
- */
-public class ConfigFactoryImpl
-    implements ConfigFactory
+public interface PaxLogger
 {
-    /**
-     * @see org.ops4j.pax.logging.service.internal.ConfigFactory#configure(java.util.Properties) 
-     */
-    public void configure( Properties prop )
-    {
-        PropertyConfigurator.configure( prop );
-    }
+    boolean isTraceEnabled();
+    boolean isDebugEnabled();
+    boolean isWarnEnabled();
+    boolean isInfoEnabled();
+    boolean isErrorEnabled();
+    boolean isFatalEnabled();
+
+    void trace( String message, Throwable t );
+    void debug( String message, Throwable t );
+    void inform( String message, Throwable t );
+    void warn( String message, Throwable t );
+    void error( String message, Throwable t );
+    void fatal( String message, Throwable t );
 }
+

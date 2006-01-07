@@ -17,7 +17,7 @@
  */
 package org.ops4j.pax.logging.service;
 
-public interface Log4JService
+public interface PaxLoggingService
 {
-    Logger getLogger( String category );
+    PaxLogger getLogger( String category );
 }

@@ -19,9 +19,7 @@ package org.ops4j.pax.logging.test;
 
 import org.apache.log4j.BasicConfigurator;
 import org.jmock.MockObjectTestCase;
-import org.osgi.service.log.LogService;
-
-import org.ops4j.pax.logging.service.internal.Log4jServiceImpl;
+import org.ops4j.pax.logging.service.internal.OsgiLogServiceImpl;
 
 public class Log4jServiceTestCase extends MockObjectTestCase
 {
@@ -33,7 +31,7 @@ public class Log4jServiceTestCase extends MockObjectTestCase
     public void testLogService() throws Exception
     {
         BasicConfigurator.configure();
-        Log4jServiceImpl ls = new Log4jServiceImpl( Log4jServiceTestCase.class.getName() );
+        OsgiLogServiceImpl ls = new OsgiLogServiceImpl( Log4jServiceTestCase.class.getName() );
 //        ls.log( LogService.LOG_DEBUG, "*******TESTING*********" );
 //        ls.log( LogService.LOG_ERROR, "*******TESTING*********", new Exception() );
 //        ls.log( LogService.LOG_INFO, "*******TESTING*********" );

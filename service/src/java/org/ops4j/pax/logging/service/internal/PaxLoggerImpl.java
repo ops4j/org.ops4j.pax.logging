@@ -20,12 +20,12 @@ package org.ops4j.pax.logging.service.internal;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-public class Logger4JImpl
-    implements org.ops4j.pax.logging.service.Logger
+public class PaxLoggerImpl
+    implements org.ops4j.pax.logging.service.PaxLogger
 {
     private org.apache.log4j.Logger m_Delegate;
 
-    public Logger4JImpl( Logger delegate )
+    public PaxLoggerImpl( Logger delegate )
     {
         m_Delegate = delegate;
     }

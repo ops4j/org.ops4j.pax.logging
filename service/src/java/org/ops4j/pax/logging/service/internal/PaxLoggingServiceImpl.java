@@ -15,23 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.service;
+package org.ops4j.pax.logging.service.internal;
 
+import org.ops4j.pax.logging.service.PaxLoggingService;
+import org.ops4j.pax.logging.service.PaxLogger;
 
-public interface Logger
+public class PaxLoggingServiceImpl
+    implements PaxLoggingService
 {
-    boolean isTraceEnabled();
-    boolean isDebugEnabled();
-    boolean isWarnEnabled();
-    boolean isInfoEnabled();
-    boolean isErrorEnabled();
-    boolean isFatalEnabled();
 
-    void trace( String message, Throwable t );
-    void debug( String message, Throwable t );
-    void inform( String message, Throwable t );
-    void warn( String message, Throwable t );
-    void error( String message, Throwable t );
-    void fatal( String message, Throwable t );
+    public PaxLogger getLogger( String category )
+    {
+        return new PaxLoggerImpl( org.apache.log4j.Logger.getLogger( category ) );
+    }
 }
-
