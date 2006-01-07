@@ -28,22 +28,21 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 
 /**
  * ServiceFactory implementation to return LogService implementation instances.
- *
  */
 public class LoggingServiceFactory
     implements ServiceFactory, ManagedService
 {
+
     /**
      * Dictonary key
      */
@@ -54,7 +53,9 @@ public class LoggingServiceFactory
      */
     public static final String LOG4J_CONFIG_FILE = "Log4J-ConfigFile";
 
-    /** System PaxLogger */
+    /**
+     * System PaxLogger
+     */
     private static final Logger m_SystemLogger;
 
     /**
@@ -86,6 +87,13 @@ public class LoggingServiceFactory
     public LoggingServiceFactory( ConfigFactory config )
     {
         m_ConfigFactory = config;
+        m_MergedProperties = new Properties();
+        m_MergedProperties.put( "log4j.rootLogger", "DEBUG, A1" );
+        m_MergedProperties.put( "log4j.appender.A1", "org.apache.log4j.ConsoleAppender" );
+        m_MergedProperties.put( "log4j.appender.A1.layout", "org.apache.log4j.PatternLayout" );
+        m_MergedProperties.put( "log4j.appender.A1.layout.ConversionPattern", "%-4r [%t] %-5p %c %x - %m%n" );
+        m_ConfigFactory.configure( m_MergedProperties );
+        System.out.println( "NICLAS!!!!");
     }
 
     /**
@@ -104,7 +112,9 @@ public class LoggingServiceFactory
                 mergeProperties( bundle, loggerName, configFileName );
             } catch( IOException e )
             {
-                m_SystemLogger.error( "Can not read Log4J configuration " + configFileName + " from bundle for '" + loggerName + "'.", e );
+                m_SystemLogger.error(
+                    "Can not read Log4J configuration " + configFileName + " from bundle for '" + loggerName + "'.", e
+                );
             }
         }
         else
@@ -127,8 +137,9 @@ public class LoggingServiceFactory
     /**
      * Tries to append a logger for the provided bundle, reading
      * the properties from the specified log4j config file
-     * @param bundle the bundle that contains the log4j configuration in it's classpath
-     * @param loggerName the loggers name to use
+     *
+     * @param bundle         the bundle that contains the log4j configuration in it's classpath
+     * @param loggerName     the loggers name to use
      * @param configFileName the location of the log4j config file
      */
     private void mergeProperties( Bundle bundle, String loggerName, String configFileName )
@@ -139,13 +150,13 @@ public class LoggingServiceFactory
         {
             URL resource = bundle.getResource( configFileName );
             is = resource.openStream();
-            if ( is != null )
+            if( is != null )
             {
                 Properties properties = new Properties();
                 properties.load( is );
                 String loggerNameKey = "log4j.logger." + loggerName;
                 String loggerOutputValue = properties.getProperty( loggerNameKey );
-                if ( loggerOutputValue == null )
+                if( loggerOutputValue == null )
                 {
                     // Makas - Aug 10, 2005: Cant find the value using the logger
                     // name given.
@@ -167,10 +178,10 @@ public class LoggingServiceFactory
                 Set set = properties.keySet();
                 Iterator itr = set.iterator();
                 Map newProperties = new HashMap();
-                while ( itr.hasNext() )
+                while( itr.hasNext() )
                 {
                     String origKey = (String) itr.next();
-                    if ( origKey.startsWith( appenderName ) )
+                    if( origKey.startsWith( appenderName ) )
                     {
                         String newKey = origKey.replaceAll( appenderName, newAppenderName );
                         // Makas - Aug 10, 2005: Replace the old key with the new.
@@ -180,7 +191,7 @@ public class LoggingServiceFactory
                     }
                 }
                 properties.putAll( newProperties );
-                if ( m_MergedProperties != null )
+                if( m_MergedProperties != null )
                 {
                     properties.putAll( m_MergedProperties );
                 }
@@ -207,12 +218,16 @@ public class LoggingServiceFactory
      */
     public void ungetService( Bundle bundle, ServiceRegistration registration, Object service )
     {
-        ( (OsgiLogServiceImpl) service ).dispose();
+        if( service instanceof OsgiLogServiceImpl )
+        {
+            ((OsgiLogServiceImpl) service ).dispose();
+        }
     }
 
     /**
      * Overwrites all the LogService properties using the Log4J properties specified
      * in this configuration.
+     *
      * @see org.osgi.service.cm.ManagedService#updated(java.util.Dictionary)
      */
     public void updated( Dictionary configuration )
@@ -239,14 +254,20 @@ public class LoggingServiceFactory
                 properties.load( is );
                 m_ConfigFactory.configure( properties );
                 m_IsUsingGlobal = true;
-            } catch ( MalformedURLException e )
+            } catch( MalformedURLException e )
             {
-                ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE, "Cannot read log4j configuration from " + configFile );
+                ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE,
+                                                                        "Cannot read log4j configuration from "
+                                                                        + configFile
+                );
                 ce.initCause( e );
                 throw ce;
-            } catch ( IOException e )
+            } catch( IOException e )
             {
-                ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE, "Cannot read log4j configuration from " + configFile );
+                ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE,
+                                                                        "Cannot read log4j configuration from "
+                                                                        + configFile
+                );
                 ce.initCause( e );
                 throw ce;
             } finally

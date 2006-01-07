@@ -45,7 +45,7 @@
     </target>
 
     <target name="publish" depends="osgi-bundle, master.publish" >
-        <publish file="target/deliverables/jars/pax-logging-service-${project.version}.jar"
-                 uri="artifact:jar:pax/logging/pax-logging-service#${project.version}" />
+        <publish file="target/deliverables/jars/${ant.project.name}-${project.version}.jar"
+                 uri="artifact:jar:pax/logging/${ant.project.name}#${project.version}" />
     </target>
 </project>
