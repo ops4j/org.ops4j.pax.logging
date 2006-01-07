@@ -93,7 +93,6 @@ public class LoggingServiceFactory
         m_MergedProperties.put( "log4j.appender.A1.layout", "org.apache.log4j.PatternLayout" );
         m_MergedProperties.put( "log4j.appender.A1.layout.ConversionPattern", "%-4r [%t] %-5p %c %x - %m%n" );
         m_ConfigFactory.configure( m_MergedProperties );
-        System.out.println( "NICLAS!!!!");
     }
 
     /**

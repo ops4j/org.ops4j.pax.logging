@@ -48,7 +48,6 @@ public class Activator
      */
     public Activator()
     {
-        System.out.println( "NNNNNNN!!!!");
     }
 
     /**
