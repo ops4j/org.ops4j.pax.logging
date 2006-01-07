@@ -26,6 +26,7 @@ import org.mortbay.http.HttpException;
 import org.mortbay.http.HttpHandler;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
+import org.apache.log4j.Logger;
 
 /** This is a pure test class, which is handles the requests on port 8080 in this example.
  * Jetty 4.2 used Jakart Commons Logging, and we are showing that
@@ -33,12 +34,15 @@ import org.mortbay.http.HttpResponse;
 public class TestHandler
     implements HttpHandler
 {
+    private Logger m_Logger = Logger.getLogger( TestHandler.class );
+
     private HttpContext m_Context;
     private String m_Name;
     private boolean m_started;
 
     public TestHandler( String name )
     {
+        m_Logger.info( "Creating TestHandler." );
         m_Name = name;
     }
 
@@ -54,12 +58,14 @@ public class TestHandler
 
     public void initialize( HttpContext httpContext )
     {
+        m_Logger.info( "Initializing the TestHandler with a HttpContext: " + httpContext );
         m_Context = httpContext;
     }
 
     public void handle( String string, String string1, HttpRequest httpRequest, HttpResponse httpResponse )
         throws HttpException, IOException
     {
+        m_Logger.info( "Processing Request." );
         httpResponse.setContentType( "text/html" );
         OutputStream outputStream = httpResponse.getOutputStream();
         OutputStreamWriter osw = new OutputStreamWriter( outputStream, "UTF-8" );
@@ -72,12 +78,14 @@ public class TestHandler
     public void start()
         throws Exception
     {
+        m_Logger.info( "Starting." );
         m_started = true;
     }
 
     public void stop()
         throws InterruptedException
     {
+        m_Logger.info( "Stopping." );
         m_started = false;
     }
 

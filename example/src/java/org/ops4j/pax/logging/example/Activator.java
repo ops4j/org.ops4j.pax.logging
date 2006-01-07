@@ -19,6 +19,7 @@ package org.ops4j.pax.logging.example;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpHandler;
 import org.mortbay.http.HttpListener;
@@ -47,6 +48,7 @@ public class Activator
         throws Exception
     {
         LogProvider provider = new PaxLoggingProvider( bundleContext );
+        Logger.setLogProvider( provider );
         LogFactory.getFactory().setLogProvider( provider );
         m_logger = LogFactory.getLog( Activator.class );
         m_logger.info( "Starting Example..." );
