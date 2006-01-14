@@ -21,7 +21,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class PaxLoggerImpl
-    implements org.ops4j.pax.logging.service.PaxLogger
+    implements org.ops4j.pax.logging.PaxLogger
 {
     private org.apache.log4j.Logger m_Delegate;
 

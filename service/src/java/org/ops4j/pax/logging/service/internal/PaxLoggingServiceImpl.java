@@ -17,8 +17,8 @@
  */
 package org.ops4j.pax.logging.service.internal;
 
-import org.ops4j.pax.logging.service.PaxLoggingService;
-import org.ops4j.pax.logging.service.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.PaxLogger;
 
 public class PaxLoggingServiceImpl
     implements PaxLoggingService

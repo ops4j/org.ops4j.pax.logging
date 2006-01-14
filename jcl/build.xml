@@ -29,17 +29,14 @@
 
         <path id="compile-deps">
             <path refid="osgi"/>
-            <path refid="log4j"/>
-            <path refid="pax-logging-service"/>
+            <path refid="pax-logging-api"/>
         </path>
 
         <path id="runtime-deps">
-            <!--path refid="log4j"/-->
         </path>
 
         <path id="unittest-deps">
             <path refid="osgi"/>
-            <path refid="log4j"/>
         </path>
     </target>
 

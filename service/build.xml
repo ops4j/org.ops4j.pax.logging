@@ -30,6 +30,7 @@
         <path id="compile-deps">
             <path refid="osgi"/>
             <path refid="log4j"/>
+            <path refid="pax-logging-api" />
         </path>
 
         <path id="runtime-deps">

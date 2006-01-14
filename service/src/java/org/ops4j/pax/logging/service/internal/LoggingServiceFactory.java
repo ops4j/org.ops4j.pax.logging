@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Enumeration;
 import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
@@ -234,54 +235,81 @@ public class LoggingServiceFactory
     {
         if( configuration == null )
         {
-            m_IsUsingGlobal = false;
-            m_ConfigFactory.configure( m_MergedProperties );
+            useGlobalProperties();
+            return;
         }
-        else
+        Object configFile = configuration.get( LOG4J_CONFIG_FILE );
+        if( configFile == null || "".equals( configFile.toString() ) )
         {
-            Object configFile = configuration.get( LOG4J_CONFIG_FILE );
-            if( configFile == null || "".equals( configFile.toString() ) )
+            usePropertiesInProvidedConfiguration( configuration );
+            return;
+        }
+        usePropertiesInURL( configFile );
+    }
+
+    private void usePropertiesInProvidedConfiguration( Dictionary configuration )
+    {
+        Properties extracted = new Properties();
+        Enumeration list = configuration.keys();
+        while( list.hasMoreElements() )
+        {
+            Object obj = list.nextElement();
+            if( obj instanceof String )
             {
-                return;
-            }
-            InputStream is = null;
-            try
-            {
-                URL url = new URL( configFile.toString() );
-                is = url.openStream();
-                Properties properties = new Properties();
-                properties.load( is );
-                m_ConfigFactory.configure( properties );
-                m_IsUsingGlobal = true;
-            } catch( MalformedURLException e )
-            {
-                ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE,
-                                                                        "Cannot read log4j configuration from "
-                                                                        + configFile
-                );
-                ce.initCause( e );
-                throw ce;
-            } catch( IOException e )
-            {
-                ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE,
-                                                                        "Cannot read log4j configuration from "
-                                                                        + configFile
-                );
-                ce.initCause( e );
-                throw ce;
-            } finally
-            {
-                if( is != null )
+                String key = (String) obj;
+                if( key.startsWith( "log4j" ) )
                 {
-                    try
-                    {
-                        is.close();
-                    } catch( IOException e )
-                    {
-                        e.printStackTrace();
-                    }
+                    Object value = configuration.get( obj );
+                    extracted.put( key, value );
                 }
             }
         }
+        m_ConfigFactory.configure( extracted );
+        m_IsUsingGlobal = false;
+    }
+
+    private void usePropertiesInURL( Object configFile )
+        throws ConfigurationException
+    {
+        InputStream is = null;
+        try
+        {
+            URL url = new URL( configFile.toString() );
+            is = url.openStream();
+            Properties properties = new Properties();
+            properties.load( is );
+            m_ConfigFactory.configure( properties );
+            m_IsUsingGlobal = true;
+        } catch( MalformedURLException e )
+        {
+            String message = "Cannot read log4j configuration from " + configFile;
+            ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE, message );
+            ce.initCause( e );
+            throw ce;
+        } catch( IOException e )
+        {
+            String message = "Cannot read log4j configuration from " + configFile;
+            ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE, message );
+            ce.initCause( e );
+            throw ce;
+        } finally
+        {
+            if( is != null )
+            {
+                try
+                {
+                    is.close();
+                } catch( IOException e )
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void useGlobalProperties()
+    {
+        m_IsUsingGlobal = false;
+        m_ConfigFactory.configure( m_MergedProperties );
     }
 }

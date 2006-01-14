@@ -20,6 +20,7 @@ package org.ops4j.pax.logging.service;
 import java.util.Hashtable;
 import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
 import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
+import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -36,7 +37,7 @@ public class Activator
     /**
      * The Managed Service PID for the log4j configuration
      */
-    public static final String LOG4J_CONFIGURATION_PID = "org.ops4j.pax.logging.log4j";
+    public static final String CONFIGURATION_PID = "org.ops4j.pax.logging.log4j";
 
     /**
      * Reference to the registered service
@@ -64,7 +65,7 @@ public class Activator
         Hashtable properties = new Hashtable();
         properties.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "" );
         properties.put( "type", "osgi-log" );
-        properties.put(Constants.SERVICE_PID, LOG4J_CONFIGURATION_PID);
+        properties.put(Constants.SERVICE_PID, CONFIGURATION_PID );
         m_RegistrationStdLogging = bundleContext.registerService( osgiLoggingName, loggingServiceFactory, properties );
         properties.put( "type", "pax-log" );
         String paxLoggingName = PaxLoggingService.class.getName();
