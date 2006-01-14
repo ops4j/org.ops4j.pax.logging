@@ -264,6 +264,12 @@ public class LoggingServiceFactory
                 }
             }
         }
+        // If the updated() method is called without any Configuration URL and without any log4j properties,
+        // then keep the default/previous configuration.
+        if( extracted.size() == 0 )
+        {
+            return;
+        }
         m_ConfigFactory.configure( extracted );
         m_IsUsingGlobal = false;
     }
