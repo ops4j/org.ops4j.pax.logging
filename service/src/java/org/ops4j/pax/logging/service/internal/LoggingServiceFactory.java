@@ -149,6 +149,9 @@ public class LoggingServiceFactory
         try
         {
             URL resource = bundle.getResource( configFileName );
+            if (resource == null) {
+                return;
+            }
             is = resource.openStream();
             if( is != null )
             {
