@@ -17,6 +17,7 @@
  */
 package org.ops4j.pax.logging.service;
 
+import java.util.Dictionary;
 import java.util.Hashtable;
 import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
 import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
@@ -25,6 +26,8 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogService;
 
 /**
@@ -60,16 +63,28 @@ public class Activator
     {
         // register the Log4JService service
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
-        LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( configFactory );
+        final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( configFactory );
         String osgiLoggingName = LogService.class.getName();
+        
         Hashtable properties = new Hashtable();
         properties.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "" );
         properties.put( "type", "osgi-log" );
-        properties.put(Constants.SERVICE_PID, CONFIGURATION_PID );
         m_RegistrationStdLogging = bundleContext.registerService( osgiLoggingName, loggingServiceFactory, properties );
         properties.put( "type", "pax-log" );
-        String paxLoggingName = PaxLoggingService.class.getName();
+        String paxLoggingName =  PaxLoggingService.class.getName();
         m_RegistrationPaxLogging = bundleContext.registerService( paxLoggingName, loggingServiceFactory, properties );
+        
+        // configuration for loggingServiceFactory
+        Hashtable managedServiceProps = new Hashtable();
+        managedServiceProps.put(Constants.SERVICE_PID, CONFIGURATION_PID );
+        ManagedService managedService = new ManagedService()
+        {
+            public void updated( Dictionary iProperties ) throws ConfigurationException
+            {
+                loggingServiceFactory.updated(iProperties);
+            }
+        };
+        bundleContext.registerService( ManagedService.class.getName(), managedService, managedServiceProps);
     }
 
     /**
