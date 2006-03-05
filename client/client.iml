@@ -10,8 +10,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="api" />
     <orderEntry type="library" name="OSGi" level="application" />
+    <orderEntry type="module" module-name="service" />
     <orderEntryProperties />
   </component>
 </module>

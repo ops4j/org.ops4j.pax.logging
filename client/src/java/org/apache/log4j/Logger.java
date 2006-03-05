@@ -18,14 +18,45 @@ package org.apache.log4j;
 
 import org.apache.commons.logging.Log;
 import org.apache.log4j.helpers.MessageFormatter;
+import org.ops4j.pax.logging.providers.DefaultLogProvider;
 import org.ops4j.pax.logging.providers.LogProvider;
+import org.ops4j.pax.logging.providers.PaxLoggingProvider;
+import org.osgi.framework.BundleContext;
 
 /**
  * This is the central class in the log4j package. Most logging
  * operations, except configuration, are done through this class.
  * <p>
- * NOTE: This is NOT the original file of Log4J Logger, and is only here to provide a static mapping
- * to the Pax Logging system running under OSGi.
+ *
+ * <b>NOTE: This is NOT the original file of Log4J Logger, and is only here to provide a static mapping
+ * to the Pax Logging system running under OSGi.</b>
+ * </p>
+ *
+ * <p>
+ * The client code that wishes to use this adaptation of Log4J and have the log output
+ * to be directed to the Pax Logging Service backend, which is driven by the real Log4J, it is necessary to;
+ * <ul>
+ * <li>ensure that log4j.jar is <b>NOT</b> included in your bundle jar.</li>
+ * <li>include the pax-logging-client.jar into the client bundle.</li>
+ * <li>update your Manifest.MF to import the org.ops4j.pax.logging package.</li>
+ * <li>Initiate this class by setting the Bundle Context.</li>
+ * </ul>
+ * Typical code looks like this;
+ * <code><pre>
+ * import org.apache.commons.logging.LogFactory;
+ * import org.apache.commons.logging.Log;
+ *
+ * public class Activator
+ *     implements BundleActivator
+ * {
+ *     public void start( BundleContext context )
+ *         throws Exception
+ *     {
+ *         LogFactory.getFactory().setBundleContext( context );
+ *     }
+ * }
+ * </pre></code>
+ * </p>
  *
  * @author Ceki G&uuml;lc&uuml;
  * @author Niclas Hedhman
@@ -36,9 +67,26 @@ public class Logger
     private static LogProvider m_provider;
     private Log m_delegate;
 
-    public static void setLogProvider( LogProvider provider )
+    static
     {
-        m_provider = provider;
+        m_provider = new DefaultLogProvider();
+    }
+
+    public static void setBundleContext( BundleContext ctx )
+    {
+        m_provider = new PaxLoggingProvider( ctx );
+    }
+
+    /** Lifecycle method to release any resources held.
+     *
+     */
+    public static void release()
+    {
+        if( m_provider != null )
+        {
+            m_provider.release();
+            m_provider = null;
+        }
     }
 
     /**
@@ -258,7 +306,7 @@ public class Logger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            m_delegate.debug( message, t);
+            m_delegate.debug( message, t );
         }
     }
 
@@ -368,7 +416,7 @@ public class Logger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            m_delegate.error(message, t );
+            m_delegate.error( message, t );
         }
     }
 
@@ -470,7 +518,7 @@ public class Logger
         if( m_delegate.isFatalEnabled() )
         {
             String msgStr = (String) messagePattern;
-            msgStr = MessageFormatter.format( msgStr, arg);
+            msgStr = MessageFormatter.format( msgStr, arg );
             m_delegate.fatal( msgStr );
         }
     }
@@ -564,7 +612,7 @@ public class Logger
      */
     public void info( String messagePattern, Object arg1, Object arg2 )
     {
-        if( m_delegate.isInfoEnabled())
+        if( m_delegate.isInfoEnabled() )
         {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format( msgStr, arg1, arg2 );
@@ -741,7 +789,7 @@ public class Logger
      */
     public void warn( Object messagePattern, Object arg )
     {
-        if( m_delegate.isWarnEnabled())
+        if( m_delegate.isWarnEnabled() )
         {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format( msgStr, arg );

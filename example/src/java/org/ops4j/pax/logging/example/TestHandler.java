@@ -29,7 +29,9 @@ import org.mortbay.http.HttpResponse;
 import org.apache.log4j.Logger;
 
 /** This is a pure test class, which is handles the requests on port 8080 in this example.
- * Jetty 4.2 used Jakart Commons Logging, and we are showing that
+ * 
+ * Jetty 4.2 used Jakarta Commons Logging, and we are showing that in combination with Log4J
+ * usage in this particular class.
  */
 public class TestHandler
     implements HttpHandler

@@ -25,64 +25,49 @@ package org.apache.commons.logging;
 
 import org.ops4j.pax.logging.providers.DefaultLogProvider;
 import org.ops4j.pax.logging.providers.LogProvider;
+import org.ops4j.pax.logging.providers.PaxLoggingProvider;
 import org.osgi.framework.BundleContext;
 
 /**
-* This is an adaptation of the Jakarta Commons Logging API for
-* OSGi usage.
-* <p>
-* The LogFactory, LogConfigurationException and Log classes are exported from
-* the Commons-Logging bundle, and will be provided to the bundles that import
-* the commons-logging classes. And this class will either bind to a plain OSGi
-* LogService, or if the Log4J service is detected, it will use that one
-* instead.
-* </p>
-* <p>
-* The bundle that uses this library to get Jakarta Commons Logging to bind to
-* any of the supported backend logging systems, must import these classes
-* and also enable the proper usage in its bundle activator. Typical code looks
-* like this;
-* <code><pre>
-* import org.apache.commons.logging.LogFactory;
-* import org.apache.commons.logging.Log;
-*
-* import org.ops4j.pax.logging.providers.LogProvider;
-* import org.ops4j.pax.logging.providers.PaxLoggingProvider;
-*
-* public class Activator
-*     implements BundleActivator
-* {
-*     public void start( BundleContext context )
-*         throws Exception
-*     {
-*         LogFactory factory = LogFactory.getInstance();
-*         factory.setBundleContext( context );
-*         PaxLoggingProvider provider = new PaxLoggingProvider( context );
-*         factory.setProvider( provider );
-*     }
-*
-*     public void stop( BundleContext context )
-*     {
-*         LogFactory factory = LogFactory.getInstance();
-*         factory.release();
-*     }
-* }
-* </pre></code>
-* </p>
-* <p>Factory for creating {@link Log} instances, with discovery and
-* configuration features similar to that employed by standard Java APIs
-* such as JAXP.</p>
-*
-* @author Niclas Hedhman (responsible for the OSGi adaptation.)
-* @author Craig R. McClanahan
-* @author Costin Manolache
-* @author Richard A. Sitze
-* @version $Revision: 1.27 $ $Date: 2004/06/06 21:15:12 $
-*/
+ * This is an adaptation of the Jakarta Commons Logging API for
+ * OSGi usage.
+ * <p>
+ * The client code that wishes to use this adaptation of Jakarta Commons Logging and have the log output
+ * to be directed to the Pax Logging Service backend, which is driven by Log4J, it is necessary to;
+ * <ul>
+ * <li>ensure that commons-logging.jar is <b>NOT</b> included in your bundle jar.</li>
+ * <li>include the pax-logging-client.jar into the client bundle.</li>
+ * <li>update your Manifest.MF to import the org.ops4j.pax.logging package.</li>
+ * <li>Initiate this class by setting the Bundle Context.</li>
+ * </ul>
+ * Typical code looks like this;
+ * <code><pre>
+ * import org.apache.commons.logging.LogFactory;
+ * import org.apache.commons.logging.Log;
+ *
+ * public class Activator
+ *     implements BundleActivator
+ * {
+ *     public void start( BundleContext context )
+ *         throws Exception
+ *     {
+ *         LogFactory.getFactory().setBundleContext( context );
+ *     }
+ * }
+ * </pre></code>
+ * </p>
+ *
+ * @author Niclas Hedhman (responsible for the OSGi adaptation.)
+ * @author Craig R. McClanahan
+ * @author Costin Manolache
+ * @author Richard A. Sitze
+ */
 
 public class LogFactory
 {
-    /**ps4j/pax/logging/providers
+
+    /**
+     * ps4j/pax/logging/providers
      * The name of the property used to identify the LogFactory implementation
      * class name.
      */
@@ -101,31 +86,21 @@ public class LogFactory
 
     private static LogFactory m_Instance;
 
-    private BundleContext  m_BundleContext;
-    private LogProvider    m_LogProvider;
+    private LogProvider m_LogProvider;
 
     static
     {
         m_Instance = new LogFactory();
     }
 
-    public void setBundleContext( BundleContext context )
+    public void setBundleContext( BundleContext ctx )
     {
-        if( m_BundleContext != null )
-        {
-            return;
-        }
-        m_BundleContext = context;
-    }
-
-    public void setLogProvider( LogProvider provider )
-    {
-        m_LogProvider = provider;
+        m_LogProvider = new PaxLoggingProvider( ctx );
     }
 
     /**
-     * @exception LogConfigurationException if the implementation class is not
-     *  available or cannot be instantiated.
+     * @throws LogConfigurationException if the implementation class is not
+     *                                   available or cannot be instantiated.
      */
     public static LogFactory getFactory()
         throws LogConfigurationException
@@ -139,10 +114,10 @@ public class LogFactory
      *
      * @param clazz Class from which a log name will be derived
      *
-     * @exception LogConfigurationException if a suitable <code>Log</code>
-     *  instance cannot be returned
+     * @throws LogConfigurationException if a suitable <code>Log</code>
+     *                                   instance cannot be returned
      */
-    public static Log getLog(Class clazz)
+    public static Log getLog( Class clazz )
         throws LogConfigurationException
     {
         return getFactory().getInstance( clazz.getName() );
@@ -153,13 +128,13 @@ public class LogFactory
      * having to care about factories.
      *
      * @param name Logical name of the <code>Log</code> instance to be
-     *  returned (the meaning of this name is only known to the underlying
-     *  logging implementation that is being wrapped)
+     *             returned (the meaning of this name is only known to the underlying
+     *             logging implementation that is being wrapped)
      *
-     * @exception LogConfigurationException if a suitable <code>Log</code>
-     *  instance cannot be returned
+     * @throws LogConfigurationException if a suitable <code>Log</code>
+     *                                   instance cannot be returned
      */
-    public static Log getLog(String name)
+    public static Log getLog( String name )
         throws LogConfigurationException
     {
         return getFactory().getInstance( name );
@@ -200,11 +175,10 @@ public class LogFactory
      *
      * @param name Name of the attribute to return
      */
-    public Object getAttribute(String name)
+    public Object getAttribute( String name )
     {
         return null;
     }
-
 
     /**
      * Return an array containing the names of all currently defined
@@ -222,8 +196,8 @@ public class LogFactory
      *
      * @param clazz Class for which a suitable Log name will be derived
      *
-     * @exception LogConfigurationException if a suitable <code>Log</code>
-     *  instance cannot be returned
+     * @throws LogConfigurationException if a suitable <code>Log</code>
+     *                                   instance cannot be returned
      */
     public Log getInstance( Class clazz )
         throws LogConfigurationException
@@ -242,11 +216,11 @@ public class LogFactory
      * call with the same name argument.</p>
      *
      * @param name Logical name of the <code>Log</code> instance to be
-     *  returned (the meaning of this name is only known to the underlying
-     *  logging implementation that is being wrapped)
+     *             returned (the meaning of this name is only known to the underlying
+     *             logging implementation that is being wrapped)
      *
-     * @exception LogConfigurationException if a suitable <code>Log</code>
-     *  instance cannot be returned
+     * @throws LogConfigurationException if a suitable <code>Log</code>
+     *                                   instance cannot be returned
      */
     public Log getInstance( String name )
         throws LogConfigurationException
@@ -267,7 +241,10 @@ public class LogFactory
      */
     public void release()
     {
-        m_LogProvider.release();
+        if( m_LogProvider != null )
+        {
+            m_LogProvider.release();
+        }
     }
 
     /**
@@ -276,7 +253,7 @@ public class LogFactory
      *
      * @param name Name of the attribute to remove
      */
-    public void removeAttribute(String name)
+    public void removeAttribute( String name )
     {
     }
 
@@ -285,11 +262,11 @@ public class LogFactory
      * this with a <code>null</code> value is equivalent to calling
      * <code>removeAttribute(name)</code>.
      *
-     * @param name Name of the attribute to set
+     * @param name  Name of the attribute to set
      * @param value Value of the attribute to set, or <code>null</code>
-     *  to remove any setting for this attribute
+     *              to remove any setting for this attribute
      */
-    public void setAttribute(String name, Object value)
+    public void setAttribute( String name, Object value )
     {
     }
 }

@@ -26,8 +26,6 @@ import org.mortbay.http.HttpListener;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.SocketListener;
 import org.mortbay.util.InetAddrPort;
-import org.ops4j.pax.logging.providers.PaxLoggingProvider;
-import org.ops4j.pax.logging.providers.LogProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -47,9 +45,8 @@ public class Activator
     public void start( BundleContext bundleContext )
         throws Exception
     {
-        LogProvider provider = new PaxLoggingProvider( bundleContext );
-        Logger.setLogProvider( provider );
-        LogFactory.getFactory().setLogProvider( provider );
+        Logger.setBundleContext( bundleContext );
+        LogFactory.getFactory().setBundleContext( bundleContext );
         m_logger = LogFactory.getLog( Activator.class );
         m_logger.info( "Starting Example..." );
 
@@ -70,5 +67,7 @@ public class Activator
     {
         m_logger.info( "Stopping Example..." );
         m_server.stop();
+        Logger.release();
+        LogFactory.getFactory().release();
     }
 }
