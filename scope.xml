@@ -26,19 +26,14 @@
     <target name="project-defs">
 
         <!--modules-->
-        <path id="pax-logging-api">
-            <pathelement
-                location="${scope.basedir}/api/target/deliverables/jars/pax-logging-api-${project.version}.jar"/>
-        </path>
-
         <path id="pax-logging-service">
             <pathelement
                 location="${scope.basedir}/service/target/deliverables/jars/pax-logging-service-${project.version}.jar"/>
         </path>
 
-        <path id="pax-logging-jcl">
+        <path id="pax-logging-client">
             <pathelement
-                location="${scope.basedir}/jcl/target/deliverables/jars/pax-logging-jcl-${project.version}.jar"/>
+                location="${scope.basedir}/client/target/deliverables/jars/pax-logging-client-${project.version}.jar"/>
         </path>
 
         <path id="pax-logging-example">

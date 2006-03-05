@@ -4,16 +4,14 @@
 
     <import file="scope.xml" />
     <target name="build-modules" depends="get-ant-tools">
-        <ant dir="api" inheritall="false" />
         <ant dir="service" inheritall="false" />
-        <ant dir="jcl" inheritall="false" />
+        <ant dir="client" inheritall="false" />
         <ant dir="example" inheritall="false" />
     </target>
 
     <target name="clean" >
-        <ant dir="api" target="clean" />
         <ant dir="service" target="clean" />
-        <ant dir="jcl" target="clean" />
+        <ant dir="client" target="clean" />
         <ant dir="example" target="clean" />
     </target>
 

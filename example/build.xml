@@ -29,12 +29,13 @@
 
         <path id="compile-deps">
             <path refid="osgi"/>
-            <path refid="pax-logging-jcl" />
+            <path refid="pax-logging-service" />
+            <path refid="pax-logging-client" />
             <path refid="jetty" />
         </path>
 
         <path id="runtime-deps">
-            <path refid="pax-logging-jcl" />
+            <path refid="pax-logging-client" />
             <path refid="jetty" />
         </path>
 

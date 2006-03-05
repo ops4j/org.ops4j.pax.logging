@@ -18,7 +18,7 @@
  * limitations under the License.
  */
  -->
-<project name="pax-logging-jcl" default="publish">
+<project name="pax-logging-client" default="publish">
 
     <import file="../scope.xml"/>
 
@@ -29,7 +29,7 @@
 
         <path id="compile-deps">
             <path refid="osgi"/>
-            <path refid="pax-logging-api"/>
+            <path refid="pax-logging-service"/>
         </path>
 
         <path id="runtime-deps">
@@ -41,7 +41,7 @@
     </target>
 
     <target name="publish" depends="osgi-bundle, master.publish" >
-        <publish file="target/deliverables/jars/pax-logging-jcl-${project.version}.jar"
-                 uri="artifact:jar:pax/logging/pax-logging-jcl#${project.version}" />
+        <publish file="target/deliverables/jars/${ant.project.name}-${project.version}.jar"
+                 uri="artifact:jar:pax/logging/${ant.project.name}#${project.version}" />
     </target>
 </project>
