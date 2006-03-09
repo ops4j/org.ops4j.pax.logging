@@ -6,7 +6,7 @@
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging</artifactId>
   <packaging>pom</packaging>
-  <name>OPS4J - Pax Reflector</name>
+  <name>OPS4J - Pax Logging</name>
   <version>0.5.1-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <organization>
