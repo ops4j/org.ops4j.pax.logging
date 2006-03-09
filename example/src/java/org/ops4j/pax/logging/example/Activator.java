@@ -46,7 +46,7 @@ public class Activator
         throws Exception
     {
         Logger.setBundleContext( bundleContext );
-        LogFactory.getFactory().setBundleContext( bundleContext );
+        LogFactory.setBundleContext( bundleContext );
         m_logger = LogFactory.getLog( Activator.class );
         m_logger.info( "Starting Example..." );
 
@@ -68,6 +68,6 @@ public class Activator
         m_logger.info( "Stopping Example..." );
         m_server.stop();
         Logger.release();
-        LogFactory.getFactory().release();
+        LogFactory.release();
     }
 }

@@ -19,6 +19,7 @@ package org.ops4j.pax.logging.service.internal;
 
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxAppender;
 
 public class PaxLoggingServiceImpl
     implements PaxLoggingService
@@ -27,5 +28,15 @@ public class PaxLoggingServiceImpl
     public PaxLogger getLogger( String category )
     {
         return new PaxLoggerImpl( org.apache.log4j.Logger.getLogger( category ) );
+    }
+
+    public void addAppender( PaxAppender appender )
+    {
+        throw new UnsupportedOperationException( "Not Implemented Yet.");
+    }
+
+    public void removeAppender( PaxAppender appender )
+    {
+        throw new UnsupportedOperationException( "Not Implemented Yet.");
     }
 }

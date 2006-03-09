@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Niclas Hedhman.
+ * Copyright 2006 Niclas Hedhman.
  *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
@@ -17,11 +17,7 @@
  */
 package org.ops4j.pax.logging;
 
-public interface PaxLoggingService
+public interface PaxAppender
 {
-    PaxLogger getLogger( String category );
 
-    void addAppender( PaxAppender appender );
-
-    void removeAppender( PaxAppender appender );
 }

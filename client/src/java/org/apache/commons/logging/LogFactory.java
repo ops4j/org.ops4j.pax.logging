@@ -86,14 +86,14 @@ public class LogFactory
 
     private static LogFactory m_Instance;
 
-    private LogProvider m_LogProvider;
+    private static LogProvider m_LogProvider;
 
     static
     {
         m_Instance = new LogFactory();
     }
 
-    public void setBundleContext( BundleContext ctx )
+    public static void setBundleContext( BundleContext ctx )
     {
         m_LogProvider = new PaxLoggingProvider( ctx );
     }
@@ -239,7 +239,7 @@ public class LogFactory
      * throwing away a ClassLoader.  Dangling references to objects in that
      * class loader would prevent garbage collection.
      */
-    public void release()
+    static public void release()
     {
         if( m_LogProvider != null )
         {

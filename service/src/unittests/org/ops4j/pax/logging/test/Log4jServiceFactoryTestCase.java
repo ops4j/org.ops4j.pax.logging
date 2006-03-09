@@ -18,11 +18,11 @@
 package org.ops4j.pax.logging.test;
 
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Properties;
+import java.io.InputStream;
 import java.util.Dictionary;
 import java.util.Enumeration;
-
+import java.util.Hashtable;
+import java.util.Properties;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.jmock.core.Invocation;
@@ -30,11 +30,12 @@ import org.jmock.core.Stub;
 import org.ops4j.pax.logging.service.internal.ConfigFactory;
 import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 
 public class Log4jServiceFactoryTestCase extends MockObjectTestCase
 {
+
     public Log4jServiceFactoryTestCase( String name )
     {
         super( name );
@@ -60,7 +61,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         Dictionary props = new Properties();
         props.put( "type", "pax-log" );
         serviceRegistration.setProperties( props );
-        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory)configFactory.proxy() );
+        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy() );
         factory.getService( (Bundle) bundle1.proxy(), serviceRegistration );
 
         Mock bundle2 = new Mock( Bundle.class );
@@ -76,11 +77,11 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         bundle2.verify();
     }
 
-    public void testManagedServiceConfiguration() throws Exception
+    public void testManagedServiceConfiguration()
+        throws Exception
     {
         Mock configFactory = new Mock( ConfigFactory.class );
         GlobalConfigureStub stub = new GlobalConfigureStub();
-        stub.setGlobal( false );
         configFactory.expects( atLeastOnce() ).method( "configure" ).with( NOT_NULL ).will( stub );
 
         ResourceStub resourceStub = new ResourceStub();
@@ -97,7 +98,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         Dictionary props = new Properties();
         props.put( "type", "pax-log" );
         serviceRegistration.setProperties( props );
-        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory)configFactory.proxy() );
+        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy() );
         factory.getService( bundle, serviceRegistration );
         factory.updated( null );
 
@@ -105,112 +106,158 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         String fileName = getClass().getClassLoader().getResource( "./global_log4j.properties" ).toString();
         Hashtable configuration = new Hashtable();
         configuration.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, fileName );
-        stub.setGlobal( true );
+        stub.setState( 10 );
         factory.updated( configuration );
 
         // ML - Aug 15, 2005: Test reseting the global configuration
-        stub.setGlobal( false );
+        stub.setState( 20 );
         factory.updated( null );
 
         configFactory.verify();
         bundle1.verify();
     }
 
-    private class GlobalConfigureStub implements Stub
+    private class GlobalConfigureStub
+        implements Stub
     {
-        private Properties m_Bundle1;
-        private Properties m_Global;
-        private boolean m_IsGlobal;
+
+        private Properties m_DefaultProps;
+        private Properties m_GlobalProps;
+        private int m_State;
+        private Properties m_Merged;
 
         public GlobalConfigureStub()
         {
             try
             {
-                m_Bundle1 = load( "./bundle1_log4j_expected.properties" );
-                m_Global = load( "./global_log4j.properties" );
+                m_DefaultProps = load( "./default_log4j.properties" );
+                m_GlobalProps = load( "./global_log4j.properties" );
+                Properties bundle1Props = load( "./bundle1_log4j_expected.properties" );
+                m_Merged = new Properties();
+                m_Merged.putAll( m_DefaultProps );
+                m_Merged.putAll( bundle1Props );
             } catch( IOException e )
             {
                 e.printStackTrace();
             }
         }
 
-        public void setGlobal( boolean global )
-        {
-            m_IsGlobal = global;
-        }
-
-        private Properties load( String name ) throws IOException
+        private Properties load( String name )
+            throws IOException
         {
             Properties prop = new Properties();
             prop.load( getClass().getClassLoader().getResourceAsStream( name ) );
             return prop;
         }
 
-        public Object invoke( Invocation invocation ) throws Throwable
+        public Object invoke( Invocation invocation )
+            throws Throwable
         {
-            Properties prop = (Properties)invocation.parameterValues.get( 0 );
+            Properties prop = (Properties) invocation.parameterValues.get( 0 );
             assertNotNull( prop );
-            assertEquals( 5, prop.size() );
-            if( m_IsGlobal )
+            switch( m_State  )
             {
-                assertEquals( m_Global, prop );
-            }
-            else
-            {
-                assertEquals( m_Bundle1, prop );
+                case 0:  // Initial default properties...
+                    assertEquals( 4, prop.size() );
+                    assertEquals( "State=0 --> Incorrect bundle available.", m_DefaultProps, prop );
+                    m_State = 5;
+                    break;
+                case 5:
+                    assertEquals( 9, prop.size() );
+                    assertEquals( "State=5 --> Incorrect bundle available.", m_Merged, prop );
+                    break;
+                case 10:
+                    assertEquals( 5, prop.size() );
+                    assertEquals( "State=10 --> Incorrect bundle available.", m_GlobalProps, prop );
+                    break;
+                case 20:
+                    assertEquals( 9, prop.size() );
+                    assertEquals( "State=20 --> Incorrect bundle available.", m_Merged, prop );
+                    break;
+                default:
+                    fail( "Unexpected m_State: " + m_State );
             }
             return null;
         }
 
         public StringBuffer describeTo( StringBuffer buffer )
         {
-            return buffer.append( "Verifying if log4j properties are switched accordingly" );
+            buffer.append( "Verifying if log4j properties are switched accordingly in State: " );
+            buffer.append( m_State );
+            return buffer;
+        }
+
+        public void setState( int state )
+        {
+            m_State = state;
         }
     }
 
-    private class BasicConfigureStub implements Stub
+    private class BasicConfigureStub
+        implements Stub
     {
-        private Properties m_Properties;
-        private Properties m_Bundle1;
-        private Properties m_Bundle2;
-        private Properties m_MergedBundle;
+
+        private Properties m_BundleOrig;
+        private Properties m_Merged1;
+        private Properties m_Merged2;
+        private int m_State;
 
         public BasicConfigureStub()
         {
             try
             {
-                m_Bundle1 = load( "./bundle1_log4j_expected.properties" );
-                m_Bundle2 = load( "./bundle2_log4j_expected.properties" );
-                m_MergedBundle = new Properties();
-                m_MergedBundle.putAll( m_Bundle1 );
-                m_MergedBundle.putAll( m_Bundle2 );
+                m_BundleOrig = load( "./default_log4j.properties" );
+                Properties bundle1 = load( "./bundle1_log4j_expected.properties" );
+                Properties bundle2 = load( "./bundle2_log4j_expected.properties" );
+                m_Merged1 = new Properties();
+                m_Merged1.putAll( m_BundleOrig );
+                m_Merged1.putAll( bundle1 );
+                m_Merged2 = new Properties();
+
+                m_Merged2.putAll( m_BundleOrig );
+                m_Merged2.putAll( bundle1 );
+                m_Merged2.putAll( bundle2 );
+                m_State = 0;
             } catch( IOException e )
             {
                 e.printStackTrace();
             }
         }
 
-        private Properties load( String name ) throws IOException
+        private Properties load( String name )
+            throws IOException
         {
             Properties prop = new Properties();
-            prop.load( getClass().getClassLoader().getResourceAsStream( name ) );
+            ClassLoader classLoader = getClass().getClassLoader();
+            InputStream resourceAsStream = classLoader.getResourceAsStream( name );
+            prop.load( resourceAsStream );
             return prop;
         }
 
-        public Object invoke( Invocation invocation ) throws Throwable
+        public Object invoke( Invocation invocation )
+            throws Throwable
         {
-            Properties prop = (Properties)invocation.parameterValues.get( 0 );
+            Properties prop = (Properties) invocation.parameterValues.get( 0 );
             assertNotNull( prop );
-            if( m_Properties == null )
+            switch( m_State )
             {
-                assertEquals( 5, prop.size() );
-                assertEquals( m_Bundle1, prop );
-                m_Properties = prop;
-            }
-            else
-            {
-                assertEquals( 10, prop.size() );
-                assertEquals( m_MergedBundle, prop );
+                case 0:
+                    assertEquals( 4, prop.size() );
+                    assertEquals( m_BundleOrig, prop );
+                    m_State = 1;
+                    break;
+                case 1:
+                    assertEquals( 9, prop.size() );
+                    assertEquals( m_Merged1, prop );
+                    m_State = 2;
+                    break;
+                case 2:
+                    assertEquals( 14, prop.size() );
+                    assertEquals( m_Merged2, prop );
+                    m_State = 2;
+                    break;
+                default:
+                    fail( "Too many calls to ConfigFactory." );
             }
             return null;
         }
@@ -225,9 +272,10 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         implements Stub
     {
 
-        public Object invoke( Invocation invocation ) throws Throwable
+        public Object invoke( Invocation invocation )
+            throws Throwable
         {
-            String name = (String)invocation.parameterValues.get( 0 );
+            String name = (String) invocation.parameterValues.get( 0 );
             return getClass().getClassLoader().getResource( name );
         }
 
@@ -241,6 +289,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
     private static class TestServiceRegistration
         implements ServiceRegistration
     {
+
         private ServiceReference m_reference;
 
         public TestServiceRegistration( Bundle bundle )
@@ -255,7 +304,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
 
         public void setProperties( Dictionary dictionary )
         {
-            ((TestReference) m_reference).setProperties( dictionary );
+            ( (TestReference) m_reference ).setProperties( dictionary );
         }
 
         public void unregister()
@@ -266,6 +315,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
     private static class TestReference
         implements ServiceReference
     {
+
         private Bundle m_bundle;
         private Dictionary m_Properties;
 
@@ -304,6 +354,12 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         public Bundle[] getUsingBundles()
         {
             return new Bundle[0];
+        }
+
+        public boolean isAssignableTo( Bundle bundle, String string )
+        {
+            System.out.println( "isAssignableTo( " + bundle + ", " + string + ");" );
+            return false;
         }
     }
 }

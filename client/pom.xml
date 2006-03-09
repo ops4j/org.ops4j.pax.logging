@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>pax-logging</artifactId>
+    <groupId>org.ops4j.pax.logging</groupId>
+    <version>0.5.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.ops4j.pax.logging</groupId>
+  <artifactId>pax-logging-client</artifactId>
+  <name>OPS4J - Pax Logging Client</name>
+  <version>0.5.1-SNAPSHOT</version>
+  <description>Pax Logging Client is expected to be embedded into OSGi bundles, for that bundle to gain access to Pax Logging Service via Log4J API, Jakarta Commons Logging API or Pax Logging Service API.</description>
+  <build>
+    <sourceDirectory>src/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/resources</directory>
+      </resource>
+    </resources>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-service</artifactId>
+      <version>0.5.1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>
