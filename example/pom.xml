@@ -15,13 +15,6 @@
   <description></description>
   <packaging>osgi-bundle</packaging>
   <build>
-    <sourceDirectory>src/java</sourceDirectory>
-    <testSourceDirectory>src/unittests</testSourceDirectory>
-    <resources>
-      <resource>
-        <directory>src/resources</directory>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.felix.plugins</groupId>

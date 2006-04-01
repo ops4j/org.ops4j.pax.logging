@@ -13,15 +13,6 @@
   <name>OPS4J - Pax Logging Client</name>
   <version>0.5.1-SNAPSHOT</version>
   <description>Pax Logging Client is expected to be embedded into OSGi bundles, for that bundle to gain access to Pax Logging Service via Log4J API, Jakarta Commons Logging API or Pax Logging Service API.</description>
-  <build>
-    <sourceDirectory>src/java</sourceDirectory>
-    <resources>
-      <resource>
-        <directory>src/resources</directory>
-      </resource>
-    </resources>
-  </build>
-
   <dependencies>
     <dependency>
       <groupId>org.osgi</groupId>
