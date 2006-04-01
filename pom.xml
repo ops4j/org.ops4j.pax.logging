@@ -1,21 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging</artifactId>
   <packaging>pom</packaging>
   <name>OPS4J - Pax Logging</name>
-  <version>0.5.1-SNAPSHOT</version>
+  <version>0.5.1</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
+  <scm>
+    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
+  </scm>
   <organization>
     <name>OPS4J - Open Participation Software for Java</name>
     <url>http://www.ops4j.org/</url>
   </organization>
-  <scm>
-    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
-  </scm>
   <build>
     <extensions>
       <extension>

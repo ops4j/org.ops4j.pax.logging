@@ -1,26 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project>
   <parent>
     <artifactId>pax-logging</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging-service</artifactId>
-  <name>OPS4J - Pax Logging Service</name>
-  <version>0.5.1-SNAPSHOT</version>
   <packaging>osgi-bundle</packaging>
-
+  <name>OPS4J - Pax Logging Service</name>
+  <version>0.5.1</version>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.felix.plugins</groupId>
         <artifactId>maven-osgi-plugin</artifactId>
-        <extensions>true</extensions>
         <version>0.3.0</version>
+        <extensions>true</extensions>
         <configuration>
           <osgiManifest>
             <bundleActivator>org.ops4j.pax.logging.service.Activator</bundleActivator>
@@ -37,26 +33,23 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
-      <scope>provided</scope>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi_R4_compendium</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
-
 </project>
