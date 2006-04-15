@@ -19,8 +19,12 @@ package org.ops4j.pax.logging.service;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
 import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
+import org.ops4j.pax.logging.service.internal.JdkHandler;
+import org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -47,6 +51,7 @@ public class Activator
      */
     private ServiceRegistration m_RegistrationStdLogging;
     private ServiceRegistration m_RegistrationPaxLogging;
+    private JdkHandler m_JdkHandler;
 
     /**
      * Default constructor
@@ -63,9 +68,10 @@ public class Activator
     {
         // register the Log4JService service
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
-        final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( configFactory );
+        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl();
+        final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( configFactory, paxLogging );
         String osgiLoggingName = LogService.class.getName();
-        
+
         Hashtable properties = new Hashtable();
         properties.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "" );
         properties.put( "type", "osgi-log" );
@@ -73,7 +79,7 @@ public class Activator
         properties.put( "type", "pax-log" );
         String paxLoggingName =  PaxLoggingService.class.getName();
         m_RegistrationPaxLogging = bundleContext.registerService( paxLoggingName, loggingServiceFactory, properties );
-        
+
         // configuration for loggingServiceFactory
         Hashtable managedServiceProps = new Hashtable();
         managedServiceProps.put(Constants.SERVICE_PID, CONFIGURATION_PID );
@@ -85,6 +91,11 @@ public class Activator
             }
         };
         bundleContext.registerService( ManagedService.class.getName(), managedService, managedServiceProps);
+
+        // Add a global handler for all JDK Logging (java.util.logging).
+        m_JdkHandler = new JdkHandler( paxLogging );
+        Logger rootLogger = LogManager.getLogManager().getLogger( "" );
+        rootLogger.addHandler( m_JdkHandler );
     }
 
     /**
@@ -93,6 +104,10 @@ public class Activator
     public void stop( BundleContext bundleContext )
         throws Exception
     {
+        // Add a global handler for all JDK Logging (java.util.logging).
+        Logger rootLogger = LogManager.getLogManager().getLogger( "" );
+        rootLogger.removeHandler( m_JdkHandler );
+        m_JdkHandler = null;
         m_RegistrationPaxLogging.unregister();
         m_RegistrationStdLogging.unregister();
     }

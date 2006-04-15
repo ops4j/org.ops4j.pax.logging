@@ -29,6 +29,7 @@ import org.jmock.core.Invocation;
 import org.jmock.core.Stub;
 import org.ops4j.pax.logging.service.internal.ConfigFactory;
 import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
+import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -61,7 +62,8 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         Dictionary props = new Properties();
         props.put( "type", "pax-log" );
         serviceRegistration.setProperties( props );
-        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy() );
+        PaxLoggingService paxLogging = (PaxLoggingService) new Mock( PaxLoggingService.class  ).proxy();
+        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy(), paxLogging );
         factory.getService( (Bundle) bundle1.proxy(), serviceRegistration );
 
         Mock bundle2 = new Mock( Bundle.class );
@@ -98,7 +100,8 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         Dictionary props = new Properties();
         props.put( "type", "pax-log" );
         serviceRegistration.setProperties( props );
-        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy() );
+        PaxLoggingService paxLogging = (PaxLoggingService) new Mock( PaxLoggingService.class  ).proxy();
+        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy(), paxLogging );
         factory.getService( bundle, serviceRegistration );
         factory.updated( null );
 

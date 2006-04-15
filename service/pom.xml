@@ -24,8 +24,8 @@
             <bundleName>${pom.name}</bundleName>
             <bundleDescription>Pax Logging Service is a Log4J driven service that supports Jakarta Commons Logging, Log4J and Pax Logging clients. Note that all this clients must use the Pax Logging Client library in the proper way. See documentation for details.</bundleDescription>
             <bundleVendor>${pom.organization.name}</bundleVendor>
-            <importPackage>org.osgi.framework;version=1.3.0, org.osgi.service.cm; specification-version=1.1.0, org.ops4j.pax.logging.service;specification-version=1.0.0, org.ops4j.pax.logging;specification-version=1.0.0</importPackage>
-            <exportPackage>org.ops4j.pax.logging;version=${pom.version}, org.osgi.service.log=1.2.0</exportPackage>
+            <importPackage>org.osgi.framework;version=1.3.0, org.osgi.service.cm; specification-version=1.1.0</importPackage>
+            <exportPackage>org.ops4j.pax.logging;version=1.0, org.osgi.service.log=1.2.0</exportPackage>
           </osgiManifest>
         </configuration>
       </plugin>

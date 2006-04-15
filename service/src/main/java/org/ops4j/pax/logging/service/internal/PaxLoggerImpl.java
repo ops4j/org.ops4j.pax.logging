@@ -19,6 +19,7 @@ package org.ops4j.pax.logging.service.internal;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 public class PaxLoggerImpl
     implements org.ops4j.pax.logging.PaxLogger
@@ -88,6 +89,11 @@ public class PaxLoggerImpl
     public void fatal( String message, Throwable t )
     {
         m_Delegate.fatal( message, t );
+    }
+
+    public void log( String callerFQCN, Priority level, Object message, Throwable t )
+    {
+        m_Delegate.log( callerFQCN, level, message, t );
     }
 }
 

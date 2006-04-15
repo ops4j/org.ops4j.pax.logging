@@ -94,7 +94,7 @@ public class Logger
      * its name.
      *
      * <p>
-     * It is intended to be used by sub-classes only. You should not create
+     * It is intended to be used by sub-classes only. You should not getLogger
      * loggers directly.
      * </p>
      *

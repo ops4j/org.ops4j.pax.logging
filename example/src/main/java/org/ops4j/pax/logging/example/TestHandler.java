@@ -29,7 +29,7 @@ import org.mortbay.http.HttpResponse;
 import org.apache.log4j.Logger;
 
 /** This is a pure test class, which is handles the requests on port 8080 in this example.
- * 
+ *
  * Jetty 4.2 used Jakarta Commons Logging, and we are showing that in combination with Log4J
  * usage in this particular class.
  */
@@ -37,6 +37,7 @@ public class TestHandler
     implements HttpHandler
 {
     private Logger m_Logger = Logger.getLogger( TestHandler.class );
+    private java.util.logging.Logger m_JdkLogger = java.util.logging.Logger.getLogger( TestHandler.class.getName() );
 
     private HttpContext m_Context;
     private String m_Name;
@@ -60,14 +61,16 @@ public class TestHandler
 
     public void initialize( HttpContext httpContext )
     {
-        m_Logger.info( "Initializing the TestHandler with a HttpContext: " + httpContext );
+        m_Logger.info( "Initializing the TestHandler with a HttpContext: " + httpContext  + "  (log4j)");
+        m_JdkLogger.info( "Initializing the TestHandler with a HttpContext: " + httpContext  + "  (jdk)");
         m_Context = httpContext;
     }
 
     public void handle( String string, String string1, HttpRequest httpRequest, HttpResponse httpResponse )
         throws HttpException, IOException
     {
-        m_Logger.info( "Processing Request." );
+        m_Logger.info( "Processing Request.  (log4j)" );
+        m_JdkLogger.info( "Processing Request.  (jdk)" );
         httpResponse.setContentType( "text/html" );
         OutputStream outputStream = httpResponse.getOutputStream();
         OutputStreamWriter osw = new OutputStreamWriter( outputStream, "UTF-8" );
@@ -80,14 +83,16 @@ public class TestHandler
     public void start()
         throws Exception
     {
-        m_Logger.info( "Starting." );
+        m_Logger.info( "Starting.  (log4j)" );
+        m_JdkLogger.info( "Starting.  (jdk)" );
         m_started = true;
     }
 
     public void stop()
         throws InterruptedException
     {
-        m_Logger.info( "Stopping." );
+        m_Logger.info( "Stopping.  (log4j)" );
+        m_JdkLogger.info( "Stopping.  (jdk)" );
         m_started = false;
     }
 

@@ -28,6 +28,7 @@ import org.mortbay.http.SocketListener;
 import org.mortbay.util.InetAddrPort;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.ops4j.pax.logging.avalon.AvalonLogFactory;
 
 /**
  * This Activator starts up the Jetty server and enables port 8080, which serves a Hello,World message.
@@ -40,6 +41,8 @@ public class Activator
     implements BundleActivator
 {
     private Log m_logger;
+    private org.apache.avalon.framework.logger.Logger m_AvalonLogger;
+
     private HttpServer m_server;
 
     public void start( BundleContext bundleContext )
@@ -47,8 +50,12 @@ public class Activator
     {
         Logger.setBundleContext( bundleContext );
         LogFactory.setBundleContext( bundleContext );
+        AvalonLogFactory.setBundleContext( bundleContext );
         m_logger = LogFactory.getLog( Activator.class );
-        m_logger.info( "Starting Example..." );
+        m_AvalonLogger = AvalonLogFactory.getLogger( Activator.class.getName() );
+
+        m_logger.info( "Starting Example...    (jcl)" );
+        m_AvalonLogger.info( "Starting Example...    (avalon)" );
 
         HttpHandler handler = new TestHandler( "test" );
         InetAddrPort port = new InetAddrPort( 8080 );
@@ -65,7 +72,8 @@ public class Activator
     public void stop( BundleContext bundleContext )
         throws Exception
     {
-        m_logger.info( "Stopping Example..." );
+        m_logger.info( "Stopping Example...    (jcl)" );
+        m_AvalonLogger.info( "Stopping Example...    (avalon)" );
         m_server.stop();
         Logger.release();
         LogFactory.release();

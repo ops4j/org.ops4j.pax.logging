@@ -36,6 +36,7 @@ import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
+import org.ops4j.pax.logging.PaxLoggingService;
 
 /**
  * ServiceFactory implementation to return LogService implementation instances.
@@ -74,6 +75,7 @@ public class LoggingServiceFactory
      * or the merged log4j properties.
      */
     private boolean m_IsUsingGlobal;
+    private Object m_PaxLogging;
 
     static
     {
@@ -85,8 +87,9 @@ public class LoggingServiceFactory
      *
      * @param config the Configuration Factory to use
      */
-    public LoggingServiceFactory( ConfigFactory config )
+    public LoggingServiceFactory( ConfigFactory config, PaxLoggingService paxLogging  )
     {
+        m_PaxLogging = paxLogging;
         m_ConfigFactory = config;
         m_MergedProperties = new Properties();
         m_MergedProperties.put( "log4j.rootLogger", "DEBUG, A1" );
@@ -129,7 +132,7 @@ public class LoggingServiceFactory
         }
         if( "pax-log".equalsIgnoreCase( type ) )
         {
-            return new PaxLoggingServiceImpl();
+            return m_PaxLogging;
         }
         throw new InternalError( "The Activator has not registered the correct types." );
     }
