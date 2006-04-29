@@ -16,9 +16,7 @@
 package org.ops4j.pax.logging.providers;
 
 import org.apache.commons.logging.Log;
-
 import org.ops4j.pax.logging.PaxLoggingService;
-
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 

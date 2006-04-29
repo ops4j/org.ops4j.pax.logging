@@ -26,24 +26,28 @@ import org.mortbay.http.HttpListener;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.SocketListener;
 import org.mortbay.util.InetAddrPort;
+import org.ops4j.pax.logging.avalon.AvalonLogFactory;
+import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.ops4j.pax.logging.avalon.AvalonLogFactory;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Activator starts up the Jetty server and enables port 8080, which serves a Hello,World message.
  *
  * Jetty 5.1 uses Jakarta Commons Logging, and we are showing that those logging statements will be passed to
  * the Pax Logging service, and ultimately output to the Log4J backend.
- *
  */
 public class Activator
     implements BundleActivator
 {
-    private Log m_logger;
-    private org.apache.avalon.framework.logger.Logger m_AvalonLogger;
+
+    private Log m_jclLogger;
+    private org.apache.avalon.framework.logger.Logger m_avalonLogger;
 
     private HttpServer m_server;
+    private org.slf4j.Logger m_slf4jLogger;
+    private java.util.logging.Logger m_jdkLogger;
 
     public void start( BundleContext bundleContext )
         throws Exception
@@ -51,11 +55,16 @@ public class Activator
         Logger.setBundleContext( bundleContext );
         LogFactory.setBundleContext( bundleContext );
         AvalonLogFactory.setBundleContext( bundleContext );
-        m_logger = LogFactory.getLog( Activator.class );
-        m_AvalonLogger = AvalonLogFactory.getLogger( Activator.class.getName() );
+        Slf4jLoggerFactory.setBundleContext( bundleContext );
 
-        m_logger.info( "Starting Example...    (jcl)" );
-        m_AvalonLogger.info( "Starting Example...    (avalon)" );
+        m_jclLogger = LogFactory.getLog( Activator.class );
+        m_avalonLogger = AvalonLogFactory.getLogger( Activator.class.getName() );
+        m_slf4jLogger = LoggerFactory.getLogger( Activator.class );
+        m_jdkLogger = java.util.logging.Logger.getLogger( Activator.class.getName() );
+        m_jclLogger.info(    "Starting Example...    (jcl)" );
+        m_avalonLogger.info( "Starting Example...    (avalon)" );
+        m_slf4jLogger.info(  "Starting Example...    (slf4j)" );
+        m_jdkLogger.info(    "Starting Example...    (jdk)" );
 
         HttpHandler handler = new TestHandler( "test" );
         InetAddrPort port = new InetAddrPort( 8080 );
@@ -72,10 +81,15 @@ public class Activator
     public void stop( BundleContext bundleContext )
         throws Exception
     {
-        m_logger.info( "Stopping Example...    (jcl)" );
-        m_AvalonLogger.info( "Stopping Example...    (avalon)" );
+        m_jclLogger.info(    "Stopping Example...    (jcl)" );
+        m_avalonLogger.info( "Stopping Example...    (avalon)" );
+        m_slf4jLogger.info(  "Stopping Example...    (slf4j)");
+        m_jdkLogger.info(    "Stopping Example...    (jdk)");
+
         m_server.stop();
-        Logger.release();
         LogFactory.release();
+        Logger.release();
+        AvalonLogFactory.release();
+        Slf4jLoggerFactory.release();
     }
 }
