@@ -80,6 +80,17 @@
       <name>Maven Plugin Repository</name>
       <url>http://repo1.maven.org/maven2</url>
     </pluginRepository>
+    <pluginRepository>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>ops4j-repository</id>
+      <name>The OPS4J Repository</name>
+      <url>http://repository.ops4j.org/maven2/</url>
+    </pluginRepository>
   </pluginRepositories>
   <dependencies>
     <dependency>
