@@ -4,7 +4,7 @@
   <artifactId>pax-logging</artifactId>
   <packaging>pom</packaging>
   <name>OPS4J - Pax Logging</name>
-  <version>0.6.2</version>
+  <version>0.6.3-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <scm>
     <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
