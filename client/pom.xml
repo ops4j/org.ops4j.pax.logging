@@ -2,19 +2,19 @@
   <parent>
     <artifactId>pax-logging</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
-    <version>0.6.1</version>
+    <version>0.6.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging-client</artifactId>
   <name>OPS4J - Pax Logging Client</name>
-  <version>0.6.1</version>
+  <version>0.6.2-SNAPSHOT</version>
   <description>Pax Logging Client is expected to be embedded into OSGi bundles, for that bundle to gain access to Pax Logging Service via Log4J API, Jakarta Commons Logging API or Pax Logging Service API.</description>
   <dependencies>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-service</artifactId>
-      <version>0.6.1</version>
+      <version>0.6.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
