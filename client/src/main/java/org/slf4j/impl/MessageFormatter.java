@@ -69,7 +69,7 @@ public class MessageFormatter {
    * return the string "Hi there.".
    * <p>
    * @param messagePattern The message pattern which will be parsed and formatted
-   * @param argument The argument to be substituted in place of the formatting anchor
+   * @param arg            The argument to be substituted in place of the formatting anchor
    * @return The formatted zmessage
    */
   public static String format(String messagePattern, Object arg) {
@@ -108,29 +108,26 @@ public class MessageFormatter {
       return null;
     }
     int i = 0;
-    int len = messagePattern.length();
+    int patternLength = messagePattern.length();
     int j = messagePattern.indexOf(DELIM_START);
 
-
-
-    StringBuffer sbuf = new StringBuffer(messagePattern.length() + 50);
+    StringBuffer sbuf = new StringBuffer(patternLength + 100);
 
     for (int L = 0; L < argArray.length; L++) {
 
-      char escape = 'x';
-
       j = messagePattern.indexOf(DELIM_START, i);
 
-      if (j == -1 || (j+1 == len)) {
+      if (j == -1 || (j+1 == patternLength )) {
         // no more variables
         if (i == 0) { // this is a simple string
           return messagePattern;
         } else { // add the tail string which contains no variables and return the result.
-          sbuf.append(messagePattern.substring(i, messagePattern.length()));
+          sbuf.append(messagePattern.substring(i));
           return sbuf.toString();
         }
       } else {
-        char delimStop = messagePattern.charAt(j + 1);
+        char escape = 'x';
+        char nextCharacter = messagePattern.charAt(j + 1);
         if (j > 0) {
           escape = messagePattern.charAt(j - 1);
         }
@@ -140,9 +137,9 @@ public class MessageFormatter {
           sbuf.append(messagePattern.substring(i, j-1));
           sbuf.append(DELIM_START);
           i = j + 1;
-        } else if ((delimStop != DELIM_STOP)) {
+        } else if (nextCharacter != DELIM_STOP) {
           // invalid DELIM_START/DELIM_STOP pair
-          sbuf.append(messagePattern.substring(i, messagePattern.length()));
+          sbuf.append(messagePattern.substring(i));
           return sbuf.toString();
         } else {
           // normal case
@@ -153,7 +150,7 @@ public class MessageFormatter {
       }
     }
     // append the characters following the second {} pair.
-    sbuf.append(messagePattern.substring(i, messagePattern.length()));
+    sbuf.append(messagePattern.substring(i));
     return sbuf.toString();
   }
 }
