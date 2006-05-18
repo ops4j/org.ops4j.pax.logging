@@ -2,14 +2,14 @@
   <parent>
     <artifactId>pax-logging</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
-    <version>0.6.3</version>
+    <version>0.6.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging-service</artifactId>
   <packaging>osgi-bundle</packaging>
   <name>OPS4J - Pax Logging Service</name>
-  <version>0.6.3</version>
+  <version>0.6.4-SNAPSHOT</version>
   <build>
     <plugins>
       <plugin>
