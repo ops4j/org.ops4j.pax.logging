@@ -156,7 +156,7 @@
   </dependencyManagement>
   <distributionManagement>
     <repository>
-      <id>ops4j-repository</id>
+      <id>upload-repository</id>
       <url>scpexe://repository.ops4j.org/var/http/repository.ops4j.org/maven2</url>
     </repository>
   </distributionManagement>

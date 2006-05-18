@@ -15,10 +15,12 @@
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-service</artifactId>
       <version>0.6.3-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi_R4_compendium</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>avalon-framework</groupId>
@@ -27,6 +29,7 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi_R4_core</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>
