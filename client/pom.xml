@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>pax-logging</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
@@ -9,7 +12,8 @@
   <artifactId>pax-logging-client</artifactId>
   <name>OPS4J - Pax Logging Client</name>
   <version>0.6.4-SNAPSHOT</version>
-  <description>Pax Logging Client is expected to be embedded into OSGi bundles, for that bundle to gain access to Pax Logging Service via Log4J API, Jakarta Commons Logging API or Pax Logging Service API.</description>
+  <description>Pax Logging Client is expected to be embedded into OSGi bundles, for that bundle to gain access to Pax
+    Logging Service via Log4J API, Jakarta Commons Logging API or Pax Logging Service API.</description>
   <dependencies>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
@@ -25,6 +29,12 @@
     <dependency>
       <groupId>avalon-framework</groupId>
       <artifactId>avalon-framework-api</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>avalon-logkit</artifactId>
+          <groupId>avalon-logkit</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

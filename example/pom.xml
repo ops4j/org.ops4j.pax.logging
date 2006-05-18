@@ -1,4 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>pax-logging</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
@@ -25,7 +28,9 @@
             <bundleName>${pom.name}</bundleName>
             <bundleDescription>An simple example application that uses the Pax Logging system.</bundleDescription>
             <bundleVendor>${pom.organization.name}</bundleVendor>
-            <importPackage>org.osgi.util.tracker; specification-version=1.3, org.ops4j.pax.logging; specification-version=1.0, javax.servlet;specification-version=2.3.0, javax.servlet.http;specification-version=2.3.0</importPackage>
+            <importPackage>org.osgi.util.tracker; specification-version=1.3, org.ops4j.pax.logging;
+              specification-version=1.0, javax.servlet;specification-version=2.3.0,
+              javax.servlet.http;specification-version=2.3.0</importPackage>
           </osgiManifest>
         </configuration>
       </plugin>
