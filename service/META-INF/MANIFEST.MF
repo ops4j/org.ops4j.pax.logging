@@ -11,3 +11,5 @@ Import-Package: org.osgi.framework;version="1.3.0",
  org.osgi.service.log;version="1.3.0"
 Bundle-ClassPath: target/classes/log4j-1.2.13.jar,
  .
+Export-Package: org.ops4j.pax.logging,
+ org.ops4j.pax.logging.service
