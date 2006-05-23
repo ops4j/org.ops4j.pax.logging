@@ -17,15 +17,17 @@
  */
 package org.ops4j.pax.logging.service;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
-import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
-import org.ops4j.pax.logging.service.internal.JdkHandler;
-import org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.service.internal.ConfigFactoryImpl;
+import org.ops4j.pax.logging.service.internal.JdkHandler;
+import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
+import org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -36,11 +38,11 @@ import org.osgi.service.log.LogService;
 
 /**
  * Starts the Log4j log services.
- *
  */
 public class Activator
     implements BundleActivator
 {
+
     /**
      * The Managed Service PID for the log4j configuration
      */
@@ -66,36 +68,49 @@ public class Activator
     public void start( BundleContext bundleContext )
         throws Exception
     {
-        // register the Log4JService service
-        ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
-        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl();
-        final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( configFactory, paxLogging );
-        String osgiLoggingName = LogService.class.getName();
-
-        Hashtable properties = new Hashtable();
-        properties.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "" );
-        properties.put( "type", "osgi-log" );
-        m_RegistrationStdLogging = bundleContext.registerService( osgiLoggingName, loggingServiceFactory, properties );
-        properties.put( "type", "pax-log" );
-        String paxLoggingName =  PaxLoggingService.class.getName();
-        m_RegistrationPaxLogging = bundleContext.registerService( paxLoggingName, loggingServiceFactory, properties );
-
-        // configuration for loggingServiceFactory
-        Hashtable managedServiceProps = new Hashtable();
-        managedServiceProps.put(Constants.SERVICE_PID, CONFIGURATION_PID );
-        ManagedService managedService = new ManagedService()
+        try
         {
-            public void updated( Dictionary iProperties ) throws ConfigurationException
-            {
-                loggingServiceFactory.updated(iProperties);
-            }
-        };
-        bundleContext.registerService( ManagedService.class.getName(), managedService, managedServiceProps);
+            // register the Log4JService service
+            ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
+            PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl();
+            final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( configFactory, paxLogging );
+            String osgiLoggingName = LogService.class.getName();
 
-        // Add a global handler for all JDK Logging (java.util.logging).
-        m_JdkHandler = new JdkHandler( paxLogging );
-        Logger rootLogger = LogManager.getLogManager().getLogger( "" );
-        rootLogger.addHandler( m_JdkHandler );
+            Hashtable properties = new Hashtable();
+            properties.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "" );
+            properties.put( "type", "osgi-log" );
+            m_RegistrationStdLogging =
+                bundleContext.registerService( osgiLoggingName, loggingServiceFactory, properties );
+            properties.put( "type", "pax-log" );
+            String paxLoggingName = PaxLoggingService.class.getName();
+            m_RegistrationPaxLogging =
+                bundleContext.registerService( paxLoggingName, loggingServiceFactory, properties );
+
+            // configuration for loggingServiceFactory
+            Hashtable managedServiceProps = new Hashtable();
+            managedServiceProps.put( Constants.SERVICE_PID, CONFIGURATION_PID );
+            ManagedService managedService = new ManagedService()
+            {
+                public void updated( Dictionary iProperties )
+                    throws ConfigurationException
+                {
+                    loggingServiceFactory.updated( iProperties );
+                }
+            };
+            bundleContext.registerService( ManagedService.class.getName(), managedService, managedServiceProps );
+
+            // Add a global handler for all JDK Logging (java.util.logging).
+            m_JdkHandler = new JdkHandler( paxLogging );
+            Logger rootLogger = LogManager.getLogManager().getLogger( "" );
+            rootLogger.addHandler( m_JdkHandler );
+        } catch( Error e )
+        {
+            FileWriter fileWriter = new FileWriter( "/home/niclas/equinox.log" );
+            PrintWriter s = new PrintWriter( fileWriter, true );
+            e.printStackTrace( s );
+            s.flush();
+            s.close();
+        }
     }
 
     /**

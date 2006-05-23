@@ -269,7 +269,7 @@ public class PaxLoggingServiceLog
         {
             return;
         }
-        logger.error( message.toString(), null );
+        logger.error( "" + message, null );
     }
 
     /**
@@ -285,7 +285,7 @@ public class PaxLoggingServiceLog
         {
             return;
         }
-        logger.error( message.toString(), t );
+        logger.error( "" + message, t );
     }
 
     /**
@@ -300,7 +300,7 @@ public class PaxLoggingServiceLog
         {
             return;
         }
-        logger.fatal( message.toString(), null );
+        logger.fatal( "" + message, null );
     }
 
     /**
@@ -316,7 +316,7 @@ public class PaxLoggingServiceLog
         {
             return;
         }
-        logger.debug( message.toString(), t );
+        logger.debug( "" + message, t );
     }
 
     private PaxLogger getLogger()

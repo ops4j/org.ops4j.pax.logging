@@ -24,27 +24,8 @@ import org.ops4j.pax.logging.PaxLoggingService;
 
 public class JdkHandler extends Handler
 {
-    private PaxLoggingService m_logService;
-    private static final org.apache.log4j.Level[] LOG4J_MAPPING;
 
-    static
-    {
-        int max = max( -1000000, Level.OFF.intValue() );
-        max = max( max, Level.FINE.intValue() );
-        max = max( max, Level.FINER.intValue() );
-        max = max( max, Level.FINEST.intValue() );
-        max = max( max, Level.INFO.intValue() );
-        max = max( max, Level.WARNING.intValue() );
-        max = max( max, Level.SEVERE.intValue() );
-        LOG4J_MAPPING = new org.apache.log4j.Level[ max ];
-        LOG4J_MAPPING[ Level.OFF.intValue() ] = org.apache.log4j.Level.OFF;
-        LOG4J_MAPPING[ Level.FINE.intValue() ] = org.apache.log4j.Level.DEBUG;
-        LOG4J_MAPPING[ Level.FINER.intValue() ] = org.apache.log4j.Level.TRACE;
-        LOG4J_MAPPING[ Level.FINEST.intValue() ] = org.apache.log4j.Level.TRACE;
-        LOG4J_MAPPING[ Level.INFO.intValue() ] = org.apache.log4j.Level.INFO;
-        LOG4J_MAPPING[ Level.WARNING.intValue() ] = org.apache.log4j.Level.WARN;
-        LOG4J_MAPPING[ Level.SEVERE.intValue() ] = org.apache.log4j.Level.ERROR;
-    }
+    private PaxLoggingService m_logService;
 
     public JdkHandler( PaxLoggingService logService )
     {
@@ -96,15 +77,37 @@ public class JdkHandler extends Handler
         PaxLoggerImpl logger = (PaxLoggerImpl) m_logService.getLogger( loggerName );
         String message = record.getMessage();
         Throwable throwable = record.getThrown();
-        int severity = level.intValue();
-        org.apache.log4j.Level log4jlevel = LOG4J_MAPPING[ severity ];
+        org.apache.log4j.Level log4jlevel;
+        if( level == Level.OFF )
+        {
+            log4jlevel = org.apache.log4j.Level.OFF;
+        }
+        else if( level == Level.FINE )
+        {
+            log4jlevel = org.apache.log4j.Level.DEBUG;
+        }
+        else if( level == Level.FINER || level == Level.FINEST )
+        {
+            log4jlevel = org.apache.log4j.Level.TRACE;
+        }
+        else if( level == Level.INFO )
+        {
+            log4jlevel = org.apache.log4j.Level.INFO;
+        }
+        else if( level == Level.WARNING )
+        {
+            log4jlevel = org.apache.log4j.Level.WARN;
+        }
+        else if( level == Level.SEVERE )
+        {
+            log4jlevel = org.apache.log4j.Level.ERROR;
+        }
+        else
+        {
+            log4jlevel = org.apache.log4j.Level.INFO;
+        }
         String callerFQCN = record.getSourceClassName();
         logger.log( callerFQCN, log4jlevel, message, throwable );
-    }
-
-    static private int max( int i1, int i2 )
-    {
-        return i1 > i2 ? i1 : i2;
     }
 
 }
