@@ -1,18 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <parent>
     <artifactId>pax-logging</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
-    <version>0.6.6-SNAPSHOT</version>
+    <version>0.7.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging-service</artifactId>
   <packaging>osgi-bundle</packaging>
   <name>OPS4J - Pax Logging Service</name>
-  <version>0.6.6-SNAPSHOT</version>
+  <version>0.7.0</version>
   <description>Pax Logging Service is a Log4J driven service that supports Jakarta Commons Logging,
     Log4J, Avalon Logging, SLF4J and Pax Logging clients. Note that all this clients must use the Pax Logging
     Client library in the proper way. See documentation for details.
