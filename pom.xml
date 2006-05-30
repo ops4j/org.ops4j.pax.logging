@@ -10,6 +10,7 @@
   <version>0.6.6-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <scm>
+    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</connection>
     <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
   </scm>
   <organization>
