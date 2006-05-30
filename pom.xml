@@ -45,13 +45,6 @@
     <module>example</module>
     <module>service</module>
   </modules>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>ops4j-repository</id>
-      <name>The OPS4J Repository</name>
-      <url>http://repository.ops4j.org/maven2/</url>
-    </pluginRepository>
-  </pluginRepositories>
   <repositories>
     <repository>
       <id>ops4j-repository</id>
