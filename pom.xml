@@ -28,7 +28,7 @@
       <plugin>
         <groupId>org.ops4j.pax.maven</groupId>
         <artifactId>maven-osgi-bundle</artifactId>
-        <version>0.9.2</version>
+        <version>0.9.3</version>
         <extensions>true</extensions>
       </plugin>
       <plugin>
