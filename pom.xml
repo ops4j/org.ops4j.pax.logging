@@ -36,6 +36,13 @@
           <target>1.4</target>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.0-beta-3</version>
+        <configuration>
+          <tagBase>https://scm.ops4j.org/repos/ops4j/qa/pax/logging</tagBase>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <modules>
@@ -106,12 +113,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagBase>https://scm.ops4j.org/repos/ops4j/qa/pax/logging</tagBase>
-        </configuration>
       </plugin>
     </plugins>
   </reporting>
