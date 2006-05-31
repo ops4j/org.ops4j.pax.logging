@@ -17,6 +17,21 @@
   </description>
 
   <properties>
+    <osgi-IgnorePackage>
+    com.sun.jdmk.comm,
+    javax.jms,
+    javax.mail,
+    javax.mail.internet,
+    javax.management,
+    javax.naming,
+    javax.swing,
+    javax.swing.border,
+    javax.swing.event,
+    javax.swing.table,
+    javax.swing.text, 
+    javax.swing.tree, 
+    javax.xml.parsers,
+    </osgi-IgnorePackage>
     <osgi-ExportPackage>org.ops4j.pax.logging;specification-version=1.0,
       org.osgi.service.log;specification-version=1.2.0
     </osgi-ExportPackage>
