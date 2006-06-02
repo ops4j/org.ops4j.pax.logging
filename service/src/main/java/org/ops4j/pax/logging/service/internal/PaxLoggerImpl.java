@@ -91,6 +91,11 @@ public class PaxLoggerImpl
         m_Delegate.fatal( message, t );
     }
 
+    public int getLogLevel()
+    {
+        return m_Delegate.getLevel().toInt();
+    }
+
     public void log( String callerFQCN, Priority level, Object message, Throwable t )
     {
         m_Delegate.log( callerFQCN, level, message, t );

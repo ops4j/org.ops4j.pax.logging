@@ -319,6 +319,12 @@ public class PaxLoggingServiceLog
         logger.debug( "" + message, t );
     }
 
+    public int getLogLevel()
+    {
+        PaxLogger logger = getLogger();
+        return logger.getLogLevel();
+    }
+
     private PaxLogger getLogger()
     {
         Object trackedservice = m_Tracker.getService();

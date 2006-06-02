@@ -20,6 +20,13 @@ package org.ops4j.pax.logging;
 
 public interface PaxLogger
 {
+
+    int LEVEL_TRACE = 0;
+    int LEVEL_DEBUG = 0;
+    int LEVEL_INFO = 0;
+    int LEVEL_WARNING = 0;
+    int LEVEL_ERROR = 0;
+
     boolean isTraceEnabled();
     boolean isDebugEnabled();
     boolean isWarnEnabled();
@@ -33,5 +40,7 @@ public interface PaxLogger
     void warn( String message, Throwable t );
     void error( String message, Throwable t );
     void fatal( String message, Throwable t );
+
+    int getLogLevel();
 }
 

@@ -228,4 +228,10 @@ public class DefaultServiceLog
         System.err.println( "FATAL - " + m_CategoryName + " : " + message );
         t.printStackTrace();
     }
+
+    public int getLogLevel()
+    {
+        // Always DEBUG mode.
+        return 10000;
+    }
 }
