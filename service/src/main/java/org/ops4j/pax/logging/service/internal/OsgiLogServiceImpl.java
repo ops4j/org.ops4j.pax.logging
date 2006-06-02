@@ -26,7 +26,7 @@ import org.osgi.service.log.LogService;
  * interface.
  */
 public class OsgiLogServiceImpl
-    implements LogService
+    implements LogService, org.knopflerfish.service.log.LogService
 {
     /**
      * Log4J logger
@@ -96,5 +96,23 @@ public class OsgiLogServiceImpl
     public void dispose()
     {
         m_Logger = null;
+    }
+
+    public int getLogLevel()
+    {
+        int level = m_Logger.getLevel().toInt();
+        if( level > 35000 )
+        {
+            return LogService.LOG_ERROR;
+        }
+        if( level > 25000 )
+        {
+            return LogService.LOG_WARNING;
+        }
+        if( level > 15000 )
+        {
+            return LogService.LOG_INFO;
+        }
+        return LogService.LOG_DEBUG;
     }
 }
