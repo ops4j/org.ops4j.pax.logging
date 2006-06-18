@@ -35,7 +35,11 @@
     </plugins>
   </build>
   <modules>
-    <module>client</module>
+    <module>api</module>
+    <module>avalon</module>
+    <module>jcl</module>
+    <module>slf4j</module>
+    <module>log4j</module>
     <module>example</module>
     <module>service</module>
   </modules>
@@ -65,6 +69,12 @@
         <groupId>avalon-framework</groupId>
         <artifactId>avalon-framework-api</artifactId>
         <version>4.3</version>
+        <exclusions>
+          <exclusion>
+            <groupId>avalon-logkit</groupId>
+            <artifactId>avalon-logkit</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>

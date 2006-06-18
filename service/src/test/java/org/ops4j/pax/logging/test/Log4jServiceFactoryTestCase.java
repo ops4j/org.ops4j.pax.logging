@@ -27,8 +27,8 @@ import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.jmock.core.Invocation;
 import org.jmock.core.Stub;
-import org.ops4j.pax.logging.service.internal.ConfigFactory;
-import org.ops4j.pax.logging.service.internal.LoggingServiceFactory;
+import org.ops4j.pax.logging.internal.ConfigFactory;
+import org.ops4j.pax.logging.internal.LoggingServiceFactory;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
@@ -52,22 +52,19 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         ResourceStub resourceStub = new ResourceStub();
 
         Mock bundle1 = new Mock( Bundle.class );
-        Hashtable dictionary = new Hashtable();
+        Hashtable<String, String> dictionary = new Hashtable<String, String>();
         dictionary.put( LoggingServiceFactory.LOG4J_LOGGER_NAME, "bundle1" );
         dictionary.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
         bundle1.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary ) );
         bundle1.expects( once() ).method( "getResource" ).will( resourceStub );
         Bundle bundle = (Bundle) bundle1.proxy();
         ServiceRegistration serviceRegistration = new TestServiceRegistration( bundle );
-        Dictionary props = new Properties();
-        props.put( "type", "pax-log" );
-        serviceRegistration.setProperties( props );
         PaxLoggingService paxLogging = (PaxLoggingService) new Mock( PaxLoggingService.class  ).proxy();
         LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy(), paxLogging );
         factory.getService( (Bundle) bundle1.proxy(), serviceRegistration );
 
         Mock bundle2 = new Mock( Bundle.class );
-        Hashtable dictionary2 = new Hashtable();
+        Hashtable<String, String> dictionary2 = new Hashtable<String, String>();
         dictionary2.put( LoggingServiceFactory.LOG4J_LOGGER_NAME, "bundle2" );
         dictionary2.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "./bundle2_log4j.properties" );
         bundle2.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary2 ) );
@@ -90,16 +87,13 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
 
         // ML - Aug 15, 2005: Test using the basic configuration
         Mock bundle1 = new Mock( Bundle.class );
-        Hashtable dictionary = new Hashtable();
+        Hashtable<String,String> dictionary = new Hashtable<String, String>();
         dictionary.put( LoggingServiceFactory.LOG4J_LOGGER_NAME, "bundle1" );
         dictionary.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
         bundle1.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary ) );
         bundle1.expects( once() ).method( "getResource" ).will( resourceStub );
         Bundle bundle = (Bundle) bundle1.proxy();
         ServiceRegistration serviceRegistration = new TestServiceRegistration( bundle );
-        Dictionary props = new Properties();
-        props.put( "type", "pax-log" );
-        serviceRegistration.setProperties( props );
         PaxLoggingService paxLogging = (PaxLoggingService) new Mock( PaxLoggingService.class  ).proxy();
         LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy(), paxLogging );
         factory.getService( bundle, serviceRegistration );
@@ -107,7 +101,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
 
         // ML - Aug 15, 2005: Test using the global configuration
         String fileName = getClass().getClassLoader().getResource( "./global_log4j.properties" ).toString();
-        Hashtable configuration = new Hashtable();
+        Hashtable<String, String> configuration = new Hashtable<String, String>();
         configuration.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, fileName );
         stub.setState( 10 );
         factory.updated( configuration );
@@ -320,14 +314,14 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
     {
 
         private Bundle m_bundle;
-        private Dictionary m_Properties;
+        private Dictionary<String,Object> m_Properties;
 
         public TestReference( Bundle bundle )
         {
             m_bundle = bundle;
         }
 
-        void setProperties( Dictionary props )
+        void setProperties( Dictionary<String,Object> props )
         {
             m_Properties = props;
         }

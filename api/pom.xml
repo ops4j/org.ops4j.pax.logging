@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>pax-logging</artifactId>
+    <groupId>org.ops4j.pax.logging</groupId>
+    <version>0.9.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.ops4j.pax.logging</groupId>
+  <artifactId>pax-logging-api</artifactId>
+  <name>Pax Logging API</name>
+  <version>0.9.0-SNAPSHOT</version>
+  <description>
+    The Pax Logging API Library is to allow for the Pax Logging Service to be reloaded without stopping the many
+    dependent bundles.
+    It also contains the OSGi Log Service API.
+  </description>
+  <dependencies>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>

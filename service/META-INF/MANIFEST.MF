@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.ops4j.pax.logging.service
 Bundle-Version: 1.0.0
 Bundle-Vendor: OPS4J
 Bundle-Localization: plugin
-Bundle-Activator: org.ops4j.pax.logging.service.Activator
+Bundle-Activator: org.ops4j.pax.logging.avalon.Activator
 Import-Package: org.osgi.framework;version="1.3.0",
  org.osgi.service.cm;version="1.2.0",
  org.osgi.service.log;version="1.3.0"

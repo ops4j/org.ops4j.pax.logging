@@ -9,11 +9,15 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="client" />
     <orderEntry type="library" name="servletapi-2.3" level="project" />
     <orderEntry type="library" name="org.mortbay.jetty-5.1.0" level="project" />
     <orderEntry type="library" name="osgi_R4_core-1.0" level="project" />
     <orderEntry type="library" name="avalon-framework-api-4.3" level="project" />
+    <orderEntry type="module" module-name="jcl" />
+    <orderEntry type="module" module-name="api" />
+    <orderEntry type="module" module-name="log4j" />
+    <orderEntry type="module" module-name="slf4j" />
+    <orderEntry type="module" module-name="avalon" />
     <orderEntryProperties />
   </component>
 </module>

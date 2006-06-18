@@ -19,18 +19,16 @@ package org.ops4j.pax.logging.example;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpHandler;
 import org.mortbay.http.HttpListener;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.SocketListener;
 import org.mortbay.util.InetAddrPort;
-import org.ops4j.pax.logging.avalon.AvalonLogFactory;
-import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.LoggerFactory;
+import org.ops4j.pax.logging.avalon.AvalonLogFactory;
 
 /**
  * This Activator starts up the Jetty server and enables port 8080, which serves a Hello,World message.
@@ -41,22 +39,16 @@ import org.slf4j.LoggerFactory;
 public class Activator
     implements BundleActivator
 {
+    private HttpServer m_server;
 
     private Log m_jclLogger;
     private org.apache.avalon.framework.logger.Logger m_avalonLogger;
-
-    private HttpServer m_server;
     private org.slf4j.Logger m_slf4jLogger;
     private java.util.logging.Logger m_jdkLogger;
 
     public void start( BundleContext bundleContext )
         throws Exception
     {
-        Logger.setBundleContext( bundleContext );
-        LogFactory.setBundleContext( bundleContext );
-        AvalonLogFactory.setBundleContext( bundleContext );
-        Slf4jLoggerFactory.setBundleContext( bundleContext );
-
         m_jclLogger = LogFactory.getLog( Activator.class );
         m_avalonLogger = AvalonLogFactory.getLogger( Activator.class.getName() );
         m_slf4jLogger = LoggerFactory.getLogger( Activator.class );
@@ -85,11 +77,6 @@ public class Activator
         m_avalonLogger.info( "Stopping Example...    (avalon)" );
         m_slf4jLogger.info(  "Stopping Example...    (slf4j)");
         m_jdkLogger.info(    "Stopping Example...    (jdk)");
-
         m_server.stop();
-        LogFactory.release();
-        Logger.release();
-        AvalonLogFactory.release();
-        Slf4jLoggerFactory.release();
     }
 }

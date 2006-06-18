@@ -8,50 +8,41 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
-  <artifactId>pax-logging-example</artifactId>
+  <artifactId>pax-logging-avalon</artifactId>
   <packaging>osgi-bundle</packaging>
-  <name>OPS4J - Pax Logging Example</name>
+  <name>Pax Logging Avalon Support</name>
   <version>0.9.0-SNAPSHOT</version>
-  <description>A simple example of using the Pax Logging system.</description>
+  <description>
+    Pax Logging Avalon Support is a bundle that enables support for Avalon Logging and connecting the API to the Pax Logging Service. See documentation for details.
+  </description>
   <dependencies>
+    <dependency>
+      <groupId>avalon-framework</groupId>
+      <artifactId>avalon-framework-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
       <version>0.9.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>pax-logging-avalon</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>pax-logging-log4j</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>pax-logging-jcl</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>pax-logging-slf4j</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>jetty</groupId>
-      <artifactId>org.mortbay.jetty</artifactId>
-      <version>5.1.0</version>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_compendium</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi_R4_core</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <properties>
     <osgi-ImportPackage>
       org.ops4j.pax.logging; version=[0.9,2.0); provider=paxlogging
     </osgi-ImportPackage>
+    <osgi-ExportPackage>
+      org.ops4j.pax.logging.avalon;version=${pom.version}; provider=paxlogging; mandatory:=provider
+      org.apache.avalon.framework.logger;version=4.3.0; provider=paxlogging; mandatory:=provider
+    </osgi-ExportPackage>
   </properties>
 </project>
