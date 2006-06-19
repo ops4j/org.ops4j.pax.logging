@@ -40,18 +40,9 @@ public class Activator
      */
     public static final String CONFIGURATION_PID = "org.ops4j.pax.logging";
 
-    public static final String[][] LOG_SYSTEMS_SUPPORTED =
-        {
-            { "org.apache.commons.logging.LogFactory", "Jakarta Commons Logging API" },
-            { "org.apache.log4j.Logger", "Log4J API" },
-            { "org.ops4j.pax.logging.internal.avalon.AvalonLogFactory", "Avalon Logging API" },
-            { "org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory", "SLF4J API" }
-        };
-
     /**
      * Reference to the registered service
      */
-    private ServiceRegistration m_RegistrationStdLogging;
     private ServiceRegistration m_RegistrationPaxLogging;
     private JdkHandler m_JdkHandler;
 
@@ -99,8 +90,9 @@ public class Activator
         // Add a global handler for all JDK Logging (java.util.logging).
         Logger rootLogger = LogManager.getLogManager().getLogger( "" );
         rootLogger.removeHandler( m_JdkHandler );
+        m_JdkHandler.flush();
+        m_JdkHandler.close();
         m_JdkHandler = null;
         m_RegistrationPaxLogging.unregister();
-        m_RegistrationStdLogging.unregister();
     }
 }

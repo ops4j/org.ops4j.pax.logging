@@ -26,6 +26,7 @@ package org.apache.commons.logging;
 import org.osgi.framework.BundleContext;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
+import org.apache.commons.logging.internal.JclLogger;
 
 /**
  * This is an adaptation of the Jakarta Commons Logging API for

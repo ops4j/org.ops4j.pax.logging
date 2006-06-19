@@ -15,9 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.apache.commons.logging;
+package org.apache.commons.logging.internal;
 
 import org.ops4j.pax.logging.PaxLogger;
+import org.apache.commons.logging.Log;
 
 public class JclLogger
     implements Log

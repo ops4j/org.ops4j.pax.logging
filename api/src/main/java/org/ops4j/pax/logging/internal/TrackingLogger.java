@@ -105,7 +105,10 @@ public class TrackingLogger
         {
             m_delegate = m_service.getLogger( m_category );
         }
-        m_delegate = new DefaultServiceLog( m_category );
+        else
+        {
+            m_delegate = new DefaultServiceLog( m_category );
+        }
     }
 
     /** Called by the tracker when there is no service available, and the reference should

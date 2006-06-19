@@ -11,6 +11,7 @@
   <artifactId>pax-logging-api</artifactId>
   <name>Pax Logging API</name>
   <version>0.9.0-SNAPSHOT</version>
+  <packaging>osgi-bundle</packaging>
   <description>
     The Pax Logging API Library is to allow for the Pax Logging Service to be reloaded without stopping the many
     dependent bundles.
@@ -28,4 +29,9 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+  <properties>
+    <osgi-ExportPackage>
+      org.ops4j.pax.logging; version=${pom.version}; provider=paxlogging
+    </osgi-ExportPackage>
+  </properties>
 </project>
