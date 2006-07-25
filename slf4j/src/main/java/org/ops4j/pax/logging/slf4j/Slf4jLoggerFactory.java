@@ -31,6 +31,7 @@ public class Slf4jLoggerFactory
     public static void setBundleContext( BundleContext context )
     {
         m_paxLogging = new PaxLoggingManager( context );
+        m_paxLogging.open();
     }
 
     /** Releases any held resources and makes the class ready for garbage collection.
@@ -38,6 +39,7 @@ public class Slf4jLoggerFactory
      */
     public static void release()
     {
+        m_paxLogging.close();
         m_paxLogging.dispose();
     }
 

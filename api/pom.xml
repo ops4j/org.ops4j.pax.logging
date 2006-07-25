@@ -31,6 +31,7 @@
     </dependency>
   </dependencies>
   <properties>
+    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
     <osgi-ExportPackage>
       org.ops4j.pax.logging; version=${pom.version}; provider=paxlogging,
       org.osgi.service.log; version=1.3,

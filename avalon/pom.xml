@@ -14,7 +14,8 @@
   <version>0.9.0-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
-    Pax Logging Avalon Support is a bundle that enables support for Avalon Logging and connecting the API to the Pax Logging Service. See documentation for details.
+    Pax Logging Avalon Support is a bundle that enables support for Avalon Logging and connecting the API to the Pax
+    Logging Service. See documentation for details.
   </description>
   <dependencies>
     <dependency>
@@ -39,14 +40,11 @@
     </dependency>
   </dependencies>
   <properties>
-    <osgi-ImportPackage>
-      org.osgi.framework,
-      org.ops4j.pax.logging; version="[0.9,2.0)",
-      org.apache.avalon.framework.logger; version="[4.1.4,4.4]"
-    </osgi-ImportPackage>
+    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
+    <osgi-BundleActivator>org.ops4j.pax.logging.avalon.Activator</osgi-BundleActivator>
     <osgi-ExportPackage>
       org.ops4j.pax.logging.avalon;version=${pom.version}; provider=paxlogging
-      org.apache.avalon.framework.logger; version=4.1.5; provider=paxlogging
+      org.apache.avalon.framework.logger; version=4.3; provider=paxlogging
     </osgi-ExportPackage>
   </properties>
 </project>

@@ -25,7 +25,6 @@ import org.osgi.util.tracker.ServiceTracker;
 
 public class PaxLoggingManager extends ServiceTracker
 {
-
     private PaxLoggingService m_service;
     private BundleContext m_context;
     private HashMap<String, TrackingLogger> m_loggers;
@@ -36,6 +35,9 @@ public class PaxLoggingManager extends ServiceTracker
         super( context, PaxLoggingService.class.getName(), null );
         m_loggers = new HashMap<String, TrackingLogger>();
         m_context = context;
+        // retrieve the service if any exist at this point.
+        ServiceReference ref = context.getServiceReference( PaxLoggingService.class.getName() );
+        m_service = (PaxLoggingService) context.getService( ref );
     }
 
     public Object addingService( ServiceReference reference )
@@ -62,8 +64,12 @@ public class PaxLoggingManager extends ServiceTracker
 
     public PaxLogger getLogger( String category )
     {
-        TrackingLogger logger = new TrackingLogger( m_service, category );
-        m_loggers.put( category, logger );
+        TrackingLogger logger = m_loggers.get( category );
+        if( logger == null )
+        {
+            logger = new TrackingLogger( m_service, category );
+            m_loggers.put( category, logger );
+        }
         return logger;
     }
 

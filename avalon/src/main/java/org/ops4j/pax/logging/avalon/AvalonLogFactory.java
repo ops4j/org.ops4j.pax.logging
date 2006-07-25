@@ -30,6 +30,7 @@ public class AvalonLogFactory
     public static void setBundleContext( BundleContext context )
     {
         m_paxLogging = new PaxLoggingManager( context );
+        m_paxLogging.open();
     }
 
     /** Lifecycle method to release any resources held.
@@ -37,6 +38,7 @@ public class AvalonLogFactory
      */
     public static void release()
     {
+        m_paxLogging.close();
         m_paxLogging.dispose();
     }
 

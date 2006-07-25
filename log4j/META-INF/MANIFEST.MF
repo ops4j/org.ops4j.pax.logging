@@ -1,0 +1,21 @@
+Bundle-Activator: org.apache.log4j.internal.Activator
+Bundle-Classpath: .
+Export-Package: org.apache.log4j;provider=paxlogging;uses:="org.ops4j.pa
+ x.logging,org.apache.log4j.spi,org.osgi.framework,org.apache.log4j.help
+ ers";version=1.2.13
+Bundle-Version: 0.9.0.SNAPSHOT
+Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/pa
+ x-logging-log4j
+Bundle-Vendor: OPS4J - Open Participation Software for Java
+Bundle-ManifestVersion: 2
+Bundle-ContactAddress: http://www.ops4j.org/
+Bundle-Date: 2006-Jul-26 07:33 MYT
+Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
+Import-Package: javax.xml.parsers, org.apache.log4j, org.ops4j.pax.loggi
+ ng, org.osgi.framework
+Bundle-Name: Pax Logging Log4J Support
+Bundle-Description: Pax Logging Log4J Support is a bundle that enables s
+ upport for Log4J and connecting the API to the Pax Logging Service. See
+  documentation for details.
+Bundle-SymbolicName: org.ops4j.pax.logging.pax-logging-log4j
+

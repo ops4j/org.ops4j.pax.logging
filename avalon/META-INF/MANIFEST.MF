@@ -1,0 +1,21 @@
+Bundle-Activator: org.ops4j.pax.logging.avalon.Activator
+Bundle-Classpath: .,avalon-framework-api-4.3.jar
+Export-Package: org.ops4j.pax.logging.avalon;provider=paxlogging;uses:="
+ org.ops4j.pax.logging,org.apache.avalon.framework.logger,org.osgi.frame
+ work";version=4.3
+Bundle-Version: 0.9.0.SNAPSHOT
+Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/pa
+ x-logging-avalon
+Bundle-Vendor: OPS4J - Open Participation Software for Java
+Bundle-ManifestVersion: 2
+Bundle-ContactAddress: http://www.ops4j.org/
+Bundle-Date: 2006-Jul-26 07:33 MYT
+Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
+Import-Package: org.ops4j.pax.logging, org.ops4j.pax.logging.avalon, org
+ .osgi.framework
+Bundle-Name: Pax Logging Avalon Support
+Bundle-Description: Pax Logging Avalon Support is a bundle that enables 
+ support for Avalon Logging and connecting the API to the Pax Logging Se
+ rvice. See documentation for details.
+Bundle-SymbolicName: org.ops4j.pax.logging.pax-logging-avalon
+

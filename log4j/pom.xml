@@ -35,10 +35,8 @@
     </dependency>
   </dependencies>
   <properties>
-    <osgi-ImportPackage>
-      org.osgi.framework,
-      org.ops4j.pax.logging; version="[0.9,2.0)"
-    </osgi-ImportPackage>
+    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
+    <osgi-BundleActivator>org.apache.log4j.internal.Activator</osgi-BundleActivator>
     <osgi-ExportPackage>
       org.apache.log4j;version=1.2.13; provider=paxlogging
     </osgi-ExportPackage>

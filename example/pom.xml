@@ -57,20 +57,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <osgi-ImportPackage>
-      org.apache.avalon.framework.logger; version="[4.1.4,4.4]",
-      org.apache.commons.logging; version="[1.0.4,1.0.4]"; provider=paxlogging,
-      org.apache.log4j; version=1.2.13,
-      org.ops4j.pax.logging; version="[0.9,2.0)",
-      org.ops4j.pax.logging.avalon,
-      org.slf4j; version=1.0; provider=paxlogging,
-      javax.servlet.http,
-      org.xml.sax,
-      org.osgi.framework,
-      javax.servlet,
-      javax.xml.parsers,
-      org.xml.sax.helpers
-    </osgi-ImportPackage>
+    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
     <osgi-IgnorePackage>
       javax.security.cert,
       com.sun.net.ssl,

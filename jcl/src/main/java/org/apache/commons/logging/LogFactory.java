@@ -95,6 +95,7 @@ public class LogFactory
     public static void setBundleContext( BundleContext ctx )
     {
         m_paxLogging = new PaxLoggingManager( ctx );
+        m_paxLogging.open();
     }
 
     /**
@@ -237,6 +238,7 @@ public class LogFactory
      */
     static public void release()
     {
+        m_paxLogging.close();
         m_paxLogging.dispose();
         m_paxLogging = null;
     }

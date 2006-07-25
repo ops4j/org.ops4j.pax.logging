@@ -45,6 +45,7 @@
   </dependencies>
   <properties>
     <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
+    <osgi-BundleActivator>org.ops4j.pax.logging.internal.Activator</osgi-BundleActivator>
     <osgi-IgnorePackage>
       <!-- Do we want to disable Java Mail delivery??? -->
       javax.jms,
@@ -63,12 +64,6 @@
       javax.swing.table,
       javax.swing.text,
       javax.swing.tree,
-
-      <!-- We are not using the XML configurator in Log4J -->
-      javax.xml.parsers,
-      org.w3c.dom,
-      org.xml.sax,
-      org.xml.sax.helpers
     </osgi-IgnorePackage>
     <osgi-ExportPackage>
       org.ops4j.pax.logging.spi; version=1.0; provider=paxlogging
