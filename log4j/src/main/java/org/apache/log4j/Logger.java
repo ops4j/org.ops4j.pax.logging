@@ -227,8 +227,7 @@ public class Logger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            String msgStr = (String) messagePattern;
-            msgStr = MessageFormatter.format( msgStr, arg1, arg2 );
+            String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
             m_delegate.trace( msgStr, null );
         }
     }
@@ -251,8 +250,7 @@ public class Logger
     {
         if( m_delegate.isFatalEnabled() )
         {
-            String msgStr = (String) messagePattern;
-            msgStr = MessageFormatter.format( msgStr, arg1, arg2 );
+            String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
             m_delegate.fatal( msgStr, null );
         }
     }
@@ -357,8 +355,7 @@ public class Logger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            String msgStr = (String) messagePattern;
-            msgStr = MessageFormatter.format( msgStr, arg1, arg2 );
+            String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
             m_delegate.debug( msgStr, null );
         }
     }
@@ -474,8 +471,7 @@ public class Logger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            String msgStr = (String) messagePattern;
-            msgStr = MessageFormatter.format( msgStr, arg1, arg2 );
+            String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
             m_delegate.error( msgStr, null );
         }
     }
@@ -632,8 +628,7 @@ public class Logger
     {
         if( m_delegate.isInfoEnabled() )
         {
-            String msgStr = (String) messagePattern;
-            msgStr = MessageFormatter.format( msgStr, arg1, arg2 );
+            String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
             m_delegate.inform( msgStr, null );
         }
     }
@@ -847,8 +842,7 @@ public class Logger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            String msgStr = (String) messagePattern;
-            msgStr = MessageFormatter.format( msgStr, arg1, arg2 );
+            String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
             m_delegate.warn( msgStr, null );
         }
     }

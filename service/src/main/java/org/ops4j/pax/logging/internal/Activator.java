@@ -67,12 +67,13 @@ public class Activator
         String[] services =
             {
                 LogService.class.getName(),
+                org.knopflerfish.service.log.LogService.class.getName(),
                 PaxLoggingService.class.getName(),
                 ManagedService.class.getName()
             };
 
-        Hashtable properties = new Hashtable();
-        properties.put( Constants.SERVICE_PID, getClass().getName() + ".PID" );
+        Hashtable<String,String> properties = new Hashtable<String, String>();
+        properties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
         m_RegistrationPaxLogging = bundleContext.registerService( services, loggingServiceFactory, properties );
 
         // Add a global handler for all JDK Logging (java.util.logging).

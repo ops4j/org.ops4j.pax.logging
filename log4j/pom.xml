@@ -12,6 +12,7 @@
   <packaging>osgi-bundle</packaging>
   <name>Pax Logging Log4J Support</name>
   <version>0.9.0-SNAPSHOT</version>
+  <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
     Pax Logging Log4J Support is a bundle that enables support for Log4J and connecting the API to the Pax Logging Service. See documentation for details.
   </description>
@@ -20,6 +21,7 @@
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
       <version>0.9.0-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

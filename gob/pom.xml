@@ -11,15 +11,11 @@
   <artifactId>pax-logging-gob</artifactId>
   <name>Pax Logging GOB</name>
   <version>0.9.0-SNAPSHOT</version>
+  <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
     The GOB (Group of Bundles) for Pax Logging. Used by the Gobilator.
   </description>
   <dependencies>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_compendium</artifactId>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi_R4_core</artifactId>

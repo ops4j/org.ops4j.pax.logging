@@ -101,19 +101,17 @@ public class MessageFormatter
      *
      * @return The formatted message
      */
-    public static String format( String messagePattern, Object arg1, Object arg2 )
+    public static String format( final String messagePattern, Object arg1, Object arg2 )
     {
         int i = 0;
-        int len = messagePattern.length();
-        int j = messagePattern.indexOf( DELIM_START );
-
-        StringBuffer sbuf = new StringBuffer( messagePattern.length() + 50 );
+        int patternLength = messagePattern.length();
+        StringBuffer sbuf = new StringBuffer( patternLength + 50 );
 
         for( int L = 0; L < 2; L++ )
         {
-            j = messagePattern.indexOf( DELIM_START, i );
+            int j = messagePattern.indexOf( DELIM_START, i );
 
-            if( j == -1 || ( j + 1 == len ) )
+            if( j == -1 || ( j + 1 == patternLength ) )
             {
                 // no more variables
                 if( i == 0 )
@@ -122,26 +120,34 @@ public class MessageFormatter
                 }
                 else
                 { // add the tail string which contains no variables and return the result.
-                    sbuf.append( messagePattern.substring( i, messagePattern.length() ) );
+                    sbuf.append( messagePattern.substring( i, patternLength ) );
                     return sbuf.toString();
                 }
             }
             else
             {
                 char delimStop = messagePattern.charAt( j + 1 );
-                if( ( delimStop != DELIM_STOP ) )
+                if( delimStop != DELIM_STOP )
                 {
                     // invalid DELIM_START/DELIM_STOP pair
-                    sbuf.append( messagePattern.substring( i, messagePattern.length() ) );
+                    sbuf.append( messagePattern.substring( i, patternLength ) );
                     return sbuf.toString();
                 }
                 sbuf.append( messagePattern.substring( i, j ) );
-                sbuf.append( ( L == 0 ) ? arg1 : arg2 );
+                if( L == 0 )
+                {
+                    sbuf.append( arg1 );
+                }
+                else
+                {
+                    sbuf.append( arg2 );
+                }
                 i = j + 2;
             }
         }
         // append the characters following the second {} pair.
-        sbuf.append( messagePattern.substring( i, messagePattern.length() ) );
+        String remainder = messagePattern.substring( i, patternLength );
+        sbuf.append( remainder );
         return sbuf.toString();
     }
 }

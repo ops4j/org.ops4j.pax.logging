@@ -32,7 +32,7 @@ public class PaxLoggingServiceImpl
 
     public int getLogLevel()
     {
-        return 0;
+        return LOG_DEBUG;
     }
 
     public void log( int level, String message )

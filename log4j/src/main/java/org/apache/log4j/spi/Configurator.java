@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Niclas Hedhman.
+ * Copyright 2006 Niclas Hedhman.
  *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
@@ -13,15 +13,13 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License. 
  */
-package org.ops4j.pax.logging;
+package org.apache.log4j.spi;
 
-import org.knopflerfish.service.log.LogService;
-
-public interface PaxLoggingService extends LogService
+/** Dummy interface to allow more applications to be compatible with Pax Logging out of the box.
+ *
+ */
+public interface Configurator
 {
-    PaxLogger getLogger( String category );
-
-    int getLogLevel();
 }
