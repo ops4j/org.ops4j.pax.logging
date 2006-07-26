@@ -10,7 +10,7 @@
   <artifactId>jcl</artifactId>
   <packaging>osgi-bundle</packaging>
   <name>Pax Logging JCL Support</name>
-  <version>0.9.0</version>
+  <version>0.9.1-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
     Pax Logging JCL Support is a bundle that enables support for Jakarta Commons Logging and connecting the API to the Pax Logging Service. See documentation for details.
@@ -40,9 +40,4 @@
       org.apache.commons.logging;version=1.0.4; provider=paxlogging
     </osgi-ExportPackage>
   </properties>
-
-  <scm>
-    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/jcl-0.9.0</connection>
-    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/jcl-0.9.0</developerConnection>
-  </scm>
 </project>
