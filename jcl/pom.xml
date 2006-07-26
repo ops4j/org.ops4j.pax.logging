@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>logging</artifactId>
     <groupId>org.ops4j.pax</groupId>
@@ -11,7 +10,7 @@
   <artifactId>jcl</artifactId>
   <packaging>osgi-bundle</packaging>
   <name>Pax Logging JCL Support</name>
-  <version>0.9.0-SNAPSHOT</version>
+  <version>0.9.0</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
     Pax Logging JCL Support is a bundle that enables support for Jakarta Commons Logging and connecting the API to the Pax Logging Service. See documentation for details.
@@ -41,4 +40,9 @@
       org.apache.commons.logging;version=1.0.4; provider=paxlogging
     </osgi-ExportPackage>
   </properties>
+
+  <scm>
+    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/jcl-0.9.0</connection>
+    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/jcl-0.9.0</developerConnection>
+  </scm>
 </project>
