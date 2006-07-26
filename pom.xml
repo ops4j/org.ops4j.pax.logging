@@ -16,7 +16,6 @@
     <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</connection>
     <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
   </scm>
-  <!--
   <modules>
     <module>api</module>
     <module>avalon</module>
@@ -27,7 +26,6 @@
     <module>service</module>
     <module>slf4j</module>
   </modules>
-  -->
   <dependencyManagement>
     <dependencies>
       <dependency>

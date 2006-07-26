@@ -1,16 +1,15 @@
 Bundle-Classpath: .
 Export-Package: org.ops4j.pax.logging;provider=paxlogging;uses:="org.kno
  pflerfish.service.log,org.osgi.framework,org.ops4j.pax.logging.internal
- ,org.osgi.util.tracker";version=0.9.0.SNAPSHOT, org.knopflerfish.servic
- e.log;uses:="org.osgi.service.log,org.osgi.framework";version=1.1, org.
- osgi.service.log;version=1.3
-Bundle-Version: 0.9.0.SNAPSHOT
-Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/ap
- i
+ ,org.osgi.util.tracker";version=0.9.0, org.knopflerfish.service.log;use
+ s:="org.osgi.service.log,org.osgi.framework";version=1.1, org.osgi.serv
+ ice.log;version=1.3
+Bundle-Version: 0.9.0
+Bundle-Source: https://scm.ops4j.org/repos/ops4j/qa/pax/api-0.9.0
 Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-ManifestVersion: 2
 Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2006-Jul-26 22:00 MYT
+Bundle-Date: 2006-Jul-26 22:13 MYT
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: org.knopflerfish.service.log, org.ops4j.pax.logging, org
  .osgi.framework, org.osgi.service.log, org.osgi.util.tracker
