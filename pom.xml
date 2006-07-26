@@ -17,6 +17,17 @@
     <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</connection>
     <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
   </scm>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.0-beta-3</version>
+        <configuration>
+          <tagBase>https://scm.ops4j.org/repos/ops4j/qa/pax</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <modules>
     <module>api</module>
     <module>avalon</module>
