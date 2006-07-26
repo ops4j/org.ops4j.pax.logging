@@ -24,32 +24,32 @@
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>api</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <version>0.9.0</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>avalon</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <version>0.9.0</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>jcl</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <version>0.9.0</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>log4j</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <version>0.9.0</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>service</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <version>0.9.0</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>slf4j</artifactId>
-      <version>0.9.0-SNAPSHOT</version>
+      <version>0.9.0</version>
     </dependency>
   </dependencies>
 </project>
