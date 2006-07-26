@@ -9,7 +9,7 @@
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>gob</artifactId>
   <name>Pax Logging GOB</name>
-  <version>0.9.0</version>
+  <version>0.9.1-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
     The GOB (Group of Bundles) for Pax Logging. Used by the Gobilator.
@@ -51,9 +51,4 @@
       <version>0.9.0</version>
     </dependency>
   </dependencies>
-
-  <scm>
-    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/gob-0.9.0</connection>
-    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/gob-0.9.0</developerConnection>
-  </scm>
 </project>
