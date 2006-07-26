@@ -10,7 +10,7 @@
   <artifactId>example</artifactId>
   <packaging>osgi-bundle</packaging>
   <name>Pax Logging Example</name>
-  <version>0.9.0</version>
+  <version>0.9.1-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>A simple example of using the Pax Logging system.</description>
   <dependencies>
@@ -64,9 +64,4 @@
       javax.net.ssl
     </osgi-IgnorePackage>
   </properties>
-
-  <scm>
-    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/example-0.9.0</connection>
-    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/example-0.9.0</developerConnection>
-  </scm>
 </project>
