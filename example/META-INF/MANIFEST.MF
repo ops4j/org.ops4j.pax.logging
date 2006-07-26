@@ -1,9 +1,9 @@
 Bundle-Version: 0.9.0.SNAPSHOT
-Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/pa
- x-logging-example
+Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/ex
+ ample
 Bundle-ManifestVersion: 2
 Bundle-Vendor: OPS4J - Open Participation Software for Java
-Bundle-Date: 2006-Jul-26 07:33 MYT
+Bundle-Date: 2006-Jul-26 22:00 MYT
 Bundle-ContactAddress: http://www.ops4j.org/
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: javax.servlet, javax.servlet.http, javax.xml.parsers, or
@@ -13,5 +13,5 @@ Import-Package: javax.servlet, javax.servlet.http, javax.xml.parsers, or
 Bundle-Name: Pax Logging Example
 Bundle-Classpath: .,org.mortbay.jetty-5.1.0.jar
 Bundle-Description: A simple example of using the Pax Logging system.
-Bundle-SymbolicName: org.ops4j.pax.logging.pax-logging-example
+Bundle-SymbolicName: org.ops4j.pax.logging.example
 

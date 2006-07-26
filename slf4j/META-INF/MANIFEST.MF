@@ -1,18 +1,19 @@
+Bundle-Activator: org.ops4j.pax.logging.slf4j.Activator
 Bundle-Classpath: .
 Export-Package: org.slf4j;provider=paxlogging;uses:="org.slf4j.impl";ver
  sion=1.0
 Bundle-Version: 0.9.0.SNAPSHOT
-Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/pa
- x-logging-slf4j
+Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/sl
+ f4j
 Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-ManifestVersion: 2
 Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2006-Jul-26 07:33 MYT
+Bundle-Date: 2006-Jul-26 22:00 MYT
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: org.ops4j.pax.logging, org.osgi.framework, org.slf4j
 Bundle-Name: Pax Logging SLF4J Support
 Bundle-Description: Pax Logging SLF4J Support is a bundle that enables s
  upport for SLF4J and connecting the API to the Pax Logging Service. See
   documentation for details.
-Bundle-SymbolicName: org.ops4j.pax.logging.pax-logging-slf4j
+Bundle-SymbolicName: org.ops4j.pax.logging.slf4j
 
