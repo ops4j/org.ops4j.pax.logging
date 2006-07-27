@@ -29,7 +29,7 @@ public class TrackingLogger
 
     public TrackingLogger( PaxLoggingService service, String category )
     {
-        m_service = service;
+        added( service );
         m_category = category;
     }
 
