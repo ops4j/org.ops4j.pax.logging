@@ -37,7 +37,10 @@ public class PaxLoggingManager extends ServiceTracker
         m_context = context;
         // retrieve the service if any exist at this point.
         ServiceReference ref = context.getServiceReference( PaxLoggingService.class.getName() );
-        m_service = (PaxLoggingService) context.getService( ref );
+        if( ref != null )
+        {
+            m_service = (PaxLoggingService) context.getService( ref );
+        }
     }
 
     public Object addingService( ServiceReference reference )

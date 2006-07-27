@@ -35,12 +35,13 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedServiceFactory;
 
 /**
  * ServiceFactory implementation to return LogService implementation instances.
  */
 public class LoggingServiceFactory
-    implements ServiceFactory
+    implements ServiceFactory, ManagedServiceFactory
 {
 
     /**
@@ -117,10 +118,6 @@ public class LoggingServiceFactory
                     "Can not read Log4J configuration " + configFileName + " from bundle for '" + loggerName + "'.", e
                 );
             }
-        }
-        else
-        {
-            loggerName = bundle.getLocation();
         }
         return m_PaxLogging;
     }
@@ -214,29 +211,6 @@ public class LoggingServiceFactory
     {
     }
 
-    /**
-     * Overwrites all the LogService properties using the Log4J properties specified
-     * in this configuration.
-     *
-     * @see org.osgi.service.cm.ManagedService#updated(java.util.Dictionary)
-     */
-    public void updated( Dictionary configuration )
-        throws ConfigurationException
-    {
-        if( configuration == null )
-        {
-            useGlobalProperties();
-            return;
-        }
-        Object configFile = configuration.get( LOG4J_CONFIG_FILE );
-        if( configFile == null || "".equals( configFile.toString() ) )
-        {
-            usePropertiesInProvidedConfiguration( configuration );
-            return;
-        }
-        usePropertiesInURL( configFile );
-    }
-
     private void usePropertiesInProvidedConfiguration( Dictionary configuration )
     {
         Properties extracted = new Properties();
@@ -307,5 +281,38 @@ public class LoggingServiceFactory
     {
         m_IsUsingGlobal = false;
         m_ConfigFactory.configure( m_MergedProperties );
+    }
+
+    public String getName()
+    {
+        return "Pax Logging";
+    }
+
+    /**
+     * Overwrites all the LogService properties using the Log4J properties specified
+     * in this configuration.
+     *
+     * @see org.osgi.service.cm.ManagedServiceFactory#updated(String, java.util.Dictionary)
+     */
+    public void updated( String string, Dictionary configuration )
+        throws ConfigurationException
+    {
+        if( configuration == null )
+        {
+            useGlobalProperties();
+            return;
+        }
+        Object configFile = configuration.get( LOG4J_CONFIG_FILE );
+        if( configFile == null || "".equals( configFile.toString() ) )
+        {
+            usePropertiesInProvidedConfiguration( configuration );
+            return;
+        }
+        usePropertiesInURL( configFile );
+    }
+
+    public void deleted( String string )
+    {
+        useGlobalProperties();
     }
 }

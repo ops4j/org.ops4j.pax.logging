@@ -37,7 +37,14 @@
     <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
     <osgi-BundleActivator>org.apache.log4j.internal.Activator</osgi-BundleActivator>
     <osgi-ExportPackage>
-      org.apache.log4j;version=1.2.13; provider=paxlogging
+      org.apache.log4j;version=1.2.13; provider=paxlogging,
+      org.apache.log4j.xml;version=1.2.13; provider=paxlogging,
+      org.apache.log4j.spi;version=1.2.13; provider=paxlogging
     </osgi-ExportPackage>
+    <osgi-ImportPackage>
+      javax.xml.parsers,
+      org.ops4j.pax.logging,
+      org.osgi.framework
+    </osgi-ImportPackage>
   </properties>
 </project>

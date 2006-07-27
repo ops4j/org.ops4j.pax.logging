@@ -97,18 +97,18 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         PaxLoggingService paxLogging = (PaxLoggingService) new Mock( PaxLoggingService.class  ).proxy();
         LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy(), paxLogging );
         factory.getService( bundle, serviceRegistration );
-        factory.updated( null );
+        factory.updated( "", null );
 
         // ML - Aug 15, 2005: Test using the global configuration
         String fileName = getClass().getClassLoader().getResource( "./global_log4j.properties" ).toString();
         Hashtable<String, String> configuration = new Hashtable<String, String>();
         configuration.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, fileName );
         stub.setState( 10 );
-        factory.updated( configuration );
+        factory.updated( "", configuration );
 
         // ML - Aug 15, 2005: Test reseting the global configuration
         stub.setState( 20 );
-        factory.updated( null );
+        factory.updated( "", null );
 
         configFactory.verify();
         bundle1.verify();

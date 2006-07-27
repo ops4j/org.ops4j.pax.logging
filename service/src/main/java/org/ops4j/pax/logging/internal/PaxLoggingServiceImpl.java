@@ -20,9 +20,13 @@ package org.ops4j.pax.logging.internal;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.cm.ManagedService;
+import org.osgi.service.cm.ConfigurationException;
+import org.knopflerfish.service.log.LogService;
+import java.util.Dictionary;
 
 public class PaxLoggingServiceImpl
-    implements PaxLoggingService
+    implements PaxLoggingService, LogService, ManagedService
 {
 
     public PaxLogger getLogger( String category )
@@ -79,5 +83,11 @@ public class PaxLoggingServiceImpl
             default:
                 logger.warn( "Undefined Level: " + level + " : " + message, exception );
         }
+    }
+
+    public void updated( Dictionary dictionary )
+        throws ConfigurationException
+    {
+
     }
 }
