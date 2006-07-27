@@ -9,7 +9,7 @@
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>api</artifactId>
   <name>Pax Logging API</name>
-  <version>0.9.1</version>
+  <version>0.9.2-SNAPSHOT</version>
   <packaging>osgi-bundle</packaging>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
@@ -37,9 +37,4 @@
       org.knopflerfish.service.log; version=1.1
     </osgi-ExportPackage>
   </properties>
-
-  <scm>
-    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/api-0.9.1</connection>
-    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/api-0.9.1</developerConnection>
-  </scm>
 </project>
