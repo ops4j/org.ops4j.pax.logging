@@ -42,7 +42,7 @@
     <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
     <osgi-BundleActivator>org.ops4j.pax.logging.avalon.Activator</osgi-BundleActivator>
     <osgi-ExportPackage>
-      org.ops4j.pax.logging.avalon;version=${pom.version}; provider=paxlogging
+      org.ops4j.pax.logging.avalon;version=${pom.version}; provider=paxlogging,
       org.apache.avalon.framework.logger; version=4.3; provider=paxlogging
     </osgi-ExportPackage>
   </properties>
