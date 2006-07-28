@@ -10,7 +10,7 @@
   <artifactId>service</artifactId>
   <packaging>osgi-bundle</packaging>
   <name>Pax Logging Service</name>
-  <version>0.9.2-SNAPSHOT</version>
+  <version>0.9.2</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>Pax Logging Service is a Log4J driven service that supports Jakarta Commons Logging,
     Log4J, Avalon Logging, SLF4J and Pax Logging clients. Note that all this clients must use the Pax Logging
@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>api</artifactId>
-      <version>0.9.0</version>
+      <version>0.9.2</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -68,4 +68,9 @@
       org.ops4j.pax.logging.spi; version=1.0; provider=paxlogging
     </osgi-ExportPackage>
   </properties>
+
+  <scm>
+    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/service-0.9.2</connection>
+    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/service-0.9.2</developerConnection>
+  </scm>
 </project>
