@@ -23,6 +23,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.cm.ConfigurationException;
 import org.knopflerfish.service.log.LogService;
+import org.apache.log4j.Logger;
 import java.util.Dictionary;
 
 public class PaxLoggingServiceImpl
@@ -31,7 +32,8 @@ public class PaxLoggingServiceImpl
 
     public PaxLogger getLogger( String category )
     {
-        return new PaxLoggerImpl( org.apache.log4j.Logger.getLogger( category ) );
+        Logger log4jLogger = Logger.getLogger( category );
+        return new PaxLoggerImpl( log4jLogger );
     }
 
     public int getLogLevel()
