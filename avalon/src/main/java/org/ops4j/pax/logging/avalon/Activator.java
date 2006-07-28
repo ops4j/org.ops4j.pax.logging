@@ -19,6 +19,7 @@ package org.ops4j.pax.logging.avalon;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.apache.avalon.framework.logger.Logger;
 
 public class Activator
     implements BundleActivator
@@ -28,11 +29,17 @@ public class Activator
         throws Exception
     {
         AvalonLogFactory.setBundleContext( iContext );
+        String name = getClass().getName();
+        Logger logger = AvalonLogFactory.getLogger( name );
+        logger.info( "Enabling Avalon Logger API support." );
     }
 
     public void stop( BundleContext iContext )
         throws Exception
     {
+        String name = getClass().getName();
+        Logger logger = AvalonLogFactory.getLogger( name );
+        logger.info( "Disabling Avalon Logger API support." );
         AvalonLogFactory.release();
     }
 }

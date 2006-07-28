@@ -19,6 +19,8 @@ package org.ops4j.pax.logging.slf4j;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator
     implements BundleActivator
@@ -28,11 +30,17 @@ public class Activator
         throws Exception
     {
         Slf4jLoggerFactory.setBundleContext( iContext );
+        String name = getClass().getName();
+        Logger logger = LoggerFactory.getLogger( name );
+        logger.info( "Enabling SLF4J API support." );
     }
 
     public void stop( BundleContext iContext )
         throws Exception
     {
+        String name = getClass().getName();
+        Logger logger = LoggerFactory.getLogger( name );
+        logger.info( "Disabling SLF4J API support." );
         Slf4jLoggerFactory.release();
     }
 }

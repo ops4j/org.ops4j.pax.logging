@@ -20,6 +20,7 @@ package org.apache.commons.logging.internal;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 public class Activator
     implements BundleActivator
@@ -29,11 +30,17 @@ public class Activator
         throws Exception
     {
         LogFactory.setBundleContext( iContext );
+        String name = getClass().getName();
+        Log logger = LogFactory.getLog( name );
+        logger.info( "Enabling Jakarta Commons Logging API support." );
     }
 
     public void stop( BundleContext iContext )
         throws Exception
     {
+        String name = getClass().getName();
+        Log logger = LogFactory.getLog( name );
+        logger.info( "Disabling Jakarta Commons Logging API support." );
         LogFactory.release();
     }
 }

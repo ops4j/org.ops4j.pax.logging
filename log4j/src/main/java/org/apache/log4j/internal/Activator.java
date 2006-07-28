@@ -29,11 +29,18 @@ public class Activator
         throws Exception
     {
         Logger.setBundleContext( iContext );
+
+        String name = getClass().getName();
+        Logger logger = Logger.getLogger( name );
+        logger.info( "Enabling Log4J API support." );
     }
 
     public void stop( BundleContext iContext )
         throws Exception
     {
+        String name = getClass().getName();
+        Logger logger = Logger.getLogger( name );
+        logger.info( "Disabling Log4J API support." );
         Logger.release();
     }
 }
