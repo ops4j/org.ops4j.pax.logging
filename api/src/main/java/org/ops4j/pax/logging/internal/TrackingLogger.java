@@ -29,8 +29,8 @@ public class TrackingLogger
 
     public TrackingLogger( PaxLoggingService service, String category )
     {
-        added( service );
         m_category = category;
+        added( service );
     }
 
     public boolean isTraceEnabled()
