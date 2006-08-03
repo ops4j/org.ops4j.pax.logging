@@ -3,12 +3,12 @@ Bundle-Classpath: .
 Export-Package: org.slf4j;provider=paxlogging;uses:="org.slf4j.impl";ver
  sion=1.0
 Bundle-Version: 0.9.3.SNAPSHOT
-Bundle-Source: https://scm.ops4j.org/repos/ops4j/qa/pax/logging-0.9.0/sl
+Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/sl
  f4j
 Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-ManifestVersion: 2
 Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2006-Aug-02 23:48 SGT
+Bundle-Date: 2006-Aug-03 14:47 SGT
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: org.ops4j.pax.logging, org.osgi.framework, org.slf4j
 Bundle-Name: Pax Logging SLF4J Support

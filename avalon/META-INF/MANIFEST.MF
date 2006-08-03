@@ -5,12 +5,12 @@ Export-Package: org.apache.avalon.framework.logger;provider=paxlogging;v
  .ops4j.pax.logging,org.apache.avalon.framework.logger,org.osgi.framewor
  k";version=0.9.3.SNAPSHOT
 Bundle-Version: 0.9.3.SNAPSHOT
-Bundle-Source: https://scm.ops4j.org/repos/ops4j/qa/pax/logging-0.9.0/av
+Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/av
  alon
 Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-ManifestVersion: 2
 Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2006-Aug-02 23:48 SGT
+Bundle-Date: 2006-Aug-03 14:47 SGT
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: org.apache.avalon.framework.logger, org.ops4j.pax.loggin
  g, org.ops4j.pax.logging.avalon, org.osgi.framework
