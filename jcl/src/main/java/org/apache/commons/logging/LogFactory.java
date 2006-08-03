@@ -24,8 +24,10 @@
 package org.apache.commons.logging;
 
 import org.osgi.framework.BundleContext;
-import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.apache.commons.logging.internal.JclLogger;
 
 /**
@@ -90,11 +92,12 @@ public class LogFactory
     static
     {
         m_Instance = new LogFactory();
+        m_paxLogging = new SimplePaxLoggingManager();
     }
 
     public static void setBundleContext( BundleContext ctx )
     {
-        m_paxLogging = new PaxLoggingManager( ctx );
+        m_paxLogging = new OSGIPaxLoggingManager( ctx );
         m_paxLogging.open();
     }
 

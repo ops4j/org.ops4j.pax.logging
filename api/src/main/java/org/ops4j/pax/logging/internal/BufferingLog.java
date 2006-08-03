@@ -20,8 +20,8 @@ package org.ops4j.pax.logging.internal;
 import java.util.ArrayList;
 import org.ops4j.pax.logging.PaxLogger;
 
-/** Experimental fallback strategy for non-availability.
- * 
+/**
+ * Experimental fallback strategy for non-availability.
  */
 public class BufferingLog
     implements PaxLogger
@@ -29,7 +29,6 @@ public class BufferingLog
 
     private enum LogType
     {
-
         trace, debug, info, warn, error, fatal
     }
 

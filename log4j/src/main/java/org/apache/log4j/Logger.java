@@ -17,10 +17,12 @@
 
 package org.apache.log4j;
 
+import org.apache.log4j.helpers.MessageFormatter;
+import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
-import org.apache.log4j.helpers.MessageFormatter;
 
 /**
  * This is the central class in the log4j package. Most logging
@@ -62,12 +64,18 @@ import org.apache.log4j.helpers.MessageFormatter;
  */
 public class Logger
 {
+
     private PaxLogger m_delegate;
     private static PaxLoggingManager m_paxLogging;
 
+    static
+    {
+        m_paxLogging = new SimplePaxLoggingManager();
+    }
+
     public static void setBundleContext( BundleContext ctx )
     {
-        m_paxLogging = new PaxLoggingManager( ctx );
+        m_paxLogging = new OSGIPaxLoggingManager( ctx );
         m_paxLogging.open();
     }
 
@@ -274,7 +282,7 @@ public class Logger
      * <p>
      * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
      * print the name of the <code>Throwable</code> but no stack trace. To
-     * print a stack trace use the {@link #debug(Object, Throwable)} form
+     * print a stack trace use the {@link #debug(Object,Throwable)} form
      * instead.
      * </p>
      *
@@ -390,7 +398,7 @@ public class Logger
      * <p>
      * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
      * print the name of the <code>Throwable</code> but no stack trace. To
-     * print a stack trace use the {@link #error(Object, Throwable)} form
+     * print a stack trace use the {@link #error(Object,Throwable)} form
      * instead.
      * </p>
      *
@@ -494,7 +502,7 @@ public class Logger
      * <p>
      * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
      * print the name of the Throwable but no stack trace. To print a stack
-     * trace use the {@link #fatal(Object, Throwable)} form instead.
+     * trace use the {@link #fatal(Object,Throwable)} form instead.
      * </p>
      *
      * @param message the message object to log
@@ -574,7 +582,7 @@ public class Logger
      * <p>
      * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
      * print the name of the Throwable but no stack trace. To print a stack
-     * trace use the {@link #info(Object, Throwable)} form instead.
+     * trace use the {@link #info(Object,Throwable)} form instead.
      * </p>
      *
      * @param message the message object to log
@@ -760,7 +768,7 @@ public class Logger
      * <p>
      * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
      * print the name of the Throwable but no stack trace. To print a stack
-     * trace use the {@link #warn(Object, Throwable)} form instead.
+     * trace use the {@link #warn(Object,Throwable)} form instead.
      * </p>
      *
      * <p></p>

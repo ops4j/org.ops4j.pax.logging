@@ -17,75 +17,16 @@
  */
 package org.ops4j.pax.logging;
 
-import java.util.HashMap;
-import org.ops4j.pax.logging.internal.TrackingLogger;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
-
-public class PaxLoggingManager extends ServiceTracker
+public interface PaxLoggingManager
 {
-    private PaxLoggingService m_service;
-    private BundleContext m_context;
-    private HashMap<String, TrackingLogger> m_loggers;
-    private ServiceReference m_logServiceRef;
 
-    public PaxLoggingManager( BundleContext context )
-    {
-        super( context, PaxLoggingService.class.getName(), null );
-        m_loggers = new HashMap<String, TrackingLogger>();
-        m_context = context;
-        // retrieve the service if any exist at this point.
-        ServiceReference ref = context.getServiceReference( PaxLoggingService.class.getName() );
-        if( ref != null )
-        {
-            m_service = (PaxLoggingService) context.getService( ref );
-        }
-    }
+    PaxLogger getLogger( String category );
 
-    public Object addingService( ServiceReference reference )
-    {
-        m_logServiceRef = reference;
-        m_service = (PaxLoggingService) m_context.getService( reference );
-        for( TrackingLogger logger : m_loggers.values() )
-        {
-            logger.added( m_service );
-        }
-        return m_service;
-    }
+    PaxLoggingService getPaxLoggingService();
 
-    public void removedService( ServiceReference reference, Object service )
-    {
-        m_service = null;
-        m_context.ungetService( m_logServiceRef );
-        m_logServiceRef = null;
-        for( TrackingLogger logger : m_loggers.values() )
-        {
-            logger.removed();
-        }
-    }
+    void open();
 
-    public PaxLogger getLogger( String category )
-    {
-        TrackingLogger logger = m_loggers.get( category );
-        if( logger == null )
-        {
-            logger = new TrackingLogger( m_service, category );
-            m_loggers.put( category, logger );
-        }
-        return logger;
-    }
+    void close();
 
-    public PaxLoggingService getPaxLoggingService()
-    {
-        return m_service;
-    }
-
-    public void dispose()
-    {
-        if( m_logServiceRef != null )
-        {
-            m_context.ungetService( m_logServiceRef );
-        }
-    }
+    void dispose();
 }

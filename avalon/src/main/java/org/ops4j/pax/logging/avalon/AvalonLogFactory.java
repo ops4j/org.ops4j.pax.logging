@@ -19,7 +19,9 @@ package org.ops4j.pax.logging.avalon;
 
 import org.apache.avalon.framework.logger.Logger;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
 
 public class AvalonLogFactory
@@ -27,9 +29,14 @@ public class AvalonLogFactory
 
     private static PaxLoggingManager m_paxLogging;
 
+    static
+    {
+        m_paxLogging = new SimplePaxLoggingManager();
+    }
+
     public static void setBundleContext( BundleContext context )
     {
-        m_paxLogging = new PaxLoggingManager( context );
+        m_paxLogging = new OSGIPaxLoggingManager( context );
         m_paxLogging.open();
     }
 

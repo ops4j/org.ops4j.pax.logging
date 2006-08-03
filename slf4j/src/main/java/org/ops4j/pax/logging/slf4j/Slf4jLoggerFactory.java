@@ -17,8 +17,10 @@
  */
 package org.ops4j.pax.logging.slf4j;
 
+import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
@@ -26,16 +28,22 @@ import org.slf4j.Logger;
 public class Slf4jLoggerFactory
     implements ILoggerFactory
 {
+
     private static PaxLoggingManager m_paxLogging;
+
+    static
+    {
+        m_paxLogging = new SimplePaxLoggingManager();
+    }
 
     public static void setBundleContext( BundleContext context )
     {
-        m_paxLogging = new PaxLoggingManager( context );
+        m_paxLogging = new OSGIPaxLoggingManager( context );
         m_paxLogging.open();
     }
 
-    /** Releases any held resources and makes the class ready for garbage collection.
-     *
+    /**
+     * Releases any held resources and makes the class ready for garbage collection.
      */
     public static void release()
     {
