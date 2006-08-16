@@ -8,7 +8,7 @@ Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/se
 Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-ManifestVersion: 2
 Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2006-Aug-03 14:47 SGT
+Bundle-Date: 2006-Aug-14 15:34 CEST
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: javax.xml.parsers, org.knopflerfish.service.log, org.ops
  4j.pax.logging, org.ops4j.pax.logging.spi, org.osgi.framework, org.osgi
