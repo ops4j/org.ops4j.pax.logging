@@ -10,7 +10,7 @@
   <artifactId>logging</artifactId>
   <packaging>pom</packaging>
   <name>Pax Logging</name>
-  <version>0.9.3-SNAPSHOT</version>
+  <version>0.9.4-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <scm>
     <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</connection>

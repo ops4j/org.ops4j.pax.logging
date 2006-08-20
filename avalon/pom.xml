@@ -3,14 +3,14 @@
   <parent>
     <artifactId>logging</artifactId>
     <groupId>org.ops4j.pax</groupId>
-    <version>0.9.3-SNAPSHOT</version>
+    <version>0.9.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>avalon</artifactId>
   <packaging>osgi-bundle</packaging>
   <name>Pax Logging Avalon Support</name>
-  <version>0.9.3-SNAPSHOT</version>
+  <version>0.9.4-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
     Pax Logging Avalon Support is a bundle that enables support for Avalon Logging and connecting the API to the Pax
