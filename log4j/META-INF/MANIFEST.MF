@@ -5,12 +5,12 @@ Export-Package: org.apache.log4j;provider=paxlogging;uses:="org.ops4j.pa
  ers";version=1.2.13, org.apache.log4j.spi;provider=paxlogging;version=1
  .2.13, org.apache.log4j.xml;provider=paxlogging;uses:="javax.xml.parser
  s";version=1.2.13
-Bundle-Version: 0.9.3.SNAPSHOT
+Bundle-Version: 0.9.4.SNAPSHOT
 Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/lo
  g4j
 Bundle-ManifestVersion: 2
 Bundle-Vendor: OPS4J - Open Participation Software for Java
-Bundle-Date: 2006-Aug-14 15:33 CEST
+Bundle-Date: 2006-Aug-20 22:31 CEST
 Bundle-ContactAddress: http://www.ops4j.org/
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: javax.xml.parsers,org.ops4j.pax.logging,org.osgi.framewo

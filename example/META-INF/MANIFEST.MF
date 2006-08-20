@@ -1,9 +1,9 @@
-Bundle-Version: 0.9.3.SNAPSHOT
+Bundle-Version: 0.9.4.SNAPSHOT
 Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/ex
  ample
 Bundle-ManifestVersion: 2
 Bundle-Vendor: OPS4J - Open Participation Software for Java
-Bundle-Date: 2006-Aug-14 15:34 CEST
+Bundle-Date: 2006-Aug-20 22:31 CEST
 Bundle-ContactAddress: http://www.ops4j.org/
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: javax.servlet, javax.servlet.http, javax.xml.parsers, or

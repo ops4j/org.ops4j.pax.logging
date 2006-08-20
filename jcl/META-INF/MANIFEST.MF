@@ -3,13 +3,13 @@ Bundle-Classpath: .
 Export-Package: org.apache.commons.logging;provider=paxlogging;uses:="or
  g.ops4j.pax.logging,org.apache.commons.logging.internal,org.osgi.framew
  ork";version=1.0.4
-Bundle-Version: 0.9.3.SNAPSHOT
+Bundle-Version: 0.9.4.SNAPSHOT
 Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/jc
  l
 Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-ManifestVersion: 2
 Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2006-Aug-14 15:33 CEST
+Bundle-Date: 2006-Aug-20 22:31 CEST
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: org.apache.commons.logging, org.ops4j.pax.logging, org.o
  sgi.framework
