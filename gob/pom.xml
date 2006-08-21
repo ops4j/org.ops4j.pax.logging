@@ -12,7 +12,7 @@
   <version>0.9.4-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
-    The GOB (Group of Bundles) for Pax Logging. Used by the Gobilator.
+    The Group of Bundles for Pax Logging. Can be used by Pax Runner.
   </description>
   <dependencies>
     <dependency>
