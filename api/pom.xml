@@ -3,13 +3,13 @@
   <parent>
     <artifactId>logging</artifactId>
     <groupId>org.ops4j.pax</groupId>
-    <version>0.9.4</version>
+    <version>0.9.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>api</artifactId>
   <name>Pax Logging API</name>
-  <version>0.9.4</version>
+  <version>0.9.5-SNAPSHOT</version>
   <packaging>osgi-bundle</packaging>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
