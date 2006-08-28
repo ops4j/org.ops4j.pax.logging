@@ -11,7 +11,7 @@ Bundle-ContactAddress: http://www.ops4j.org/
 Bundle-Date: 2006-Aug-21 21:07 CEST
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: javax.xml.parsers, org.knopflerfish.service.log, org.ops
- 4j.pax.logging, org.ops4j.pax.logging.spi, org.osgi.framework, org.osgi
+ 4j.pax.logging, org.osgi.framework, org.osgi
  .service.cm, org.osgi.service.log, org.w3c.dom, org.xml.sax, org.xml.sa
  x.helpers
 Bundle-Name: Pax Logging Service
