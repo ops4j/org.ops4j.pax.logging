@@ -32,6 +32,7 @@
       <artifactId>osgi_R4_core</artifactId>
       <scope>provided</scope>
     </dependency>
+
   </dependencies>
   <properties>
     <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
