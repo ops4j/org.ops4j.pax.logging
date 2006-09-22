@@ -23,6 +23,8 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
+import java.util.WeakHashMap;
+import java.util.Map;
 
 /**
  * This is the central class in the log4j package. Most logging
@@ -67,16 +69,30 @@ public class Logger
 
     private PaxLogger m_delegate;
     private static PaxLoggingManager m_paxLogging;
+    private static WeakHashMap<Logger, String> m_loggers;
 
     static
     {
+        m_loggers = new WeakHashMap<Logger, String>();
         m_paxLogging = new SimplePaxLoggingManager();
     }
 
     public static void setBundleContext( BundleContext ctx )
     {
         m_paxLogging = new OSGIPaxLoggingManager( ctx );
+        // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
+        for( Map.Entry<Logger,String> entry: m_loggers.entrySet() )
+        {
+            Logger logger = entry.getKey();
+            String name = entry.getValue();
+            logger.setPaxLoggingManager( m_paxLogging, name );
+        }
         m_paxLogging.open();
+    }
+
+    private void setPaxLoggingManager( PaxLoggingManager loggingManager, String name )
+    {
+        m_delegate = loggingManager.getLogger( name );
     }
 
     /**
@@ -117,8 +133,10 @@ public class Logger
      */
     public static Logger getLogger( String name )
     {
-        PaxLogger logger = m_paxLogging.getLogger( name );
-        return new Logger( logger );
+        PaxLogger paxLogger = m_paxLogging.getLogger( name );
+        Logger logger = new Logger( paxLogger );
+        m_loggers.put( logger, name );
+        return logger;
     }
 
     /**

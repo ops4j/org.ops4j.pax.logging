@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.impl.MessageFormatter;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
 
 public class Slf4jLogger
     implements Logger
@@ -811,5 +812,10 @@ public class Slf4jLogger
         {
             m_delegate.error( msg, t );
         }
+    }
+
+    void setPaxLoggingManager( PaxLoggingManager loggingManager, String name )
+    {
+        m_delegate = loggingManager.getLogger( name );
     }
 }

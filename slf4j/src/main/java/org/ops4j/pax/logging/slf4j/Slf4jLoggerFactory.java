@@ -24,21 +24,32 @@ import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
+import java.util.WeakHashMap;
+import java.util.Map;
 
 public class Slf4jLoggerFactory
     implements ILoggerFactory
 {
 
     private static PaxLoggingManager m_paxLogging;
+    private static WeakHashMap<Slf4jLogger,String> m_loggers;
 
     static
     {
+        m_loggers = new WeakHashMap<Slf4jLogger, String>();
         m_paxLogging = new SimplePaxLoggingManager();
     }
 
     public static void setBundleContext( BundleContext context )
     {
         m_paxLogging = new OSGIPaxLoggingManager( context );
+        // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
+        for( Map.Entry<Slf4jLogger, String> entry : m_loggers.entrySet() )
+        {
+            String name = entry.getValue();
+            Slf4jLogger logger = entry.getKey();
+            logger.setPaxLoggingManager( m_paxLogging, name );
+        }
         m_paxLogging.open();
     }
 
@@ -64,7 +75,9 @@ public class Slf4jLoggerFactory
      */
     public Logger getLogger( String name )
     {
-        PaxLogger logger = m_paxLogging.getLogger( name );
-        return new Slf4jLogger( name, logger );
+        PaxLogger paxLogger = m_paxLogging.getLogger( name );
+        Slf4jLogger logger = new Slf4jLogger( name, paxLogger );
+        m_loggers.put( logger, name );
+        return logger;
     }
 }

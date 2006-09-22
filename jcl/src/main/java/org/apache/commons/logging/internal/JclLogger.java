@@ -13,16 +13,18 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.apache.commons.logging.internal;
 
-import org.ops4j.pax.logging.PaxLogger;
 import org.apache.commons.logging.Log;
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
 
 public class JclLogger
     implements Log
 {
+
     private PaxLogger m_delegate;
 
     public JclLogger( PaxLogger delegate )
@@ -180,5 +182,16 @@ public class JclLogger
     public int getLogLevel()
     {
         return m_delegate.getLogLevel();
+    }
+
+    /**
+     * Not a public method.
+     *
+     * @param paxLoggingManager
+     * @param name
+     */
+    public void setPaxLoggingManager( PaxLoggingManager paxLoggingManager, String name )
+    {
+        m_delegate = paxLoggingManager.getLogger( name );
     }
 }

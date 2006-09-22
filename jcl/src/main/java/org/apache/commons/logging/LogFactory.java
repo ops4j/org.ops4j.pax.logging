@@ -29,6 +29,8 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.apache.commons.logging.internal.JclLogger;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * This is an adaptation of the Jakarta Commons Logging API for
@@ -88,16 +90,24 @@ public class LogFactory
 
     private static LogFactory m_Instance;
     private static PaxLoggingManager m_paxLogging;
+    private static WeakHashMap<JclLogger, String> m_loggers;
 
     static
     {
         m_Instance = new LogFactory();
         m_paxLogging = new SimplePaxLoggingManager();
+        m_loggers = new WeakHashMap<JclLogger, String>();
     }
 
     public static void setBundleContext( BundleContext ctx )
     {
         m_paxLogging = new OSGIPaxLoggingManager( ctx );
+        for( Map.Entry<JclLogger,String> entry: m_loggers.entrySet() )
+        {
+            JclLogger logger = entry.getKey();
+            String name = entry.getValue();
+            logger.setPaxLoggingManager( m_paxLogging, name );
+        }
         m_paxLogging.open();
     }
 
@@ -229,7 +239,9 @@ public class LogFactory
         throws LogConfigurationException
     {
         PaxLogger logger = m_paxLogging.getLogger( name );
-        return new JclLogger( logger );
+        JclLogger jclLogger = new JclLogger( logger );
+        m_loggers.put( jclLogger, name );
+        return jclLogger;
     }
 
     /**

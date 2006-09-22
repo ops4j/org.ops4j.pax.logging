@@ -225,4 +225,5 @@ public interface Log
      * </pre>
      */
     int getLogLevel();
+
 }

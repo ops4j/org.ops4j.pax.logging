@@ -19,10 +19,12 @@ package org.ops4j.pax.logging.avalon;
 
 import org.apache.avalon.framework.logger.Logger;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
 
 public class AvalonLogger
     implements Logger
 {
+
     private String m_name;
     private PaxLogger m_delegate;
 
@@ -115,5 +117,10 @@ public class AvalonLogger
     public String getName()
     {
         return m_name;
+    }
+
+    void setPaxLoggingManager( PaxLoggingManager paxLoggingManager, String name )
+    {
+        m_delegate = paxLoggingManager.getLogger( name );
     }
 }
