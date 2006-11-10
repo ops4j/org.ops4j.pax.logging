@@ -14,9 +14,9 @@ import java.util.Set;
 
 import org.osgi.framework.Bundle;
 import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.service.cm.ManagedService;
 
-public class ManagedLoggingServiceFactory implements ManagedServiceFactory
+public class LoggingServiceConfiguration implements ManagedService
 {
     /**
      * Dictonary key
@@ -43,7 +43,7 @@ public class ManagedLoggingServiceFactory implements ManagedServiceFactory
      */
     private boolean m_IsUsingGlobal;
     
-    public ManagedLoggingServiceFactory( ConfigFactory configFactory )
+    public LoggingServiceConfiguration( ConfigFactory configFactory )
     {
         m_ConfigFactory = configFactory;
         m_MergedProperties = new Properties();
@@ -101,7 +101,7 @@ public class ManagedLoggingServiceFactory implements ManagedServiceFactory
 
                 Set set = properties.keySet();
                 Iterator itr = set.iterator();
-                Map newProperties = new HashMap();
+                Map<String, Object> newProperties = new HashMap<String, Object>();
                 while( itr.hasNext() )
                 {
                     String origKey = (String) itr.next();
@@ -206,18 +206,13 @@ public class ManagedLoggingServiceFactory implements ManagedServiceFactory
         m_ConfigFactory.configure( m_MergedProperties );
     }
 
-    public String getName()
-    {
-        return "Pax Logging";
-    }
-
     /**
      * Overwrites all the LogService properties using the Log4J properties specified
      * in this configuration.
      *
      * @see org.osgi.service.cm.ManagedServiceFactory#updated(String, java.util.Dictionary)
      */
-    public void updated( String pid, Dictionary configuration )
+    public void updated( Dictionary configuration )
         throws ConfigurationException
     {
         if( configuration == null )
@@ -232,10 +227,5 @@ public class ManagedLoggingServiceFactory implements ManagedServiceFactory
             return;
         }
         usePropertiesInURL( configFile );
-    }
-
-    public void deleted( String pid )
-    {
-        useGlobalProperties();
     }
 }

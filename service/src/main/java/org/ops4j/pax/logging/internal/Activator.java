@@ -26,7 +26,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ManagedServiceFactory;
+import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogService;
 
 /**
@@ -63,8 +63,8 @@ public class Activator
         // register the Pax Logging service
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
         PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl();
-        final ManagedLoggingServiceFactory managedServiceFactory = new ManagedLoggingServiceFactory( configFactory );
-        final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( managedServiceFactory, paxLogging );
+        final LoggingServiceConfiguration loggingServiceConfig = new LoggingServiceConfiguration( configFactory );
+        final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( loggingServiceConfig, paxLogging );
 
         String[] services =
             {
@@ -75,10 +75,10 @@ public class Activator
 
         Hashtable<String,String> srProperties = new Hashtable<String, String>();
         m_RegistrationPaxLogging = bundleContext.registerService( services, loggingServiceFactory, srProperties );
-        // Register the managed service factory
-        Hashtable<String,String> msfProperties = new Hashtable<String, String>();
-        msfProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );        
-        bundleContext.registerService( ManagedServiceFactory.class.getName(), managedServiceFactory, msfProperties );
+        // Register the logging service configuration
+        Hashtable<String,String> configProperties = new Hashtable<String, String>();
+        configProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );        
+        bundleContext.registerService( ManagedService.class.getName(), loggingServiceConfig, configProperties );
         // Add a global handler for all JDK Logging (java.util.logging).
         m_JdkHandler = new JdkHandler( paxLogging );
         Logger rootLogger = LogManager.getLogManager().getLogger( "" );
