@@ -90,6 +90,6 @@ public class PaxLoggingServiceImpl
     public void updated( Dictionary dictionary )
         throws ConfigurationException
     {
-
+        System.out.println( "I AM CALLED" );
     }
 }

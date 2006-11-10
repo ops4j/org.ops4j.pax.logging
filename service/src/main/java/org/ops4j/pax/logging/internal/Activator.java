@@ -20,12 +20,13 @@ package org.ops4j.pax.logging.internal;
 import java.util.Hashtable;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ManagedService;
+import org.osgi.service.cm.ManagedServiceFactory;
 import org.osgi.service.log.LogService;
 
 /**
@@ -62,20 +63,22 @@ public class Activator
         // register the Pax Logging service
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
         PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl();
-        final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( configFactory, paxLogging );
+        final ManagedLoggingServiceFactory managedServiceFactory = new ManagedLoggingServiceFactory( configFactory );
+        final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( managedServiceFactory, paxLogging );
 
         String[] services =
             {
                 LogService.class.getName(),
                 org.knopflerfish.service.log.LogService.class.getName(),
                 PaxLoggingService.class.getName(),
-                ManagedService.class.getName()
             };
 
-        Hashtable<String,String> properties = new Hashtable<String, String>();
-        properties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
-        m_RegistrationPaxLogging = bundleContext.registerService( services, loggingServiceFactory, properties );
-
+        Hashtable<String,String> srProperties = new Hashtable<String, String>();
+        m_RegistrationPaxLogging = bundleContext.registerService( services, loggingServiceFactory, srProperties );
+        // Register the managed service factory
+        Hashtable<String,String> msfProperties = new Hashtable<String, String>();
+        msfProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );        
+        bundleContext.registerService( ManagedServiceFactory.class.getName(), managedServiceFactory, msfProperties );
         // Add a global handler for all JDK Logging (java.util.logging).
         m_JdkHandler = new JdkHandler( paxLogging );
         Logger rootLogger = LogManager.getLogManager().getLogger( "" );

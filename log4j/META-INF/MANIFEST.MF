@@ -10,7 +10,7 @@ Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/lo
  g4j
 Bundle-ManifestVersion: 2
 Bundle-Vendor: OPS4J - Open Participation Software for Java
-Bundle-Date: 2006-Sep-22 16:14 MYT
+Bundle-Date: 2006-Nov-01 19:33 SGT
 Bundle-ContactAddress: http://www.ops4j.org/
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: javax.xml.parsers,org.ops4j.pax.logging,org.osgi.framewo
