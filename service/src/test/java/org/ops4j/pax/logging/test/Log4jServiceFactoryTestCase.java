@@ -23,13 +23,15 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
+
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.jmock.core.Invocation;
 import org.jmock.core.Stub;
-import org.ops4j.pax.logging.internal.ConfigFactory;
-import org.ops4j.pax.logging.internal.LoggingServiceFactory;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.internal.ConfigFactory;
+import org.ops4j.pax.logging.internal.LoggingServiceConfiguration;
+import org.ops4j.pax.logging.internal.LoggingServiceFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -48,25 +50,26 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         Mock configFactory = new Mock( ConfigFactory.class );
         BasicConfigureStub stub = new BasicConfigureStub();
         configFactory.expects( atLeastOnce() ).method( "configure" ).with( NOT_NULL ).will( stub );
-
+        
+        LoggingServiceConfiguration loggingConfig = new LoggingServiceConfiguration( (ConfigFactory) configFactory.proxy() );
         ResourceStub resourceStub = new ResourceStub();
 
         Mock bundle1 = new Mock( Bundle.class );
         Hashtable<String, String> dictionary = new Hashtable<String, String>();
-        dictionary.put( LoggingServiceFactory.LOG4J_LOGGER_NAME, "bundle1" );
-        dictionary.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
+        dictionary.put( LoggingServiceConfiguration.LOG4J_LOGGER_NAME, "bundle1" );
+        dictionary.put( LoggingServiceConfiguration.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
         bundle1.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary ) );
         bundle1.expects( once() ).method( "getResource" ).will( resourceStub );
         Bundle bundle = (Bundle) bundle1.proxy();
         ServiceRegistration serviceRegistration = new TestServiceRegistration( bundle );
         PaxLoggingService paxLogging = (PaxLoggingService) new Mock( PaxLoggingService.class  ).proxy();
-        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy(), paxLogging );
+        LoggingServiceFactory factory = new LoggingServiceFactory( loggingConfig, paxLogging );
         factory.getService( (Bundle) bundle1.proxy(), serviceRegistration );
 
         Mock bundle2 = new Mock( Bundle.class );
         Hashtable<String, String> dictionary2 = new Hashtable<String, String>();
-        dictionary2.put( LoggingServiceFactory.LOG4J_LOGGER_NAME, "bundle2" );
-        dictionary2.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "./bundle2_log4j.properties" );
+        dictionary2.put( LoggingServiceConfiguration.LOG4J_LOGGER_NAME, "bundle2" );
+        dictionary2.put( LoggingServiceConfiguration.LOG4J_CONFIG_FILE, "./bundle2_log4j.properties" );
         bundle2.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary2 ) );
         bundle2.expects( once() ).method( "getResource" ).will( resourceStub );
         factory.getService( (Bundle) bundle2.proxy(), serviceRegistration );
@@ -82,33 +85,34 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         Mock configFactory = new Mock( ConfigFactory.class );
         GlobalConfigureStub stub = new GlobalConfigureStub();
         configFactory.expects( atLeastOnce() ).method( "configure" ).with( NOT_NULL ).will( stub );
+        LoggingServiceConfiguration loggingConfig = new LoggingServiceConfiguration( (ConfigFactory) configFactory.proxy() );
 
         ResourceStub resourceStub = new ResourceStub();
 
         // ML - Aug 15, 2005: Test using the basic configuration
         Mock bundle1 = new Mock( Bundle.class );
         Hashtable<String,String> dictionary = new Hashtable<String, String>();
-        dictionary.put( LoggingServiceFactory.LOG4J_LOGGER_NAME, "bundle1" );
-        dictionary.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
+        dictionary.put( LoggingServiceConfiguration.LOG4J_LOGGER_NAME, "bundle1" );
+        dictionary.put( LoggingServiceConfiguration.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
         bundle1.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary ) );
         bundle1.expects( once() ).method( "getResource" ).will( resourceStub );
         Bundle bundle = (Bundle) bundle1.proxy();
         ServiceRegistration serviceRegistration = new TestServiceRegistration( bundle );
         PaxLoggingService paxLogging = (PaxLoggingService) new Mock( PaxLoggingService.class  ).proxy();
-        LoggingServiceFactory factory = new LoggingServiceFactory( (ConfigFactory) configFactory.proxy(), paxLogging );
+        LoggingServiceFactory factory = new LoggingServiceFactory( loggingConfig, paxLogging );
         factory.getService( bundle, serviceRegistration );
-        factory.updated( "", null );
+        loggingConfig.updated( null );
 
         // ML - Aug 15, 2005: Test using the global configuration
         String fileName = getClass().getClassLoader().getResource( "./global_log4j.properties" ).toString();
         Hashtable<String, String> configuration = new Hashtable<String, String>();
-        configuration.put( LoggingServiceFactory.LOG4J_CONFIG_FILE, fileName );
+        configuration.put( LoggingServiceConfiguration.LOG4J_CONFIG_FILE, fileName );
         stub.setState( 10 );
-        factory.updated( "", configuration );
+        loggingConfig.updated( configuration );
 
         // ML - Aug 15, 2005: Test reseting the global configuration
         stub.setState( 20 );
-        factory.updated( "", null );
+        loggingConfig.updated( null );
 
         configFactory.verify();
         bundle1.verify();
