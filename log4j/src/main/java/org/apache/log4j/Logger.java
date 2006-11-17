@@ -874,4 +874,32 @@ public class Logger
             m_delegate.warn( msgStr, null );
         }
     }
+
+    /**
+     * Log a message with the code level priority.
+     * @param priority, the code level of the message
+     * @param msg the message object to log.
+     */
+
+        public void log(Priority priority, Object  msg)
+    {
+	if(priority == Level.FATAL){
+	    this.fatal(msg);
+	}
+	if(priority == Level.ERROR){
+	    this.error(msg);
+	}
+	if(priority == Level.WARN){
+	    this.warn(msg);
+	}
+	if(priority == Level.INFO){
+	    this.info(msg);
+	}
+	if(priority == Level.DEBUG){
+	    this.debug(msg);
+	}
+	if(priority == Level.ALL){
+	    this.trace(msg);
+	}
+    }
 }
