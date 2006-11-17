@@ -25,6 +25,7 @@
     <module>log4j</module>
     <module>service</module>
     <module>slf4j</module>
+    <module>log4jclient</module>
   </modules>
   <dependencyManagement>
     <dependencies>

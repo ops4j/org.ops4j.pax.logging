@@ -1,4 +1,5 @@
 Bundle-Activator: org.ops4j.pax.logging.internal.Activator
+Bundle-Classpath: .,log4j-1.2.13.jar
 Export-Package: org.ops4j.pax.logging.spi;provider=paxlogging;version=1.
  0
 Bundle-Version: 0.9.5.SNAPSHOT
@@ -7,7 +8,7 @@ Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/se
 Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-ManifestVersion: 2
 Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2006-Nov-13 19:21 SGT
+Bundle-Date: 2006-Nov-17 16:31 CET
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: javax.xml.parsers, org.knopflerfish.service.log, org.ops
  4j.pax.logging, org.ops4j.pax.logging.spi, org.osgi.framework, org.osgi
@@ -19,6 +20,4 @@ Bundle-Description: Pax Logging Service is a Log4J driven service that s
  ogging clients. Note that all this clients must use the Pax Logging Cli
  ent library in the proper way. See documentation for details.
 Bundle-SymbolicName: org.ops4j.pax.logging.service
-Bundle-ClassPath: .,
- target/classes/log4j-1.2.13.jar
 
