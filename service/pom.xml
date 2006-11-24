@@ -43,7 +43,7 @@
     </dependency>
   </dependencies>
   <properties>
-    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
+    <!--osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest-->
     <osgi-BundleActivator>org.ops4j.pax.logging.internal.Activator</osgi-BundleActivator>
     <osgi-IgnorePackage>
       <!-- Do we want to disable Java Mail delivery??? -->
