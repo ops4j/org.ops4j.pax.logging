@@ -51,6 +51,7 @@ public class LoggingServiceFactory
      * Constructor
      *
      * @param config the Configuration Factory to use
+     * @param paxLogging reference to the Service instance.
      */
     public LoggingServiceFactory( LoggingServiceConfiguration config, PaxLoggingService paxLogging  )
     {

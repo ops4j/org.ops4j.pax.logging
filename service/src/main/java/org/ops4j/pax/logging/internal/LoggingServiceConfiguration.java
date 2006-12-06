@@ -16,7 +16,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 
-public class LoggingServiceConfiguration implements ManagedService
+public class LoggingServiceConfiguration
+    implements ManagedService
 {
     /**
      * Dictonary key
@@ -42,7 +43,7 @@ public class LoggingServiceConfiguration implements ManagedService
      * or the merged log4j properties.
      */
     private boolean m_IsUsingGlobal;
-    
+
     public LoggingServiceConfiguration( ConfigFactory configFactory )
     {
         m_ConfigFactory = configFactory;
@@ -62,6 +63,7 @@ public class LoggingServiceConfiguration implements ManagedService
      * @param bundle         the bundle that contains the log4j configuration in it's classpath
      * @param loggerName     the loggers name to use
      * @param configFileName the location of the log4j config file
+     * @throws java.io.IOException if an I/O problem occurs.
      */
     void mergeProperties( Bundle bundle, String loggerName, String configFileName )
         throws IOException
