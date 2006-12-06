@@ -1,34 +1,16 @@
-<?xml version="1.0"?><project>
-  <!--<parent>
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
     <artifactId>logging</artifactId>
     <groupId>org.ops4j.pax</groupId>
     <version>0.9.5-SNAPSHOT</version>
-  </parent>-->
+  </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax</groupId>
   <artifactId>log4jclient</artifactId>
   <packaging>osgi-bundle</packaging>
   <name>log4jClient Bundle</name>
   <version>0.1</version>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix.plugins</groupId>
-        <artifactId>maven-osgi-plugin</artifactId>
-        <version>0.8.0-SNAPSHOT</version>
-        <extensions>true</extensions>
-        <configuration>
-          <osgiManifest>
-            <bundleActivator>auto-detect</bundleActivator>	    
-            <bundleName>log4jClient</bundleName>
-            <Bundle-SymbolicName>log4jclient</Bundle-SymbolicName>
-            <bundleDescription>An OSGi bundle</bundleDescription>
-            <bundleVendor>PParrend</bundleVendor>
-          </osgiManifest>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -37,9 +19,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.felix</groupId>
-      <artifactId>org.osgi.core</artifactId>
-      <version>0.8.0-SNAPSHOT</version>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi_R4_core</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
