@@ -14,5 +14,8 @@
     <orderEntry type="library" name="osgi_R4_compendium-1.0" level="project" />
     <orderEntryProperties />
   </component>
+  <component name="PluginUploader.UploadConfigurable">
+    <option name="_archivePath" />
+  </component>
 </module>
 

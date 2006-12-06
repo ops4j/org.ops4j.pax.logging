@@ -20,5 +20,8 @@
     <orderEntry type="module" module-name="avalon" />
     <orderEntryProperties />
   </component>
+  <component name="PluginUploader.UploadConfigurable">
+    <option name="_archivePath" />
+  </component>
 </module>
 

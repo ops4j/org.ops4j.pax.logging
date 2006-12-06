@@ -47,8 +47,6 @@
   <component name="CodeStyleProjectProfileManger">
     <option name="PROJECT_PROFILE" />
     <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
-    <scopes />
-    <profiles />
   </component>
   <component name="CodeStyleSettingsManager">
     <option name="PER_PROJECT_SETTINGS">
@@ -208,7 +206,7 @@
     <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />
     <scopes />
     <profiles>
-      <profile version="1.0">
+      <profile version="1.0" is_locked="false">
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
         <used_levels>
@@ -427,12 +425,14 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/api/api.iml" filepath="$PROJECT_DIR$/api/api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appenders/publish/appender-publish.iml" filepath="$PROJECT_DIR$/appenders/publish/appender-publish.iml" />
       <module fileurl="file://$PROJECT_DIR$/avalon/avalon.iml" filepath="$PROJECT_DIR$/avalon/avalon.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/docs.iml" filepath="$PROJECT_DIR$/src/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
       <module fileurl="file://$PROJECT_DIR$/gob/gob.iml" filepath="$PROJECT_DIR$/gob/gob.iml" />
       <module fileurl="file://$PROJECT_DIR$/jcl/jcl.iml" filepath="$PROJECT_DIR$/jcl/jcl.iml" />
       <module fileurl="file://$PROJECT_DIR$/log4j/log4j.iml" filepath="$PROJECT_DIR$/log4j/log4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/log4jclient/log4jclient.iml" filepath="$PROJECT_DIR$/log4jclient/log4jclient.iml" />
       <module fileurl="file://$PROJECT_DIR$/service/service.iml" filepath="$PROJECT_DIR$/service/service.iml" />
       <module fileurl="file://$PROJECT_DIR$/slf4j/slf4j.iml" filepath="$PROJECT_DIR$/slf4j/slf4j.iml" />
     </modules>
@@ -448,6 +448,13 @@
   </component>
   <component name="StarteamVcsAdapter" />
   <component name="VssVcs" />
+  <component name="com.intellij.jsf.UserDefinedFacesConfigs">
+    <option name="USER_DEFINED_CONFIGS">
+      <value>
+        <list size="0" />
+      </value>
+    </option>
+  </component>
   <component name="libraryTable">
     <library name="log4j-1.2.13">
       <CLASSES>
@@ -513,6 +520,8 @@
     <option name="COPY_FORMS_RUNTIME_TO_OUTPUT" value="true" />
     <option name="DEFAULT_LAYOUT_MANAGER" value="GridLayoutManager" />
   </component>
-  <UsedPathMacros />
+  <UsedPathMacros>
+    <macro name="M2_REPO" />
+  </UsedPathMacros>
 </project>
 

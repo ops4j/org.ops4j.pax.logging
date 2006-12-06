@@ -9,5 +9,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntryProperties />
   </component>
+  <component name="PluginUploader.UploadConfigurable">
+    <option name="_archivePath" />
+  </component>
 </module>
 
