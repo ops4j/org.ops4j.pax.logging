@@ -17,6 +17,8 @@
  */
 package org.ops4j.pax.logging.slf4j;
 
+import java.util.Map;
+import java.util.WeakHashMap;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -24,8 +26,6 @@ import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
-import java.util.WeakHashMap;
-import java.util.Map;
 
 public class Slf4jLoggerFactory
     implements ILoggerFactory
