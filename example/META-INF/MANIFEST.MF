@@ -1,17 +1,17 @@
-Bundle-Version: 0.9.5.SNAPSHOT
+Bundle-Vendor: OPS4J - Open Participation Software for Java
+Bundle-ContactAddress: http://www.ops4j.org/
+Bundle-Name: Pax Logging Example
 Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/ex
  ample
-Bundle-ManifestVersion: 2
-Bundle-Vendor: OPS4J - Open Participation Software for Java
-Bundle-Date: 2006-Dec-06 12:27 MYT
-Bundle-ContactAddress: http://www.ops4j.org/
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
+Bundle-Date: 2007-Jan-30 10:57 SGT
+Bundle-Description: A simple example of using the Pax Logging system.
 Import-Package: javax.servlet, javax.servlet.http, javax.xml.parsers, or
  g.apache.avalon.framework.logger, org.apache.commons.logging, org.apach
  e.log4j, org.ops4j.pax.logging.avalon, org.osgi.framework, org.slf4j, o
  rg.xml.sax, org.xml.sax.helpers
-Bundle-Name: Pax Logging Example
-Bundle-Classpath: .,org.mortbay.jetty-5.1.0.jar
-Bundle-Description: A simple example of using the Pax Logging system.
 Bundle-SymbolicName: org.ops4j.pax.logging.example
+Bundle-Classpath: .,org.mortbay.jetty-5.1.0.jar
+Bundle-Version: 0.9.5.SNAPSHOT
+Bundle-ManifestVersion: 2
 
