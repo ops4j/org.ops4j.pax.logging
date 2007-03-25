@@ -24,16 +24,16 @@ import org.ops4j.pax.logging.internal.DefaultServiceLog;
 public class SimplePaxLoggingManager
     implements PaxLoggingManager
 {
-    private final Map<String, PaxLogger> m_category_Logger;
+    private final Map m_category_Logger;
 
     public SimplePaxLoggingManager()
     {
-        m_category_Logger = new HashMap<String, PaxLogger>();
+        m_category_Logger = new HashMap();
     }
 
     public PaxLogger getLogger( String category )
     {
-        PaxLogger paxLogger = m_category_Logger.get( category );
+        PaxLogger paxLogger = (PaxLogger) m_category_Logger.get( category );
 
         if( paxLogger == null )
         {

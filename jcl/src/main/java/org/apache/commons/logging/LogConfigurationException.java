@@ -31,9 +31,10 @@ package org.apache.commons.logging;
 * @author Craig R. McClanahan
 * @version $Revision: 1.6 $ $Date: 2004/02/28 21:46:45 $
 */
-
 public class LogConfigurationException extends RuntimeException
 {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Construct a new exception with <code>null</code> as its detail message.
      */

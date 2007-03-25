@@ -73,10 +73,10 @@ public class Activator
                 PaxLoggingService.class.getName(),
             };
 
-        Hashtable<String,String> srProperties = new Hashtable<String, String>();
+        Hashtable srProperties = new Hashtable();
         m_RegistrationPaxLogging = bundleContext.registerService( services, loggingServiceFactory, srProperties );
         // Register the logging service configuration
-        Hashtable<String,String> configProperties = new Hashtable<String, String>();
+        Hashtable configProperties = new Hashtable();
         configProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );        
         bundleContext.registerService( ManagedService.class.getName(), loggingServiceConfig, configProperties );
         // Add a global handler for all JDK Logging (java.util.logging).

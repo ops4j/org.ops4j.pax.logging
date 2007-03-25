@@ -55,7 +55,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         ResourceStub resourceStub = new ResourceStub();
 
         Mock bundle1 = new Mock( Bundle.class );
-        Hashtable<String, String> dictionary = new Hashtable<String, String>();
+        Hashtable dictionary = new Hashtable();
         dictionary.put( LoggingServiceConfiguration.LOG4J_LOGGER_NAME, "bundle1" );
         dictionary.put( LoggingServiceConfiguration.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
         bundle1.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary ) );
@@ -67,7 +67,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
         factory.getService( (Bundle) bundle1.proxy(), serviceRegistration );
 
         Mock bundle2 = new Mock( Bundle.class );
-        Hashtable<String, String> dictionary2 = new Hashtable<String, String>();
+        Hashtable dictionary2 = new Hashtable();
         dictionary2.put( LoggingServiceConfiguration.LOG4J_LOGGER_NAME, "bundle2" );
         dictionary2.put( LoggingServiceConfiguration.LOG4J_CONFIG_FILE, "./bundle2_log4j.properties" );
         bundle2.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary2 ) );
@@ -91,7 +91,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
 
         // ML - Aug 15, 2005: Test using the basic configuration
         Mock bundle1 = new Mock( Bundle.class );
-        Hashtable<String,String> dictionary = new Hashtable<String, String>();
+        Hashtable dictionary = new Hashtable();
         dictionary.put( LoggingServiceConfiguration.LOG4J_LOGGER_NAME, "bundle1" );
         dictionary.put( LoggingServiceConfiguration.LOG4J_CONFIG_FILE, "./bundle1_log4j.properties" );
         bundle1.expects( atLeastOnce() ).method( "getHeaders" ).will( returnValue( dictionary ) );
@@ -105,7 +105,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
 
         // ML - Aug 15, 2005: Test using the global configuration
         String fileName = getClass().getClassLoader().getResource( "./global_log4j.properties" ).toString();
-        Hashtable<String, String> configuration = new Hashtable<String, String>();
+        Hashtable configuration = new Hashtable();
         configuration.put( LoggingServiceConfiguration.LOG4J_CONFIG_FILE, fileName );
         stub.setState( 10 );
         loggingConfig.updated( configuration );
@@ -318,14 +318,14 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
     {
 
         private Bundle m_bundle;
-        private Dictionary<String,Object> m_Properties;
+        private Dictionary m_Properties;
 
         public TestReference( Bundle bundle )
         {
             m_bundle = bundle;
         }
 
-        void setProperties( Dictionary<String,Object> props )
+        void setProperties( Dictionary props )
         {
             m_Properties = props;
         }

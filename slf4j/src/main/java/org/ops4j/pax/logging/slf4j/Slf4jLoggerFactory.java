@@ -17,8 +17,12 @@
  */
 package org.ops4j.pax.logging.slf4j;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.Map.Entry;
+
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -32,11 +36,11 @@ public class Slf4jLoggerFactory
 {
 
     private static PaxLoggingManager m_paxLogging;
-    private static WeakHashMap<Slf4jLogger,String> m_loggers;
+    private static WeakHashMap m_loggers;
 
     static
     {
-        m_loggers = new WeakHashMap<Slf4jLogger, String>();
+        m_loggers = new WeakHashMap();
         m_paxLogging = new SimplePaxLoggingManager();
     }
 
@@ -44,10 +48,13 @@ public class Slf4jLoggerFactory
     {
         m_paxLogging = new OSGIPaxLoggingManager( context );
         // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-        for( Map.Entry<Slf4jLogger, String> entry : m_loggers.entrySet() )
+        Set entrySet = m_loggers.entrySet();
+        Iterator iterator = entrySet.iterator();
+        while( iterator.hasNext() )
         {
-            String name = entry.getValue();
-            Slf4jLogger logger = entry.getKey();
+            Map.Entry entry = (Entry) iterator.next();
+            String name = (String) entry.getValue();
+            Slf4jLogger logger = (Slf4jLogger) entry.getKey();
             logger.setPaxLoggingManager( m_paxLogging, name );
         }
         m_paxLogging.open();

@@ -4,7 +4,7 @@ Bundle-Name: Pax Logging Example
 Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/ex
  ample
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
-Bundle-Date: 2007-Jan-30 10:57 SGT
+Bundle-Date: 2007-Mar-25 12:02 MYT
 Bundle-Description: A simple example of using the Pax Logging system.
 Import-Package: javax.servlet, javax.servlet.http, javax.xml.parsers, or
  g.apache.avalon.framework.logger, org.apache.commons.logging, org.apach

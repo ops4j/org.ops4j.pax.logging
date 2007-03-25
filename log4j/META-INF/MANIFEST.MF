@@ -2,7 +2,7 @@ Bundle-Activator: org.apache.log4j.internal.Activator
 Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/lo
  g4j
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
-Bundle-Date: 2007-Jan-30 10:57 SGT
+Bundle-Date: 2007-Mar-25 12:02 MYT
 Bundle-Description: Pax Logging Log4J Support is a bundle that enables s
  upport for Log4J and connecting the API to the Pax Logging Service. See
   documentation for details.

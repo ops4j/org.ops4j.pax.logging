@@ -23,27 +23,34 @@ import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
+
+import java.util.Iterator;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class AvalonLogFactory
 {
 
     private static PaxLoggingManager m_paxLogging;
-    private static WeakHashMap<AvalonLogger, String> m_loggers;
+    private static WeakHashMap m_loggers;
     static
     {
         m_paxLogging = new SimplePaxLoggingManager();
-        m_loggers = new WeakHashMap<AvalonLogger, String>();
+        m_loggers = new WeakHashMap();
     }
 
     public static void setBundleContext( BundleContext context )
     {
         m_paxLogging = new OSGIPaxLoggingManager( context );
-        for( Map.Entry<AvalonLogger,String> entry: m_loggers.entrySet() )
+        Set entrySet = m_loggers.entrySet();
+        Iterator iterator = entrySet.iterator();
+        while( iterator.hasNext() )
         {
-            AvalonLogger logger = entry.getKey();
-            String name = entry.getValue();
+            Map.Entry entry = (Entry) iterator.next();
+            AvalonLogger logger = (AvalonLogger) entry.getKey();
+            String name = (String) entry.getValue();
             logger.setPaxLoggingManager( m_paxLogging, name );
         }
         m_paxLogging.open();

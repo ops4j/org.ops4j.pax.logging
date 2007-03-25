@@ -103,7 +103,7 @@ public class LoggingServiceConfiguration
 
                 Set set = properties.keySet();
                 Iterator itr = set.iterator();
-                Map<String, Object> newProperties = new HashMap<String, Object>();
+                Map newProperties = new HashMap();
                 while( itr.hasNext() )
                 {
                     String origKey = (String) itr.next();

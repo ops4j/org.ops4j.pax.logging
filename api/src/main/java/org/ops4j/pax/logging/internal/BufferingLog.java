@@ -18,6 +18,8 @@
 package org.ops4j.pax.logging.internal;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.ops4j.pax.logging.PaxLogger;
 
 /**
@@ -27,42 +29,71 @@ public class BufferingLog
     implements PaxLogger
 {
 
-    private enum LogType
+    private static class LogType
     {
-        trace, debug, info, warn, error, fatal
+        private static final int TRACE_INT = 0;
+        private static final int DEBUG_INT = 1;
+        private static final int INFO_INT = 2;
+        private static final int WARN_INT = 3;
+        private static final int ERROR_INT = 4;
+        private static final int FATAL_INT = 5;
+        
+        private static LogType trace = new LogType( TRACE_INT );
+        private static LogType debug = new LogType( DEBUG_INT );
+        private static LogType info = new LogType( INFO_INT );
+        private static LogType warn = new LogType( WARN_INT );
+        private static LogType error = new LogType( ERROR_INT );
+        private static LogType fatal = new LogType( FATAL_INT );
+        
+        private final int m_type;
+        
+        private LogType( int type )
+        {
+            m_type = type;
+        }
+        
+        private int getType()
+        {
+            return m_type;
+        }
     }
 
-    private ArrayList<LogPackage> m_queue;
+    private ArrayList m_queue;
 
     public BufferingLog()
     {
-        m_queue = new ArrayList<LogPackage>();
+        m_queue = new ArrayList();
     }
 
     void flush( PaxLogger destination )
     {
-        for( LogPackage pack : m_queue )
+        Iterator iterator = m_queue.iterator();
+        while( iterator.hasNext() )
         {
+        LogPackage pack = (LogPackage) iterator.next();
             Throwable throwable = pack.getException();
             String message = pack.getMessage();
-            switch( pack.getType() )
+            
+            LogType logType = pack.getType();
+            int logTypeAsInt = logType.getType();
+            switch( logTypeAsInt )
             {
-                case debug:
+                case LogType.DEBUG_INT:
                     destination.debug( message, throwable );
                     break;
-                case trace:
+                case LogType.TRACE_INT:
                     destination.trace( message, throwable );
                     break;
-                case info:
+                case LogType.INFO_INT:
                     destination.inform( message, throwable );
                     break;
-                case warn:
+                case LogType.WARN_INT:
                     destination.warn( message, throwable );
                     break;
-                case error:
+                case LogType.ERROR_INT:
                     destination.error( message, throwable );
                     break;
-                case fatal:
+                case LogType.FATAL_INT:
                     destination.fatal( message, throwable );
                     break;
             }
