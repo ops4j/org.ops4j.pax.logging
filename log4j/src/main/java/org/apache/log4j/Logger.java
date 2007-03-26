@@ -17,18 +17,17 @@
 
 package org.apache.log4j;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.WeakHashMap;
 import org.apache.log4j.helpers.MessageFormatter;
+import org.ops4j.pax.logging.DefaultServiceLog;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
-
-import java.util.Iterator;
-import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * This is the central class in the log4j package. Most logging
@@ -78,7 +77,6 @@ public class Logger
     static
     {
         m_loggers = new WeakHashMap();
-        m_paxLogging = new SimplePaxLoggingManager();
     }
 
     public static void setBundleContext( BundleContext ctx )
@@ -140,7 +138,15 @@ public class Logger
      */
     public static Logger getLogger( String name )
     {
-        PaxLogger paxLogger = m_paxLogging.getLogger( name );
+        PaxLogger paxLogger;
+        if( m_paxLogging == null )
+        {
+            paxLogger = new DefaultServiceLog( name );
+        }
+        else
+        {
+            paxLogger = m_paxLogging.getLogger( name );
+        }
         Logger logger = new Logger( paxLogger );
         m_loggers.put( logger, name );
         return logger;
@@ -884,29 +890,36 @@ public class Logger
 
     /**
      * Log a message with the code level priority.
+     *
      * @param priority, the code level of the message
-     * @param msg the message object to log.
+     * @param msg       the message object to log.
      */
 
-        public void log(Priority priority, Object  msg)
+    public void log( Priority priority, Object msg )
     {
-	if(priority == Level.FATAL){
-	    this.fatal(msg);
-	}
-	if(priority == Level.ERROR){
-	    this.error(msg);
-	}
-	if(priority == Level.WARN){
-	    this.warn(msg);
-	}
-	if(priority == Level.INFO){
-	    this.info(msg);
-	}
-	if(priority == Level.DEBUG){
-	    this.debug(msg);
-	}
-	if(priority == Level.ALL){
-	    this.trace(msg);
-	}
+        if( priority == Level.FATAL )
+        {
+            this.fatal( msg );
+        }
+        if( priority == Level.ERROR )
+        {
+            this.error( msg );
+        }
+        if( priority == Level.WARN )
+        {
+            this.warn( msg );
+        }
+        if( priority == Level.INFO )
+        {
+            this.info( msg );
+        }
+        if( priority == Level.DEBUG )
+        {
+            this.debug( msg );
+        }
+        if( priority == Level.ALL )
+        {
+            this.trace( msg );
+        }
     }
 }

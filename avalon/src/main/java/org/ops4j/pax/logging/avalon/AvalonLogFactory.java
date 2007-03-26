@@ -21,7 +21,6 @@ import org.apache.avalon.framework.logger.Logger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
 
 import java.util.Iterator;
@@ -35,9 +34,9 @@ public class AvalonLogFactory
 
     private static PaxLoggingManager m_paxLogging;
     private static WeakHashMap m_loggers;
+
     static
     {
-        m_paxLogging = new SimplePaxLoggingManager();
         m_loggers = new WeakHashMap();
     }
 
@@ -82,6 +81,8 @@ public class AvalonLogFactory
             newName = parent.getName() + "." + name;
         }
         PaxLogger logger = m_paxLogging.getLogger( newName );
-        return new AvalonLogger( "", logger );
+        AvalonLogger avalonLogger = new AvalonLogger( logger );
+        m_loggers.put( logger, newName );
+        return avalonLogger;
     }
 }

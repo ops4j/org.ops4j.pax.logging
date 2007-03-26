@@ -19,6 +19,7 @@ package org.ops4j.pax.logging.internal;
 
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.DefaultServiceLog;
 
 public class TrackingLogger
     implements PaxLogger

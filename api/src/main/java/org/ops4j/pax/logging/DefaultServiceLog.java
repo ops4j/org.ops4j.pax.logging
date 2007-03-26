@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging;
 
 import org.ops4j.pax.logging.PaxLogger;
 
@@ -127,4 +127,9 @@ public class DefaultServiceLog
          // Always DEBUG mode.
          return 10000;
      }
+
+    public String getName()
+    {
+        return m_categoryName;
+    }
 }

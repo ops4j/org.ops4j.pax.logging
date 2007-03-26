@@ -432,7 +432,6 @@
       <module fileurl="file://$PROJECT_DIR$/gob/gob.iml" filepath="$PROJECT_DIR$/gob/gob.iml" />
       <module fileurl="file://$PROJECT_DIR$/jcl/jcl.iml" filepath="$PROJECT_DIR$/jcl/jcl.iml" />
       <module fileurl="file://$PROJECT_DIR$/log4j/log4j.iml" filepath="$PROJECT_DIR$/log4j/log4j.iml" />
-      <module fileurl="file://$PROJECT_DIR$/log4jclient/log4jclient.iml" filepath="$PROJECT_DIR$/log4jclient/log4jclient.iml" />
       <module fileurl="file://$PROJECT_DIR$/service/service.iml" filepath="$PROJECT_DIR$/service/service.iml" />
       <module fileurl="file://$PROJECT_DIR$/slf4j/slf4j.iml" filepath="$PROJECT_DIR$/slf4j/slf4j.iml" />
     </modules>

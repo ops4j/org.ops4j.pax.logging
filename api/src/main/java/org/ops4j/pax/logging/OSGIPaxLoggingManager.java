@@ -21,15 +21,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.ops4j.pax.logging.internal.TrackingLogger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class OSGIPaxLoggingManager
-        extends ServiceTracker
-        implements PaxLoggingManager
+public class OSGIPaxLoggingManager extends ServiceTracker
+    implements PaxLoggingManager
 {
 
     private PaxLoggingService m_service;
@@ -47,7 +45,7 @@ public class OSGIPaxLoggingManager
         m_context = context;
         // retrieve the service if any exist at this point.
         ServiceReference ref = context.getServiceReference( PaxLoggingService.class.getName() );
-        if ( ref != null )
+        if( ref != null )
         {
             m_service = (PaxLoggingService) context.getService( ref );
         }
@@ -59,7 +57,7 @@ public class OSGIPaxLoggingManager
         m_service = (PaxLoggingService) m_context.getService( reference );
         Collection values = m_loggers.values();
         Iterator iterator = values.iterator();
-        while ( iterator.hasNext() )
+        while( iterator.hasNext() )
         {
             TrackingLogger logger = (TrackingLogger) iterator.next();
             logger.added( m_service );
@@ -75,7 +73,7 @@ public class OSGIPaxLoggingManager
 
         Collection values = m_loggers.values();
         Iterator iterator = values.iterator();
-        while ( iterator.hasNext() )
+        while( iterator.hasNext() )
         {
             TrackingLogger logger = (TrackingLogger) iterator.next();
             logger.removed();
@@ -85,7 +83,7 @@ public class OSGIPaxLoggingManager
     public PaxLogger getLogger( String category )
     {
         TrackingLogger logger = (TrackingLogger) m_loggers.get( category );
-        if ( logger == null )
+        if( logger == null )
         {
             logger = new TrackingLogger( m_service, category );
             m_loggers.put( category, logger );
@@ -100,7 +98,7 @@ public class OSGIPaxLoggingManager
 
     public void dispose()
     {
-        if ( m_logServiceRef != null )
+        if( m_logServiceRef != null )
         {
             m_context.ungetService( m_logServiceRef );
         }

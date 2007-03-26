@@ -24,13 +24,10 @@ import org.ops4j.pax.logging.PaxLoggingManager;
 public class AvalonLogger
     implements Logger
 {
-
-    private String m_name;
     private PaxLogger m_delegate;
 
-    public AvalonLogger( String name, PaxLogger logger )
+    public AvalonLogger( PaxLogger logger )
     {
-        m_name = name;
         m_delegate = logger;
     }
 
@@ -116,7 +113,7 @@ public class AvalonLogger
 
     public String getName()
     {
-        return m_name;
+        return m_delegate.getName();
     }
 
     void setPaxLoggingManager( PaxLoggingManager paxLoggingManager, String name )

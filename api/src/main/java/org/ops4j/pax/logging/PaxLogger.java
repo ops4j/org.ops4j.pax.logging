@@ -41,5 +41,7 @@ public interface PaxLogger
     void fatal( String message, Throwable t );
 
     int getLogLevel();
+
+    String getName();
 }
 

@@ -27,9 +27,16 @@ public class JclLogger
 
     private PaxLogger m_delegate;
 
-    public JclLogger( PaxLogger delegate )
+    public JclLogger( PaxLogger delegate, PaxLogger backup )
     {
-        m_delegate = delegate;
+        if( m_delegate == null )
+        {
+            m_delegate = backup;
+        }
+        else
+        {
+            m_delegate = delegate;
+        }
     }
 
     public boolean isDebugEnabled()

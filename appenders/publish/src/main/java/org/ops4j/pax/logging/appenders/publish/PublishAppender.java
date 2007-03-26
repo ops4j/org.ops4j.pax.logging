@@ -19,6 +19,7 @@ package org.ops4j.pax.logging.appenders.publish;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
@@ -39,11 +40,11 @@ public class PublishAppender extends AppenderSkeleton
 {
     private BundleContext m_context;
     private ServiceTracker m_tracker;
-    private ArrayList<Event> m_buffer;
+    private final ArrayList m_buffer;
 
     public PublishAppender( BundleContext context )
     {
-        m_buffer = new ArrayList<Event>();
+        m_buffer = new ArrayList();
         m_context = context;
         m_tracker = new ServiceTracker( m_context, EventAdmin.class.getName(), null );
         m_tracker.open();
@@ -59,7 +60,7 @@ public class PublishAppender extends AppenderSkeleton
         props.put( EventConstants.EXECPTION_CLASS, throwable.getClass() );
         props.put( "category.name", loggingEvent.fqnOfCategoryClass);
         props.put( "thread.name", loggingEvent.getThreadName() );
-        props.put( EventConstants.TIMESTAMP, loggingEvent.timeStamp );
+        props.put( EventConstants.TIMESTAMP, new Long(loggingEvent.timeStamp) );
         Event event = new Event( "org/ops4j/pax/logging", props );
         synchronized( m_buffer )
         {
@@ -72,15 +73,17 @@ public class PublishAppender extends AppenderSkeleton
     {
         ServiceReference ref = m_tracker.getServiceReference();
         EventAdmin admin = (EventAdmin) m_context.getService( ref );
-        ArrayList<Event> clone = null;
+        ArrayList clone;
         synchronized( m_buffer )
         {
             clone = new ArrayList();
             clone.addAll( m_buffer );
             m_buffer.clear();
         }
-        for( Event event : clone )
+        Iterator list = clone.iterator();
+        while( list.hasNext() )
         {
+            Event event = (Event) list.next();
             admin.postEvent( event );
         }
         m_context.ungetService( ref );

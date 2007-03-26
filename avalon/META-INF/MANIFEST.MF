@@ -10,7 +10,7 @@ Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/av
 Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-ManifestVersion: 2
 Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2007-Mar-26 10:48 MYT
+Bundle-Date: 2007-Mar-26 12:44 MYT
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: org.apache.avalon.framework.logger, org.ops4j.pax.loggin
  g, org.ops4j.pax.logging.avalon, org.osgi.framework

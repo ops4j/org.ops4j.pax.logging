@@ -19,14 +19,13 @@ package org.ops4j.pax.logging.slf4j;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.Map.Entry;
-
+import org.ops4j.pax.logging.DefaultServiceLog;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.ops4j.pax.logging.SimplePaxLoggingManager;
 import org.osgi.framework.BundleContext;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
@@ -41,7 +40,6 @@ public class Slf4jLoggerFactory
     static
     {
         m_loggers = new WeakHashMap();
-        m_paxLogging = new SimplePaxLoggingManager();
     }
 
     public static void setBundleContext( BundleContext context )
@@ -82,7 +80,15 @@ public class Slf4jLoggerFactory
      */
     public Logger getLogger( String name )
     {
-        PaxLogger paxLogger = m_paxLogging.getLogger( name );
+        PaxLogger paxLogger;
+        if( m_paxLogging == null )
+        {
+            paxLogger = new DefaultServiceLog( name );
+        }
+        else
+        {
+            paxLogger = m_paxLogging.getLogger( name );
+        }
         Slf4jLogger logger = new Slf4jLogger( name, paxLogger );
         m_loggers.put( logger, name );
         return logger;

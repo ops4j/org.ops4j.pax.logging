@@ -27,7 +27,7 @@ import org.osgi.framework.BundleContext;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.ops4j.pax.logging.SimplePaxLoggingManager;
+import org.ops4j.pax.logging.DefaultServiceLog;
 import org.apache.commons.logging.internal.JclLogger;
 
 import java.util.Iterator;
@@ -90,7 +90,7 @@ public class LogFactory
      */
     public static final String FACTORY_PROPERTIES = "commons-logging.properties";
 
-    private static LogFactory m_Instance;
+    private static LogFactory m_instance;
 
     private static PaxLoggingManager m_paxLogging;
 
@@ -98,8 +98,7 @@ public class LogFactory
 
     static
     {
-        m_Instance = new LogFactory();
-        m_paxLogging = new SimplePaxLoggingManager();
+        m_instance = new LogFactory();
         m_loggers = new WeakHashMap();
     }
 
@@ -126,7 +125,7 @@ public class LogFactory
      */
     public static LogFactory getFactory() throws LogConfigurationException
     {
-        return m_Instance;
+        return m_instance;
     }
 
     /**
@@ -252,8 +251,17 @@ public class LogFactory
      */
     public Log getInstance( String name ) throws LogConfigurationException
     {
-        PaxLogger logger = m_paxLogging.getLogger( name );
-        JclLogger jclLogger = new JclLogger( logger );
+        PaxLogger logger;
+        if( m_paxLogging == null )
+        {
+            logger = new DefaultServiceLog( name );
+        }
+        else
+        {
+            logger = m_paxLogging.getLogger( name );
+        }
+        DefaultServiceLog backup = new DefaultServiceLog( name );
+        JclLogger jclLogger = new JclLogger( logger, backup );
         m_loggers.put( jclLogger, name );
         return jclLogger;
     }
