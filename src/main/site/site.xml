@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Pax Wicket">
+
+  <bannerRight>
+    <name>OPS4J</name>
+    <src>images/logo.png</src>
+    <href>http://www.ops4j.org/</href>
+  </bannerRight>
+
+  <body>
+    <links>
+      <item name="Pax" href="http://www.ops4j.org/projects/pax/" />
+      <item name="Base" href="http://www.ops4j.org/projects/base/" />
+      <item name="Hansa" href="http://www.ops4j.org/projects/hansa/" />
+      <item name="Qi4J" href="http://www.ops4j.org/projects/qi4j/" />
+    </links>
+
+    <menu name="Pax Logging">
+      <item name="Introduction" href="index.html"/>
+      <item name="User Guide" href="userguide.html"/>
+      <item name="Reference" href="reference/index.html" />
+      <item name="APIs" href="apis/index.html">
+        <item name="Avalon" href="apis/avalon.html"/>
+        <item name="Jakarta Commons Logging" href="apis/jcl.html"/>
+        <item name="JDK Logging" href="apis/jdk.html"/>
+        <item name="KF Log" href="apis/kflog.html"/>
+        <item name="Log4J" href="apis/log4j.html"/>
+        <item name="Pax Logging" href="apis/pax.html"/>
+        <item name="SLF4J" href="apis/slf4j.html"/>
+      </item>
+      <item name="Roadmap" href="roadmap/index.html">
+        <item name="Appenders" href="roadmap/appenders.html"/>
+        <item name="Formatters" href="roadmap/formatters.html"/>
+      </item>
+    </menu>
+
+    ${reports}
+  </body>
+</project>
+

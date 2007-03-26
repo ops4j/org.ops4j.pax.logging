@@ -1,0 +1,27 @@
+
+    -------------------
+    Pax Logging - Changelog
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+Changes in 0.9.0
+    If you have not used previous versions of Pax Logging, you can skip this section.
+
+    Pax Logging v 0.9.x is again somewhat incompatible with previous pre-releases.
+    Here is a list of changes that has happened in ver 0.9.x so far.
+
+    * The previous pax-logging-client jar file no longer exist, and must be removed
+      from clients using Pax Logging ver 0.9.x.
+
+    * Each legacy API now resides in its own bundle. For support of the legacy API,
+      just load that bundle.
+
+    * The Service bundle can now be reloaded without shutting down the clients, as
+      the API bundle contain a tracker.
+
+    * The Activator in the client bundle, no longer need to bother with setting the
+      bundle context in the APIs.
+

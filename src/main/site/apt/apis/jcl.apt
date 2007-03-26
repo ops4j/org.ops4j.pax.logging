@@ -1,0 +1,28 @@
+
+    -------------------
+    Pax Logging - Jakarta Commons Logging 
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+Jakarta Commons Logging
+
++----------------------
+import org.apache.commons.logging.LogFactory;
+
+public class MyPojo
+{
+    private static final Log logger = LogFactory.getLog( MyPojo.class );
+
+    private void doSomething()
+    {
+        if( logger.isDebugEnabled() )
+        {
+            logger.debug( "Doing something." );
+        }
+    }
+}
++----------------------

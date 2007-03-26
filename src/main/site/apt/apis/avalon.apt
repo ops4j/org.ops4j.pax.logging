@@ -1,0 +1,75 @@
+
+    -------------------
+    Pax Logging - Avalon 
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+Avalon Logging API
+
+    Avalon uses a totally different approach to logging, known as Inversion of Control
+    (IoC) where the class is given the Logger from the user of the class, such as;
+
++----------------------
+public class MyPojo1
+{
+    private MyPojo2 m_pojo2;
+
+    public MyPojo1( Logger logger )
+    {
+        if( logger.isDebugEnabled() )
+        {
+            logger.debug( "Created MyPojo1." );
+        }
+        Logger childLogger = logger.getChildLogger( "pojo2" );
+        pojo2 = new MyPojo2( childLogger );
+    }
+}
+
+public class MyPojo2
+{
+    public MyPojo2( Logger logger )
+    {
+        if( logger.isDebugEnabled() )
+        {
+            logger.debug( "Created MyPojo2." );
+        }
+    }
+}
+
++----------------------
+
+To obtain the RootLogger, or any other arbitrary Logger for that matter, you call the
+ AvalonLogFactory, such as;
+
++----------------------
+import org.apache.avalon.framework.logger.Logger;
+import org.ops4j.pax.logging.avalon.AvalonLogFactory;
+
+public class MyController
+{
+    public MyController()
+    {
+        Logger root = AvalonLogFactory.getLogger( "" );
+        Logger pojo1Logger = root.getChildLogger( "pojo1" );
+        MyPojo1 pojo1 = new MyPojo1( logger );
+    }
+}
+// or something like;
+
+public class MyStuff
+{
+    private static final Logger m_logger = AvalonLogFactory.getLogger( MyStuff.class.getName() );
+
+    public MyStuff()
+    {
+        if( m_logger.isDebugEnabled() )
+        {
+            m_logger.debug( "MyStuff was created on " + new Date() );
+        }
+    }
+}
++----------------------

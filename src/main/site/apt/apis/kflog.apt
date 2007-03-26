@@ -1,0 +1,34 @@
+
+    -------------------
+    Pax Logging - Knopflerfish Log
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+Knopflerfish Log
+    The Knopflerfish community has a lot of good bundles, that all uses the KF Log
+    service and its bundle. Pax Logging implements the same interface and is a
+    drop-in replacement of KF Log. No configuration or other changes are required.
+    To use Knopflerfish Log interface you do;
+
++-----------------------
+import org.knopflerfish.service.log.LogRef;
+
+:
+:
+
+private LogRef m_logger;
+
+public void start( BundleContext context )
+    throws Exception
+{
+    m_logger = new LogRef( context );
+    if( m_logger.doDebug() )
+    {
+        m_logger.debug( "some debug statement" );
+    }
+}
++-----------------------

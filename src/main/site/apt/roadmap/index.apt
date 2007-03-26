@@ -1,0 +1,23 @@
+
+    -------------------
+    Pax Logging - Roadmap
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+Roadmap
+    We are getting closer and closer to a final release of Pax Logging. The main features
+    missing for a 1.0 release at this point are;
+
+    * Full support of packaging Appender and Layout implementations in installable bundles.
+
+    * Full OSGi Log Service spec compliance in Pax Logging Service. Missing right now is
+      the LogReader service.
+
+    * A PaxLogger factory class for the API bundle to make the usage of the native Pax
+      Logging API simpler.
+
+    Any help in these areas are greatly appreciated.

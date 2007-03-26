@@ -1,0 +1,47 @@
+
+    -------------------
+    Pax Logging
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+How to use Pax Logging in my bundles
+
+    For a more step-by-step approach, look at Pierre Parrend's article
+    {{{http://wiki.ops4j.org/confluence/display/ops4j/How+to+use+Pax+Logging}here}}.
+    
+    First of all, look at the example in pax/logging/example, which is complete with both
+    Jakarta Commons Logging API, Log4J Logger API and usage of 3rd party library that
+    depends on Jakarta Commons Logging, namely the Jetty HTTP server.
+
+    You need to;
+
+    * ensure that log4j.jar, commons-logging.jar, and any other legacy API that you want
+      to use, are NOT included in your bundle jar.
+
+    * Import the logging APIs that are used in your client bundle. To ensure that your
+      bundle's logging will get routed to Pax Logging Service, and not linked to another
+      JCL or Log4J implementation (perhaps exported by a third-party bundle), you should
+      specify the attribute provider=paxlogging (see below).
+
+Manifest.MF
+    You will need to import the legacy API you want to use. For instance, importing the
+    Log4J and Jakarta Commons Logging;
+
++-------------------
+Import-Package: org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+ org.apache.commons.logging; version="[1.0,1.1)"; provider=paxlogging
++-------------------
+
+Setting up the OSGi application
+
+    The <Pax Logging API> bundle and each legacy API bundle from the Pax Logging project is
+    needed to load before starting your client bundle. The Pax Logging Servicebundle can
+    be loaded and reloaded at any point in time, and the fallback of Pax Logging is a
+    simple output to the system console.
+
+    The java.util.logging API and Knopflerfish Log API are natively available and do not
+    require any additional bundles to be loaded, only the API bundle and the service bundle.

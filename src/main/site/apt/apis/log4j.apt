@@ -1,0 +1,26 @@
+
+    -------------------
+    Pax Logging - Log4J
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+Log4J
+
++------------------
+public class MyPojo
+{
+    private static final Logger logger = Logger.getLogger( MyPojo.class );
+
+    private void doSomething()
+    {
+        if( logger.isDebugEnabled() )
+        {
+             logger.debug( "Doing something." );
+        }
+    }
+}
++------------------

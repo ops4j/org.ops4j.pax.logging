@@ -1,0 +1,56 @@
+
+    -------------------
+    Pax Logging - JDK Logging 
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+JDK Logging a.k.a. java.util.logging
+    For JDK Logging you just use it as normal, without any extra considerations.
+    Example;
+
++-------------------
+import java.util.logging.Logger;
+public class PloukPlouk
+{
+    private static final Logger m_logger = Logger.getLogger( PloukPlouk.class.getName() );
+
+    public PloukPlouk()
+    {
+        if( m_logger.isDebugEnabled() )
+        {
+            m_logger.debug( "Death by Zogotounga on " + new Date() );
+        }
+    }
+}
++-------------------
+
+In the case of JDK Logging there is a mapping occuring between the Levels in JDK Logging
+and in Log4J. The definition chosen is as follows;
+
++-------------------+-------------+------------------------------+
+| JDK Logging Level | Log4J Level |   Comment                    |
++-------------------+-------------+------------------------------+
+| OFF               | OFF         |                              |
++-------------------+-------------+------------------------------+
+| WARNING           | WARN        |                              |
++-------------------+-------------+------------------------------+
+| SEVERE            | ERROR       |                              |
++-------------------+-------------+------------------------------+
+| INFO              | INFO        |                              |
++-------------------+-------------+------------------------------+
+| FINE              | DEBUG       |                              |
++-------------------+-------------+------------------------------+
+| FINER             | TRACE       |                              |
++-------------------+-------------+------------------------------+
+| FINEST            | TRACE       |                              |
++-------------------+-------------+------------------------------+
+| CONFIG            | n/a         | CONFIG events are ignored.   |
++-------------------+-------------+------------------------------+
+| n/a               | FATAL       | No such thing in JDK Logging.|
++-------------------+-------------+------------------------------+
+JDK to Log4J Level mapping
+

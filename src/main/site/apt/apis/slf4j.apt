@@ -1,0 +1,28 @@
+
+    -------------------
+    Pax Logging - SLF4J
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+SLF4J - Simple Logging Facade for Java
+
++--------------------
+import package org.slf4j.LoggerFactory;
+
+public class Zogotounga
+{
+    private static final Logger logger = LoggerFactory.getLogger( Zogotounga.class );
+
+    private void treatment()
+    {
+        if( logger.isDebugEnabled() )
+        {
+             logger.debug( "Zogotounga treatment in progress." );
+        }
+    }
+}
++--------------------

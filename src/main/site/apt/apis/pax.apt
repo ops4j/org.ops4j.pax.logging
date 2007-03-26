@@ -1,0 +1,30 @@
+
+    -------------------
+    Pax Logging - Pax Logging API
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+Pax Logging native
+
+    You could also use the Pax Logging Service directly, without bothering about any of the
+    other APIs. You need to look up the PaxLoggingService, and ask it for a PaxLogger.
+    Note: The plan is to include a simple factory for using the native Pax Logging API,
+    similar to Log4J and JCL.
+
++--------------------------
+private PaxLogger m_logger;
+
+public void start( BundleContext context )
+    throws Exception
+{
+    ServiceReference ref = context.getServiceReference( PaxLoggingService.class.getName() );
+    PaxLoggingService service = (PaxLoggingService) context.getService( ref );
+    m_logger = service.getLogger( MyActivator.class.getName() );
+
+    m_logger.info( "MyActivator is started." );
+}
++---------------------------

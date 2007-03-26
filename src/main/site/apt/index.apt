@@ -1,0 +1,39 @@
+
+    -------------------
+    Pax Logging 
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+Welcome to Pax Logging
+
+
+    The logging support in the standard Log Service of the OSGi specification is minimalistic and
+    not entirely suitable for enterprise applications. This project tries to address this by
+    extending the standard interface with additional interfaces and using a strong logging
+    backend, the Apache Log4J. Pax Logging defines its own API, but more importantly it supports
+    the Log4J and Jakarta Commons Logging APIs as well, making it easy to creata bundles that uses
+    these common APIs, either directly in new code or usage residing inside 3rd party libraries.
+
+
+Main Features
+
+    * Log4J driving the backend implementation.
+
+    * Log4J API supported.
+
+    * Jakarta Commons Logging API supported.
+
+    * Pax Logging Service implements the standard OSGi Log Service API.
+
+    * JDK Logging API support.
+
+    * Avalon Logger API support.
+
+    * SLF4J API support.
+    
+    * Knopflerfish Log service support.
+    
