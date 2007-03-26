@@ -9,7 +9,7 @@
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>service</artifactId>
   <packaging>osgi-bundle</packaging>
-  <name>Pax Logging Service</name>
+  <name>OPS4J - Pax Logging Service</name>
   <version>0.9.5-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>Pax Logging Service is a Log4J driven service that supports Jakarta Commons Logging,
@@ -26,6 +26,7 @@
       <artifactId>api</artifactId>
       <version>0.9.5-SNAPSHOT</version>
       <scope>provided</scope>
+      <type>osgi-bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
     </dependency>
     <dependency>
       <groupId>log4j</groupId>

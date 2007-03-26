@@ -9,7 +9,7 @@
   <groupId>org.ops4j.pax</groupId>
   <artifactId>logging</artifactId>
   <packaging>pom</packaging>
-  <name>Pax Logging</name>
+  <name>OPS4J - Pax Logging</name>
   <version>0.9.5-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <scm>
@@ -25,7 +25,6 @@
     <module>log4j</module>
     <module>service</module>
     <module>slf4j</module>
-    <module>log4jclient</module>
   </modules>
   <build>
     <plugins>

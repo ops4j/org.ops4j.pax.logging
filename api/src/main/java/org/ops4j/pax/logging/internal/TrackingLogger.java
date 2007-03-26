@@ -99,6 +99,11 @@ public class TrackingLogger
         return m_delegate.getLogLevel();
     }
 
+    public String getName()
+    {
+        return m_delegate.getName();
+    }
+
     public void added( PaxLoggingService service )
     {
         m_service = service;

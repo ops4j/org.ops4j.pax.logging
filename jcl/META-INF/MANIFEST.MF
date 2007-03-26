@@ -9,11 +9,11 @@ Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/jc
 Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-ManifestVersion: 2
 Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2007-Mar-26 12:44 MYT
+Bundle-Date: 2007-Mar-26 21:17 MYT
 Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
 Import-Package: org.apache.commons.logging, org.ops4j.pax.logging, org.o
  sgi.framework
-Bundle-Name: Pax Logging JCL Support
+Bundle-Name: OPS4J - Pax Logging JCL Support
 Bundle-Description: Pax Logging JCL Support is a bundle that enables sup
  port for Jakarta Commons Logging and connecting the API to the Pax Logg
  ing Service. See documentation for details.

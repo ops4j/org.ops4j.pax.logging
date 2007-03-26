@@ -9,7 +9,7 @@
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>slf4j</artifactId>
   <packaging>osgi-bundle</packaging>
-  <name>Pax Logging SLF4J Support</name>
+  <name>OPS4J - Pax Logging SLF4J Support</name>
   <version>0.9.5-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
@@ -21,6 +21,7 @@
       <artifactId>api</artifactId>
       <version>0.9.5-SNAPSHOT</version>
       <scope>provided</scope>
+      <type>osgi-bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

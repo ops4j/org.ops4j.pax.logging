@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>api</artifactId>
-  <name>Pax Logging API</name>
+  <name>OPS4J - Pax Logging API</name>
   <version>0.9.5-SNAPSHOT</version>
   <packaging>osgi-bundle</packaging>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>

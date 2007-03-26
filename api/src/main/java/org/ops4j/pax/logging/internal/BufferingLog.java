@@ -171,6 +171,11 @@ public class BufferingLog
         return PaxLogger.LEVEL_TRACE;
     }
 
+    public String getName()
+    {
+        return "";
+    }
+
     private static class LogPackage
     {
 

@@ -9,7 +9,7 @@
   <groupId>org.ops4j.pax.logging.appenders</groupId>
   <artifactId>publish</artifactId>
   <packaging>osgi-bundle</packaging>
-  <name>Pax Logging JCL Support</name>
+  <name>OPS4J - Pax Logging Publish Appender</name>
   <version>0.9.5-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
