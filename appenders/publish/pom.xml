@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging.appenders</groupId>
   <artifactId>publish</artifactId>
-  <packaging>osgi-bundle</packaging>
+  <packaging>bundle</packaging>
   <name>OPS4J - Pax Logging Publish Appender</name>
   <version>0.9.5-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
@@ -33,11 +33,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
-    <osgi-BundleActivator>org.ops4j.pax.logging.appenders.publish.internal.Activator</osgi-BundleActivator>
-    <osgi-ExportPackage>
-      org.ops4j.pax.logging.appenders.publish;version=${pom.version}; provider=paxlogging
-    </osgi-ExportPackage>
-  </properties>
 </project>

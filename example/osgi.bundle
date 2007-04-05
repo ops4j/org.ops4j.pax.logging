@@ -1,0 +1,5 @@
+
+Private-Package:    javax.security.cert,\
+                    com.sun.net.ssl, \
+                    com.sun.net.ssl.internal.ssl, \
+                    javax.net.ssl

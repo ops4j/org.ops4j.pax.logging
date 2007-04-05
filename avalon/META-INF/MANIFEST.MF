@@ -1,22 +1,21 @@
-Bundle-Activator: org.ops4j.pax.logging.avalon.Activator
-Bundle-Classpath: .,avalon-framework-api-4.3.jar
-Export-Package: org.apache.avalon.framework.logger;provider=paxlogging;v
- ersion=4.3, org.ops4j.pax.logging.avalon;provider=paxlogging;uses:="org
- .ops4j.pax.logging,org.apache.avalon.framework.logger,org.osgi.framewor
- k";version=0.9.5.SNAPSHOT
-Bundle-Version: 0.9.5.SNAPSHOT
-Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/av
- alon
-Bundle-Vendor: OPS4J - Open Participation Software for Java
-Bundle-ManifestVersion: 2
-Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2007-Mar-26 21:17 MYT
-Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
-Import-Package: org.apache.avalon.framework.logger, org.ops4j.pax.loggin
- g, org.ops4j.pax.logging.avalon, org.osgi.framework
+Manifest-Version: 1
+Bundle-Description: Pax Logging Avalon Support is a bundle that enable
+ s support for Avalon Logging and connecting the API to the Pax   Logg
+ ing Service. See documentation for details.
 Bundle-Name: OPS4J - Pax Logging Avalon Support
-Bundle-Description: Pax Logging Avalon Support is a bundle that enables 
- support for Avalon Logging and connecting the API to the Pax Logging Se
- rvice. See documentation for details.
+Created-By: Bnd-0.0.116
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.html
+Bundle-DocURL: http://www.ops4j.org/
+Import-Package: org.apache.avalon.framework.logger;provider=paxlogging
+ ;version=4.3,org.apache.log,org.ops4j.pax.logging;version=0.9.5-SNAPS
+ HOT,org.ops4j.pax.logging.avalon;provider=paxlogging;version=0.9.5-SN
+ APSHOT,org.osgi.framework;version=1.3
+Bundle-ManifestVersion: 2
+Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-SymbolicName: org.ops4j.pax.logging.avalon
+Export-Package: org.apache.avalon.framework.logger;provider=paxlogging
+ ;uses:=org.apache.log;version=4.3,org.ops4j.pax.logging.avalon;provid
+ er=paxlogging;uses:="org.ops4j.pax.logging,org.apache.avalon.framewor
+ k.logger,org.osgi.framework";version=0.9.5-SNAPSHOT
+Bundle-Version: 0.9.5.SNAPSHOT
 

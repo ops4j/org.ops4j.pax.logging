@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/test/java"/>
-	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry exported="true" kind="lib" path="target/classes/log4j-1.2.13.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="var" path="M2_REPO/jmock/jmock/1.0.1/jmock-1.0.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/4.1/junit-4.1.jar"/>
-	<classpathentry kind="output" path="bin"/>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
+  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+  <classpathentry kind="lib" path="log4j-1.2.13.jar" sourcepath="/home/niclas/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.1/junit-4.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/jmock/jmock/1.0.1/jmock-1.0.1.jar"/>
 </classpath>

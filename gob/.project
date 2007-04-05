@@ -1,7 +1,6 @@
 <projectDescription>
-  <name>avalon</name>
-  <comment>Pax Logging Avalon Support is a bundle that enables support for Avalon Logging and connecting the API to the Pax
-    Logging Service. See documentation for details.</comment>
+  <name>gob</name>
+  <comment>The Group of Bundles for Pax Logging. Can be used by Pax Runner.</comment>
   <projects/>
   <buildSpec>
     <buildCommand>
@@ -15,10 +14,15 @@
     </buildCommand>
   </buildSpec>
   <natures>
-    <nature>org.eclipse.pde.PluginNature</nature>
     <nature>org.eclipse.jdt.core.javanature</nature>
+    <nature>org.eclipse.pde.PluginNature</nature>
   </natures>
   <linkedResources>
+    <link>
+      <name>log4j-1.2.13.jar</name>
+      <type>1</type>
+      <location>/home/niclas/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar</location>
+    </link>
     <link>
       <name>avalon-framework-api-4.3.jar</name>
       <type>1</type>

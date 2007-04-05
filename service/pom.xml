@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>service</artifactId>
-  <packaging>osgi-bundle</packaging>
+  <packaging>bundle</packaging>
   <name>OPS4J - Pax Logging Service</name>
   <version>0.9.5-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
@@ -26,7 +26,7 @@
       <artifactId>api</artifactId>
       <version>0.9.5-SNAPSHOT</version>
       <scope>provided</scope>
-      <type>osgi-bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
+      <type>bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
@@ -43,30 +43,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <!--osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest-->
-    <osgi-BundleActivator>org.ops4j.pax.logging.internal.Activator</osgi-BundleActivator>
-    <osgi-IgnorePackage>
-      <!-- Do we want to disable Java Mail delivery??? -->
-      javax.jms,
-      javax.mail,
-      javax.mail.internet,
-
-      <!--  Not sure how these are used... -->
-      com.sun.jdmk.comm,
-      javax.management,
-      javax.naming,
-
-      <!-- Probably ChainSaw or LF5 classes uses swing -->
-      javax.swing,
-      javax.swing.border,
-      javax.swing.event,
-      javax.swing.table,
-      javax.swing.text,
-      javax.swing.tree,
-    </osgi-IgnorePackage>
-    <osgi-ExportPackage>
-      org.ops4j.pax.logging.spi; version=1.0; provider=paxlogging
-    </osgi-ExportPackage>
-  </properties>
 </project>

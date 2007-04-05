@@ -1,17 +1,22 @@
+Manifest-Version: 1
+Created-By: Bnd-0.0.116
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.html
+Import-Package: org.apache.avalon.framework.logger;version=4.3,org.apa
+ che.commons.logging;version=1.0,org.apache.log4j;version=1.2,org.mort
+ bay.http,org.mortbay.util,org.ops4j.pax.logging.avalon;version=0.9.5-
+ SNAPSHOT,org.ops4j.pax.logging.example,org.osgi.framework;version=1.3
+ ,org.slf4j
+Export-Package: org.ops4j.pax.logging.example;uses:="org.mortbay.util,
+ org.apache.log4j,org.mortbay.http,org.apache.avalon.framework.logger,
+ org.slf4j,org.osgi.framework,org.apache.commons.logging,org.ops4j.pax
+ .logging.avalon"
 Bundle-Version: 0.9.5.SNAPSHOT
-Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/ex
- ample
+Bundle-Description: A simple example of using the Pax Logging system.
+Bundle-Name: OPS4J - Pax Logging Example
+Bundle-DocURL: http://www.ops4j.org/
+Private-Package: javax.security.cert,com.sun.net.ssl, com.sun.net.ssl.
+ internal.ssl, javax.net.ssl
 Bundle-ManifestVersion: 2
 Bundle-Vendor: OPS4J - Open Participation Software for Java
-Bundle-Date: 2007-Mar-26 21:17 MYT
-Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
-Import-Package: javax.servlet, javax.servlet.http, javax.xml.parsers, or
- g.apache.avalon.framework.logger, org.apache.commons.logging, org.apach
- e.log4j, org.ops4j.pax.logging.avalon, org.osgi.framework, org.slf4j, o
- rg.xml.sax, org.xml.sax.helpers
-Bundle-Name: OPS4J - Pax Logging Example
-Bundle-Classpath: .,org.mortbay.jetty-5.1.0.jar
-Bundle-Description: A simple example of using the Pax Logging system.
 Bundle-SymbolicName: org.ops4j.pax.logging.example
 

@@ -1,0 +1,2 @@
+
+ExportPackage:   org.slf4j; version=1.0; provider=paxlogging

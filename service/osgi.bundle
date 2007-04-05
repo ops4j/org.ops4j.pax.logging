@@ -1,0 +1,15 @@
+
+Private-Package:    javax.jms, \
+                    javax.mail, \
+                    javax.mail.internet, \
+                    com.sun.jdmk.comm, \
+                    javax.management, \
+                    javax.naming, \
+                    javax.swing, \
+                    javax.swing.border, \
+                    javax.swing.event, \
+                    javax.swing.table, \
+                    javax.swing.text, \
+                    javax.swing.tree
+
+Export-Package:  org.ops4j.pax.logging.spi; version=1.0; provider=paxlogging

@@ -1,0 +1,2 @@
+
+Export-Package:   org.ops4j.pax.logging.appenders.publish;version=${pom.version}; provider=paxlogging

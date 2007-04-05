@@ -34,20 +34,19 @@ import org.osgi.util.tracker.ServiceTracker;
 /**
  * This appender publishes the Log events as OSGi events according to the
  * OSGi Event Admin specification (ch 113 in Compendium).
+ *
+ * <b>NOTE:</b> This is work in progress and not working yet.
  */
 public class PublishAppender extends AppenderSkeleton
     implements Appender
 {
-    private BundleContext m_context;
-    private ServiceTracker m_tracker;
     private final ArrayList m_buffer;
+    private EventAdmin m_service;
 
-    public PublishAppender( BundleContext context )
+    public PublishAppender( EventAdmin service )
     {
+        m_service = service;
         m_buffer = new ArrayList();
-        m_context = context;
-        m_tracker = new ServiceTracker( m_context, EventAdmin.class.getName(), null );
-        m_tracker.open();
     }
 
     protected void append( LoggingEvent loggingEvent )
@@ -69,10 +68,17 @@ public class PublishAppender extends AppenderSkeleton
         fireEvents();
     }
 
+    public boolean requiresLayout()
+    {
+        return false;
+    }
+
+    public void close()
+    {
+    }
+
     private void fireEvents()
     {
-        ServiceReference ref = m_tracker.getServiceReference();
-        EventAdmin admin = (EventAdmin) m_context.getService( ref );
         ArrayList clone;
         synchronized( m_buffer )
         {
@@ -84,18 +90,7 @@ public class PublishAppender extends AppenderSkeleton
         while( list.hasNext() )
         {
             Event event = (Event) list.next();
-            admin.postEvent( event );
+            m_service.postEvent( event );
         }
-        m_context.ungetService( ref );
-    }
-
-    public boolean requiresLayout()
-    {
-        return false;
-    }
-
-    public void close()
-    {
-        m_tracker.close();
     }
 }

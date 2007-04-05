@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>log4j</artifactId>
-  <packaging>osgi-bundle</packaging>
+  <packaging>bundle</packaging>
   <name>OPS4J - Pax Logging Log4J Support</name>
   <version>0.9.5-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
@@ -21,7 +21,7 @@
       <artifactId>api</artifactId>
       <version>0.9.5-SNAPSHOT</version>
       <scope>provided</scope>
-      <type>osgi-bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
+      <type>bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
@@ -34,18 +34,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
-    <osgi-BundleActivator>org.apache.log4j.internal.Activator</osgi-BundleActivator>
-    <osgi-ExportPackage>
-      org.apache.log4j;version=1.2.13; provider=paxlogging,
-      org.apache.log4j.xml;version=1.2.13; provider=paxlogging,
-      org.apache.log4j.spi;version=1.2.13; provider=paxlogging
-    </osgi-ExportPackage>
-    <osgi-ImportPackage>
-      javax.xml.parsers,
-      org.ops4j.pax.logging,
-      org.osgi.framework
-    </osgi-ImportPackage>
-  </properties>
 </project>

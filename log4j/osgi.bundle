@@ -1,0 +1,4 @@
+
+Export-Package:     org.apache.log4j;version=1.2.13; provider=paxlogging, \
+                    org.apache.log4j.xml;version=1.2.13; provider=paxlogging, \
+                    org.apache.log4j.spi;version=1.2.13; provider=paxlogging

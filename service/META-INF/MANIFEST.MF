@@ -1,24 +1,24 @@
-Bundle-Activator: org.ops4j.pax.logging.internal.Activator
-Export-Package: org.ops4j.pax.logging.spi;provider=paxlogging;version=1.
- 0
+Manifest-Version: 1
+Created-By: Bnd-0.0.116
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.html
+Import-Package: org.ops4j.pax.logging.spi;provider=paxlogging;version=
+ 1.0
+Include-Resource: src/main/resources/
+Export-Package: org.ops4j.pax.logging.spi;provider=paxlogging;version=
+ 1.0
 Bundle-Version: 0.9.5.SNAPSHOT
-Bundle-Source: https://scm.ops4j.org/repos/ops4j/projects/pax/logging/se
- rvice
-Bundle-Vendor: OPS4J - Open Participation Software for Java
+Bundle-Description: Pax Logging Service is a Log4J driven service that
+  supports Jakarta Commons Logging,   Log4J, Avalon Logging, SLF4J and
+  Pax Logging clients. Note that all this clients must use the Pax Log
+ ging   Client library in the proper way. See documentation for detail
+ s.
+Bundle-Name: OPS4J - Pax Logging Service
+Bundle-DocURL: http://www.ops4j.org/
+Private-Package: javax.jms, javax.mail, javax.mail.internet, com.sun.j
+ dmk.comm, javax.management, javax.naming, javax.swing, javax.swing.bo
+ rder, javax.swing.event, javax.swing.table, javax.swing.text, javax.s
+ wing.tree
 Bundle-ManifestVersion: 2
-Bundle-ContactAddress: http://www.ops4j.org/
-Bundle-Date: 2006-Nov-17 16:31 CET
-Bundle-DocURL: http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging
-Import-Package: javax.xml.parsers, org.knopflerfish.service.log, org.ops
- 4j.pax.logging, org.ops4j.pax.logging.spi, org.osgi.framework, org.osgi
- .service.cm, org.osgi.service.log, org.w3c.dom, org.xml.sax, org.xml.sa
- x.helpers
-Bundle-Name: Pax Logging Service
-Bundle-Description: Pax Logging Service is a Log4J driven service that s
- upports Jakarta Commons Logging, Log4J, Avalon Logging, SLF4J and Pax L
- ogging clients. Note that all this clients must use the Pax Logging Cli
- ent library in the proper way. See documentation for details.
+Bundle-Vendor: OPS4J - Open Participation Software for Java
 Bundle-SymbolicName: org.ops4j.pax.logging.service
-Bundle-ClassPath: target/classes/log4j-1.2.13.jar,
- .
 

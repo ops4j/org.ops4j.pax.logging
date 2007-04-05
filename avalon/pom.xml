@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>avalon</artifactId>
-  <packaging>osgi-bundle</packaging>
+  <packaging>bundle</packaging>
   <name>OPS4J - Pax Logging Avalon Support</name>
   <version>0.9.5-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
@@ -26,7 +26,7 @@
       <artifactId>api</artifactId>
       <version>0.9.5-SNAPSHOT</version>
       <scope>provided</scope>
-      <type>osgi-bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
+      <type>bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
@@ -39,12 +39,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
-    <osgi-BundleActivator>org.ops4j.pax.logging.avalon.Activator</osgi-BundleActivator>
-    <osgi-ExportPackage>
-      org.ops4j.pax.logging.avalon;version=${pom.version}; provider=paxlogging,
-      org.apache.avalon.framework.logger; version=4.3; provider=paxlogging
-    </osgi-ExportPackage>
-  </properties>
 </project>

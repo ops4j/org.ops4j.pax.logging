@@ -10,7 +10,7 @@
   <artifactId>api</artifactId>
   <name>OPS4J - Pax Logging API</name>
   <version>0.9.5-SNAPSHOT</version>
-  <packaging>osgi-bundle</packaging>
+  <packaging>bundle</packaging>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
     The Pax Logging API Library is to allow for the Pax Logging Service to be reloaded without stopping the many
@@ -29,12 +29,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
-    <osgi-ExportPackage>
-      org.ops4j.pax.logging; version=${pom.version}; provider=paxlogging,
-      org.osgi.service.log; version=1.3,
-      org.knopflerfish.service.log; version=1.1
-    </osgi-ExportPackage>
-  </properties>
 </project>

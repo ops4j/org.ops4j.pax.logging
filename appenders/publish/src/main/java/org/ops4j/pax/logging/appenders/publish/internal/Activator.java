@@ -20,6 +20,8 @@ package org.ops4j.pax.logging.appenders.publish.internal;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.service.event.EventAdmin;
 import org.ops4j.pax.logging.appenders.publish.PublishAppender;
 import org.apache.log4j.Appender;
 
@@ -34,10 +36,13 @@ public class Activator
 {
     private PublishAppender m_appender;
     private ServiceRegistration m_registration;
+    private ServiceTracker m_tracker;
 
     public void start( BundleContext bundleContext )
         throws Exception
     {
+        m_tracker = new EventAdminTracker( bundleContext );
+        m_tracker.open();
         m_appender = new PublishAppender( bundleContext );
         m_registration = bundleContext.registerService( Appender.class.getName(), m_appender, null );
     }
@@ -45,7 +50,7 @@ public class Activator
     public void stop( BundleContext bundleContext )
         throws Exception
     {
-        m_appender.close();
+        m_tracker.close();
         m_registration.unregister();
     }
 }

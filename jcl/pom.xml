@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>jcl</artifactId>
-  <packaging>osgi-bundle</packaging>
+  <packaging>bundle</packaging>
   <name>OPS4J - Pax Logging JCL Support</name>
   <version>0.9.5-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
@@ -21,7 +21,7 @@
       <artifactId>api</artifactId>
       <version>0.9.5-SNAPSHOT</version>
       <scope>provided</scope>
-      <type>osgi-bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
+      <type>bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
@@ -34,11 +34,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <osgi-manifest>${basedir}/META-INF/MANIFEST.MF</osgi-manifest>
-    <osgi-BundleActivator>org.apache.commons.logging.internal.Activator</osgi-BundleActivator>
-    <osgi-ExportPackage>
-      org.apache.commons.logging;version=1.0.4; provider=paxlogging
-    </osgi-ExportPackage>
-  </properties>
 </project>

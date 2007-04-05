@@ -1,6 +1,6 @@
 <projectDescription>
-  <name>jcl</name>
-  <comment>Pax Logging JCL Support is a bundle that enables support for Jakarta Commons Logging and connecting the API to the Pax Logging Service. See documentation for details.</comment>
+  <name>example</name>
+  <comment>A simple example of using the Pax Logging system.</comment>
   <projects/>
   <buildSpec>
     <buildCommand>
@@ -14,8 +14,14 @@
     </buildCommand>
   </buildSpec>
   <natures>
-    <nature>org.eclipse.pde.PluginNature</nature>
     <nature>org.eclipse.jdt.core.javanature</nature>
+    <nature>org.eclipse.pde.PluginNature</nature>
   </natures>
-  <linkedResources/>
+  <linkedResources>
+    <link>
+      <name>org.mortbay.jetty-5.1.0.jar</name>
+      <type>1</type>
+      <location>/home/niclas/.m2/repository/jetty/org.mortbay.jetty/5.1.0/org.mortbay.jetty-5.1.0.jar</location>
+    </link>
+  </linkedResources>
 </projectDescription>
