@@ -19,11 +19,5 @@
     <nature>org.eclipse.pde.PluginNature</nature>
     <nature>org.eclipse.jdt.core.javanature</nature>
   </natures>
-  <linkedResources>
-    <link>
-      <name>log4j-1.2.13.jar</name>
-      <type>1</type>
-      <location>/home/niclas/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar</location>
-    </link>
-  </linkedResources>
+  <linkedResources/>
 </projectDescription>

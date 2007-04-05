@@ -26,7 +26,6 @@
       <artifactId>api</artifactId>
       <version>0.9.5-SNAPSHOT</version>
       <scope>provided</scope>
-      <type>bundle</type>  <!-- Required due to bug in Maven, when building from pax/ directory. -->
     </dependency>
     <dependency>
       <groupId>log4j</groupId>

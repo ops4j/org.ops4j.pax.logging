@@ -17,11 +17,5 @@
     <nature>org.eclipse.jdt.core.javanature</nature>
     <nature>org.eclipse.pde.PluginNature</nature>
   </natures>
-  <linkedResources>
-    <link>
-      <name>org.mortbay.jetty-5.1.0.jar</name>
-      <type>1</type>
-      <location>/home/niclas/.m2/repository/jetty/org.mortbay.jetty/5.1.0/org.mortbay.jetty-5.1.0.jar</location>
-    </link>
-  </linkedResources>
+  <linkedResources/>
 </projectDescription>

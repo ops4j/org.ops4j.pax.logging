@@ -6,7 +6,6 @@
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-  <classpathentry kind="lib" path="log4j-1.2.13.jar" sourcepath="/home/niclas/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/junit/junit/4.1/junit-4.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/jmock/jmock/1.0.1/jmock-1.0.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.1/junit-4.1.jar"/>
 </classpath>
