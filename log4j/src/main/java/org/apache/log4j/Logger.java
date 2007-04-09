@@ -135,13 +135,14 @@ public class Logger
      * </p>
      *
      * @param name The name of the logger to retrieve.
+     * @return the Logger instance of the given name.
      */
     public static Logger getLogger( String name )
     {
         PaxLogger paxLogger;
         if( m_paxLogging == null )
         {
-            paxLogger = new DefaultServiceLog( name );
+            paxLogger = new DefaultServiceLog( null, name );
         }
         else
         {
@@ -158,6 +159,7 @@ public class Logger
      * @param clazz The name of <code>clazz</code> will be used as the name of
      *              the logger to retrieve.  See {@link #getLogger(String)} for
      *              more detailed information.
+     * @return the Logger instance for the given class.
      */
     public static Logger getLogger( Class clazz )
     {
@@ -175,6 +177,7 @@ public class Logger
      * does not retrieve the root logger but a logger just under root named
      * "root".
      * </p>
+     * @return the top-most Logger instance, which does not have a name.
      */
     public static Logger getRootLogger()
     {

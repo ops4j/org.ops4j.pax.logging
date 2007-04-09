@@ -35,60 +35,63 @@ package org.slf4j.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.slf4j.IMarkerFactory;
 import org.slf4j.Marker;
 
 /**
  * An almost trivial implementation of the {@link IMarkerFactory}
  * interface which creates {@link BasicMarker} instances.
- * 
+ *
  * <p>Simple logging systems can conform to the SLF4J API by binding
  * {@link org.slf4j.MarkerFactory} with an instance of this class.
  *
  * @author Ceki G&uuml;lc&uuml;
  */
-public class BasicMarkerFactory implements IMarkerFactory {
+public class BasicMarkerFactory implements IMarkerFactory
+{
 
-  Map markerMap = new HashMap();
-  
-  /**
-   * Regular users should <em>not</em> create
-   * <code>BasicMarkerFactory</code> instances. <code>Marker</code>
-   * instances can be obtained using the static {@link
-   * org.slf4j.MarkerFactory#getMarker} method.
-   */
-  public BasicMarkerFactory() {
-  }
+    Map markerMap = new HashMap();
 
-  /**
-   * Manufacture a {@link BasicMarker} instance by name. If the instance has been 
-   * created earlier, return the previously created instance. 
-   * 
-   * @param name the name of the marker to be created
-   * @return a Marker instance
-   */
-  public synchronized Marker getMarker(String name) {
-    if (name == null) {
-      throw new IllegalArgumentException("Marker name cannot be null");
+    /**
+     * Regular users should <em>not</em> create
+     * <code>BasicMarkerFactory</code> instances. <code>Marker</code>
+     * instances can be obtained using the static {@link
+     * org.slf4j.MarkerFactory#getMarker} method.
+     */
+    public BasicMarkerFactory()
+    {
     }
 
-    Marker marker = (Marker) markerMap.get(name);
-    if (marker == null) {
-      marker = new BasicMarker(name, this);
-      markerMap.put(name, marker);
+    /**
+     * Manufacture a {@link BasicMarker} instance by name. If the instance has been
+     * created earlier, return the previously created instance.
+     *
+     * @param name the name of the marker to be created
+     *
+     * @return a Marker instance
+     */
+    public synchronized Marker getMarker( String name )
+    {
+        if( name == null )
+        {
+            throw new IllegalArgumentException( "Marker name cannot be null" );
+        }
+
+        Marker marker = (Marker) markerMap.get( name );
+        if( marker == null )
+        {
+            marker = new BasicMarker( name, this );
+            markerMap.put( name, marker );
+        }
+        return marker;
     }
-    return marker;
-  }
-  
-  /**
-   * Does the name marked already exist?
-   */
-  public synchronized boolean exists(String name) {
-    if (name == null) {
-      return false;
+
+    /**
+     * Does the name marked already exist?
+     */
+    public synchronized boolean exists( String name )
+    {
+        return name != null && markerMap.containsKey( name );
     }
-    return markerMap.containsKey(name);
-  }
-  
+
 }

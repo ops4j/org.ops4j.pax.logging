@@ -16,15 +16,18 @@
  */
 package org.ops4j.pax.logging;
 
-import org.ops4j.pax.logging.PaxLogger;
+import org.osgi.framework.Bundle;
 
 public class DefaultServiceLog
     implements PaxLogger
 {
+
+    private Bundle m_bundle;
     private String m_categoryName;
 
-    public DefaultServiceLog( String categoryName )
+    public DefaultServiceLog( Bundle bundle, String categoryName )
     {
+        m_bundle = bundle;
         m_categoryName = categoryName;
     }
 
@@ -64,10 +67,7 @@ public class DefaultServiceLog
 
     public void debug( String message, Throwable t )
     {
-        System.out.print( "[" );
-        System.out.print( m_categoryName );
-        System.out.print( "] : " );
-        System.out.println( message );
+        output( message );
         if( t != null )
         {
             t.printStackTrace( System.out );
@@ -76,10 +76,7 @@ public class DefaultServiceLog
 
     public void inform( String message, Throwable t )
     {
-        System.out.print( "[" );
-        System.out.print( m_categoryName );
-        System.out.print( "] : " );
-        System.out.println( message );
+        output( message );
         if( t != null )
         {
             t.printStackTrace( System.out );
@@ -88,10 +85,7 @@ public class DefaultServiceLog
 
     public void warn( String message, Throwable t )
     {
-        System.out.print( "[" );
-        System.out.print( m_categoryName );
-        System.out.print( "] : " );
-        System.out.println( message );
+        output( message );
         if( t != null )
         {
             t.printStackTrace( System.out );
@@ -100,10 +94,7 @@ public class DefaultServiceLog
 
     public void error( String message, Throwable t )
     {
-        System.out.print( "[" );
-        System.out.print( m_categoryName );
-        System.out.print( "] : " );
-        System.out.println( message );
+        output( message );
         if( t != null )
         {
             t.printStackTrace( System.out );
@@ -112,10 +103,7 @@ public class DefaultServiceLog
 
     public void fatal( String message, Throwable t )
     {
-        System.out.print( "[" );
-        System.out.print( m_categoryName );
-        System.out.print( "] : " );
-        System.out.println( message );
+        output( message );
         if( t != null )
         {
             t.printStackTrace( System.out );
@@ -123,13 +111,22 @@ public class DefaultServiceLog
     }
 
     public int getLogLevel()
-     {
-         // Always DEBUG mode.
-         return 10000;
-     }
+    {
+        // Always DEBUG mode.
+        return 10000;
+    }
 
     public String getName()
     {
         return m_categoryName;
+    }
+
+    private void output( String message )
+    {
+        System.out.print( m_bundle.getSymbolicName() );
+        System.out.print( "[" );
+        System.out.print( m_categoryName );
+        System.out.print( "] : " );
+        System.out.println( message );
     }
 }

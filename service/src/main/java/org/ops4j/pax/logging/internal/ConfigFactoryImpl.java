@@ -26,6 +26,7 @@ import org.apache.log4j.PropertyConfigurator;
 public class ConfigFactoryImpl
     implements ConfigFactory
 {
+
     /**
      * @see org.ops4j.pax.logging.internal.ConfigFactory#configure(java.util.Properties)
      */

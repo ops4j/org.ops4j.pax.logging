@@ -24,6 +24,7 @@ import java.util.Map;
 import org.ops4j.pax.logging.internal.TrackingLogger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Bundle;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class OSGIPaxLoggingManager extends ServiceTracker
@@ -85,7 +86,7 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         TrackingLogger logger = (TrackingLogger) m_loggers.get( category );
         if( logger == null )
         {
-            logger = new TrackingLogger( m_service, category );
+            logger = new TrackingLogger( m_service, category, m_context.getBundle() );
             m_loggers.put( category, logger );
         }
         return logger;
@@ -102,5 +103,10 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         {
             m_context.ungetService( m_logServiceRef );
         }
+    }
+
+    public Bundle getBundle()
+    {
+        return m_context.getBundle();
     }
 }

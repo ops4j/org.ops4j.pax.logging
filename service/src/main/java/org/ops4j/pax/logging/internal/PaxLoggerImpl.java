@@ -21,13 +21,19 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.ops4j.pax.logging.PaxLogger;
+import org.osgi.framework.Bundle;
 
 public class PaxLoggerImpl
     implements PaxLogger
 {
     private org.apache.log4j.Logger m_delegate;
 
-    public PaxLoggerImpl( Logger delegate )
+    /**
+     * 
+     * @param bundle The bundle that is logging the message. Currently not used.
+     * @param delegate The Log4J delegate to receive the log message.
+     */
+    public PaxLoggerImpl( Bundle bundle, Logger delegate )
     {
         m_delegate = delegate;
     }

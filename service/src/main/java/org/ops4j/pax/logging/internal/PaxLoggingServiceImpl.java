@@ -17,23 +17,32 @@
  */
 package org.ops4j.pax.logging.internal;
 
+import java.util.Dictionary;
+import org.apache.log4j.Logger;
+import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.service.cm.ConfigurationException;
-import org.knopflerfish.service.log.LogService;
-import org.apache.log4j.Logger;
-import java.util.Dictionary;
+import org.osgi.service.cm.ManagedService;
+import org.osgi.service.log.LogEntry;
 
 public class PaxLoggingServiceImpl
     implements PaxLoggingService, LogService, ManagedService
 {
 
-    public PaxLogger getLogger( String category )
+    private LogReaderServiceImpl m_logReader;
+
+    public PaxLoggingServiceImpl( LogReaderServiceImpl logReader )
+    {
+        m_logReader = logReader;
+    }
+
+    public PaxLogger getLogger( Bundle bundle, String category )
     {
         Logger log4jLogger = Logger.getLogger( category );
-        return new PaxLoggerImpl( log4jLogger );
+        return new PaxLoggerImpl( bundle, log4jLogger );
     }
 
     public int getLogLevel()
@@ -59,15 +68,18 @@ public class PaxLoggingServiceImpl
     public void log( ServiceReference sr, int level, String message, Throwable exception )
     {
         String category;
+        Bundle bundle;
         if( sr == null )
         {
             category = "[undefined]";
+            bundle = null;
         }
         else
         {
-            category = sr.getBundle().getSymbolicName();
+            bundle = sr.getBundle();
+            category = bundle.getSymbolicName();
         }
-        PaxLogger logger = getLogger( category );
+        PaxLogger logger = getLogger( bundle, category );
         switch( level )
         {
             case LOG_ERROR:
@@ -85,6 +97,8 @@ public class PaxLoggingServiceImpl
             default:
                 logger.warn( "Undefined Level: " + level + " : " + message, exception );
         }
+        LogEntry entry = new LogEntryImpl( bundle, sr, level, message, exception );
+        m_logReader.fireEvent( entry );
     }
 
     public void updated( Dictionary dictionary )

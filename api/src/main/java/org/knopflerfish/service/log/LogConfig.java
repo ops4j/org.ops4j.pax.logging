@@ -34,6 +34,7 @@ public interface LogConfig {
      * 
      * @param filter
      *            the new default filter level.
+     * @param bundleLocation TODO
      */
     public void setFilter(String bundleLocation, int filter);
 

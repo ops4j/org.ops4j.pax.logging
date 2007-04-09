@@ -48,6 +48,7 @@ public class LogUtil {
      * 
      * @param level
      *            is the log severity level.
+     * @return TODO
      */
     static public String fromLevel(int level) {
         return fromLevel(level, 0);
@@ -61,6 +62,7 @@ public class LogUtil {
      *            is the log severity level. *
      * @param length
      *            the minimum length of the resulting string.
+     * @return TODO
      */
     static public String fromLevel(int level, int length) {
         StringBuffer sb = new StringBuffer(length > 7 ? length : 7);

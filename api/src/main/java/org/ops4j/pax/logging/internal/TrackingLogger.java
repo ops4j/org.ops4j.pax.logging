@@ -17,20 +17,24 @@
  */
 package org.ops4j.pax.logging.internal;
 
+import org.ops4j.pax.logging.DefaultServiceLog;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.DefaultServiceLog;
+import org.osgi.framework.Bundle;
 
 public class TrackingLogger
     implements PaxLogger
 {
+
     private PaxLoggingService m_service;
     private String m_category;
+    private Bundle m_bundle;
     private PaxLogger m_delegate;
 
-    public TrackingLogger( PaxLoggingService service, String category )
+    public TrackingLogger( PaxLoggingService service, String category, Bundle bundle )
     {
         m_category = category;
+        m_bundle = bundle;
         added( service );
     }
 
@@ -109,20 +113,21 @@ public class TrackingLogger
         m_service = service;
         if( m_service != null )
         {
-            m_delegate = m_service.getLogger( m_category );
+            m_delegate = m_service.getLogger( m_bundle, m_category );
         }
         else
         {
-            m_delegate = new DefaultServiceLog( m_category );
+            m_delegate = new DefaultServiceLog( m_bundle, m_category );
         }
     }
 
-    /** Called by the tracker when there is no service available, and the reference should
+    /**
+     * Called by the tracker when there is no service available, and the reference should
      * be dropped.
      */
     public void removed()
     {
         m_service = null;
-        m_delegate = new DefaultServiceLog( m_category );
+        m_delegate = new DefaultServiceLog( m_bundle, m_category );
     }
 }

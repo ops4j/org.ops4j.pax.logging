@@ -83,7 +83,7 @@ public class Slf4jLoggerFactory
         PaxLogger paxLogger;
         if( m_paxLogging == null )
         {
-            paxLogger = new DefaultServiceLog( name );
+            paxLogger = new DefaultServiceLog( null, name );
         }
         else
         {

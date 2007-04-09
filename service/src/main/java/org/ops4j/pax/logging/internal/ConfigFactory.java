@@ -21,12 +21,13 @@ import java.util.Properties;
 
 /**
  * Separating out the configuration class for more detailed testing.
- *
  */
 public interface ConfigFactory
 {
+
     /**
      * Expects a "merged" log4j configuration properties.
+     *
      * @param prop log4j configuration properties.
      */
     void configure( Properties prop );

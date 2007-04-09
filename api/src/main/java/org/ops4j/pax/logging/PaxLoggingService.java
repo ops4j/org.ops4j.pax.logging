@@ -18,10 +18,11 @@
 package org.ops4j.pax.logging;
 
 import org.knopflerfish.service.log.LogService;
+import org.osgi.framework.Bundle;
 
 public interface PaxLoggingService extends LogService
 {
-    PaxLogger getLogger( String category );
+    PaxLogger getLogger( Bundle bundle, String category );
 
     int getLogLevel();
 }

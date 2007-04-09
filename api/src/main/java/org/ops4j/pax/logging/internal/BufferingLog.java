@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.ops4j.pax.logging.PaxLogger;
+import org.osgi.framework.Bundle;
 
 /**
  * Experimental fallback strategy for non-availability.
@@ -28,7 +29,6 @@ import org.ops4j.pax.logging.PaxLogger;
 public class BufferingLog
     implements PaxLogger
 {
-
     private static class LogType
     {
         private static final int TRACE_INT = 0;

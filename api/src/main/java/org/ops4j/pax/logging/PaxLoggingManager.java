@@ -17,6 +17,8 @@
  */
 package org.ops4j.pax.logging;
 
+import org.osgi.framework.Bundle;
+
 public interface PaxLoggingManager
 {
 
@@ -29,4 +31,6 @@ public interface PaxLoggingManager
     void close();
 
     void dispose();
+
+    Bundle getBundle();
 }

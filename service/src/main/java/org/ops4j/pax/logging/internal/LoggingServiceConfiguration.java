@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
 import org.osgi.framework.Bundle;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
@@ -19,6 +18,7 @@ import org.osgi.service.cm.ManagedService;
 public class LoggingServiceConfiguration
     implements ManagedService
 {
+
     /**
      * Dictonary key
      */
@@ -63,6 +63,7 @@ public class LoggingServiceConfiguration
      * @param bundle         the bundle that contains the log4j configuration in it's classpath
      * @param loggerName     the loggers name to use
      * @param configFileName the location of the log4j config file
+     *
      * @throws java.io.IOException if an I/O problem occurs.
      */
     void mergeProperties( Bundle bundle, String loggerName, String configFileName )
@@ -72,7 +73,8 @@ public class LoggingServiceConfiguration
         try
         {
             URL resource = bundle.getResource( configFileName );
-            if (resource == null) {
+            if( resource == null )
+            {
                 return;
             }
             is = resource.openStream();
@@ -121,6 +123,7 @@ public class LoggingServiceConfiguration
                 {
                     properties.putAll( m_MergedProperties );
                 }
+                //noinspection PointlessBooleanExpression
                 if( m_IsUsingGlobal == false )
                 {
                     m_ConfigFactory.configure( properties );
@@ -212,7 +215,7 @@ public class LoggingServiceConfiguration
      * Overwrites all the LogService properties using the Log4J properties specified
      * in this configuration.
      *
-     * @see org.osgi.service.cm.ManagedServiceFactory#updated(String, java.util.Dictionary)
+     * @see org.osgi.service.cm.ManagedServiceFactory#updated(String,java.util.Dictionary)
      */
     public void updated( Dictionary configuration )
         throws ConfigurationException

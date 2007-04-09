@@ -17,7 +17,6 @@
  */
 package org.ops4j.pax.logging;
 
-
 public interface PaxLogger
 {
     int LEVEL_TRACE = 0;

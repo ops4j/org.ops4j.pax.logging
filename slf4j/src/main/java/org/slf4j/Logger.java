@@ -44,6 +44,7 @@ public interface Logger {
 
   /**
    * Return the name of this <code>Logger</code> instance.
+   * @return TODO
    */
   public String getName();
 
@@ -116,6 +117,7 @@ public interface Logger {
    * marker data is also taken into account.
    * 
    * @param marker The marker data to take into consideration
+   * @return true if Debug level is enabled
    */
   public boolean isDebugEnabled(Marker marker);
   
@@ -241,6 +243,7 @@ public interface Logger {
    * data is also taken into consideration.
    *
    * @param marker The marker data to take into consideration
+   * @return true if Info level is enabled
    */
   public boolean isInfoEnabled(Marker marker);
   
@@ -365,6 +368,7 @@ public interface Logger {
    * data is also taken into consideration.
    *
    * @param marker The marker data to take into consideration
+   * @return true if Warn level is enabled
    */
   public boolean isWarnEnabled(Marker marker);
  
@@ -487,6 +491,7 @@ public interface Logger {
    * marker data is also taken into consideration.
    *
    * @param marker The marker data to take into consideration
+   * @return true if Fatal level is enabled
    */
   public boolean isErrorEnabled(Marker marker);
   

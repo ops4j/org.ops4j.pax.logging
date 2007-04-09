@@ -194,8 +194,8 @@ public class JclLogger
     /**
      * Not a public method.
      *
-     * @param paxLoggingManager
-     * @param name
+     * @param paxLoggingManager TODO
+     * @param name TODO
      */
     public void setPaxLoggingManager( PaxLoggingManager paxLoggingManager, String name )
     {

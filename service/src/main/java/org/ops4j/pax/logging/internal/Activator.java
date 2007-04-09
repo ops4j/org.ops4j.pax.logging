@@ -20,13 +20,13 @@ package org.ops4j.pax.logging.internal;
 import java.util.Hashtable;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedService;
+import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 
 /**
@@ -46,6 +46,7 @@ public class Activator
      */
     private ServiceRegistration m_RegistrationPaxLogging;
     private JdkHandler m_JdkHandler;
+    private ServiceRegistration m_registrationLogReaderService;
 
     /**
      * Default constructor
@@ -60,11 +61,17 @@ public class Activator
     public void start( BundleContext bundleContext )
         throws Exception
     {
+        // register the LogReaderService
+        LogReaderServiceImpl logReader = new LogReaderServiceImpl();
+        m_registrationLogReaderService =
+            bundleContext.registerService( LogReaderService.class.getName(), logReader, null );
+
         // register the Pax Logging service
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
-        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl();
+        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( logReader );
         final LoggingServiceConfiguration loggingServiceConfig = new LoggingServiceConfiguration( configFactory );
-        final LoggingServiceFactory loggingServiceFactory = new LoggingServiceFactory( loggingServiceConfig, paxLogging );
+        final LoggingServiceFactory loggingServiceFactory =
+            new LoggingServiceFactory( loggingServiceConfig, paxLogging );
 
         String[] services =
             {
@@ -77,7 +84,7 @@ public class Activator
         m_RegistrationPaxLogging = bundleContext.registerService( services, loggingServiceFactory, srProperties );
         // Register the logging service configuration
         Hashtable configProperties = new Hashtable();
-        configProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );        
+        configProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
         bundleContext.registerService( ManagedService.class.getName(), loggingServiceConfig, configProperties );
         // Add a global handler for all JDK Logging (java.util.logging).
         m_JdkHandler = new JdkHandler( paxLogging );
@@ -98,5 +105,6 @@ public class Activator
         m_JdkHandler.close();
         m_JdkHandler = null;
         m_RegistrationPaxLogging.unregister();
+        m_registrationLogReaderService.unregister();
     }
 }

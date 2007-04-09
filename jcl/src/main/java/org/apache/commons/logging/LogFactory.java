@@ -122,6 +122,7 @@ public class LogFactory
      * @throws LogConfigurationException
      *             if the implementation class is not available or cannot be
      *             instantiated.
+     * @return the LogFactory instance to use.
      */
     public static LogFactory getFactory() throws LogConfigurationException
     {
@@ -137,6 +138,7 @@ public class LogFactory
      * 
      * @throws LogConfigurationException
      *             if a suitable <code>Log</code> instance cannot be returned
+     * @return the Log instance to use for the class
      */
     public static Log getLog( Class clazz ) throws LogConfigurationException
     {
@@ -154,6 +156,7 @@ public class LogFactory
      * 
      * @throws LogConfigurationException
      *             if a suitable <code>Log</code> instance cannot be returned
+     * @return the Log instance to use for the class of the given name
      */
     public static Log getLog( String name ) throws LogConfigurationException
     {
@@ -168,6 +171,7 @@ public class LogFactory
      * 
      * @param classLoader
      *            ClassLoader for which to release the LogFactory
+     *
      */
     public static void release( ClassLoader classLoader )
     {
@@ -196,6 +200,7 @@ public class LogFactory
      * 
      * @param name
      *            Name of the attribute to return
+     * @return always return null. This method is not supported in Pax Logging.
      */
     public Object getAttribute( String name )
     {
@@ -206,6 +211,7 @@ public class LogFactory
      * Return an array containing the names of all currently defined
      * configuration attributes. If there are no such attributes, a zero length
      * array is returned.
+     * @return always returns an emtpy String array. This method is not supported in Pax Logging.
      */
     public String[] getAttributeNames()
     {
@@ -221,6 +227,7 @@ public class LogFactory
      * 
      * @throws LogConfigurationException
      *             if a suitable <code>Log</code> instance cannot be returned
+     * @return the Log instance to use for the given class.
      */
     public Log getInstance( Class clazz ) throws LogConfigurationException
     {
@@ -248,19 +255,20 @@ public class LogFactory
      * 
      * @throws LogConfigurationException
      *             if a suitable <code>Log</code> instance cannot be returned
+     * @return the Log instance of the class with the given name.
      */
     public Log getInstance( String name ) throws LogConfigurationException
     {
         PaxLogger logger;
         if( m_paxLogging == null )
         {
-            logger = new DefaultServiceLog( name );
+            logger = new DefaultServiceLog( null, name );
         }
         else
         {
             logger = m_paxLogging.getLogger( name );
         }
-        DefaultServiceLog backup = new DefaultServiceLog( name );
+        DefaultServiceLog backup = new DefaultServiceLog( m_paxLogging.getBundle(), name );
         JclLogger jclLogger = new JclLogger( logger, backup );
         m_loggers.put( jclLogger, name );
         return jclLogger;

@@ -110,7 +110,7 @@ public interface Marker {
    * 
    * If 'name' is null the returned value is always false.
    * 
-   * @param other The marker to test for inclusion.
+   * @param name The marker to test for inclusion.
    * @return Whether this marker contains the other marker.
    */
   public boolean contains(String name);

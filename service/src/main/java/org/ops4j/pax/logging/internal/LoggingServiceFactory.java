@@ -20,7 +20,6 @@ package org.ops4j.pax.logging.internal;
 
 import java.io.IOException;
 import java.util.Dictionary;
-
 import org.apache.log4j.Logger;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
@@ -50,10 +49,10 @@ public class LoggingServiceFactory
     /**
      * Constructor
      *
-     * @param config the Configuration Factory to use
+     * @param config     the Configuration Factory to use
      * @param paxLogging reference to the Service instance.
      */
-    public LoggingServiceFactory( LoggingServiceConfiguration config, PaxLoggingService paxLogging  )
+    public LoggingServiceFactory( LoggingServiceConfiguration config, PaxLoggingService paxLogging )
     {
         m_PaxLogging = paxLogging;
         m_ConfigFactory = config;
@@ -61,7 +60,7 @@ public class LoggingServiceFactory
 
     /**
      * @see org.osgi.framework.ServiceFactory#getService(org.osgi.framework.Bundle,
-     *      org.osgi.framework.ServiceRegistration)
+     *org.osgi.framework.ServiceRegistration)
      */
     public Object getService( Bundle bundle, ServiceRegistration registration )
     {
@@ -87,7 +86,7 @@ public class LoggingServiceFactory
      * Disposes the LogService instance.
      *
      * @see org.osgi.framework.ServiceFactory#ungetService(org.osgi.framework.Bundle,
-     *      org.osgi.framework.ServiceRegistration, java.lang.Object)
+     *org.osgi.framework.ServiceRegistration,java.lang.Object)
      */
     public void ungetService( Bundle bundle, ServiceRegistration registration, Object service )
     {

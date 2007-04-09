@@ -329,7 +329,7 @@ public class LogRef implements ServiceListener, LogService {
      *            Log message.
      */
     public void debug(String msg) {
-        doLog(msg, LOG_DEBUG, (ServiceReference) null, (Throwable) null);
+        doLog(msg, LOG_DEBUG, null, null);
     }
 
     /**
@@ -342,7 +342,7 @@ public class LogRef implements ServiceListener, LogService {
      *            message is associated with.
      */
     public void debug(String msg, ServiceReference sr) {
-        doLog(msg, LOG_DEBUG, sr, (Throwable) null);
+        doLog(msg, LOG_DEBUG, sr, null);
     }
 
     /**
@@ -354,7 +354,7 @@ public class LogRef implements ServiceListener, LogService {
      *            The exception that reflects the condition.
      */
     public void debug(String msg, Throwable e) {
-        doLog(msg, LOG_DEBUG, (ServiceReference) null, e);
+        doLog(msg, LOG_DEBUG, null, e);
     }
 
     /**
@@ -379,7 +379,7 @@ public class LogRef implements ServiceListener, LogService {
      *            Log message
      */
     public void info(String msg) {
-        doLog(msg, LOG_INFO, (ServiceReference) null, (Throwable) null);
+        doLog(msg, LOG_INFO, null, null );
     }
 
     /**
@@ -392,7 +392,7 @@ public class LogRef implements ServiceListener, LogService {
      *            message is associated with.
      */
     public void info(String msg, ServiceReference sr) {
-        doLog(msg, LOG_INFO, sr, (Throwable) null);
+        doLog(msg, LOG_INFO, sr, null );
     }
 
     /**
@@ -404,7 +404,7 @@ public class LogRef implements ServiceListener, LogService {
      *            The exception that reflects the condition.
      */
     public void info(String msg, Throwable e) {
-        doLog(msg, LOG_INFO, (ServiceReference) null, e);
+        doLog(msg, LOG_INFO, null, e);
     }
 
     /**
@@ -429,7 +429,7 @@ public class LogRef implements ServiceListener, LogService {
      *            Log message
      */
     public void warn(String msg) {
-        doLog(msg, LOG_WARNING, (ServiceReference) null, (Throwable) null);
+        doLog(msg, LOG_WARNING, null, null );
     }
 
     /**
@@ -442,7 +442,7 @@ public class LogRef implements ServiceListener, LogService {
      *            message is associated with.
      */
     public void warn(String msg, ServiceReference sr) {
-        doLog(msg, LOG_WARNING, sr, (Throwable) null);
+        doLog(msg, LOG_WARNING, sr, null );
     }
 
     /**
@@ -454,7 +454,7 @@ public class LogRef implements ServiceListener, LogService {
      *            The exception that reflects the condition.
      */
     public void warn(String msg, Throwable e) {
-        doLog(msg, LOG_WARNING, (ServiceReference) null, e);
+        doLog(msg, LOG_WARNING, null, e);
     }
 
     /**
@@ -479,7 +479,7 @@ public class LogRef implements ServiceListener, LogService {
      *            Log message
      */
     public void error(String msg) {
-        doLog(msg, LOG_ERROR, (ServiceReference) null, (Throwable) null);
+        doLog(msg, LOG_ERROR, null, null );
     }
 
     /**
@@ -492,7 +492,7 @@ public class LogRef implements ServiceListener, LogService {
      *            message is associated with.
      */
     public void error(String msg, ServiceReference sr) {
-        doLog(msg, LOG_ERROR, sr, (Throwable) null);
+        doLog(msg, LOG_ERROR, sr, null );
     }
 
     /**
@@ -504,7 +504,7 @@ public class LogRef implements ServiceListener, LogService {
      *            The exception that reflects the condition.
      */
     public void error(String msg, Throwable e) {
-        doLog(msg, LOG_ERROR, (ServiceReference) null, e);
+        doLog(msg, LOG_ERROR, null, e);
     }
 
     /**
@@ -533,7 +533,7 @@ public class LogRef implements ServiceListener, LogService {
      *            Human readable string describing the condition.
      */
     public void log(int level, String message) {
-        doLog(message, level, (ServiceReference) null, (Throwable) null);
+        doLog(message, level, null, null );
     }
 
     /**
@@ -549,7 +549,7 @@ public class LogRef implements ServiceListener, LogService {
      *            The exception that reflects the condition.
      */
     public void log(int level, String message, Throwable exception) {
-        doLog(message, level, (ServiceReference) null, exception);
+        doLog(message, level, null, exception);
     }
 
     /**
@@ -566,7 +566,7 @@ public class LogRef implements ServiceListener, LogService {
      *            Human readable string describing the condition.
      */
     public void log(ServiceReference sr, int level, String message) {
-        doLog(message, level, sr, (Throwable) null);
+        doLog(message, level, sr, null );
     }
 
     /**

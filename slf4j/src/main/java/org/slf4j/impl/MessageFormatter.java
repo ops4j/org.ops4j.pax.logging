@@ -109,13 +109,12 @@ public class MessageFormatter {
     }
     int i = 0;
     int patternLength = messagePattern.length();
-    int j = messagePattern.indexOf(DELIM_START);
 
     StringBuffer sbuf = new StringBuffer(patternLength + 100);
 
     for (int L = 0; L < argArray.length; L++) {
 
-      j = messagePattern.indexOf(DELIM_START, i);
+      int j = messagePattern.indexOf(DELIM_START, i);
 
       if (j == -1 || (j+1 == patternLength )) {
         // no more variables
