@@ -21,6 +21,7 @@ import java.util.Hashtable;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.EventAdminTracker;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -48,6 +49,7 @@ public class Activator
     private JdkHandler m_JdkHandler;
     private ServiceRegistration m_registrationLogReaderService;
     private FrameworkHandler m_frameworkHandler;
+    private EventAdminTracker m_eventAdmin;
 
     /**
      * Default constructor
@@ -67,9 +69,13 @@ public class Activator
         m_registrationLogReaderService =
             bundleContext.registerService( LogReaderService.class.getName(), logReader, null );
 
+        // Tracking for the EventAdmin
+        m_eventAdmin = new EventAdminTracker( bundleContext );
+        m_eventAdmin.open();
+
         // register the Pax Logging service
         ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
-        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( logReader );
+        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( logReader, m_eventAdmin );
         final LoggingServiceConfiguration loggingServiceConfig = new LoggingServiceConfiguration( configFactory );
         final LoggingServiceFactory loggingServiceFactory =
             new LoggingServiceFactory( loggingServiceConfig, paxLogging );
@@ -104,6 +110,9 @@ public class Activator
     public void stop( BundleContext bundleContext )
         throws Exception
     {
+        // shut down the tracker.
+        m_eventAdmin.close();
+
         // Clean up the listeners.
         bundleContext.removeBundleListener( m_frameworkHandler );
         bundleContext.removeFrameworkListener( m_frameworkHandler );

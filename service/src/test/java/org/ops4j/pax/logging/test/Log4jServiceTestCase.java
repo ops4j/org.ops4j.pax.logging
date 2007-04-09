@@ -42,7 +42,7 @@ public class Log4jServiceTestCase extends MockObjectTestCase implements LogListe
         LogReaderServiceImpl logReader = new LogReaderServiceImpl();
         logReader.addLogListener( this );
         m_logged = false;
-        PaxLoggingServiceImpl ls = new PaxLoggingServiceImpl( logReader );
+        PaxLoggingServiceImpl ls = new PaxLoggingServiceImpl( logReader, null );
         ls.log( LogService.LOG_DEBUG, "*******TESTING*********" );
         Exception exception = new Exception();
         ls.log( LogService.LOG_ERROR, "*******TESTING*********", exception );

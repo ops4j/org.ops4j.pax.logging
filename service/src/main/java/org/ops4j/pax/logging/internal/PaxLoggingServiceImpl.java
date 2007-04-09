@@ -133,8 +133,13 @@ public class PaxLoggingServiceImpl
         }
         LogEntry entry = new LogEntryImpl( bundle, sr, level, message, exception );
         m_logReader.fireEvent( entry );
-        Event event = createEvent( type, bundle, level, entry, message, exception, sr );
-        m_eventAdmin.postEvent( event );
+
+        // This should only be null for TestCases.
+        if( m_eventAdmin != null )
+        {
+            Event event = createEvent( type, bundle, level, entry, message, exception, sr );
+            m_eventAdmin.postEvent( event );
+        }
     }
 
     public void updated( Dictionary dictionary )
