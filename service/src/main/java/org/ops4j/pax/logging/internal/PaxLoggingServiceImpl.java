@@ -57,7 +57,7 @@ public class PaxLoggingServiceImpl
 
     public void log( int level, String message, Throwable exception )
     {
-        log( null, level, message, exception );
+        log( (ServiceReference) null, level, message, exception );
     }
 
     public void log( ServiceReference sr, int level, String message )
@@ -67,17 +67,38 @@ public class PaxLoggingServiceImpl
 
     public void log( ServiceReference sr, int level, String message, Throwable exception )
     {
-        String category;
-        Bundle bundle;
+        log( null, sr, level, message, exception );
+    }
+
+    /** This method is used by the FrameworkHandler to log framework events.
+     *
+     * @param bundle The bundle that caused the event.
+     * @param level The level to be logged as.
+     * @param message The message.
+     * @param exception The exception, if any otherwise null.
+     */
+    void log( Bundle bundle, int level, String message, Throwable exception )
+    {
+        log( bundle, null, level, message, exception );
+    }
+
+    private void log( Bundle bundle, ServiceReference sr, int level, String message, Throwable exception )
+    {
+        String category = "";
         if( sr == null )
         {
             category = "[undefined]";
-            bundle = null;
         }
         else
         {
-            bundle = sr.getBundle();
-            category = bundle.getSymbolicName();
+            if( bundle != null )
+            {
+                bundle = sr.getBundle();
+            }
+            if( bundle != null )
+            {
+                category = bundle.getSymbolicName();
+            }
         }
         PaxLogger logger = getLogger( bundle, category );
         switch( level )

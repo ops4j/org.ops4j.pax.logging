@@ -47,6 +47,7 @@ public class Activator
     private ServiceRegistration m_RegistrationPaxLogging;
     private JdkHandler m_JdkHandler;
     private ServiceRegistration m_registrationLogReaderService;
+    private FrameworkHandler m_frameworkHandler;
 
     /**
      * Default constructor
@@ -90,6 +91,11 @@ public class Activator
         m_JdkHandler = new JdkHandler( paxLogging );
         Logger rootLogger = LogManager.getLogManager().getLogger( "" );
         rootLogger.addHandler( m_JdkHandler );
+
+        m_frameworkHandler = new FrameworkHandler( paxLogging );
+        bundleContext.addBundleListener( m_frameworkHandler );
+        bundleContext.addFrameworkListener( m_frameworkHandler );
+        bundleContext.addServiceListener( m_frameworkHandler );
     }
 
     /**
@@ -98,7 +104,12 @@ public class Activator
     public void stop( BundleContext bundleContext )
         throws Exception
     {
-        // Add a global handler for all JDK Logging (java.util.logging).
+        // Clean up the listeners.
+        bundleContext.removeBundleListener( m_frameworkHandler );
+        bundleContext.removeFrameworkListener( m_frameworkHandler );
+        bundleContext.removeServiceListener( m_frameworkHandler );
+
+        // Remove the global handler for all JDK Logging (java.util.logging).
         Logger rootLogger = LogManager.getLogManager().getLogger( "" );
         rootLogger.removeHandler( m_JdkHandler );
         m_JdkHandler.flush();
