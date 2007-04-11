@@ -36,6 +36,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="api" />
     <orderEntryProperties />
   </component>
   <component name="PluginUploader.UploadConfigurable">
