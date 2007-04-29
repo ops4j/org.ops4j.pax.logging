@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>logging</artifactId>
-    <groupId>org.ops4j.pax</groupId>
+    <artifactId>build</artifactId>
+    <groupId>org.ops4j.pax.logging</groupId>
     <version>0.9.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -11,7 +11,6 @@
   <name>OPS4J - Pax Logging API</name>
   <version>0.9.5-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
     The Pax Logging API Library is to allow for the Pax Logging Service to be reloaded without stopping the many
     dependent bundles.
