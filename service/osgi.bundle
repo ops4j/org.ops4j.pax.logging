@@ -1,15 +1,24 @@
+Bundle-Activator: org.ops4j.pax.logging.internal.Activator
 
-Private-Package:    javax.jms, \
-                    javax.mail, \
-                    javax.mail.internet, \
-                    com.sun.jdmk.comm, \
-                    javax.management, \
-                    javax.naming, \
-                    javax.swing, \
-                    javax.swing.border, \
-                    javax.swing.event, \
-                    javax.swing.table, \
-                    javax.swing.text, \
-                    javax.swing.tree
+Private-Package:  org.apache.log4j.*, \
+                  org.ops4j.pax.logging.internal
 
-Export-Package:  org.ops4j.pax.logging.spi; version=1.0; provider=paxlogging
+Import-Package:   com.sun.jdmk.comm; resolution:=optional, \
+                  javax.jms; resolution:=optional, \
+                  javax.mail; resolution:=optional, \
+                  javax.mail.internet; resolution:=optional, \
+                  javax.management; resolution:=optional, \
+                  javax.naming; resolution:=optional, \
+                  javax.swing; resolution:=optional, \
+                  javax.swing.border; resolution:=optional, \
+                  javax.swing.event; resolution:=optional, \
+                  javax.swing.table; resolution:=optional, \
+                  javax.swing.text; resolution:=optional, \
+                  javax.swing.tree; resolution:=optional, \
+                  javax.xml.parsers; resoltion:=optional, \
+                  org.w3c.dom; resolution:=optional, \
+                  org.xml.sax; resolution:=optional, \
+                  org.xml.sax.helpers; resolution:=optional, \
+                  *
+
+Export-Package:   org.ops4j.pax.logging.spi; version=${pom.version}; provider=paxlogging

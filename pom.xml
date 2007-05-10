@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.ops4j.pax</groupId>
     <artifactId>project</artifactId>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
   </parent>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>build</artifactId>
@@ -47,16 +47,19 @@
         <groupId>org.osgi</groupId>
         <artifactId>osgi_R4_core</artifactId>
         <version>1.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>osgi_R4_compendium</artifactId>
         <version>1.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jmock</groupId>
         <artifactId>jmock</artifactId>
         <version>1.0.1</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>

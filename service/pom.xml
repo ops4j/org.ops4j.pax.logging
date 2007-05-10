@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>logging</artifactId>
-    <groupId>org.ops4j.pax</groupId>
+    <artifactId>build</artifactId>
+    <groupId>org.ops4j.pax.logging</groupId>
     <version>0.9.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -15,11 +15,48 @@
   <description>Pax Logging Service is a Log4J driven service that supports Jakarta Commons Logging,
     Log4J, Avalon Logging, SLF4J and Pax Logging clients. Note that all this clients must use the Pax Logging
     Client library in the proper way. See documentation for details.</description>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.ops4j.pax.maven</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.ops4j.pax.construct</groupId>
+        <artifactId>maven-pax-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>dependency-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>log4j</groupId>
+                  <artifactId>log4j</artifactId>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.directory}/classes
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
@@ -34,12 +71,10 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi_R4_compendium</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi_R4_core</artifactId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

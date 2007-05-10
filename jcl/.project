@@ -1,6 +1,7 @@
 <projectDescription>
   <name>jcl</name>
-  <comment>Pax Logging JCL Support is a bundle that enables support for Jakarta Commons Logging and connecting the API to the Pax Logging Service. See documentation for details.</comment>
+  <comment>Pax Logging JCL Support is a bundle that enables support for Jakarta Commons Logging and connecting the API to the
+      Pax Logging Service. See documentation for details.</comment>
   <projects/>
   <buildSpec>
     <buildCommand>

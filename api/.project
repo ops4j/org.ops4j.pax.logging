@@ -1,8 +1,7 @@
 <projectDescription>
   <name>api</name>
-  <comment>The Pax Logging API Library is to allow for the Pax Logging Service to be reloaded without stopping the many
-    dependent bundles.
-    It also contains the OSGi Log Service API and the Knopflerfish Log API.</comment>
+  <comment>The Pax Logging API Library is to allow for the Pax Logging Service to be reloaded without stopping the many 
+    dependent bundles. It also contains the OSGi Log Service API and the Knopflerfish Log API.</comment>
   <projects/>
   <buildSpec>
     <buildCommand>

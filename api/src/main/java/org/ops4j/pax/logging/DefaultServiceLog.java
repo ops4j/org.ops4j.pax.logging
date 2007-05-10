@@ -123,7 +123,11 @@ public class DefaultServiceLog
 
     private void output( String message )
     {
-        System.out.print( m_bundle.getSymbolicName() );
+        // Might be [null] if used by standard test cases.
+        if( m_bundle != null )
+        {
+            System.out.print( m_bundle.getSymbolicName() );
+        }
         System.out.print( "[" );
         System.out.print( m_categoryName );
         System.out.print( "] : " );

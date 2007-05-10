@@ -15,11 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.avalon;
+package org.ops4j.pax.logging.avalon.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.apache.avalon.framework.logger.Logger;
+import org.ops4j.pax.logging.avalon.AvalonLogFactory;
 
 public class Activator
     implements BundleActivator

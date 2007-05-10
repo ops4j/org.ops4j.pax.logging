@@ -18,7 +18,6 @@
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>osgi_R4_core</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>

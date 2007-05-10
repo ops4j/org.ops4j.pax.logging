@@ -1,5 +1,11 @@
+Bundle-Activator:   org.ops4j.pax.logging.example.Activator
 
-Private-Package:    javax.security.cert,\
-                    com.sun.net.ssl, \
-                    com.sun.net.ssl.internal.ssl, \
-                    javax.net.ssl
+Private-Package:    org.mortbay.*, \
+                    org.ops4j.pax.logging.example
+
+Import-Package:     com.sun.net.ssl.*; resolution:=optional, \
+                    javax.net.ssl; resolution:=optional, \
+                    javax.security.cert; resolution:=optional, \
+                    *
+
+Export-Package:

@@ -1,2 +1,5 @@
+Bundle-Activator:   org.apache.commons.logging.internal.Activator
+
+Private-Package:    org.apache.commons.logging.internal
 
 Export-Package:     org.apache.commons.logging;version=1.0.4; provider=paxlogging

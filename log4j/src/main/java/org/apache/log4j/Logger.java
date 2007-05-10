@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
-import org.apache.log4j.helpers.MessageFormatter;
+import org.apache.log4j.internal.MessageFormatter;
 import org.ops4j.pax.logging.DefaultServiceLog;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;

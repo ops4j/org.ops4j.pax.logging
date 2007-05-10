@@ -268,8 +268,7 @@ public class LogFactory
         {
             logger = m_paxLogging.getLogger( name );
         }
-        DefaultServiceLog backup = new DefaultServiceLog( m_paxLogging.getBundle(), name );
-        JclLogger jclLogger = new JclLogger( logger, backup );
+        JclLogger jclLogger = new JclLogger( logger );
         m_loggers.put( jclLogger, name );
         return jclLogger;
     }
