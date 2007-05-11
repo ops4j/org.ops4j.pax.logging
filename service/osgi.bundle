@@ -1,24 +1,16 @@
 Bundle-Activator: org.ops4j.pax.logging.internal.Activator
 
-Private-Package:  org.apache.log4j.*, \
+Private-Package:  org.apache.log4j, \
+                  org.apache.log4j.config, \
+                  org.apache.log4j.helpers, \
+                  org.apache.log4j.or, \
+                  org.apache.log4j.spi, \
                   org.ops4j.pax.logging.internal
 
-Import-Package:   com.sun.jdmk.comm; resolution:=optional, \
-                  javax.jms; resolution:=optional, \
-                  javax.mail; resolution:=optional, \
-                  javax.mail.internet; resolution:=optional, \
-                  javax.management; resolution:=optional, \
-                  javax.naming; resolution:=optional, \
-                  javax.swing; resolution:=optional, \
-                  javax.swing.border; resolution:=optional, \
-                  javax.swing.event; resolution:=optional, \
-                  javax.swing.table; resolution:=optional, \
-                  javax.swing.text; resolution:=optional, \
-                  javax.swing.tree; resolution:=optional, \
-                  javax.xml.parsers; resoltion:=optional, \
-                  org.w3c.dom; resolution:=optional, \
-                  org.xml.sax; resolution:=optional, \
-                  org.xml.sax.helpers; resolution:=optional, \
-                  *
+Import-Package: org.knopflerfish.service.log; provider="paxlogging", \
+                org.ops4j.pax.logging, \
+                org.osgi.framework; version="[1.0.0, 2.0.0)", \
+                org.osgi.service.cm; version="[1.0.0, 2.0.0)", \
+                org.osgi.service.log; version="[1.0.0, 2.0.0)"
 
 Export-Package:   org.ops4j.pax.logging.spi; version=${pom.version}; provider=paxlogging
