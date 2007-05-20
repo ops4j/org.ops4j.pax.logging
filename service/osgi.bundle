@@ -7,7 +7,7 @@ Private-Package:  org.apache.log4j, \
                   org.apache.log4j.spi, \
                   org.ops4j.pax.logging.internal
 
-Import-Package: org.knopflerfish.service.log; provider="paxlogging", \
+Import-Package: org.knopflerfish.service.log; provider="paxlogging";version="[1.1.0,2.0.0)", \
                 org.ops4j.pax.logging, \
                 org.osgi.framework; version="[1.0.0, 2.0.0)", \
                 org.osgi.service.cm; version="[1.0.0, 2.0.0)", \
