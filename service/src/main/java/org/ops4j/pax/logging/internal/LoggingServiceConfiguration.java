@@ -31,7 +31,7 @@ public class LoggingServiceConfiguration
     /**
      * The config factory
      */
-    private ConfigFactory m_ConfigFactory;
+    private Configurator m_configurator;
 
     /**
      * Merged log4j properties from all the bundles.
@@ -44,15 +44,15 @@ public class LoggingServiceConfiguration
      */
     private boolean m_IsUsingGlobal;
 
-    public LoggingServiceConfiguration( ConfigFactory configFactory )
+    public LoggingServiceConfiguration( Configurator configurator )
     {
-        m_ConfigFactory = configFactory;
+        m_configurator = configurator;
         m_MergedProperties = new Properties();
         m_MergedProperties.put( "log4j.rootLogger", "DEBUG, A1" );
         m_MergedProperties.put( "log4j.appender.A1", "org.apache.log4j.ConsoleAppender" );
         m_MergedProperties.put( "log4j.appender.A1.layout", "org.apache.log4j.PatternLayout" );
         m_MergedProperties.put( "log4j.appender.A1.layout.ConversionPattern", "%-4r [%t] %-5p %c %x - %m%n" );
-        m_ConfigFactory.configure( m_MergedProperties );
+        m_configurator.configure( m_MergedProperties );
 
     }
 
@@ -126,7 +126,7 @@ public class LoggingServiceConfiguration
                 //noinspection PointlessBooleanExpression
                 if( m_IsUsingGlobal == false )
                 {
-                    m_ConfigFactory.configure( properties );
+                    m_configurator.configure( properties );
                 }
                 m_MergedProperties = properties;
             }
@@ -162,7 +162,7 @@ public class LoggingServiceConfiguration
         {
             return;
         }
-        m_ConfigFactory.configure( extracted );
+        m_configurator.configure( extracted );
         m_IsUsingGlobal = false;
     }
 
@@ -182,14 +182,14 @@ public class LoggingServiceConfiguration
                 is.close();
                 is = null;
 
-                m_ConfigFactory.configureXml( url.getFile() );
+                m_configurator.configureXml( url.getFile() );
             }
             else
             {
                 is = url.openStream();
                 Properties properties = new Properties();
                 properties.load( is );
-                m_ConfigFactory.configure( properties );
+                m_configurator.configure( properties );
             }
 
             m_IsUsingGlobal = true;
@@ -219,7 +219,7 @@ public class LoggingServiceConfiguration
     private void useGlobalProperties()
     {
         m_IsUsingGlobal = false;
-        m_ConfigFactory.configure( m_MergedProperties );
+        m_configurator.configure( m_MergedProperties );
     }
 
     /**

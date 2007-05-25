@@ -22,14 +22,14 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
 /**
- * Implementation of the ConfigFactory interface
+ * Implementation of the Configurator interface
  */
-public class ConfigFactoryImpl
-    implements ConfigFactory
+public class Log4jConfiguratorImpl
+    implements Configurator
 {
 
     /**
-     * @see org.ops4j.pax.logging.internal.ConfigFactory#configure(java.util.Properties)
+     * @see org.ops4j.pax.logging.internal.Configurator#configure(java.util.Properties)
      */
     public void configure( Properties prop )
     {
@@ -37,7 +37,7 @@ public class ConfigFactoryImpl
     }
 
     /**
-     * @see org.ops4j.pax.logging.internal.ConfigFactory#configureXml(String)
+     * @see org.ops4j.pax.logging.internal.Configurator#configureXml(String)
      */
     public void configureXml( String filename )
     {

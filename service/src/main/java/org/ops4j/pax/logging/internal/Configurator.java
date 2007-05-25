@@ -26,7 +26,7 @@ import java.util.Properties;
  * TODO We probably need to encapsulate the Properties/XML config/Filenames/etc. into a LogConfig interface,
  * TODO with different implementations depending on the logging framework and config type
  */
-public interface ConfigFactory
+public interface Configurator
 {
 
     /**

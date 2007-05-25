@@ -68,9 +68,9 @@ public class Activator
             bundleContext.registerService( LogReaderService.class.getName(), logReader, null );
 
         // register the Pax Logging service
-        ConfigFactoryImpl configFactory = new ConfigFactoryImpl();
+        Log4jConfiguratorImpl log4jConfigurator = new Log4jConfiguratorImpl();
         PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( logReader );
-        final LoggingServiceConfiguration loggingServiceConfig = new LoggingServiceConfiguration( configFactory );
+        final LoggingServiceConfiguration loggingServiceConfig = new LoggingServiceConfiguration( log4jConfigurator );
         final LoggingServiceFactory loggingServiceFactory =
             new LoggingServiceFactory( loggingServiceConfig, paxLogging );
 

@@ -29,7 +29,7 @@ import org.jmock.MockObjectTestCase;
 import org.jmock.core.Invocation;
 import org.jmock.core.Stub;
 import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.internal.ConfigFactory;
+import org.ops4j.pax.logging.internal.Configurator;
 import org.ops4j.pax.logging.internal.LoggingServiceConfiguration;
 import org.ops4j.pax.logging.internal.LoggingServiceFactory;
 import org.osgi.framework.Bundle;
@@ -47,11 +47,11 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
     public void testMergingProperties()
         throws Exception
     {
-        Mock configFactory = new Mock( ConfigFactory.class );
+        Mock configFactory = new Mock( Configurator.class );
         BasicConfigureStub stub = new BasicConfigureStub();
         configFactory.expects( atLeastOnce() ).method( "configure" ).with( NOT_NULL ).will( stub );
         
-        LoggingServiceConfiguration loggingConfig = new LoggingServiceConfiguration( (ConfigFactory) configFactory.proxy() );
+        LoggingServiceConfiguration loggingConfig = new LoggingServiceConfiguration( (Configurator) configFactory.proxy() );
         ResourceStub resourceStub = new ResourceStub();
 
         Mock bundle1 = new Mock( Bundle.class );
@@ -82,10 +82,10 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
     public void testManagedServiceConfiguration()
         throws Exception
     {
-        Mock configFactory = new Mock( ConfigFactory.class );
+        Mock configFactory = new Mock( Configurator.class );
         GlobalConfigureStub stub = new GlobalConfigureStub();
         configFactory.expects( atLeastOnce() ).method( "configure" ).with( NOT_NULL ).will( stub );
-        LoggingServiceConfiguration loggingConfig = new LoggingServiceConfiguration( (ConfigFactory) configFactory.proxy() );
+        LoggingServiceConfiguration loggingConfig = new LoggingServiceConfiguration( (Configurator) configFactory.proxy() );
 
         ResourceStub resourceStub = new ResourceStub();
 
@@ -258,7 +258,7 @@ public class Log4jServiceFactoryTestCase extends MockObjectTestCase
                     m_State = 2;
                     break;
                 default:
-                    fail( "Too many calls to ConfigFactory." );
+                    fail( "Too many calls to Configurator." );
             }
             return null;
         }
