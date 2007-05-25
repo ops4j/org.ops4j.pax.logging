@@ -21,6 +21,10 @@ import java.util.Properties;
 
 /**
  * Separating out the configuration class for more detailed testing.
+ *
+ * TODO Currently this class has two methods, which to some extent expose the underlying implementations.
+ * TODO We probably need to encapsulate the Properties/XML config/Filenames/etc. into a LogConfig interface,
+ * TODO with different implementations depending on the logging framework and config type
  */
 public interface ConfigFactory
 {
@@ -31,4 +35,10 @@ public interface ConfigFactory
      * @param prop log4j configuration properties.
      */
     void configure( Properties prop );
+
+    /**
+     * Expects log4j configuration filename.
+     * @param filename log4j Xml configuration filename.
+     */
+    void configureXml( String filename );
 }

@@ -172,24 +172,35 @@ public class LoggingServiceConfiguration
         InputStream is = null;
         try
         {
-            URL url = new URL( configFile.toString() );
-            is = url.openStream();
-            Properties properties = new Properties();
-            properties.load( is );
-            m_ConfigFactory.configure( properties );
+            String configFileString = configFile.toString();
+            URL url = new URL( configFileString );
+            if(configFileString.endsWith(".xml"))
+            {
+                // we just verify here that we can open the stream i.e. the file exists
+                // we want to throw ConfigurationException if not since log4j does not re-throw this exception
+                is = url.openStream();
+                is.close();
+                is = null;
+
+                m_ConfigFactory.configureXml( url.getFile() );
+            }
+            else
+            {
+                is = url.openStream();
+                Properties properties = new Properties();
+                properties.load( is );
+                m_ConfigFactory.configure( properties );
+            }
+
             m_IsUsingGlobal = true;
         } catch( MalformedURLException e )
         {
             String message = "Cannot read log4j configuration from " + configFile;
-            ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE, message );
-            ce.initCause( e );
-            throw ce;
+            throw new ConfigurationException( LOG4J_CONFIG_FILE, message, e );
         } catch( IOException e )
         {
             String message = "Cannot read log4j configuration from " + configFile;
-            ConfigurationException ce = new ConfigurationException( LOG4J_CONFIG_FILE, message );
-            ce.initCause( e );
-            throw ce;
+            throw new ConfigurationException( LOG4J_CONFIG_FILE, message, e );
         } finally
         {
             if( is != null )

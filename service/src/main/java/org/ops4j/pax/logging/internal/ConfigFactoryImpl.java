@@ -19,6 +19,7 @@ package org.ops4j.pax.logging.internal;
 
 import java.util.Properties;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * Implementation of the ConfigFactory interface
@@ -33,5 +34,13 @@ public class ConfigFactoryImpl
     public void configure( Properties prop )
     {
         PropertyConfigurator.configure( prop );
+    }
+
+    /**
+     * @see org.ops4j.pax.logging.internal.ConfigFactory#configureXml(String)
+     */
+    public void configureXml( String filename )
+    {
+        DOMConfigurator.configure( filename );
     }
 }
