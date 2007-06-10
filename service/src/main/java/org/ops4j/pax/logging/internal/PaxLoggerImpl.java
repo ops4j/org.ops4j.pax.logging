@@ -113,5 +113,3 @@ public class PaxLoggerImpl
         m_delegate.log( callerFQCN, level, message, t );
     }
 }
-
-

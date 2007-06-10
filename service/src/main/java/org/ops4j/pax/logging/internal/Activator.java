@@ -35,7 +35,6 @@ import org.osgi.service.log.LogService;
 public class Activator
     implements BundleActivator
 {
-
     /**
      * The Managed Service PID for the log4j configuration
      */
@@ -78,15 +77,16 @@ public class Activator
             {
                 LogService.class.getName(),
                 org.knopflerfish.service.log.LogService.class.getName(),
-                PaxLoggingService.class.getName(),
+                PaxLoggingService.class.getName()
             };
 
         Hashtable srProperties = new Hashtable();
         m_RegistrationPaxLogging = bundleContext.registerService( services, loggingServiceFactory, srProperties );
         // Register the logging service configuration
         Hashtable configProperties = new Hashtable();
+        configProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
         configProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
-        bundleContext.registerService( ManagedService.class.getName(), loggingServiceConfig, configProperties );
+        bundleContext.registerService( LoggingServiceConfiguration.class.getName(), loggingServiceConfig, configProperties );
         // Add a global handler for all JDK Logging (java.util.logging).
         m_JdkHandler = new JdkHandler( paxLogging );
         Logger rootLogger = LogManager.getLogManager().getLogger( "" );
