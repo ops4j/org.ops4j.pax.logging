@@ -23,8 +23,9 @@
   <modules>
     <module>api</module>
     <module>avalon</module>
-    <module>example</module>
-    <module>gob</module>
+    <!-- These don't build -->
+    <!--module>example</module>
+    <module>gob</module-->
     <module>jcl</module>
     <module>log4j</module>
     <module>service</module>
