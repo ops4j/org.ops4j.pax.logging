@@ -35,10 +35,22 @@ import org.osgi.service.log.LogService;
 public class Activator
     implements BundleActivator
 {
+
     /**
      * The Managed Service PID for the log4j configuration
      */
     public static final String CONFIGURATION_PID = "org.ops4j.pax.logging";
+
+    private static final String[] LOGFACTORY_SERVICE_NAMES = {
+        LogService.class.getName(),
+        org.knopflerfish.service.log.LogService.class.getName(),
+        PaxLoggingService.class.getName()
+    };
+
+    private static final String[] CONFIG_SERVICE_NAMES = {
+        ManagedService.class.getName(),
+        LoggingServiceConfiguration.class.getName()
+    };
 
     /**
      * Reference to the registered service
@@ -47,6 +59,7 @@ public class Activator
     private JdkHandler m_JdkHandler;
     private ServiceRegistration m_registrationLogReaderService;
     private FrameworkHandler m_frameworkHandler;
+    private ServiceRegistration m_configRegistration;
 
     /**
      * Default constructor
@@ -73,20 +86,17 @@ public class Activator
         final LoggingServiceFactory loggingServiceFactory =
             new LoggingServiceFactory( loggingServiceConfig, paxLogging );
 
-        String[] services =
-            {
-                LogService.class.getName(),
-                org.knopflerfish.service.log.LogService.class.getName(),
-                PaxLoggingService.class.getName()
-            };
-
         Hashtable srProperties = new Hashtable();
-        m_RegistrationPaxLogging = bundleContext.registerService( services, loggingServiceFactory, srProperties );
+        m_RegistrationPaxLogging =
+            bundleContext.registerService( LOGFACTORY_SERVICE_NAMES, loggingServiceFactory, srProperties );
+
         // Register the logging service configuration
         Hashtable configProperties = new Hashtable();
         configProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
         configProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
-        bundleContext.registerService( LoggingServiceConfiguration.class.getName(), loggingServiceConfig, configProperties );
+        m_configRegistration =
+            bundleContext.registerService( CONFIG_SERVICE_NAMES, loggingServiceConfig, configProperties );
+
         // Add a global handler for all JDK Logging (java.util.logging).
         m_JdkHandler = new JdkHandler( paxLogging );
         Logger rootLogger = LogManager.getLogManager().getLogger( "" );
@@ -115,7 +125,14 @@ public class Activator
         m_JdkHandler.flush();
         m_JdkHandler.close();
         m_JdkHandler = null;
+
         m_RegistrationPaxLogging.unregister();
+        m_RegistrationPaxLogging = null;
+
+        m_configRegistration.unregister();
+        m_configRegistration = null;
+
         m_registrationLogReaderService.unregister();
+        m_registrationLogReaderService = null;
     }
 }
