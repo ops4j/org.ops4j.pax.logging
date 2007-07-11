@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.ops4j.pax</groupId>
     <artifactId>project</artifactId>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.7</version>
   </parent>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>build</artifactId>
