@@ -22,14 +22,9 @@
   </scm>
   <modules>
     <module>api</module>
-    <module>avalon</module>
-    <!-- These don't build -->
-    <!--module>example</module>
-    <module>gob</module-->
-    <module>jcl</module>
-    <module>log4j</module>
+    <module>example</module>
+    <module>gob</module>
     <module>service</module>
-    <module>slf4j</module>
   </modules>
   <build>
     <plugins>

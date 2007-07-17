@@ -1,8 +1,0 @@
-Bundle-Activator:   org.apache.commons.logging.internal.Activator
-
-Private-Package:    org.apache.commons.logging.internal
-
-Export-Package:     org.apache.commons.logging;version=1.0.4; provider=paxlogging
-
-Import-Package:     org.ops4j.pax.logging;version="[0.1.0, 1.0.0)", \
-                    org.osgi.framework;version="[1.0.0, 2.0.0)"
