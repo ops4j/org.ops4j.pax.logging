@@ -25,3 +25,7 @@ Changes in 0.9.0
     * The Activator in the client bundle, no longer need to bother with setting the
       bundle context in the APIs.
 
+Changes in 0.9.5
+
+    * Legacy API bundles has been folded into the API bundle, so that all legacy
+      APIs are always available.

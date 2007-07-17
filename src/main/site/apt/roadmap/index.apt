@@ -15,7 +15,8 @@ Roadmap
     * Full support of packaging Appender and Layout implementations in installable bundles.
 
     * Full OSGi Log Service spec compliance in Pax Logging Service. Missing right now is
-      the LogReader service.
+      the LogReader service. Thanks to Jayway, the Pax Logging will be run against the
+      OSGi TCK, but certification is expensive and will not be done.
 
     * A PaxLogger factory class for the API bundle to make the usage of the native Pax
       Logging API simpler.

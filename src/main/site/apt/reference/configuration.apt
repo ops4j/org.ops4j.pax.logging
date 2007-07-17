@@ -35,8 +35,3 @@ Configuration
     PropertiesConfigurator. If the URLhas a "file:" protocol, the Pax Logging system
     will tell Log4J to watch the file for changes and re-configure if changed. This
     is not possible for other URL types.
-
-    Deprecation: Pax Logging used to support that a Pax Logging client connected to
-                 the standard OSGi Log Service. This is no longer supported. We will
-                 work to improve the the Pax Logging Service to the full spec of
-                 the standard OSGi Log Service. This may however still take some time.

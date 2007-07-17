@@ -8,3 +8,38 @@
     -------------------
 
 
+Reference Guide for Developers
+
+Usages if legacy APIs
+
+     If you need to use Pax Logging in your project, which uses logging APIs such
+     as Jakarta Commons Logging, SLF4J, JDK Logging, Log4J and others, then see
+     the {{{../apis/index.html}API section}} which covers all the normal usage
+     aspects.
+
+Configuration
+
+     Pax Logging utilizes the OSGi Configuration Admin service for configuration,
+     and if you don't want the default DEBUG mode, you need to install a
+     Configuration Admin service from some provider. Then take a close look at
+     the {{{configuration.html}Configuration Guide}}.
+
+Creating a provider/bridge for another legacy API
+
+     Pax Logging supports the creation of new APIs to legacy logging systems.
+     And these can be installed in runtime as OSGi bundles, and made available
+     on the fly to the Pax Logging back-end.
+
+     Typically, you need to fork the legacy API and exchange the original classes
+     with the delegating bridge classes needed. Some logging APIs are interface
+     based, which makes the process a lot easier.
+
+     Since the bridge will need to find the <Pax Logging Service> before the
+     log events can be sent, you need to provide a OSGi BundleContext
+<!--
+
+Creating Log4J appenders.
+
+Creating Log4J formatters.
+
+-->
