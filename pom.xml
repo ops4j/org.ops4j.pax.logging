@@ -25,6 +25,7 @@
     <module>example</module>
     <module>gob</module>
     <module>service</module>
+    <module>commons-compat</module>
   </modules>
   <build>
     <plugins>
