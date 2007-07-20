@@ -1,4 +1,3 @@
-Private-Package: org.ops4j.pax.logging.internal
 
 Private-Package: org.apache.commons.logging.internal, \
                  org.apache.log4j.internal, \
