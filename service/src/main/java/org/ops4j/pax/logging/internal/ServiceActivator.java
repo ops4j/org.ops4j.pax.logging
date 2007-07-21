@@ -32,7 +32,7 @@ import org.osgi.service.log.LogService;
 /**
  * Starts the Log4j log services.
  */
-public class Activator
+public class ServiceActivator
     implements BundleActivator
 {
 
@@ -64,7 +64,7 @@ public class Activator
     /**
      * Default constructor
      */
-    public Activator()
+    public ServiceActivator()
     {
     }
 
