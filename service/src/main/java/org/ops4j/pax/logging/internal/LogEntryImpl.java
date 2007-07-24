@@ -20,7 +20,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
 
-class LogEntryImpl
+public class LogEntryImpl
     implements LogEntry
 {
 
