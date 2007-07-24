@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 import org.apache.log4j.internal.MessageFormatter;
+import org.apache.log4j.spi.LoggerFactory;
 import org.ops4j.pax.logging.DefaultServiceLog;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
@@ -47,21 +48,6 @@ import org.osgi.framework.BundleContext;
  * <li>update your Manifest.MF to import the org.ops4j.pax.logging package.</li>
  * <li>Initiate this class by setting the Bundle Context.</li>
  * </ul>
- * Typical code looks like this;
- * <code><pre>
- * import org.apache.commons.logging.LogFactory;
- * import org.apache.commons.logging.Log;
- *
- * public class Activator
- *     implements BundleActivator
- * {
- *     public void start( BundleContext context )
- *         throws Exception
- *     {
- *         LogFactory.getFactory().setBundleContext( context );
- *     }
- * }
- * </pre></code>
  * </p>
  *
  * @author Ceki G&uuml;lc&uuml;
@@ -135,6 +121,7 @@ public class Logger
      * </p>
      *
      * @param name The name of the logger to retrieve.
+     *
      * @return the Logger instance of the given name.
      */
     public static Logger getLogger( String name )
@@ -159,6 +146,7 @@ public class Logger
      * @param clazz The name of <code>clazz</code> will be used as the name of
      *              the logger to retrieve.  See {@link #getLogger(String)} for
      *              more detailed information.
+     *
      * @return the Logger instance for the given class.
      */
     public static Logger getLogger( Class clazz )
@@ -177,11 +165,29 @@ public class Logger
      * does not retrieve the root logger but a logger just under root named
      * "root".
      * </p>
+     *
      * @return the top-most Logger instance, which does not have a name.
      */
     public static Logger getRootLogger()
     {
         return getLogger( "" );
+    }
+
+    /**
+     * This method is equivalent to <code>getLogger( String name )</code> and the
+     * LoggerFactory is ignored. The method exists only to improve compatibility with
+     * Log4J.
+     *
+     * @param name    The name of the logger to retrieve.
+     * @param factory <b>Ignored!</b>
+     *
+     * @return the Logger instance of the given name.
+     *
+     * @since Pax Logging 0.9.5
+     */
+    public static Logger getLogger( String name, LoggerFactory factory )
+    {
+        return getLogger( name );
     }
 
     /**

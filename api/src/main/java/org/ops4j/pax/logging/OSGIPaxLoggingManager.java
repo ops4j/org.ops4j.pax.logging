@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.ops4j.pax.logging.internal.TrackingLogger;
+import org.ops4j.pax.logging.internal2.TrackingLogger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Bundle;
