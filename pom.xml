@@ -22,10 +22,10 @@
   </scm>
   <modules>
     <module>api</module>
-    <module>example</module>
+   	<module>service</module>
     <module>gob</module>
-    <module>service</module>
     <module>commons-compat</module>
+	<module>example</module>
   </modules>
   <build>
     <plugins>
