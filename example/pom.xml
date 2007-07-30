@@ -3,14 +3,14 @@
   <parent>
     <artifactId>build</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
-    <version>0.9.5-SNAPSHOT</version>
+    <version>0.9.5</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>example</artifactId>
   <packaging>bundle</packaging>
   <name>OPS4J - Pax Logging Example</name>
-  <version>0.9.5-SNAPSHOT</version>
+  <version>0.9.5</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>A simple example of using the Pax Logging system.</description>
 
@@ -56,7 +56,7 @@
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>api</artifactId>
-      <version>0.9.5-SNAPSHOT</version>
+      <version>0.9.5</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
