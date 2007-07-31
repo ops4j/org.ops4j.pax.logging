@@ -1,0 +1,8 @@
+This product includes software developed at 
+Open Participation Software for Java (http://www.ops4j.org/).
+
+This product includes software developed at 
+The Apache Software Foundation (http://www.apache.org/).
+
+This product includes software developed at 
+The SLF4J project (http://www.slf4j.org/).
