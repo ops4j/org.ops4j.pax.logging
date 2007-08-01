@@ -9,6 +9,10 @@
 
 
 Log4J
+    Log4J is also very popular to use. The problem here is that the
+    Log4J project does not explicitly draw a line between the API and
+    more internal or SPI oriented features, so Pax Logging only has
+    support for the most common usage patterns.
 
 +------------------
 public class MyPojo

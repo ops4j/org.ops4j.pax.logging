@@ -8,3 +8,34 @@
     -------------------
 
 
+Pax Logging API
+
+    Pax Logging has its own API, but it is not necessary to use it. 
+    This {{{pax.html}page}} goes through the details.
+
+Avalon Framework Logging API
+    The Avalon Framework is used under the hood in many applications.
+    Pax Logging supports this API, but only partially. See this
+    {{{avalon.html}page}} for details.
+
+Jakarta Commons Logging API
+    The very commonly used Jakarta Commons Logging API is fully 
+    supported, as is described {{{avalon.html}here}}
+
+Knopflerfish Log 
+    Knopflerfish extends the standard OSGi Log Service, by making the
+    discovery process simpler. Pax Logging API copies the Knopflerfish
+    Log classes "as-is" for convenience. Usage is found on this
+    {{{kflog.html}page}}.
+
+JDK java.util.logging API
+    The JDK logging package is also fully supported, and how to use that
+    can be found on its {{{jdk.html}page}}.
+
+Log4J
+    Log4J is a very popular tool and Pax Logging uses it as its backend.
+    The Log4J API is not well defined, but we try to support it as well
+    as possible. See the details {{{log4j.html}page}}.
+
+SLF4J - Simple Logging Facade for Java
+    SLF4J is fully supported, as described on this {{{slf4j.html}page}}.

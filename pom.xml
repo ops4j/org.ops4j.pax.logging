@@ -7,7 +7,7 @@
     <version>1.7</version>
   </parent>
   <groupId>org.ops4j.pax.logging</groupId>
-  <artifactId>build</artifactId>
+  <artifactId>logging</artifactId>
   <packaging>pom</packaging>
   <name>OPS4J - Pax Logging</name>
   <version>0.9.6-SNAPSHOT</version>
@@ -22,10 +22,10 @@
   </scm>
   <modules>
     <module>api</module>
-   	<module>service</module>
+    <module>service</module>
     <module>gob</module>
     <module>commons-compat</module>
-	<module>example</module>
+    <module>example</module>
   </modules>
   <build>
     <plugins>

@@ -21,7 +21,7 @@ How to use Pax Logging in my bundles
     You need to;
 
     * ensure that log4j.jar, commons-logging.jar, and any other legacy API that you want
-      to use, are NOT included in your bundle jar.
+      to use, are NOT included in your bundle jars.
 
     * Import the logging APIs that are used in your client bundle. To ensure that your
       bundle's logging will get routed to Pax Logging Service, and not linked to another

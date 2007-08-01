@@ -35,7 +35,8 @@ Creating a provider/bridge for another legacy API
      based, which makes the process a lot easier.
 
      Since the bridge will need to find the <Pax Logging Service> before the
-     log events can be sent, you need to provide a OSGi BundleContext
+     log events can be sent, you need to provide a OSGi BundleContext.
+
 <!--
 
 Creating Log4J appenders.

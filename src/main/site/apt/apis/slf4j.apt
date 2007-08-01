@@ -9,6 +9,10 @@
 
 
 SLF4J - Simple Logging Facade for Java
+    SLF4J was written by Ceki Gülcü, the original author of Log4J as an 
+    attempt to solve the classloding problems with Jakarta Commons Logging.
+    SLF4J is very easy to create implementations for, so Pax Logging has
+    full support for it.
 
 +--------------------
 import package org.slf4j.LoggerFactory;
