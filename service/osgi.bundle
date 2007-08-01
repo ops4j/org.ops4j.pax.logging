@@ -1,4 +1,4 @@
-Bundle-Activator: org.ops4j.pax.logging.internal.ServiceActivator
+Bundle-Activator: org.ops4j.pax.logging.internal.Activator
 
 Private-Package:  org.apache.log4j, \
                   org.apache.log4j.config, \
