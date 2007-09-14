@@ -22,12 +22,12 @@
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>api</artifactId>
-      <version>0.9.5</version>
+      <version>0.9.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>service</artifactId>
-      <version>0.9.5</version>
+      <version>0.9.6-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
