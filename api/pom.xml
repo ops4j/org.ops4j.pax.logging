@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
-  <artifactId>api</artifactId>
+  <artifactId>pax-logging-api</artifactId>
   <name>OPS4J - Pax Logging API</name>
   <version>0.9.6-SNAPSHOT</version>
   <packaging>bundle</packaging>

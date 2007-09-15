@@ -7,7 +7,7 @@
     <version>1.7</version>
   </parent>
   <groupId>org.ops4j.pax.logging</groupId>
-  <artifactId>logging</artifactId>
+  <artifactId>pax-logging</artifactId>
   <packaging>pom</packaging>
   <name>OPS4J - Pax Logging</name>
   <version>0.9.6-SNAPSHOT</version>

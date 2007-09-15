@@ -489,9 +489,7 @@
         <root url="jar://$M2_REPO$/org/osgi/osgi_R4_core/1.0/osgi_R4_core-1.0.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/osgi/osgi_R4_core/1.0/osgi_R4_core-1.0.jar!/OSGI-OPT/src" />
-      </SOURCES>
+      <SOURCES />
     </library>
     <library name="junit-3.8.1">
       <CLASSES>

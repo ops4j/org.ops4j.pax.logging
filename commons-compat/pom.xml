@@ -39,7 +39,7 @@
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>pax-logging-api</artifactId>
       <version>0.9.6-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>

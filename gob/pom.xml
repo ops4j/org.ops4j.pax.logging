@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
-  <artifactId>gob</artifactId>
+  <artifactId>pax-logging-gob</artifactId>
   <name>OPS4J - Pax Logging GOB</name>
   <version>0.9.6-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
@@ -21,12 +21,12 @@
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>api</artifactId>
+      <artifactId>pax-logging-api</artifactId>
       <version>0.9.6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>service</artifactId>
+      <artifactId>pax-logging-service</artifactId>
       <version>0.9.6-SNAPSHOT</version>
     </dependency>
   </dependencies>

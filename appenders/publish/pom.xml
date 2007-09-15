@@ -32,7 +32,7 @@
   <dependencies>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>service</artifactId>
+      <artifactId>pax-logging-service</artifactId>
       <version>0.9.6-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
