@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.ops4j.pax.logging</groupId>
     <artifactId>pax-logging</artifactId>
-    <version>0.9.6</version>
+    <version>0.9.7-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging-gob</artifactId>
   <name>OPS4J - Pax Logging GOB</name>
-  <version>0.9.6</version>
+  <version>0.9.7-SNAPSHOT</version>
   <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>
     The Group of Bundles for Pax Logging. Can be used by Pax Runner.
