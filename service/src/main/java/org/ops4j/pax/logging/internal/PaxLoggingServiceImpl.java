@@ -48,7 +48,7 @@ public class PaxLoggingServiceImpl
     public PaxLogger getLogger( Bundle bundle, String category )
     {
         Logger log4jLogger = Logger.getLogger( category );
-        return new PaxLoggerImpl( bundle, log4jLogger );
+        return new PaxLoggerImpl( log4jLogger );
     }
 
     public int getLogLevel()

@@ -27,13 +27,13 @@ public class PaxLoggerImpl
     implements PaxLogger
 {
     private org.apache.log4j.Logger m_delegate;
+    private static final String FQCN = "org.ops4j.pax.logging.internal.TrackingLogger";
 
     /**
      * 
-     * @param bundle The bundle that is logging the message. Currently not used.
      * @param delegate The Log4J delegate to receive the log message.
      */
-    public PaxLoggerImpl( Bundle bundle, Logger delegate )
+    PaxLoggerImpl( Logger delegate )
     {
         m_delegate = delegate;
     }
@@ -75,27 +75,27 @@ public class PaxLoggerImpl
 
     public void debug( String message, Throwable t )
     {
-        m_delegate.debug( message, t );
+        m_delegate.log( FQCN, Level.DEBUG, message, t );
     }
 
     public void inform( String message, Throwable t )
     {
-        m_delegate.info( message, t );
+        m_delegate.log( FQCN, Level.INFO, message, t );
     }
 
     public void warn( String message, Throwable t )
     {
-        m_delegate.warn( message, t );
+        m_delegate.log( FQCN, Level.WARN, message, t );
     }
 
     public void error( String message, Throwable t )
     {
-        m_delegate.error( message, t );
+        m_delegate.log( FQCN, Level.ERROR, message, t );
     }
 
     public void fatal( String message, Throwable t )
     {
-        m_delegate.fatal( message, t );
+        m_delegate.log( FQCN, Level.FATAL, message, t );
     }
 
     public int getLogLevel()
@@ -110,6 +110,10 @@ public class PaxLoggerImpl
 
     public void log( String callerFQCN, Priority level, Object message, Throwable t )
     {
+        if( callerFQCN == null )
+        {
+            callerFQCN = FQCN;
+        }
         m_delegate.log( callerFQCN, level, message, t );
     }
 }

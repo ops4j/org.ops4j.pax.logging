@@ -24,7 +24,6 @@
     <module>api</module>
     <module>service</module>
     <module>gob</module>
-    <module>commons-compat</module>
     <module>example</module>
   </modules>
   <build>

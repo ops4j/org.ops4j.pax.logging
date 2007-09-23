@@ -2,7 +2,8 @@ package org.apache.commons.logging.impl;
 
 import org.apache.commons.logging.Log;
 
-public class NoOpLog implements Log
+public class NoOpLog
+    implements Log
 {
 
     public void debug(Object message)

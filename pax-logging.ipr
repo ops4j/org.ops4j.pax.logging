@@ -427,7 +427,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/api/api.iml" filepath="$PROJECT_DIR$/api/api.iml" />
       <module fileurl="file://$PROJECT_DIR$/appenders/publish/appender-publish.iml" filepath="$PROJECT_DIR$/appenders/publish/appender-publish.iml" />
-      <module fileurl="file://$PROJECT_DIR$/commons-compat/commons-compat.iml" filepath="$PROJECT_DIR$/commons-compat/commons-compat.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/docs.iml" filepath="$PROJECT_DIR$/src/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
       <module fileurl="file://$PROJECT_DIR$/gob/gob.iml" filepath="$PROJECT_DIR$/gob/gob.iml" />
