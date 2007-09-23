@@ -16,10 +16,6 @@
   </description>
   <dependencies>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi_R4_core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
       <version>0.9.6-SNAPSHOT</version>
