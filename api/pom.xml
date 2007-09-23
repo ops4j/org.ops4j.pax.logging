@@ -3,13 +3,13 @@
   <parent>
     <artifactId>pax-logging</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
-    <version>0.9.6-SNAPSHOT</version>
+    <version>0.9.6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging-api</artifactId>
   <name>OPS4J - Pax Logging API</name>
-  <version>0.9.6-SNAPSHOT</version>
+  <version>0.9.6</version>
   <packaging>bundle</packaging>
   <description>
     The Pax Logging API Library is to allow for the Pax Logging Service to be reloaded without stopping the many 
