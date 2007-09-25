@@ -266,7 +266,7 @@ public class LogFactory
         }
         else
         {
-            logger = m_paxLogging.getLogger( name );
+            logger = m_paxLogging.getLogger( name, JclLogger.JCL_FQCN );
         }
         JclLogger jclLogger = new JclLogger( logger );
         m_loggers.put( jclLogger, name );

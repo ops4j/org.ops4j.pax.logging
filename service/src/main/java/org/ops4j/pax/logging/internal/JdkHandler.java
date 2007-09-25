@@ -75,7 +75,7 @@ public class JdkHandler extends Handler
         }
         String loggerName = record.getLoggerName();
         // TODO: Can't associate a bundle with the JDK logger. So how??
-        PaxLoggerImpl logger = (PaxLoggerImpl) m_logService.getLogger( null, loggerName );
+        PaxLoggerImpl logger = (PaxLoggerImpl) m_logService.getLogger( null, loggerName, null );
         String message = record.getMessage();
         Throwable throwable = record.getThrown();
         org.apache.log4j.Level log4jlevel;

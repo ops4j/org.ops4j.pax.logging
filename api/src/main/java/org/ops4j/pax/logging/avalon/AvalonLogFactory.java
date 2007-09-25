@@ -17,17 +17,16 @@
  */
 package org.ops4j.pax.logging.avalon;
 
-import org.apache.avalon.framework.logger.Logger;
-import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.OSGIPaxLoggingManager;
-import org.ops4j.pax.logging.PaxLoggingManager;
-import org.osgi.framework.BundleContext;
-
 import java.util.Iterator;
-import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.WeakHashMap;
+import org.apache.avalon.framework.logger.Logger;
+import org.ops4j.pax.logging.OSGIPaxLoggingManager;
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
+import org.osgi.framework.BundleContext;
 
 public class AvalonLogFactory
 {
@@ -55,8 +54,8 @@ public class AvalonLogFactory
         m_paxLogging.open();
     }
 
-    /** Lifecycle method to release any resources held.
-     *
+    /**
+     * Lifecycle method to release any resources held.
      */
     public static void release()
     {
@@ -80,7 +79,7 @@ public class AvalonLogFactory
         {
             newName = parent.getName() + "." + name;
         }
-        PaxLogger logger = m_paxLogging.getLogger( newName );
+        PaxLogger logger = m_paxLogging.getLogger( newName, AvalonLogger.AVALON_FQCN );
         AvalonLogger avalonLogger = new AvalonLogger( logger );
         m_loggers.put( logger, newName );
         return avalonLogger;

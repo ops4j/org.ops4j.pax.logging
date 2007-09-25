@@ -70,9 +70,12 @@ import org.osgi.framework.BundleContext;
  */
 public class PaxLoggerFactory
 {
+
+    private static final String PAXLOGGING_FQCN = PaxLogger.class.getName();
+
     public static PaxLogger getPaxLogger( BundleContext context, String category )
     {
         PaxLoggingManager paxLogging = new OSGIPaxLoggingManager( context );
-        return paxLogging.getLogger( category );
+        return paxLogging.getLogger( category, PAXLOGGING_FQCN );
     }
 }

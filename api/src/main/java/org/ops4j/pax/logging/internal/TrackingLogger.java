@@ -30,9 +30,11 @@ public class TrackingLogger
     private String m_category;
     private Bundle m_bundle;
     private PaxLogger m_delegate;
+    private String m_fqcn;
 
-    public TrackingLogger( PaxLoggingService service, String category, Bundle bundle )
+    public TrackingLogger( PaxLoggingService service, String category, Bundle bundle, String fqcn )
     {
+        m_fqcn = fqcn;
         m_category = category;
         m_bundle = bundle;
         added( service );
@@ -113,7 +115,7 @@ public class TrackingLogger
         m_service = service;
         if( m_service != null )
         {
-            m_delegate = m_service.getLogger( m_bundle, m_category );
+            m_delegate = m_service.getLogger( m_bundle, m_category, m_fqcn );
         }
         else
         {

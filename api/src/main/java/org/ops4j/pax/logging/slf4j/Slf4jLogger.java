@@ -27,8 +27,9 @@ public class Slf4jLogger
     implements Logger
 {
 
-    private String m_name;
+    public static final String SLF4J_FQCN = Slf4jLogger.class.getName();
 
+    private String m_name;
     private PaxLogger m_delegate;
 
     public Slf4jLogger( String name, PaxLogger delegate )
@@ -816,6 +817,6 @@ public class Slf4jLogger
 
     void setPaxLoggingManager( PaxLoggingManager loggingManager, String name )
     {
-        m_delegate = loggingManager.getLogger( name );
+        m_delegate = loggingManager.getLogger( name, SLF4J_FQCN );
     }
 }

@@ -55,7 +55,8 @@ import org.osgi.framework.BundleContext;
  */
 public class Logger
 {
-
+    private static final String LOG4J_FQCN = Logger.class.getName();
+    
     private PaxLogger m_delegate;
     private static PaxLoggingManager m_paxLogging;
     private static WeakHashMap m_loggers;
@@ -83,7 +84,7 @@ public class Logger
 
     private void setPaxLoggingManager( PaxLoggingManager loggingManager, String name )
     {
-        m_delegate = loggingManager.getLogger( name );
+        m_delegate = loggingManager.getLogger( name, LOG4J_FQCN );
     }
 
     /**
@@ -133,7 +134,7 @@ public class Logger
         }
         else
         {
-            paxLogger = m_paxLogging.getLogger( name );
+            paxLogger = m_paxLogging.getLogger( name, LOG4J_FQCN );
         }
         Logger logger = new Logger( paxLogger );
         m_loggers.put( logger, name );

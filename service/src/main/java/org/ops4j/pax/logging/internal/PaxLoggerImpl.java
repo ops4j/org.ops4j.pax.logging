@@ -21,21 +21,22 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.ops4j.pax.logging.PaxLogger;
-import org.osgi.framework.Bundle;
 
 public class PaxLoggerImpl
     implements PaxLogger
 {
+
     private org.apache.log4j.Logger m_delegate;
-    private static final String FQCN = "org.ops4j.pax.logging.internal.TrackingLogger";
+    private String m_fqcn;
 
     /**
-     * 
      * @param delegate The Log4J delegate to receive the log message.
+     * @param fqcn     The fully qualified classname of the client owning this logger.
      */
-    PaxLoggerImpl( Logger delegate )
+    PaxLoggerImpl( Logger delegate, String fqcn )
     {
         m_delegate = delegate;
+        m_fqcn = fqcn;
     }
 
     public boolean isTraceEnabled()
@@ -70,32 +71,32 @@ public class PaxLoggerImpl
 
     public void trace( String message, Throwable t )
     {
-        m_delegate.trace( message, t );
+        m_delegate.log( m_fqcn, Level.TRACE, message, t );
     }
 
     public void debug( String message, Throwable t )
     {
-        m_delegate.log( FQCN, Level.DEBUG, message, t );
+        m_delegate.log( m_fqcn, Level.DEBUG, message, t );
     }
 
     public void inform( String message, Throwable t )
     {
-        m_delegate.log( FQCN, Level.INFO, message, t );
+        m_delegate.log( m_fqcn, Level.INFO, message, t );
     }
 
     public void warn( String message, Throwable t )
     {
-        m_delegate.log( FQCN, Level.WARN, message, t );
+        m_delegate.log( m_fqcn, Level.WARN, message, t );
     }
 
     public void error( String message, Throwable t )
     {
-        m_delegate.log( FQCN, Level.ERROR, message, t );
+        m_delegate.log( m_fqcn, Level.ERROR, message, t );
     }
 
     public void fatal( String message, Throwable t )
     {
-        m_delegate.log( FQCN, Level.FATAL, message, t );
+        m_delegate.log( m_fqcn, Level.FATAL, message, t );
     }
 
     public int getLogLevel()
@@ -112,7 +113,7 @@ public class PaxLoggerImpl
     {
         if( callerFQCN == null )
         {
-            callerFQCN = FQCN;
+            callerFQCN = m_fqcn;
         }
         m_delegate.log( callerFQCN, level, message, t );
     }

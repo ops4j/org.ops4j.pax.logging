@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.ops4j.pax.logging.internal.TrackingLogger;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.Bundle;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class OSGIPaxLoggingManager extends ServiceTracker
@@ -81,13 +81,14 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         }
     }
 
-    public PaxLogger getLogger( String category )
+    public PaxLogger getLogger( String category, String fqcn )
     {
-        TrackingLogger logger = (TrackingLogger) m_loggers.get( category );
+        String key = fqcn + "#" + category;
+        TrackingLogger logger = (TrackingLogger) m_loggers.get( key );
         if( logger == null )
         {
-            logger = new TrackingLogger( m_service, category, m_context.getBundle() );
-            m_loggers.put( category, logger );
+            logger = new TrackingLogger( m_service, category, m_context.getBundle(), fqcn );
+            m_loggers.put( key, logger );
         }
         return logger;
     }

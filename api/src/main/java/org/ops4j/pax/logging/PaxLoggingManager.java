@@ -22,7 +22,7 @@ import org.osgi.framework.Bundle;
 public interface PaxLoggingManager
 {
 
-    PaxLogger getLogger( String category );
+    PaxLogger getLogger( String category, String fqcn );
 
     PaxLoggingService getPaxLoggingService();
 

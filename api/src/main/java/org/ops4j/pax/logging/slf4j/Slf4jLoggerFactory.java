@@ -87,7 +87,7 @@ public class Slf4jLoggerFactory
         }
         else
         {
-            paxLogger = m_paxLogging.getLogger( name );
+            paxLogger = m_paxLogging.getLogger( name, Slf4jLogger.SLF4J_FQCN );
         }
         Slf4jLogger logger = new Slf4jLogger( name, paxLogger );
         m_loggers.put( logger, name );

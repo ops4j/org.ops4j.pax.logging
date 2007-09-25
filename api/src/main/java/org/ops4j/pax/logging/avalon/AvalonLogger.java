@@ -24,6 +24,9 @@ import org.ops4j.pax.logging.PaxLoggingManager;
 public class AvalonLogger
     implements Logger
 {
+
+    static final String AVALON_FQCN = AvalonLogger.class.getName();
+    
     private PaxLogger m_delegate;
 
     public AvalonLogger( PaxLogger logger )
@@ -118,6 +121,6 @@ public class AvalonLogger
 
     void setPaxLoggingManager( PaxLoggingManager paxLoggingManager, String name )
     {
-        m_delegate = paxLoggingManager.getLogger( name );
+        m_delegate = paxLoggingManager.getLogger( name, AVALON_FQCN );
     }
 }

@@ -25,6 +25,8 @@ public class JclLogger
     implements Log
 {
 
+    public static final String JCL_FQCN = JclLogger.class.getName();
+    
     private PaxLogger m_delegate;
 
     public JclLogger( PaxLogger delegate )
@@ -192,6 +194,6 @@ public class JclLogger
      */
     public void setPaxLoggingManager( PaxLoggingManager paxLoggingManager, String name )
     {
-        m_delegate = paxLoggingManager.getLogger( name );
+        m_delegate = paxLoggingManager.getLogger( name, JCL_FQCN );
     }
 }

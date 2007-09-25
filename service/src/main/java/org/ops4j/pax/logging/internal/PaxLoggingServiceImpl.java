@@ -45,10 +45,10 @@ public class PaxLoggingServiceImpl
         m_eventAdmin = eventAdmin;
     }
 
-    public PaxLogger getLogger( Bundle bundle, String category )
+    public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
     {
         Logger log4jLogger = Logger.getLogger( category );
-        return new PaxLoggerImpl( log4jLogger );
+        return new PaxLoggerImpl( log4jLogger, fqcn );
     }
 
     public int getLogLevel()
@@ -108,7 +108,7 @@ public class PaxLoggingServiceImpl
             }
         }
         String type;
-        PaxLogger logger = getLogger( bundle, category );
+        PaxLogger logger = getLogger( bundle, category, null );
         switch( level )
         {
             case LOG_ERROR:
