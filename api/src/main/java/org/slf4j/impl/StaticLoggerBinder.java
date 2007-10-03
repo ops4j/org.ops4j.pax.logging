@@ -24,15 +24,12 @@
 
 package org.slf4j.impl;
 
+import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
 import org.slf4j.ILoggerFactory;
 
 /**
- * The binding of {@link LoggerFactory} class with an actual instance of
+ * The binding of {@link org.apache.log4j.spi.LoggerFactory} class with an actual instance of
  * {@link ILoggerFactory} is performed using information returned by this class.
- *
- * This class is meant to provide a dummy StaticLoggerBinder to the slf4j-api module.
- * Real implementations are found in  each SLF4J binding project, e.g. slf4j-nop,
- * slf4j-log4j12 etc.
  *
  * @author Ceki G&uuml;lc&uuml;
  */
@@ -43,14 +40,23 @@ public class StaticLoggerBinder {
    */
   public static final StaticLoggerBinder SINGLETON = new StaticLoggerBinder();
 
+  private static final String loggerFactoryClassStr = Slf4jLoggerFactory.class.getName();
+
+  /**
+   * The ILoggerFactory instance returned by the {@link #getLoggerFactory} method
+   * should always be the same object
+   */
+  private final ILoggerFactory loggerFactory;
+
   private StaticLoggerBinder() {
+    loggerFactory = new Slf4jLoggerFactory();
   }
 
   public ILoggerFactory getLoggerFactory() {
-    return null;
+    return loggerFactory;
   }
 
   public String getLoggerFactoryClassStr() {
-    return StaticLoggerBinder.class.getName();
+    return loggerFactoryClassStr;
   }
 }
