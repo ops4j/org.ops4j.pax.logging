@@ -4,7 +4,6 @@ Private-Package: org.apache.commons.logging.internal, \
                  org.apache.log4j.internal, \
                  org.ops4j.pax.logging.slf4j, \
                  org.slf4j.impl, \
-                 org.slf4j.spi, \
                  org.ops4j.pax.logging.internal
 
 Export-Package: org.ops4j.pax.logging; version=${pom.version}; provider=paxlogging,\
@@ -14,7 +13,9 @@ Export-Package: org.ops4j.pax.logging; version=${pom.version}; provider=paxloggi
                 org.apache.log4j;version=1.2.13; provider=paxlogging, \
                 org.apache.log4j.xml;version=1.2.13; provider=paxlogging, \
                 org.apache.log4j.spi;version=1.2.13; provider=paxlogging, \
-                org.slf4j; version=1.0; provider=paxlogging, \
+                org.slf4j; version=1.4.3; provider=paxlogging, \
+                org.slf4j.helpers; version=1.4.3; provider=paxlogging, \
+                org.slf4j.spi; version=1.4.3; provider=paxlogging, \
                 org.ops4j.pax.logging.avalon;version=${pom.version}; provider=paxlogging, \
                 org.apache.avalon.framework.logger; version=4.3; provider=paxlogging
 

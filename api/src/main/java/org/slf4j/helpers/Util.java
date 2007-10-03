@@ -22,51 +22,24 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.slf4j;
+package org.slf4j.helpers;
 
 
 /**
- * Implementaitons of this interface are used to manufacture {@link Marker}
- * instances.
  *
- * <p>See the section <a href="http://slf4j.org/faq.html#3">Implementing
- * the SLF4J API</a> in the FAQ for details on how to make your logging
- * system conform to SLF4J.
+ * An internal utility class.
  *
  * @author Ceki G&uuml;lc&uuml;
  */
-public interface IMarkerFactory {
+public class Util {
 
-  /**
-   * Manufacture a {@link Marker} instance by name. If the instance has been
-   * created earlier, return the previously created instance.
-   *
-   * <p>Null name values are not allowed.
-   *
-   * @param name the name of the marker to be created, null value is
-   * not allowed.
-   *
-   * @return a Marker instance
-   */
-  Marker getMarker(String name);
+  static final public void reportFailure(String msg, Throwable t) {
+    System.err.println(msg);
+    System.err.println("Reported exception:");
+    t.printStackTrace();
+  }
 
-  /**
-   * Checks if the marker with the name already exists. If name is null, then false
-   * is returned.
-   *
-   * @return true id the marker exists, false otherwise.
-   */
-  boolean exists(String name);
-
-  /**
-   * Detach an existing marker.
-   * <p>
-   * Note that after a marker is detached, there might still be "dangling" references
-   * to the detached marker.
-   *
-   *
-   * @param name The name of the marker to detach
-   * @return whether the marker  could be detached or not
-   */
-  boolean detachMarker(String name);
+  static final public void reportFailure(String msg) {
+    System.err.println("SLF4J: " +msg);
+  }
 }

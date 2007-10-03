@@ -19,7 +19,7 @@ package org.ops4j.pax.logging.slf4j;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
-import org.slf4j.impl.MessageFormatter;
+import org.slf4j.helpers.MessageFormatter;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 
@@ -44,6 +44,198 @@ public class Slf4jLogger
     public String getName()
     {
         return m_name;
+    }
+
+    /**
+     * Is the logger instance enabled for the TRACE level?
+     *
+     * @return True if this Logger is enabled for the DEBUG level,
+     *         false otherwise.
+     */
+    public boolean isTraceEnabled()
+    {
+        return m_delegate.isTraceEnabled();
+    }
+
+    /**
+     * Log a message at the DEBUG level.
+     *
+     * @param msg the message string to be logged
+     */
+    public void trace( String msg )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            m_delegate.trace( msg, null );
+        }
+    }
+
+    /**
+     * Log a message at the TRACE level according to the specified format
+     * and argument.
+     *
+     * <p>This form avoids superfluous object creation when the logger
+     * is disabled for the TRACE level. </p>
+     *
+     * @param format the format string
+     * @param arg    the argument
+     */
+    public void trace( String format, Object arg )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            String message = MessageFormatter.format( format, arg );
+            m_delegate.trace( message, null );
+        }
+    }
+
+    /**
+     * Log a message at the TRACE level according to the specified format
+     * and arguments.
+     *
+     * <p>This form avoids superfluous object creation when the logger
+     * is disabled for the TRACE level. </p>
+     *
+     * @param format the format string
+     * @param arg1   the first argument
+     * @param arg2   the second argument
+     */
+    public void trace( String format, Object arg1, Object arg2 )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            String message = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.trace( message, null );
+        }
+    }
+
+    /**
+     * Log a message at the TRACE level according to the specified format
+     * and arguments.
+     *
+     * <p>This form avoids superfluous object creation when the logger
+     * is disabled for the TRACE level. </p>
+     *
+     * @param format   the format string
+     * @param argArray an array of arguments
+     */
+    public void trace( String format, Object[] argArray )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            String message = MessageFormatter.format( format, argArray );
+            m_delegate.trace( message, null );
+        }
+    }
+
+    /**
+     * Log an exception (throwable) at the TRACE level with an
+     * accompanying message.
+     *
+     * @param msg the message accompanying the exception
+     * @param t   the exception (throwable) to log
+     */
+    public void trace( String msg, Throwable t )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            m_delegate.trace( msg, t );
+        }
+    }
+
+    /**
+     * Similar to {@link #isTraceEnabled()} method except that the
+     * marker data is also taken into account.
+     *
+     * @param marker The marker data to take into consideration
+     */
+    public boolean isTraceEnabled( Marker marker )
+    {
+        return m_delegate.isTraceEnabled();
+    }
+
+    /**
+     * Log a message with the specific Marker at the TRACE level.
+     *
+     * @param marker the marker data specific to this log statement
+     * @param msg    the message string to be logged
+     */
+    public void trace( Marker marker, String msg )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            m_delegate.trace( msg, null );
+        }
+    }
+
+    /**
+     * This method is similar to {@link #trace(String, Object)} method except that the
+     * marker data is also taken into consideration.
+     *
+     * @param marker the marker data specific to this log statement
+     * @param format the format string
+     * @param arg    the argument
+     */
+    public void trace( Marker marker, String format, Object arg )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            String message = MessageFormatter.format( format, arg );
+            m_delegate.trace( message, null );
+        }
+    }
+
+    /**
+     * This method is similar to {@link #trace(String, Object, Object)}
+     * method except that the marker data is also taken into
+     * consideration.
+     *
+     * @param marker the marker data specific to this log statement
+     * @param format the format string
+     * @param arg1   the first argument
+     * @param arg2   the second argument
+     */
+    public void trace( Marker marker, String format, Object arg1, Object arg2 )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            String message = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.trace( message, null );
+        }
+    }
+
+    /**
+     * This method is similar to {@link #trace(String, Object[])}
+     * method except that the marker data is also taken into
+     * consideration.
+     *
+     * @param marker   the marker data specific to this log statement
+     * @param format   the format string
+     * @param argArray an array of arguments
+     */
+    public void trace( Marker marker, String format, Object[] argArray )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            String message = MessageFormatter.format( format, argArray );
+            m_delegate.trace( message, null );
+        }
+    }
+
+    /**
+     * This method is similar to {@link #trace(String, Throwable)} method except that the
+     * marker data is also taken into consideration.
+     *
+     * @param marker the marker data specific to this log statement
+     * @param msg    the message accompanying the exception
+     * @param t      the exception (throwable) to log
+     */
+    public void trace( Marker marker, String msg, Throwable t )
+    {
+        if( m_delegate.isTraceEnabled() )
+        {
+            m_delegate.trace( msg, t );
+        }
     }
 
     /**
