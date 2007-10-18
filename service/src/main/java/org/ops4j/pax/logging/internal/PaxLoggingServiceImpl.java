@@ -47,7 +47,7 @@ public class PaxLoggingServiceImpl
 
     public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
     {
-        Logger log4jLogger = Logger.getLogger( category );
+        Logger log4jLogger = Logger.getLogger( category );        
         return new PaxLoggerImpl( log4jLogger, fqcn );
     }
 
@@ -108,7 +108,7 @@ public class PaxLoggingServiceImpl
             }
         }
         String type;
-        PaxLogger logger = getLogger( bundle, category, null );
+        PaxLogger logger = getLogger( bundle, category, "" );
         switch( level )
         {
             case LOG_ERROR:
