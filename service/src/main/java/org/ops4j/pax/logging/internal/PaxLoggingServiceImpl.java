@@ -47,7 +47,7 @@ public class PaxLoggingServiceImpl
 
     public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
     {
-        Logger log4jLogger = Logger.getLogger( category );        
+        Logger log4jLogger = Logger.getLogger( category );
         return new PaxLoggerImpl( log4jLogger, fqcn );
     }
 
@@ -172,7 +172,10 @@ public class PaxLoggingServiceImpl
         {
             props.put( "exception", exception );
             props.put( "exception.class", exception.getClass() );
-            props.put( "exception.message", exception.getMessage() );
+            // Only save message if message is not null otherwise NPE is thrown
+            if (exception.getMessage() != null){
+                props.put( "exception.message", exception.getMessage() );
+            }
         }
         if( sr != null )
         {
