@@ -56,7 +56,7 @@
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
-      <version>0.9.6</version>
+      <version>0.9.7-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

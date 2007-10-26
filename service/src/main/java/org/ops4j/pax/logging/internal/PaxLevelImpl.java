@@ -15,9 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ops4j.pax.logging.spi;
+package org.ops4j.pax.logging.internal;
 
-public interface PaxLayout
+import org.ops4j.pax.logging.spi.PaxLevel;
+import org.apache.log4j.Level;
+
+public class PaxLevelImpl
+    implements PaxLevel
 {
+    private Level m_delegate;
+
+    public PaxLevelImpl( Level delegate )
+    {
+        m_delegate = delegate;
+    }
+
+    public boolean isGreaterOrEqual( PaxLevel r )
+    {
+        PaxLevelImpl impl = (PaxLevelImpl) r;
+        return m_delegate.isGreaterOrEqual( impl.m_delegate );
+    }
+
+    public int toInt()
+    {
+        return m_delegate.toInt();
+    }
+
+    public int getSyslogEquivalent()
+    {
+        return m_delegate.getSyslogEquivalent();
+    }
 
 }

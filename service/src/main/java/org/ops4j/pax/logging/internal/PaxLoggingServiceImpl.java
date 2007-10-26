@@ -19,7 +19,11 @@ package org.ops4j.pax.logging.internal;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Enumeration;
 import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.PaxLoggingConfigurator;
 import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminTracker;
 import org.ops4j.pax.logging.PaxLogger;
@@ -35,12 +39,14 @@ import org.osgi.service.log.LogEntry;
 public class PaxLoggingServiceImpl
     implements PaxLoggingService, LogService, ManagedService
 {
-
     private LogReaderServiceImpl m_logReader;
     private EventAdminTracker m_eventAdmin;
+    private AppenderTracker m_appenderTracker;
 
-    public PaxLoggingServiceImpl( LogReaderServiceImpl logReader, EventAdminTracker eventAdmin )
+    public PaxLoggingServiceImpl( LogReaderServiceImpl logReader, EventAdminTracker eventAdmin,
+                                  AppenderTracker appenderTracker )
     {
+        m_appenderTracker = appenderTracker;
         m_logReader = logReader;
         m_eventAdmin = eventAdmin;
     }
@@ -48,7 +54,7 @@ public class PaxLoggingServiceImpl
     public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
     {
         Logger log4jLogger = Logger.getLogger( category );
-        return new PaxLoggerImpl( log4jLogger, fqcn );
+        return new PaxLoggerImpl( bundle, log4jLogger, fqcn, this );
     }
 
     public int getLogLevel()
@@ -107,56 +113,95 @@ public class PaxLoggingServiceImpl
                 category = bundle.getSymbolicName();
             }
         }
-        String type;
         PaxLogger logger = getLogger( bundle, category, "" );
         switch( level )
         {
             case LOG_ERROR:
                 logger.error( message, exception );
-                type = "LOG_ERROR";
                 break;
             case LOG_WARNING:
                 logger.warn( message, exception );
-                type = "LOG_WARNING";
                 break;
             case LOG_INFO:
                 logger.inform( message, exception );
-                type = "LOG_INFO";
                 break;
             case LOG_DEBUG:
                 logger.debug( message, exception );
-                type = "LOG_DEBUG";
                 break;
             default:
                 logger.warn( "Undefined Level: " + level + " : " + message, exception );
-                type = "LOG_OTHER";
         }
+        handleEvents( bundle, sr, level, message, exception );
+    }
+
+    void handleEvents( Bundle bundle, ServiceReference sr, int level, String message, Throwable exception )
+    {
         LogEntry entry = new LogEntryImpl( bundle, sr, level, message, exception );
         m_logReader.fireEvent( entry );
 
         // This should only be null for TestCases.
         if( m_eventAdmin != null )
         {
-            Event event = createEvent( type, bundle, level, entry, message, exception, sr );
+            Event event = createEvent( bundle, level, entry, message, exception, sr );
             m_eventAdmin.postEvent( event );
         }
     }
 
-    public void updated( Dictionary dictionary )
+    public void updated( Dictionary configuration )
         throws ConfigurationException
     {
-        System.out.println( "I AM CALLED" );
+        Properties extracted = new Properties();
+        Enumeration list = configuration.keys();
+        while( list.hasMoreElements() )
+        {
+            Object obj = list.nextElement();
+            if( obj instanceof String )
+            {
+                String key = (String) obj;
+                if( key.startsWith( "log4j" ) )
+                {
+                    Object value = configuration.get( obj );
+                    extracted.put( key, value );
+                }
+            }
+        }
+        // If the updated() method is called without any Configuration URL and without any log4j properties,
+        // then keep the default/previous configuration.
+        if( extracted.size() == 0 )
+        {
+            return;
+        }
+        PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
+        configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
     }
 
-    private Event createEvent( String type, Bundle bundle, int level, LogEntry entry, String message,
-                               Throwable exception, ServiceReference sr )
+    static Event createEvent( Bundle bundle, int level, LogEntry entry, String message,
+                              Throwable exception, ServiceReference sr )
     {
+        String type;
+        switch( level )
+        {
+            case LOG_ERROR:
+                type = "LOG_ERROR";
+                break;
+            case LOG_WARNING:
+                type = "LOG_WARNING";
+                break;
+            case LOG_INFO:
+                type = "LOG_INFO";
+                break;
+            case LOG_DEBUG:
+                type = "LOG_DEBUG";
+                break;
+            default:
+                type = "LOG_OTHER";
+        }
         String topic = "org/osgi/service/log/LogEntry/" + type;
         Dictionary props = new Hashtable();
         if( bundle != null )
         {
             props.put( "bundle", bundle );
-            Long bundleId = new Long(bundle.getBundleId());
+            Long bundleId = new Long( bundle.getBundleId() );
             props.put( "bundle.id", bundleId );
             String symbolicName = bundle.getSymbolicName();
             if( symbolicName != null )

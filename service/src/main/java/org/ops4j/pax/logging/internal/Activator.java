@@ -26,7 +26,6 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 
@@ -36,21 +35,15 @@ import org.osgi.service.log.LogService;
 public class Activator
     implements BundleActivator
 {
-
     /**
      * The Managed Service PID for the log4j configuration
      */
     public static final String CONFIGURATION_PID = "org.ops4j.pax.logging";
 
-    private static final String[] LOGFACTORY_SERVICE_NAMES = {
+    private static final String[] LOGSERVICE_NAMES = {
         LogService.class.getName(),
         org.knopflerfish.service.log.LogService.class.getName(),
         PaxLoggingService.class.getName()
-    };
-
-    private static final String[] CONFIG_SERVICE_NAMES = {
-        ManagedService.class.getName(),
-        LoggingServiceConfiguration.class.getName()
     };
 
     /**
@@ -60,8 +53,8 @@ public class Activator
     private JdkHandler m_JdkHandler;
     private ServiceRegistration m_registrationLogReaderService;
     private FrameworkHandler m_frameworkHandler;
-    private ServiceRegistration m_configRegistration;
     private EventAdminTracker m_eventAdmin;
+    private AppenderTracker m_appenderTracker;
 
     /**
      * Default constructor
@@ -86,22 +79,13 @@ public class Activator
         m_eventAdmin.open();
 
         // register the Pax Logging service
-        Log4jConfiguratorImpl log4jConfigurator = new Log4jConfiguratorImpl();
-        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( logReader, m_eventAdmin );
-        final LoggingServiceConfiguration loggingServiceConfig = new LoggingServiceConfiguration( log4jConfigurator );
-        final LoggingServiceFactory loggingServiceFactory =
-            new LoggingServiceFactory( loggingServiceConfig, paxLogging );
-
-        Hashtable srProperties = new Hashtable();
-        m_RegistrationPaxLogging =
-            bundleContext.registerService( LOGFACTORY_SERVICE_NAMES, loggingServiceFactory, srProperties );
-
-        // Register the logging service configuration
-        Hashtable configProperties = new Hashtable();
-        configProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
-        configProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
-        m_configRegistration =
-            bundleContext.registerService( CONFIG_SERVICE_NAMES, loggingServiceConfig, configProperties );
+        m_appenderTracker = new AppenderTracker( bundleContext );
+        m_appenderTracker.open( true );
+        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( logReader, m_eventAdmin, m_appenderTracker );
+        Hashtable serviceProperties = new Hashtable();
+        serviceProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
+        serviceProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
+        m_RegistrationPaxLogging = bundleContext.registerService( LOGSERVICE_NAMES, paxLogging, serviceProperties );
 
         // Add a global handler for all JDK Logging (java.util.logging).
         m_JdkHandler = new JdkHandler( paxLogging );
@@ -120,7 +104,8 @@ public class Activator
     public void stop( BundleContext bundleContext )
         throws Exception
     {
-        // shut down the tracker.
+        // shut down the trackers.
+        m_appenderTracker.close();
         m_eventAdmin.close();
 
         // Clean up the listeners.
@@ -137,9 +122,6 @@ public class Activator
 
         m_RegistrationPaxLogging.unregister();
         m_RegistrationPaxLogging = null;
-
-        m_configRegistration.unregister();
-        m_configRegistration = null;
 
         m_registrationLogReaderService.unregister();
         m_registrationLogReaderService = null;

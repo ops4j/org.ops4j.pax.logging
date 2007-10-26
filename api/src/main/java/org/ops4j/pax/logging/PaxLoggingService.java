@@ -22,6 +22,9 @@ import org.osgi.framework.Bundle;
 
 public interface PaxLoggingService extends LogService
 {
+
+    String APPENDER_NAME_PROPERTY = "org.ops4j.pax.logging.appender.name";
+
     PaxLogger getLogger( Bundle bundle, String category, String fqcn );
 
     int getLogLevel();

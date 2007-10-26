@@ -13,23 +13,29 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License.
+ * limitations under the License. 
  */
 package org.ops4j.pax.logging.spi;
 
-public interface PaxAppender
+public interface PaxLoggingEvent
 {
+    PaxLocationInfo getLocationInformation();
 
-    /** Returns the Name of the appender, which can be used in the configuration.
-     *
-     * @return The name of this appender.
-     */
-    String getName();
+    PaxLevel getLevel();
 
-    /** Outputs a formatted message.
-     *
-     * @param message A formatted message to be written to the appender.
-     */
-    void println( String message );
+    String getLoggerName();
 
+    String getMessage();
+
+    String getRenderedMessage();
+
+    String getThreadName();
+
+    String[] getThrowableStrRep();
+
+    boolean locationInformationExists();
+
+    long getTimeStamp();
+
+    String getFQNOfLoggerClass();
 }

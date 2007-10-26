@@ -21,6 +21,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.ops4j.pax.logging.PaxLogger;
+import org.osgi.framework.Bundle;
+import org.osgi.service.log.LogService;
+import org.osgi.service.log.LogEntry;
 
 public class PaxLoggerImpl
     implements PaxLogger
@@ -28,15 +31,20 @@ public class PaxLoggerImpl
 
     private org.apache.log4j.Logger m_delegate;
     private String m_fqcn;
-
+    private Bundle m_bundle;
+    private PaxLoggingServiceImpl m_service;
     /**
+     * @param bundle
      * @param delegate The Log4J delegate to receive the log message.
      * @param fqcn     The fully qualified classname of the client owning this logger.
+     * @param service
      */
-    PaxLoggerImpl( Logger delegate, String fqcn )
+    PaxLoggerImpl( Bundle bundle, Logger delegate, String fqcn, PaxLoggingServiceImpl service )
     {
         m_delegate = delegate;
         m_fqcn = fqcn;
+        m_bundle = bundle;
+        m_service = service;
     }
 
     public boolean isTraceEnabled()
@@ -72,6 +80,7 @@ public class PaxLoggerImpl
     public void trace( String message, Throwable t )
     {
         m_delegate.log( m_fqcn, Level.TRACE, message, t );
+        m_service.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t );
     }
 
     public void debug( String message, Throwable t )
@@ -117,4 +126,5 @@ public class PaxLoggerImpl
         }
         m_delegate.log( callerFQCN, level, message, t );
     }
+
 }
