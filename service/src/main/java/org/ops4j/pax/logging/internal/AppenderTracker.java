@@ -23,6 +23,7 @@ import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class AppenderTracker extends ServiceTracker
@@ -31,13 +32,7 @@ public class AppenderTracker extends ServiceTracker
 
     public AppenderTracker( BundleContext bundleContext )
     {
-        super( bundleContext
-            , "&("
-              + "(" + Constants.OBJECTCLASS + "=" + Appender.class.getName() + ")"
-              + "(" + PaxLoggingService.APPENDER_NAME_PROPERTY + "=*)"
-              + ")"
-            , null
-        );
+        super( bundleContext, Appender.class.getName(), null );
         m_appenders = new HashMap();
     }
 
