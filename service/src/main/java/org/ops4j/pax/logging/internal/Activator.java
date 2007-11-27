@@ -26,6 +26,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 
@@ -43,7 +44,8 @@ public class Activator
     private static final String[] LOGSERVICE_NAMES = {
         LogService.class.getName(),
         org.knopflerfish.service.log.LogService.class.getName(),
-        PaxLoggingService.class.getName()
+        PaxLoggingService.class.getName(),
+        ManagedService.class.getName()
     };
 
     /**
