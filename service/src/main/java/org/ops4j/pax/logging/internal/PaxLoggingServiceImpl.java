@@ -150,6 +150,10 @@ public class PaxLoggingServiceImpl
     public void updated( Dictionary configuration )
         throws ConfigurationException
     {
+        if( configuration == null )
+        {
+            return;
+        }
         Properties extracted = new Properties();
         Enumeration list = configuration.keys();
         while( list.hasMoreElements() )
