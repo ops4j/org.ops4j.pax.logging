@@ -30,14 +30,16 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.event.Event;
 import org.osgi.service.log.LogEntry;
 
 public class PaxLoggingServiceImpl
-    implements PaxLoggingService, LogService, ManagedService
+    implements PaxLoggingService, LogService, ManagedService, ServiceFactory
 {
     private LogReaderServiceImpl m_logReader;
     private EventAdminTracker m_eventAdmin;
@@ -97,22 +99,22 @@ public class PaxLoggingServiceImpl
 
     private void log( Bundle bundle, ServiceReference sr, int level, String message, Throwable exception )
     {
-        String category = "";
-        if( sr == null )
+        // failsafe in case bundle is null
+        if( null == bundle && null != sr )
         {
-            category = "[undefined]";
+            bundle = sr.getBundle();
         }
-        else
+
+        String category = "[undefined]";
+        if( bundle != null )
         {
-            if( bundle != null )
+            category = bundle.getSymbolicName();
+            if( null == category )
             {
-                bundle = sr.getBundle();
-            }
-            if( bundle != null )
-            {
-                category = bundle.getSymbolicName();
+                category = "[bundle@" + bundle.getBundleId() + ']';
             }
         }
+
         PaxLogger logger = getLogger( bundle, category, "" );
         switch( level )
         {
@@ -240,5 +242,58 @@ public class PaxLoggingServiceImpl
             props.put( "service.objectClass", objClass );
         }
         return new Event( topic, props );
+    }
+
+    /*
+     * use local class to delegate calls to underlying instance while keeping bundle reference
+     */
+    public Object getService( final Bundle bundle, ServiceRegistration registration )
+    {
+        class ManagedPaxLoggingService
+            implements PaxLoggingService, LogService, ManagedService
+        {
+            public void log( int level, String message )
+            {
+                PaxLoggingServiceImpl.this.log( bundle, null, level, message, null );
+            }
+
+            public void log( int level, String message, Throwable exception )
+            {
+                PaxLoggingServiceImpl.this.log( bundle, null, level, message, exception );
+            }
+
+            public void log( ServiceReference sr, int level, String message )
+            {
+                PaxLoggingServiceImpl.this.log( bundle, sr, level, message, null );
+            }
+
+            public void log( ServiceReference sr, int level, String message, Throwable exception )
+            {
+                PaxLoggingServiceImpl.this.log( bundle, sr, level, message, exception );
+            }
+
+            public int getLogLevel()
+            {
+                return PaxLoggingServiceImpl.this.getLogLevel();
+            }
+
+            public PaxLogger getLogger( Bundle myBundle, String category, String fqcn )
+            {
+                return PaxLoggingServiceImpl.this.getLogger( myBundle, category, fqcn );
+            }
+
+            public void updated( Dictionary configuration )
+                throws ConfigurationException
+            {
+                PaxLoggingServiceImpl.this.updated( configuration );
+            }
+        }
+
+        return new ManagedPaxLoggingService();
+    }
+
+    public void ungetService( Bundle bundle, ServiceRegistration registration, Object service )
+    {
+        // nothing to do...
     }
 }
