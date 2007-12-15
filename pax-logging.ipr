@@ -426,6 +426,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/api/api.iml" filepath="$PROJECT_DIR$/api/api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/appenders/mail/appender-mail.iml" filepath="$PROJECT_DIR$/appenders/mail/appender-mail.iml" />
       <module fileurl="file://$PROJECT_DIR$/appenders/publish/appender-publish.iml" filepath="$PROJECT_DIR$/appenders/publish/appender-publish.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/docs.iml" filepath="$PROJECT_DIR$/src/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
@@ -449,9 +450,11 @@
     <option name="GENERATE_IIOP_STUBS" value="false" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
   </component>
+  <component name="StarteamVcsAdapter" />
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
   </component>
+  <component name="VssVcs" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
     <option name="USER_DEFINED_CONFIGS">
       <value>
@@ -488,7 +491,9 @@
         <root url="jar://$M2_REPO$/org/osgi/osgi_R4_core/1.0/osgi_R4_core-1.0.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/osgi/osgi_R4_core/1.0/osgi_R4_core-1.0.jar!/OSGI-OPT/src" />
+      </SOURCES>
     </library>
     <library name="junit-3.8.1">
       <CLASSES>
@@ -509,7 +514,9 @@
         <root url="jar://$M2_REPO$/org/osgi/osgi_R4_compendium/1.0/osgi_R4_compendium-1.0.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/osgi/osgi_R4_compendium/1.0/osgi_R4_compendium-1.0.jar!/OSGI-OPT/src" />
+      </SOURCES>
     </library>
     <library name="avalon-framework-api-4.3">
       <CLASSES>
