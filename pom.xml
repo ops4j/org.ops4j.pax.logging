@@ -102,4 +102,105 @@
       </snapshots>
     </repository>
   </repositories>
+  <developers>
+    <developer>
+      <name>Alin Dreghiciu</name>
+      <id>adreghiciu@gmail.com</id>
+      <email>adreghiciu@gmail.com</email>
+    </developer>
+    <developer>
+      <name>Anders Janmyr</name>
+      <id>anders.janmyr@jayway.se</id>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Andreas Ronge</name>
+      <id>andreas.ronge@jayway.se</id>
+      <email>andreas.ronge@jayway.se</email>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Hirarm Chirino</name>
+      <id>chirino</id>
+    </developer>
+    <developer>
+      <name>Damian Golda</name>
+      <id>damian.golda@gmail.com</id>
+      <email>damian.golda@gmail.com</email>
+    </developer>
+    <developer>
+      <name>Per Böckman</name>
+      <id>dev2null</id>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>David Ribeiro Alves</name>
+      <id>dr-alves@criticalsoftware.com</id>
+      <email>dr-alves@criticalsoftware.com</email>
+    </developer>
+    <developer>
+      <name>Edward Yakop</name>
+      <id>edward.yakop@gmail.com</id>
+      <organization>Jayway Malaysia Sdn Bhd</organization>
+      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+      <timezone>+8</timezone>
+    </developer>
+    <developer>
+      <name>Guillaume Nodet</name>
+      <id>gnodet</id>
+    </developer>
+    <developer>
+      <name>Makas Lau</name>
+      <id>makas@ops4j.org</id>
+      <organization>Jayway Malaysia Sdn Bhd</organization>
+      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+      <timezone>+8</timezone>
+    </developer>
+    <developer>
+      <name>Stuart McCulloch</name>
+      <id>mcculls</id>
+      <organization>Jayway Malaysia Sdn Bhd</organization>
+      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+      <timezone>+8</timezone>
+    </developer>
+    <developer>
+      <name>Niclas Hedhman</name>
+      <id>niclas@hedhman.org</id>
+      <organization>Jayway Malaysia Sdn Bhd</organization>
+      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+      <timezone>+8</timezone>
+      <email>niclas@hedhman.org</email>
+    </developer>
+    <developer>
+      <name>David Leangen</name>
+      <id>ops4j@leangen.net</id>
+      <email>ops4j@leangen.net</email>
+    </developer>
+    <developer>
+      <name>Peter Neubauer</name>
+      <id>peter@neubauer.se</id>
+      <organization>Jayway Malaysia Sdn Bhd</organization>
+      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Pierre Parrend</name>
+      <id>pparrend</id>
+    </developer>
+    <developer>
+      <name>Raman Gupta</name>
+      <id>rocketraman@fastmail.fm</id>
+      <email>rocketraman@fastmail.fm</email>
+    </developer>
+    <developer>
+      <name>Toni Menzel</name>
+      <id>tonit</id>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Wouter de Vaal</name>
+      <id>wouterv</id>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
 </project>
