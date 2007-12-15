@@ -19,6 +19,14 @@ package org.ops4j.pax.logging;
 
 import org.osgi.framework.Bundle;
 
+/**
+ * This Logger will be used when the Pax Logging Service is not available.
+ * <p>
+ * Defaults to DEBUG but can be changed if if the "org.ops4j.pax.logging.DefaultServiceLog.level" system property
+ * is set to on of the following: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or NONE, prior to this class is loaded,
+ * OR by calling the static method <code>DefaultServiceLog.setLogLevel( String <b>level</b> )</code>, where
+ * <b>level</b> is one of the same strings.
+ */
 public class DefaultServiceLog
     implements PaxLogger
 {
@@ -31,61 +39,21 @@ public class DefaultServiceLog
     private static final int FATAL = 5;
     private static final int NONE = 6;
 
-    public static int level = getDefaultLevel();
+    public static int level;
 
     private Bundle m_bundle;
     private String m_categoryName;
+
+    static
+    {
+        String levelName = System.getProperty( "org.ops4j.pax.logging.DefaultServiceLog.level", "DEBUG" ).trim();
+        convertLevel( levelName );
+    }
 
     public DefaultServiceLog( Bundle bundle, String categoryName )
     {
         m_bundle = bundle;
         m_categoryName = categoryName;
-    }
-
-    /**
-     * Gets the level that the logger will use.  Defaults to DEBUG but can be changed if
-     * if the "org.ops4j.pax.logging.DefaultServiceLog.level" system property is set to
-     * on of the following: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or NONE.
-     *
-     * The System property must be set before the class is loaded.
-     * 
-     * @return the level of this default log service.
-     */
-    static private int getDefaultLevel()
-    {
-        String levelName = System.getProperty( "org.ops4j.pax.logging.DefaultServiceLog.level", "DEBUG" ).trim();
-        if( "TRACE".equals( levelName ) )
-        {
-            return TRACE;
-        }
-        else if( "DEBUG".equals( levelName ) )
-        {
-            return DEBUG;
-        }
-        else if( "INFO".equals( levelName ) )
-        {
-            return INFO;
-        }
-        else if( "WARN".equals( levelName ) )
-        {
-            return WARN;
-        }
-        else if( "ERROR".equals( levelName ) )
-        {
-            return ERROR;
-        }
-        else if( "FATAL".equals( levelName ) )
-        {
-            return FATAL;
-        }
-        else if( "NONE".equals( levelName ) )
-        {
-            return NONE;
-        }
-        else
-        {
-            return DEBUG;
-        }
     }
 
     public boolean isTraceEnabled()
@@ -171,6 +139,11 @@ public class DefaultServiceLog
         return level;
     }
 
+    public void setLogLevel( String level )
+    {
+        convertLevel( level );
+    }
+
     public String getName()
     {
         return m_categoryName;
@@ -192,6 +165,42 @@ public class DefaultServiceLog
         if( t != null )
         {
             t.printStackTrace( System.out );
+        }
+    }
+
+    private static void convertLevel( String levelName )
+    {
+        if( "TRACE".equals( levelName ) )
+        {
+            level = TRACE;
+        }
+        else if( "DEBUG".equals( levelName ) )
+        {
+            level = DEBUG;
+        }
+        else if( "INFO".equals( levelName ) )
+        {
+            level = INFO;
+        }
+        else if( "WARN".equals( levelName ) )
+        {
+            level = WARN;
+        }
+        else if( "ERROR".equals( levelName ) )
+        {
+            level = ERROR;
+        }
+        else if( "FATAL".equals( levelName ) )
+        {
+            level = FATAL;
+        }
+        else if( "NONE".equals( levelName ) )
+        {
+            level = NONE;
+        }
+        else
+        {
+            level = DEBUG;
         }
     }
 }
