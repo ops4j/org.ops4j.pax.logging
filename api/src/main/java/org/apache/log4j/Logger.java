@@ -55,8 +55,9 @@ import org.osgi.framework.BundleContext;
  */
 public class Logger
 {
+
     private static final String LOG4J_FQCN = Logger.class.getName();
-    
+
     private PaxLogger m_delegate;
     private static PaxLoggingManager m_paxLogging;
     private static WeakHashMap m_loggers;
@@ -797,10 +798,11 @@ public class Logger
      * Check whether this category is enabled for the given Level.
      *
      * @param priority the level to check
+     *
      * @return boolean - <code>true</code> if this category is enabled for the given
      *         level, <code>false</code> otherwise.
      */
-    public boolean isEnabledFor(Priority priority)
+    public boolean isEnabledFor( Priority priority )
     {
         if( priority == Level.FATAL )
         {
@@ -943,29 +945,53 @@ public class Logger
 
     public void log( Priority priority, Object msg )
     {
+        log( priority, msg, null );
+    }
+
+    /**
+     * This generic form is intended to be used by wrappers.
+     */
+    public void log( Priority priority, Object message, Throwable t )
+    {
         if( priority == Level.FATAL )
         {
-            this.fatal( msg );
+            this.fatal( message, t );
         }
         if( priority == Level.ERROR )
         {
-            this.error( msg );
+            this.error( message, t );
         }
         if( priority == Level.WARN )
         {
-            this.warn( msg );
+            this.warn( message, t );
         }
         if( priority == Level.INFO )
         {
-            this.info( msg );
+            this.info( message, t );
         }
         if( priority == Level.DEBUG )
         {
-            this.debug( msg );
+            this.debug( message, t );
         }
         if( priority == Level.ALL )
         {
-            this.trace( msg );
+            this.trace( message, t );
         }
+    }
+
+    /**
+     * This is the most generic printing method. It is intended to be
+     * invoked by <b>wrapper</b> classes.
+     *
+     * <b>Note:</b>In Pax Logging the callerFQCN is ignored.
+     *
+     * @param callerFQCN The wrapper class' fully qualified class name.
+     * @param level      The level of the logging request.
+     * @param message    The message of the logging request.
+     * @param t          The throwable of the logging request, may be null.
+     */
+    public void log( String callerFQCN, Priority level, Object message, Throwable t )
+    {
+        log( level, message, t );
     }
 }
