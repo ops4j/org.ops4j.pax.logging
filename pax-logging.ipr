@@ -426,11 +426,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/api/api.iml" filepath="$PROJECT_DIR$/api/api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/appenders/mail/appender-mail.iml" filepath="$PROJECT_DIR$/appenders/mail/appender-mail.iml" />
-      <module fileurl="file://$PROJECT_DIR$/appenders/publish/appender-publish.iml" filepath="$PROJECT_DIR$/appenders/publish/appender-publish.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/docs.iml" filepath="$PROJECT_DIR$/src/docs.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gob/gob.iml" filepath="$PROJECT_DIR$/gob/gob.iml" />
       <module fileurl="file://$PROJECT_DIR$/service/service.iml" filepath="$PROJECT_DIR$/service/service.iml" />
     </modules>
   </component>

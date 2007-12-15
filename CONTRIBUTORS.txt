@@ -1,0 +1,21 @@
+
+The following people has contributed to the Pax Logging effort;
+
+adreghiciu@gmail.com
+anders.janmyr@jayway.se
+andreas.ronge@jayway.se
+chirino
+damian.golda@gmail.com
+dev2null
+dr-alves@criticalsoftware.com
+edward.yakop@gmail.com
+gnodet
+makas@ops4j.org
+mcculls
+niclas@hedhman.org
+ops4j@leangen.net
+peter@neubauer.se
+pparrend
+rocketraman@fastmail.fm
+tonit
+wouterv

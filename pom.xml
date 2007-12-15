@@ -23,7 +23,6 @@
   <modules>
     <module>api</module>
     <module>service</module>
-    <module>gob</module>
     <module>example</module>
   </modules>
   <build>
