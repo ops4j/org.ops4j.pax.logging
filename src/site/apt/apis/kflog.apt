@@ -9,6 +9,7 @@
 
 
 Knopflerfish Log
+
     The Knopflerfish community has a lot of good bundles, that all uses the KF Log
     service and its bundle. Pax Logging implements the same interface and is a
     drop-in replacement of KF Log. No configuration or other changes are required.

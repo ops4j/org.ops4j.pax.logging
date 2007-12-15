@@ -42,8 +42,8 @@ public class MyPojo2
 
 +----------------------
 
-To obtain the RootLogger, or any other arbitrary Logger for that matter, you call the
- AvalonLogFactory, such as;
+    To obtain the RootLogger, or any other arbitrary Logger for that matter, you call the
+    AvalonLogFactory, such as;
 
 +----------------------
 import org.apache.avalon.framework.logger.Logger;

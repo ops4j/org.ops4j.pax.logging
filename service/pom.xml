@@ -11,7 +11,6 @@
   <packaging>bundle</packaging>
   <name>OPS4J - Pax Logging Service</name>
   <version>0.9.9-SNAPSHOT</version>
-  <url>http://wiki.ops4j.org/dokuwiki/doku.php?id=pax:logging</url>
   <description>Pax Logging Service is a Log4J driven service that supports Jakarta Commons Logging,
     Log4J, Avalon Logging, SLF4J and Pax Logging clients. Note that all this clients must use the Pax Logging
     Client library in the proper way. See documentation for details.</description>

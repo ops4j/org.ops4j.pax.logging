@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Pax Wicket">
+<project name="Pax Logging">
 
   <bannerRight>
     <name>OPS4J</name>
@@ -29,9 +29,12 @@
         <item name="SLF4J" href="apis/slf4j.html"/>
       </item>
       <item name="Roadmap" href="roadmap/index.html">
+<!--
         <item name="Appenders" href="roadmap/appenders.html"/>
         <item name="Formatters" href="roadmap/formatters.html"/>
+-->
       </item>
+      <item name="Wiki" href="http://wiki.ops4j.org/confluence/display/ops4j/Pax+Logging" />
     </menu>
 
     ${reports}

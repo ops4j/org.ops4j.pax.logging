@@ -10,7 +10,6 @@
 
 Welcome to Pax Logging
 
-
     The logging support in the standard Log Service of the OSGi specification is minimalistic and
     not entirely suitable for enterprise applications. This project tries to address this by
     extending the standard interface with additional interfaces and using a strong logging

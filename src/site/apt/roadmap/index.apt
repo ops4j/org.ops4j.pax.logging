@@ -1,0 +1,20 @@
+
+    -------------------
+    Pax Logging - Roadmap
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2007 March 26
+    -------------------
+
+
+Roadmap
+
+    We are getting closer and closer to a final release of Pax Logging.
+    Thanks to Jayway, we have been able to make the Pax Logging pass
+    the TCK of the OSGi Alliance.
+
+    For a more up to date information visit the
+    {{{http://issues.ops4j.org/jira/browse/PAXLOGGING?report=com.atlassian.jira.plugin.system.project:roadmap-panel}Pax Logging Road Map}},
+    at the OPS4J issue tracking system at http://issues.ops4j.org/jira/browse/PAXLOGGING.
+
