@@ -3,14 +3,14 @@
   <parent>
     <artifactId>pax-logging</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
-    <version>1.0-RC1</version>
+    <version>1.0-RC2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging-service</artifactId>
   <packaging>bundle</packaging>
   <name>OPS4J - Pax Logging Service</name>
-  <version>1.0-RC1</version>
+  <version>1.0-RC2-SNAPSHOT</version>
   <description>Pax Logging Service is a Log4J driven service that supports Jakarta Commons Logging,
     Log4J, Avalon Logging, SLF4J and Pax Logging clients. Note that all this clients must use the Pax Logging
     Client library in the proper way. See documentation for details.</description>
@@ -60,7 +60,7 @@
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
-      <version>1.0-RC1</version>
+      <version>1.0-RC2-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
