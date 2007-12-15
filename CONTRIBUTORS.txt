@@ -1,21 +1,28 @@
 
-The following people has contributed to the Pax Logging effort;
+The following people has contributed, at varying degree to
+the Pax Logging codebase;
 
-adreghiciu@gmail.com
-anders.janmyr@jayway.se
-andreas.ronge@jayway.se
-chirino
-damian.golda@gmail.com
-dev2null
-dr-alves@criticalsoftware.com
-edward.yakop@gmail.com
-gnodet
-makas@ops4j.org
-mcculls
-niclas@hedhman.org
-ops4j@leangen.net
-peter@neubauer.se
-pparrend
-rocketraman@fastmail.fm
-tonit
-wouterv
+Alin Dreghiciu          adreghiciu@gmail.com
+Anders Janmyr           anders.janmyr@jayway.se
+Andreas Ronge           andreas.ronge@jayway.se
+Hirarm Chirino          chirino
+Damian Golda            damian.golda@gmail.com
+Per Böckman             dev2null
+David Ribeiro Alves     dr-alves@criticalsoftware.com
+Edward Yakop            edward.yakop@gmail.com
+Guillaume Nodet         gnodet
+Makas Lau               makas@ops4j.org
+Stuart McCulloch        mcculls
+Niclas Hedhman          niclas@hedhman.org
+David Leangen           ops4j@leangen.net
+Peter Neubauer          peter@neubauer.se
+Pierre Parrend          pparrend
+Raman Gupta             rocketraman@fastmail.fm
+Toni Menzel             tonit
+Wouter de Vaal          wouterv
+
+
+Thank you & Keep up the Good Work
+
+Wiki brought to Coding works.
+-- The OPS4J Founders
