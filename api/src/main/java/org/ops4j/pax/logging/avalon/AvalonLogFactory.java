@@ -81,7 +81,7 @@ public class AvalonLogFactory
         }
         PaxLogger logger = m_paxLogging.getLogger( newName, AvalonLogger.AVALON_FQCN );
         AvalonLogger avalonLogger = new AvalonLogger( logger );
-        m_loggers.put( logger, newName );
+        m_loggers.put( avalonLogger, newName );
         return avalonLogger;
     }
 }
