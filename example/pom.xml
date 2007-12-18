@@ -3,14 +3,14 @@
   <parent>
     <artifactId>pax-logging</artifactId>
     <groupId>org.ops4j.pax.logging</groupId>
-    <version>1.0-RC2</version>
+    <version>1.0-RC3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>example</artifactId>
   <packaging>bundle</packaging>
   <name>OPS4J - Pax Logging Example</name>
-  <version>1.0-RC2</version>
+  <version>1.0-RC3-SNAPSHOT</version>
   <description>A simple example of using the Pax Logging system.</description>
 
   <build>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
-      <version>1.0-RC2</version>
+      <version>1.0-RC3-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
