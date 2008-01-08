@@ -23,7 +23,6 @@ import org.apache.log4j.Priority;
 import org.ops4j.pax.logging.PaxLogger;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
-import org.osgi.service.log.LogEntry;
 
 public class PaxLoggerImpl
     implements PaxLogger
@@ -33,11 +32,12 @@ public class PaxLoggerImpl
     private String m_fqcn;
     private Bundle m_bundle;
     private PaxLoggingServiceImpl m_service;
+
     /**
-     * @param bundle
+     * @param bundle The bundle that this PaxLogger belongs to.
      * @param delegate The Log4J delegate to receive the log message.
      * @param fqcn     The fully qualified classname of the client owning this logger.
-     * @param service
+     * @param service The service to be used to handle the logging events.
      */
     PaxLoggerImpl( Bundle bundle, Logger delegate, String fqcn, PaxLoggingServiceImpl service )
     {
@@ -80,32 +80,37 @@ public class PaxLoggerImpl
     public void trace( String message, Throwable t )
     {
         m_delegate.log( m_fqcn, Level.TRACE, message, t );
-        m_service.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t );
+        m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
     }
 
     public void debug( String message, Throwable t )
     {
         m_delegate.log( m_fqcn, Level.DEBUG, message, t );
+        m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
     }
 
     public void inform( String message, Throwable t )
     {
         m_delegate.log( m_fqcn, Level.INFO, message, t );
+        m_service.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
     }
 
     public void warn( String message, Throwable t )
     {
         m_delegate.log( m_fqcn, Level.WARN, message, t );
+        m_service.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
     }
 
     public void error( String message, Throwable t )
     {
         m_delegate.log( m_fqcn, Level.ERROR, message, t );
+        m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
     }
 
     public void fatal( String message, Throwable t )
     {
         m_delegate.log( m_fqcn, Level.FATAL, message, t );
+        m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
     }
 
     public int getLogLevel()
