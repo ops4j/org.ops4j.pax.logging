@@ -41,6 +41,10 @@ public class Activator
         org.ops4j.pax.logging.avalon.AvalonLogFactory.setBundleContext( bundleContext );
         org.apache.avalon.framework.logger.Logger avalonLogger = org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger( name );
         avalonLogger.info( "Enabling Avalon Logger API support." );
+        
+        org.apache.juli.logging.LogFactory.setBundleContext( bundleContext );
+        org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog( name );
+        juliLogger.info( "Enabling JULI Logger API support." );
     }
 
     public void stop( BundleContext bundleContext )
@@ -59,5 +63,9 @@ public class Activator
         org.apache.avalon.framework.logger.Logger avalonLogger = org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger( name );
         avalonLogger.info( "Disabling Avalon Logger API support." );
         org.ops4j.pax.logging.avalon.AvalonLogFactory.release();
+
+        org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog( name );
+        juliLogger.info( "Disabling JULI Logger API support." );
+        org.apache.juli.logging.LogFactory.releaseAll();
     }
 }

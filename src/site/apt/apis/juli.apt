@@ -1,0 +1,35 @@
+
+    -------------------
+    Pax Logging - Jakarta Commons Logging 
+    -------------------
+    Niclas Hedhman
+    -------------------
+    2008 January 10
+    -------------------
+
+
+Tomcat JULI Logging API
+
+    Tomcat uses the JULI Logging API, created by Ceki Gülcü to get away from the
+    many problems with Jakarta Commons Logging. The API is practically identical
+    with JCL, but lives in a different package. JULI was abandoned by Apache
+    Log Services project, and Tomcat community imported the small codebase, and
+    Ceki went on to create SLF4J instead.
+    
++----------------------
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
+
+public class MyPojo
+{
+    private static final Log logger = LogFactory.getLog( MyPojo.class );
+
+    private void doSomething()
+    {
+        if( logger.isDebugEnabled() )
+        {
+            logger.debug( "Doing something." );
+        }
+    }
+}
++----------------------

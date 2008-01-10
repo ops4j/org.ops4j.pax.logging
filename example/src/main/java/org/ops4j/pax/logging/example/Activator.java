@@ -42,6 +42,7 @@ public class Activator
     private HttpServer m_server;
 
     private Log m_jclLogger;
+    private org.apache.juli.logging.Log m_juliLogger;
     private org.apache.avalon.framework.logger.Logger m_avalonLogger;
     private org.slf4j.Logger m_slf4jLogger;
     private java.util.logging.Logger m_jdkLogger;
@@ -50,6 +51,7 @@ public class Activator
         throws Exception
     {
         m_jclLogger = LogFactory.getLog( Activator.class );
+        m_juliLogger = org.apache.juli.logging.LogFactory.getLog( Activator.class );
         m_avalonLogger = AvalonLogFactory.getLogger( Activator.class.getName() );
         m_slf4jLogger = LoggerFactory.getLogger( Activator.class );
         m_jdkLogger = java.util.logging.Logger.getLogger( Activator.class.getName() );
@@ -57,6 +59,7 @@ public class Activator
         m_avalonLogger.info( "Starting Example...    (avalon)" );
         m_slf4jLogger.info(  "Starting Example...    (slf4j)" );
         m_jdkLogger.info(    "Starting Example...    (jdk)" );
+        m_juliLogger.info(   "Starting Example...    (juli)" );
 
         HttpHandler handler = new TestHandler( "test" );
         InetAddrPort port = new InetAddrPort( 8080 );
@@ -77,6 +80,7 @@ public class Activator
         m_avalonLogger.info( "Stopping Example...    (avalon)" );
         m_slf4jLogger.info(  "Stopping Example...    (slf4j)");
         m_jdkLogger.info(    "Stopping Example...    (jdk)");
+        m_juliLogger.info(   "Stopping Example...    (juli)");
         m_server.stop();
     }
 }

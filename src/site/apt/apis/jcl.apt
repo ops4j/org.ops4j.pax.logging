@@ -18,6 +18,7 @@ Jakarta Commons Logging
     The JCL API in Pax Logging is totally safe and OSGi friendly.
 
 +----------------------
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class MyPojo
