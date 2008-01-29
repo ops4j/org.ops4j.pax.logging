@@ -123,7 +123,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.trace( message, null );
         }
     }
@@ -217,7 +217,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.trace( message, null );
         }
     }
@@ -315,7 +315,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.debug( message, null );
         }
     }
@@ -409,7 +409,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.debug( message, null );
         }
     }
@@ -507,7 +507,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.inform( message, null );
         }
     }
@@ -601,7 +601,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.inform( message, null );
         }
     }
@@ -679,7 +679,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.warn( message, null );
         }
     }
@@ -793,7 +793,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.warn( message, null );
         }
     }
@@ -891,7 +891,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.error( message, null );
         }
     }
@@ -985,7 +985,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            String message = MessageFormatter.format( format, argArray );
+            String message = MessageFormatter.arrayFormat( format, argArray );
             m_delegate.error( message, null );
         }
     }
