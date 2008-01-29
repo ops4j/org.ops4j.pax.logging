@@ -17,6 +17,7 @@
 package org.ops4j.pax.logging;
 
 import org.osgi.framework.BundleContext;
+import java.util.WeakHashMap;
 
 /** Native Pax Logging factory.
  *
@@ -33,7 +34,7 @@ import org.osgi.framework.BundleContext;
  *
  *   public MyClass( BundleContext bc, ... )
  *   {
- *       logger = PaxLoggerFactory.getPaxLogger( bc, MyClass.class.getName() );
+ *       logger = PaxLoggingFactory.getPaxLogger( bc, MyClass.class.getName() );
  *       :
  *   }
  *   :
@@ -46,36 +47,40 @@ import org.osgi.framework.BundleContext;
  * public class Activator
  *     implements BundleActivator
  * {
- *     private static BundleContext context;
+ *     public static PaxLoggingManager logManager;
  *
  *     public void start( BundleContext context )
  *     {
- *         this.context = context;
- *     }
- *  :
- *     public static PaxLogger getLogger( String category )
- *     {
- *         return PaxLoggerFactory.getPaxLogger( context, category );
+ *         logManager = PaxLoggingFactory.getPaxLoggingManager( context );
  *     }
  * }
  *
  * public class MyClass
  * {
- *     private PaxLogger logger = Activator.getLogger( MyClass.class.getName() );
+ *     private PaxLogger logger = Activator.logManager.getLogger( MyClass.class, null );
  *
  * }
  *
  * </code></pre>
  *
  */
-public class PaxLoggerFactory
+public class PaxLoggingFactory
 {
+    private static WeakHashMap managers;
 
-    private static final String PAXLOGGING_FQCN = PaxLogger.class.getName();
-
-    public static PaxLogger getPaxLogger( BundleContext context, String category )
+    static
     {
-        PaxLoggingManager paxLogging = new OSGIPaxLoggingManager( context );
-        return paxLogging.getLogger( category, PAXLOGGING_FQCN );
+        managers = new WeakHashMap();
+    }
+
+    public static synchronized PaxLoggingManager getPaxLoggingManager( BundleContext context )
+    {
+        PaxLoggingManager paxLogging = (PaxLoggingManager) managers.get( context );
+        if( paxLogging == null )
+        {
+            paxLogging = new OSGIPaxLoggingManager( context );
+            managers.put( context, paxLogging );
+        }
+        return paxLogging;
     }
 }

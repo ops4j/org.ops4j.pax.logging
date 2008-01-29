@@ -83,6 +83,10 @@ public class OSGIPaxLoggingManager extends ServiceTracker
 
     public PaxLogger getLogger( String category, String fqcn )
     {
+        if( fqcn == null )
+        {
+            fqcn = PaxLogger.class.getName();
+        }
         String key = fqcn + "#" + category;
         TrackingLogger logger = (TrackingLogger) m_loggers.get( key );
         if( logger == null )

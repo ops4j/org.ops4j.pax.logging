@@ -26,7 +26,7 @@ How to use Pax Logging in my bundles
     * Import the logging APIs that are used in your client bundle. To ensure that your
       bundle's logging will get routed to Pax Logging Service, and not linked to another
       JCL or Log4J implementation (perhaps exported by a third-party bundle), you should
-      specify the attribute provider=paxlogging (see below).
+      specify the attribute provider=paxlogging and the directive mandatory:=provider (see below).
 
 Manifest.MF
 
@@ -49,5 +49,33 @@ Setting up the OSGi application
     simple output to the system console.
 
     If the <Pax Logging API> bundle is not started before starting your client bundle, then
-    Pax Logging will output log statements using a DefaultLogService, which uses the System.out
-    console stream only.
+    Pax Logging will output log statements using a DefaultServiceLog, which uses the System.out
+    console stream only. The default logger is set to DEBUG level.
+
+API vs Service
+
+    Pax Logging comes in two parts. The API is required and includes a simple default logger that
+    output to the console if no Service is available. The Service is backed by a Log4J instance,
+    and it is possible to upgrade the Service on-the-fly, without having your bundles stopped, thanks
+    to the OSGi service layer and clever separation in <Pax Logging API>. However, when you do an
+    upgrade and refresh of the <Pax Logging Service>, the bridging classes in the <Pax Logging API>
+    will 'halt' for a brief moment, anticipating that an upgrade is in progress. This could affect
+    the performance of your application. Version 1.1 is scheduled to allow other strategies.
+    If the Service does not re-appear within the timeout period, the API will fallback to the
+    default Logger once again.
+
+Default Logger
+
+    The log level of the Default Logger in the <Pax Logging API> can be set via the system property
+    -Dorg.ops4j.pax.logging.DefaultServiceLog.level=<level>, where level is one of
+    DEBUG, WARN, INFO, ERROR. It can also be set programmatically, such as;
+
++-------------------
+PaxLoggingManager logManager = PaxLoggingFactory.getPaxLoggingManager( bundleContext );
+DefaultServiceLog logger = (DefaultServiceLog) logManager.getLogger( SomeClass.class, null );
+logger.setLogLevel( "INFO" );
++-------------------
+
+    Note that this is "per logger" instance, and perhaps not suitable for system-wide settings.
+
+    
