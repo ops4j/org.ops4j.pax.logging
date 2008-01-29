@@ -67,15 +67,12 @@ API vs Service
 Default Logger
 
     The log level of the Default Logger in the <Pax Logging API> can be set via the system property
-    -Dorg.ops4j.pax.logging.DefaultServiceLog.level=<level>, where level is one of
-    DEBUG, WARN, INFO, ERROR. It can also be set programmatically, such as;
+    -Dorg.ops4j.pax.logging.DefaultServiceLog.level=<level>, It can also be set programmatically,
+    by calling the static method
 
-+-------------------
-PaxLoggingManager logManager = PaxLoggingFactory.getPaxLoggingManager( bundleContext );
-DefaultServiceLog logger = (DefaultServiceLog) logManager.getLogger( SomeClass.class, null );
-logger.setLogLevel( "INFO" );
-+-------------------
++--------------------
+    public static void DefaultServiceLog.setLogLevel( String level )
++--------------------
 
-    Note that this is "per logger" instance, and perhaps not suitable for system-wide settings.
-
-    
+    The valid level strings are; "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "NONE", and if
+    any other string is used or null, the "DEBUG" level will be set.

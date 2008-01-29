@@ -139,7 +139,7 @@ public class DefaultServiceLog
         return level;
     }
 
-    public void setLogLevel( String level )
+    public static void setLogLevel( String level )
     {
         convertLevel( level );
     }

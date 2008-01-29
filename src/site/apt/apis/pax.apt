@@ -12,8 +12,6 @@ Pax Logging native
 
     You could also use the Pax Logging Service directly, without bothering about any of the
     other APIs. You need to look up the PaxLoggingService, and ask it for a PaxLogger.
-    Note: The plan is to include a simple factory for using the native Pax Logging API,
-    similar to Log4J and JCL.
 
 +--------------------------
 private PaxLogger m_logger;
