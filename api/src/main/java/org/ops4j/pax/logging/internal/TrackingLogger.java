@@ -42,7 +42,7 @@ public class TrackingLogger
 
     public boolean isTraceEnabled()
     {
-        return false;
+        return m_delegate.isTraceEnabled();
     }
 
     public boolean isDebugEnabled()
