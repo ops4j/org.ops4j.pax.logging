@@ -22,11 +22,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpException;
 import org.mortbay.http.HttpHandler;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
-import org.apache.log4j.Logger;
 
 /** This is a pure test class, which is handles the requests on port 8080 in this example.
  *
@@ -36,8 +34,11 @@ import org.apache.log4j.Logger;
 public class TestHandler
     implements HttpHandler
 {
-    private Logger m_Logger = Logger.getLogger( TestHandler.class );
+    private org.apache.log4j.Logger m_Logger = org.apache.log4j.Logger.getLogger( TestHandler.class );
+    private org.slf4j.Logger m_Slf4jLogger = org.slf4j.LoggerFactory.getLogger( TestHandler.class );
     private java.util.logging.Logger m_JdkLogger = java.util.logging.Logger.getLogger( TestHandler.class.getName() );
+    private org.apache.commons.logging.Log m_JclLogger = org.apache.commons.logging.LogFactory.getLog( TestHandler.class );
+    private org.apache.juli.logging.Log m_JuliLogger = org.apache.juli.logging.LogFactory.getLog( TestHandler.class );
 
     private HttpContext m_Context;
     private String m_Name;
@@ -67,10 +68,13 @@ public class TestHandler
     }
 
     public void handle( String string, String string1, HttpRequest httpRequest, HttpResponse httpResponse )
-        throws HttpException, IOException
+        throws IOException
     {
         m_Logger.info( "Processing Request.  (log4j)" );
         m_JdkLogger.info( "Processing Request.  (jdk)" );
+        m_JclLogger.info( "Processing Request.  (jcl)" );
+        m_JuliLogger.info( "Processing Request.  (juli)" );
+        m_Slf4jLogger.info( "Processing Request.  (slf4j)" );
         httpResponse.setContentType( "text/html" );
         OutputStream outputStream = httpResponse.getOutputStream();
         OutputStreamWriter osw = new OutputStreamWriter( outputStream, "UTF-8" );
@@ -85,6 +89,9 @@ public class TestHandler
     {
         m_Logger.info( "Starting.  (log4j)" );
         m_JdkLogger.info( "Starting.  (jdk)" );
+        m_JclLogger.info( "Starting.  (jcl)" );
+        m_JuliLogger.info( "Starting.  (juli)" );
+        m_Slf4jLogger.info( "Starting.  (slf4j)" );
         m_started = true;
     }
 
@@ -93,6 +100,9 @@ public class TestHandler
     {
         m_Logger.info( "Stopping.  (log4j)" );
         m_JdkLogger.info( "Stopping.  (jdk)" );
+        m_JclLogger.info( "Stopping.  (jcl)" );
+        m_JuliLogger.info( "Stopping.  (juli)" );
+        m_Slf4jLogger.info( "Stopping.  (slf4j)" );
         m_started = false;
     }
 

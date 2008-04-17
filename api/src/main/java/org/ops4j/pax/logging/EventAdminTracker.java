@@ -28,13 +28,11 @@ import org.osgi.util.tracker.ServiceTracker;
  * to the actual service if available.
  * If the Event Admin service is not available, this tracker will queue the Events until
  * the service becomes available.
- *
- * This design simplifies the PublishAppender, as it can assume that the service is always
- * available.
  */
 public class EventAdminTracker extends ServiceTracker
     implements EventAdmin
 {
+
     private final LinkedList m_queue;
     private BundleContext m_context;
     private EventAdmin m_service;
@@ -54,9 +52,9 @@ public class EventAdminTracker extends ServiceTracker
         synchronized( m_queue )
         {
             m_queue.add( event );
-            deliver();
-            cleanup();
         }
+        deliver();
+        cleanup();
     }
 
     public void sendEvent( Event event )
@@ -64,42 +62,38 @@ public class EventAdminTracker extends ServiceTracker
         synchronized( m_queue )
         {
             m_queue.add( event );
-            deliver();
-            cleanup();
         }
+        deliver();
+        cleanup();
     }
 
     public Object addingService( ServiceReference serviceReference )
     {
         m_service = (EventAdmin) m_context.getService( serviceReference );
-        synchronized( m_queue )
-        {
-            deliver();
-            return m_service;
-        }
+        deliver();
+        return m_service;
     }
 
     public void removedService( ServiceReference serviceReference, Object object )
     {
-        synchronized( m_queue )
-        {
-            m_service = null;
-        }
+        m_service = null;
     }
 
     private void deliver()
     {
-        synchronized( m_queue )
+        EventAdmin forDelivery = m_service;
+        if( forDelivery == null )
         {
-            if( m_service == null )
+            return;
+        }
+        while( m_queue.size() > 0 )
+        {
+            Event event;
+            synchronized( m_queue )
             {
-                return;
+                event = (Event) m_queue.remove( 0 );
             }
-            while( m_queue.size() > 0 )
-            {
-                Event event = (Event) m_queue.remove(0);
-                m_service.postEvent( event );
-            }
+            forDelivery.postEvent( event );
         }
     }
 
@@ -128,7 +122,10 @@ public class EventAdminTracker extends ServiceTracker
     {
         while( m_queue.size() > m_maxSize )
         {
-            m_queue.remove( 0 );
+            synchronized( m_queue )
+            {
+                m_queue.remove( 0 );
+            }
         }
     }
 }

@@ -3,9 +3,9 @@ Bundle-Activator:   org.ops4j.pax.logging.example.Activator
 Private-Package:    org.mortbay.*, \
                     org.ops4j.pax.logging.example
 
-Import-Package:     com.sun.net.ssl.*; resolution:=optional, \
-                    javax.net.ssl; resolution:=optional, \
-                    javax.security.cert; resolution:=optional, \
+Import-Package:     com.sun.net.ssl.*;resolution:=optional, \
+                    javax.net.ssl;resolution:=optional, \
+                    javax.security.cert;resolution:=optional, \
                     *
 
 Export-Package:
