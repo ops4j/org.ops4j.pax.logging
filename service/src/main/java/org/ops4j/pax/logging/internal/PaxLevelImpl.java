@@ -46,4 +46,9 @@ public class PaxLevelImpl
         return m_delegate.getSyslogEquivalent();
     }
 
+    public String toString()
+    {
+        return m_delegate.toString();
+    }
+
 }
