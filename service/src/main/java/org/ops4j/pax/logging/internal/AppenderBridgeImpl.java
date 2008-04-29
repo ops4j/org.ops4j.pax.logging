@@ -26,7 +26,13 @@ import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 public class AppenderBridgeImpl extends AppenderSkeleton
     implements Appender
 {
+
     private PaxAppender m_delegate;
+
+    public AppenderBridgeImpl( PaxAppender delegate )
+    {
+        m_delegate = delegate;
+    }
 
     protected void append( LoggingEvent event )
     {

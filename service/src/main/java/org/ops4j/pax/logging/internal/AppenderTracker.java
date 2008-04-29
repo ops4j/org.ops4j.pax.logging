@@ -18,8 +18,9 @@
 package org.ops4j.pax.logging.internal;
 
 import java.util.HashMap;
-import org.apache.log4j.Appender;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.spi.PaxAppender;
+import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
@@ -32,7 +33,7 @@ public class AppenderTracker extends ServiceTracker
 
     public AppenderTracker( BundleContext bundleContext )
     {
-        super( bundleContext, Appender.class.getName(), null );
+        super( bundleContext, PaxAppender.class.getName(), null );
         m_appenders = new HashMap();
     }
 
@@ -46,7 +47,6 @@ public class AppenderTracker extends ServiceTracker
 
     public void modifiedService( ServiceReference serviceReference, Object object )
     {
-        removeAppender( (Appender) object );
         Object name = serviceReference.getProperty( PaxLoggingService.APPENDER_NAME_PROPERTY );
         m_appenders.put( name, object );
         super.modifiedService( serviceReference, object );
@@ -59,14 +59,27 @@ public class AppenderTracker extends ServiceTracker
         super.removedService( serviceReference, object );
     }
 
-    public Appender getAppender( String name )
+    public PaxAppender getAppender( String name )
     {
-        return (Appender) m_appenders.get( name );
+        return new PaxAppenderProxy( name );
     }
 
-    private void removeAppender( Appender appender )
-    {
-        String name = appender.getName();
-        m_appenders.remove( name );
+    public class PaxAppenderProxy implements PaxAppender {
+
+        private final String name;
+
+        public PaxAppenderProxy( String name )
+        {
+            this.name = name;
+        }
+
+        public void doAppend( PaxLoggingEvent event )
+        {
+            PaxAppender appender = (PaxAppender) m_appenders.get( name );
+            if( appender != null ) {
+                appender.doAppend( event );
+            }
+        }
     }
+
 }

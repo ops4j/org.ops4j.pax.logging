@@ -21,11 +21,6 @@ public interface PaxAppender
 {
 
     /**
-     *  @return the name of this PaxAppender.
-     */
-    String getName();
-
-    /**
      * Log in <code>Appender</code> specific way. When appropriate,
      * Loggers will call the <code>doAppend</code> method of appender
      * implementations in order to log.

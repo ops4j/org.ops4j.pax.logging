@@ -19,9 +19,12 @@ package org.apache.log4j;
 
 import java.util.Properties;
 import org.ops4j.pax.logging.internal.AppenderTracker;
+import org.ops4j.pax.logging.internal.AppenderBridgeImpl;
+import org.ops4j.pax.logging.spi.PaxAppender;
 
 public class PaxLoggingConfigurator extends PropertyConfigurator
 {
+    public static final String OSGI_APPENDER_PREFIX = "osgi:";
 
     private AppenderTracker m_appenderTracker;
 
@@ -32,11 +35,14 @@ public class PaxLoggingConfigurator extends PropertyConfigurator
 
     Appender parseAppender( Properties props, String appenderName )
     {
-        Appender appender = m_appenderTracker.getAppender( appenderName );
-        if( appender == null )
-        {
-            appender = super.parseAppender( props, appenderName );
+        if (appenderName.startsWith( OSGI_APPENDER_PREFIX )) {
+            appenderName = appenderName.substring(  OSGI_APPENDER_PREFIX.length() );
+            PaxAppender appender = m_appenderTracker.getAppender( appenderName );
+            return new AppenderBridgeImpl( appender );
         }
-        return appender;
+        else
+        {
+            return super.parseAppender( props, appenderName );
+        }
     }
 }
