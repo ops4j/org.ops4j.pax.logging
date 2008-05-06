@@ -86,14 +86,17 @@ public class EventAdminTracker extends ServiceTracker
         {
             return;
         }
-        while( m_queue.size() > 0 )
+        while( m_queue.size() > 0 ) // Still not ok: this must be volatile or sync'd too!
         {
-            Event event;
+            Event event = null;
             synchronized( m_queue )
             {
-                event = (Event) m_queue.remove( 0 );
+                // Make sure queue is still not empty (due to race conditions)
+                if ( m_queue.size() > 0 )
+                    event = (Event) m_queue.remove( 0 );
             }
-            forDelivery.postEvent( event );
+            if ( event != null )
+                forDelivery.postEvent( event );
         }
     }
 
