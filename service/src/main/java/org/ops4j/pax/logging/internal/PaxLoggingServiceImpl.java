@@ -18,11 +18,11 @@
 package org.ops4j.pax.logging.internal;
 
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
-import java.util.Enumeration;
-import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PaxLoggingConfigurator;
 import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminTracker;
@@ -41,6 +41,7 @@ import org.osgi.service.log.LogEntry;
 public class PaxLoggingServiceImpl
     implements PaxLoggingService, LogService, ManagedService, ServiceFactory
 {
+
     private LogReaderServiceImpl m_logReader;
     private EventAdminTracker m_eventAdmin;
     private AppenderTracker m_appenderTracker;
@@ -164,10 +165,24 @@ public class PaxLoggingServiceImpl
             if( obj instanceof String )
             {
                 String key = (String) obj;
+                Object value = configuration.get( obj );
                 if( key.startsWith( "log4j" ) )
                 {
-                    Object value = configuration.get( obj );
                     extracted.put( key, value );
+                }
+                else if( key.startsWith( "pax." ) )
+                {
+                    if( "pax.logging.entries.size".equals( key ) )
+                    {
+                        try
+                        {
+                            m_logReader.setMaxEntries( Integer.parseInt( (String) value ) );
+                        }
+                        catch( Exception e )
+                        {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         }
@@ -224,7 +239,8 @@ public class PaxLoggingServiceImpl
             props.put( "exception", exception );
             props.put( "exception.class", exception.getClass() );
             // Only save message if message is not null otherwise NPE is thrown
-            if (exception.getMessage() != null){
+            if( exception.getMessage() != null )
+            {
                 props.put( "exception.message", exception.getMessage() );
             }
         }
@@ -252,6 +268,7 @@ public class PaxLoggingServiceImpl
         class ManagedPaxLoggingService
             implements PaxLoggingService, LogService, ManagedService
         {
+
             public void log( int level, String message )
             {
                 PaxLoggingServiceImpl.this.log( bundle, null, level, message, null );

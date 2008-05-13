@@ -29,7 +29,7 @@ public class LogReaderTest extends TestCase
     public void testAddRemoveListener()
         throws Exception
     {
-        LogReaderServiceImpl underTest = new LogReaderServiceImpl();
+        LogReaderServiceImpl underTest = new LogReaderServiceImpl(10);
         MyTestListener listener = new MyTestListener();
         underTest.addLogListener( listener );
         LogEntry entry = new LogEntryImpl( null, null, 2, "", null );

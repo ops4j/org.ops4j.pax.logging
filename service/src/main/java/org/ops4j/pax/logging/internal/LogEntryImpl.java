@@ -16,6 +16,7 @@
  */
 package org.ops4j.pax.logging.internal;
 
+import java.lang.ref.WeakReference;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
@@ -25,16 +26,22 @@ public class LogEntryImpl
 {
 
     private long m_time;
-    private Bundle m_bundle;
-    private ServiceReference m_service;
+    private WeakReference/*<Bundle>*/ m_bundle;
+    private WeakReference/*<ServiceReference>*/ m_service;
     private int m_level;
     private String m_message;
     private Throwable m_exception;
 
     public LogEntryImpl( Bundle bundle, ServiceReference service, int level, String message, Throwable exception )
     {
-        m_bundle = bundle;
-        m_service = service;
+        if( bundle != null )
+        {
+            m_bundle = new WeakReference( bundle );
+        }
+        if( service != null )
+        {
+            m_service = new WeakReference( service );
+        }
         m_level = level;
         m_message = message;
         m_exception = exception;
@@ -43,12 +50,20 @@ public class LogEntryImpl
 
     public Bundle getBundle()
     {
-        return m_bundle;
+        if( m_bundle == null )
+        {
+            return null;
+        }
+        return (Bundle) m_bundle.get();
     }
 
     public ServiceReference getServiceReference()
     {
-        return m_service;
+        if( m_service == null )
+        {
+            return null;
+        }
+        return (ServiceReference) m_service.get();
     }
 
     public int getLevel()

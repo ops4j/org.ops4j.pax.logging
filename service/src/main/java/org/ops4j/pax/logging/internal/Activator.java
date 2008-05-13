@@ -72,7 +72,7 @@ public class Activator
         throws Exception
     {
         // register the LogReaderService
-        LogReaderServiceImpl logReader = new LogReaderServiceImpl();
+        LogReaderServiceImpl logReader = new LogReaderServiceImpl( 100 );
         m_registrationLogReaderService =
             bundleContext.registerService( LogReaderService.class.getName(), logReader, null );
 

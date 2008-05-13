@@ -17,9 +17,10 @@
 package org.ops4j.pax.logging.internal;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.LinkedList;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogReaderService;
@@ -32,12 +33,14 @@ public class LogReaderServiceImpl
 {
 
     private ArrayList m_listeners;
-    private Vector m_entries;
+    private LinkedList m_entries;
+    private int m_maxEntries;
 
-    public LogReaderServiceImpl()
+    public LogReaderServiceImpl( int maxEntries )
     {
+        m_maxEntries = maxEntries;
         m_listeners = new ArrayList();
-        m_entries = new Vector();
+        m_entries = new LinkedList();
     }
 
     public void addLogListener( LogListener logListener )
@@ -62,17 +65,26 @@ public class LogReaderServiceImpl
 
     public Enumeration getLog()
     {
-        return m_entries.elements();
+        return Collections.enumeration( m_entries );
     }
 
-    void fireEvent( LogEntry entry )
+    final void fireEvent( LogEntry entry )
     {
-        m_entries.addElement( entry );
+        m_entries.add( 0, entry );
         Iterator iterator = m_listeners.iterator();
         while( iterator.hasNext() )
         {
             LogListener listener = (LogListener) iterator.next();
             fire( listener, entry );
+        }
+        cleanUp();
+    }
+
+    private void cleanUp()
+    {
+        while( m_entries.size() > m_maxEntries )
+        {
+            m_entries.removeLast();
         }
     }
 
@@ -87,5 +99,15 @@ public class LogReaderServiceImpl
             System.err.println( "'" + listener + "' is removed as a LogListener, since it threw an exception." );
             removeLogListener( listener );
         }
+    }
+
+    /**
+     * Sets the max number of entries that should be allowed in the LogReader buffer.
+     *
+     * @param maxSize the maximum number of entries in the LogReader buffer.
+     */
+    final void setMaxEntries( int maxSize )
+    {
+        m_maxEntries = maxSize;
     }
 }

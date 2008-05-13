@@ -512,7 +512,6 @@
     <option name="DEFAULT_LAYOUT_MANAGER" value="GridLayoutManager" />
   </component>
   <UsedPathMacros>
-    <macro name="DEV_PAX" />
     <macro name="M2_REPO" />
   </UsedPathMacros>
 </project>
