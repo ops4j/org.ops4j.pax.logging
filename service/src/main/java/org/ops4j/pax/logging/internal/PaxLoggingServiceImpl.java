@@ -155,6 +155,7 @@ public class PaxLoggingServiceImpl
     {
         if( configuration == null )
         {
+            configureDefaults();
             return;
         }
         Properties extracted = new Properties();
@@ -186,14 +187,25 @@ public class PaxLoggingServiceImpl
                 }
             }
         }
-        // If the updated() method is called without any Configuration URL and without any log4j properties,
+        // If the updated() method is called without any log4j properties,
         // then keep the default/previous configuration.
         if( extracted.size() == 0 )
         {
+            configureDefaults();
             return;
         }
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
         configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
+    }
+
+    private void configureDefaults()
+    {
+        PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
+        Properties defaultProperties = new Properties();
+        defaultProperties.put( "log4j.rootLogger", "ALL, A1" );
+        defaultProperties.put( "log4j.appender.A1", "org.apache.log4j.ConsoleAppender" );
+        defaultProperties.put( "log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout" );
+        configurator.doConfigure( defaultProperties, LogManager.getLoggerRepository() );
     }
 
     static Event createEvent( Bundle bundle, int level, LogEntry entry, String message,
