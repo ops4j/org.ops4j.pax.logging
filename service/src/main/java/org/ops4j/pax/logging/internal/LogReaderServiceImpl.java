@@ -33,7 +33,7 @@ public class LogReaderServiceImpl
 {
 
     private ArrayList m_listeners;
-    private LinkedList m_entries;
+    private final LinkedList m_entries;
     private int m_maxEntries;
 
     public LogReaderServiceImpl( int maxEntries )
@@ -70,7 +70,10 @@ public class LogReaderServiceImpl
 
     final void fireEvent( LogEntry entry )
     {
-        m_entries.add( 0, entry );
+        synchronized( m_entries )
+        {
+            m_entries.add( 0, entry );
+        }
         Iterator iterator = m_listeners.iterator();
         while( iterator.hasNext() )
         {
@@ -82,9 +85,12 @@ public class LogReaderServiceImpl
 
     private void cleanUp()
     {
-        while( m_entries.size() > m_maxEntries )
+        synchronized( m_entries )
         {
-            m_entries.removeLast();
+            while( m_entries.size() > m_maxEntries )
+            {
+                m_entries.removeLast();
+            }
         }
     }
 
