@@ -10,15 +10,15 @@
   <artifactId>pax-logging</artifactId>
   <packaging>pom</packaging>
   <name>OPS4J - Pax Logging</name>
-  <version>1.1.1</version>
+  <version>1.2-SNAPSHOT</version>
   <url>http://www.ops4j.org/projects/pax/logging</url>
   <issueManagement>
     <system>jira</system>
     <url>http://issues.ops4j.org/jira/browse/PAXLOGGING</url>
   </issueManagement>
   <scm>
-    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/pax-logging-1.1.1</connection>
-    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/pax-logging-1.1.1</developerConnection>
+    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</connection>
+    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
   </scm>
   <modules>
     <module>api</module>
