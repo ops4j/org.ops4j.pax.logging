@@ -31,7 +31,6 @@ import org.osgi.service.log.LogReaderService;
 public class LogReaderServiceImpl
     implements LogReaderService
 {
-
     private ArrayList m_listeners;
     private final LinkedList m_entries;
     private int m_maxEntries;
@@ -39,15 +38,22 @@ public class LogReaderServiceImpl
     public LogReaderServiceImpl( int maxEntries )
     {
         m_maxEntries = maxEntries;
-        m_listeners = new ArrayList();
         m_entries = new LinkedList();
     }
 
     public void addLogListener( LogListener logListener )
     {
-        synchronized( m_listeners )
+        synchronized( this )
         {
-            ArrayList clone = new ArrayList( m_listeners );
+            ArrayList clone;
+            if( m_listeners == null )
+            {
+                clone = new ArrayList();
+            }
+            else
+            {
+                clone = new ArrayList( m_listeners );
+            }
             clone.add( logListener );
             m_listeners = clone;
         }
@@ -55,11 +61,22 @@ public class LogReaderServiceImpl
 
     public void removeLogListener( LogListener logListener )
     {
-        synchronized( m_listeners )
+        synchronized( this )
         {
+            if( m_listeners == null )
+            {
+                return;
+            }
             ArrayList clone = new ArrayList( m_listeners );
             clone.remove( logListener );
-            m_listeners = clone;
+            if( clone.size() == 0 )
+            {
+                m_listeners = null;
+            }
+            else
+            {
+                m_listeners = clone;
+            }
         }
     }
 
@@ -68,29 +85,30 @@ public class LogReaderServiceImpl
         return Collections.enumeration( m_entries );
     }
 
+    private void cleanUp()
+    {
+        while( m_entries.size() > m_maxEntries )
+        {
+            m_entries.removeLast();
+        }
+    }
+
     final void fireEvent( LogEntry entry )
     {
         synchronized( m_entries )
         {
-            m_entries.add( 0, entry );
+            m_entries.addFirst( entry );
+            cleanUp();
+        }
+        if( m_listeners == null )
+        {
+            return;
         }
         Iterator iterator = m_listeners.iterator();
         while( iterator.hasNext() )
         {
             LogListener listener = (LogListener) iterator.next();
             fire( listener, entry );
-        }
-        cleanUp();
-    }
-
-    private void cleanUp()
-    {
-        synchronized( m_entries )
-        {
-            while( m_entries.size() > m_maxEntries )
-            {
-                m_entries.removeLast();
-            }
         }
     }
 
