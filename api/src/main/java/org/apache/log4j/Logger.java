@@ -53,12 +53,11 @@ import org.osgi.framework.BundleContext;
  * @author Ceki G&uuml;lc&uuml;
  * @author Niclas Hedhman
  */
-public class Logger
+public class Logger extends Category
 {
 
     private static final String LOG4J_FQCN = Logger.class.getName();
 
-    private PaxLogger m_delegate;
     private static PaxLoggingManager m_paxLogging;
     private static WeakHashMap m_loggers;
 
@@ -111,7 +110,7 @@ public class Logger
      */
     private Logger( PaxLogger delegate )
     {
-        m_delegate = delegate;
+        super( delegate );
     }
 
     /**
@@ -308,63 +307,6 @@ public class Logger
     }
 
     /**
-     * Log a message object with the DEBUG level.
-     *
-     * <p>
-     * This method first checks if this category is <code>DEBUG</code> enabled
-     * by comparing the level of this category with the
-     * DEBUG level. If this category is <code>DEBUG</code> enabled, then it
-     * converts the message object (passed as parameter) to a string by
-     * invoking the appropriate org.apache.log4j.or.ObjectRenderer. It
-     * then proceeds to call all the registered appenders in this category and
-     * also higher in the hierarchy depending on the value of the additivity
-     * flag.
-     * </p>
-     *
-     * <p>
-     * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
-     * print the name of the <code>Throwable</code> but no stack trace. To
-     * print a stack trace use the {@link #debug(Object,Throwable)} form
-     * instead.
-     * </p>
-     *
-     * @param message the message object to log.
-     */
-    public void debug( Object message )
-    {
-        if( m_delegate.isDebugEnabled() && message != null )
-        {
-            m_delegate.debug( message.toString(), null );
-        }
-    }
-
-    /**
-     * Log a message object with the <code>DEBUG</code> level including the
-     * stack trace of the {@link Throwable}<code>t</code> passed as parameter.
-     *
-     * <p>
-     * See {@link #debug(Object)} form for more detailed information.
-     * </p>
-     *
-     * @param message the message object to log.
-     * @param t       the exception to log, including its stack trace.
-     */
-    public void debug( Object message, Throwable t )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            if( message != null )
-            {
-                m_delegate.debug( message.toString(), t );
-            }
-            else
-            {
-                m_delegate.debug( null, t );
-            }
-        }
-    }
-
-    /**
      * Log a message with the <code>DEBUG</code> level with message formatting
      * done according to the value of <code>messagePattern</code> and
      * <code>arg</code> parameters.
@@ -425,62 +367,6 @@ public class Logger
     }
 
     /**
-     * Log a message object with the ERROR Level.
-     *
-     * <p>
-     * This method first checks if this category is <code>ERROR</code> enabled
-     * by comparing the level of this category with ERROR
-     * Level. If this category is <code>ERROR</code> enabled, then it converts
-     * the message object passed as parameter to a string by invoking the
-     * appropriate org.apache.log4j.or.ObjectRenderer. It proceeds to
-     * call all the registered appenders in this category and also higher in
-     * the hierarchy depending on the value of the additivity flag.
-     * </p>
-     *
-     * <p>
-     * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
-     * print the name of the <code>Throwable</code> but no stack trace. To
-     * print a stack trace use the {@link #error(Object,Throwable)} form
-     * instead.
-     * </p>
-     *
-     * @param message the message object to log
-     */
-    public void error( Object message )
-    {
-        if( m_delegate.isErrorEnabled() && message != null )
-        {
-            m_delegate.error( message.toString(), null );
-        }
-    }
-
-    /**
-     * Log a message object with the <code>ERROR</code> level including the
-     * stack trace of the {@link Throwable}<code>t</code> passed as parameter.
-     *
-     * <p>
-     * See {@link #error(Object)} form for more detailed information.
-     * </p>
-     *
-     * @param message the message object to log.
-     * @param t       the exception to log, including its stack trace.
-     */
-    public void error( Object message, Throwable t )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            if( message != null )
-            {
-                m_delegate.error( message.toString(), t );
-            }
-            else
-            {
-                m_delegate.error( null, t );
-            }
-        }
-    }
-
-    /**
      * Log a message with the <code>ERROR</code> level with message formatting
      * done according to the value of <code>messagePattern</code> and
      * <code>arg</code> parameters.
@@ -529,35 +415,6 @@ public class Logger
     }
 
     /**
-     * Log a message object with the FATAL Level.
-     *
-     * <p>
-     * This method first checks if this category is <code>FATAL</code> enabled
-     * by comparing the level of this category with FATAL
-     * Level. If the category is <code>FATAL</code> enabled, then it converts
-     * the message object passed as parameter to a string by invoking the
-     * appropriate org.apache.log4j.or.ObjectRenderer. It proceeds to
-     * call all the registered appenders in this category and also higher in
-     * the hierarchy depending on the value of the additivity flag.
-     * </p>
-     *
-     * <p>
-     * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
-     * print the name of the Throwable but no stack trace. To print a stack
-     * trace use the {@link #fatal(Object,Throwable)} form instead.
-     * </p>
-     *
-     * @param message the message object to log
-     */
-    public void fatal( Object message )
-    {
-        if( m_delegate.isFatalEnabled() && message != null )
-        {
-            m_delegate.fatal( message.toString(), null );
-        }
-    }
-
-    /**
      * Log a message with the <code>FATAL</code> level with message formatting
      * done according to the value of <code>messagePattern</code> and
      * <code>arg</code> parameters.
@@ -579,61 +436,6 @@ public class Logger
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format( msgStr, arg );
             m_delegate.fatal( msgStr, null );
-        }
-    }
-
-    /**
-     * Log a message object with the <code>FATAL</code> level including the
-     * stack trace of the {@link Throwable}<code>t</code> passed as parameter.
-     *
-     * <p>
-     * See {@link #fatal(Object)} for more detailed information.
-     * </p>
-     *
-     * @param message the message object to log.
-     * @param t       the exception to log, including its stack trace.
-     */
-    public void fatal( Object message, Throwable t )
-    {
-        if( m_delegate.isFatalEnabled() )
-        {
-            if( message != null )
-            {
-                m_delegate.fatal( message.toString(), t );
-            }
-            else
-            {
-                m_delegate.fatal( null, t );
-            }
-        }
-    }
-
-    /**
-     * Log a message object with the INFO Level.
-     *
-     * <p>
-     * This method first checks if this category is <code>INFO</code> enabled by
-     * comparing the level of this category with INFO Level.
-     * If the category is <code>INFO</code> enabled, then it converts the
-     * message object passed as parameter to a string by invoking the
-     * appropriate org.apache.log4j.or.ObjectRenderer. It proceeds to
-     * call all the registered appenders in this category and also higher in
-     * the hierarchy depending on the value of the additivity flag.
-     * </p>
-     *
-     * <p>
-     * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
-     * print the name of the Throwable but no stack trace. To print a stack
-     * trace use the {@link #info(Object,Throwable)} form instead.
-     * </p>
-     *
-     * @param message the message object to log
-     */
-    public void info( Object message )
-    {
-        if( m_delegate.isInfoEnabled() && message != null )
-        {
-            m_delegate.inform( message.toString(), null );
         }
     }
 
@@ -686,79 +488,6 @@ public class Logger
     }
 
     /**
-     * Log a message object with the <code>INFO</code> level including the stack
-     * trace of the {@link Throwable}<code>t</code> passed as parameter.
-     *
-     * <p>
-     * See {@link #info(Object)} for more detailed information.
-     * </p>
-     *
-     * @param message the message object to log.
-     * @param t       the exception to log, including its stack trace.
-     */
-    public void info( Object message, Throwable t )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            if( message != null )
-            {
-                m_delegate.inform( message.toString(), t );
-            }
-            else
-            {
-                m_delegate.inform( null, t );
-            }
-        }
-    }
-
-    /**
-     * Check whether this category is enabled for the <code>DEBUG</code> Level.
-     *
-     * <p>
-     * This function is intended to lessen the computational cost of disabled
-     * log debug statements.
-     * </p>
-     *
-     * <p>
-     * For some <code>cat</code> Category object, when you write,
-     * <pre>
-     *      cat.debug("This is entry number: " + i );
-     *  </pre>
-     * </p>
-     *
-     * <p>
-     * You incur the cost constructing the message, concatenatiion in this case,
-     * regardless of whether the message is logged or not.
-     * </p>
-     *
-     * <p>
-     * If you are worried about speed, then you should write
-     * <pre>
-     *          if(cat.isDebugEnabled()) {
-     *            cat.debug("This is entry number: " + i );
-     *          }
-     *  </pre>
-     * </p>
-     *
-     * <p>
-     * This way you will not incur the cost of parameter construction if
-     * debugging is disabled for <code>cat</code>. On the other hand, if the
-     * <code>cat</code> is debug enabled, you will incur the cost of evaluating
-     * whether the category is debug enabled twice. Once in
-     * <code>isDebugEnabled</code> and once in the <code>debug</code>.  This is
-     * an insignificant overhead since evaluating a category takes about 1%% of
-     * the time it takes to actually log.
-     * </p>
-     *
-     * @return boolean - <code>true</code> if this category is debug enabled,
-     *         <code>false</code> otherwise.
-     */
-    public boolean isDebugEnabled()
-    {
-        return m_delegate.isDebugEnabled();
-    }
-
-    /**
      * Check whether this category is enabled for the TRACE  Level. See also
      * {@link #isDebugEnabled()}.
      *
@@ -768,18 +497,6 @@ public class Logger
     public boolean isTraceEnabled()
     {
         return m_delegate.isTraceEnabled();
-    }
-
-    /**
-     * Check whether this category is enabled for the info Level. See also
-     * {@link #isDebugEnabled()}.
-     *
-     * @return boolean - <code>true</code> if this category is enabled for level
-     *         info, <code>false</code> otherwise.
-     */
-    public boolean isInfoEnabled()
-    {
-        return m_delegate.isInfoEnabled();
     }
 
     /**
@@ -832,63 +549,6 @@ public class Logger
     }
 
     /**
-     * Log a message object with the WARN Level.
-     *
-     * <p>
-     * This method first checks if this category is <code>WARN</code> enabled by
-     * comparing the level of this category with WARN Level.
-     * If the category is <code>WARN</code> enabled, then it converts the
-     * message object passed as parameter to a string by invoking the
-     * appropriate org.apache.log4j.or.ObjectRenderer. It proceeds to
-     * call all the registered appenders in this category and also higher in
-     * the hieararchy depending on the value of the additivity flag.
-     * </p>
-     *
-     * <p>
-     * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
-     * print the name of the Throwable but no stack trace. To print a stack
-     * trace use the {@link #warn(Object,Throwable)} form instead.
-     * </p>
-     *
-     * <p></p>
-     *
-     * @param message the message object to log.
-     */
-    public void warn( Object message )
-    {
-        if( m_delegate.isWarnEnabled() && message != null )
-        {
-            m_delegate.warn( message.toString(), null );
-        }
-    }
-
-    /**
-     * Log a message with the <code>WARN</code> level including the stack trace
-     * of the {@link Throwable}<code>t</code> passed as parameter.
-     *
-     * <p>
-     * See {@link #warn(Object)} for more detailed information.
-     * </p>
-     *
-     * @param message the message object to log.
-     * @param t       the exception to log, including its stack trace.
-     */
-    public void warn( Object message, Throwable t )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            if( message != null )
-            {
-                m_delegate.warn( message.toString(), t );
-            }
-            else
-            {
-                m_delegate.warn( null, t );
-            }
-        }
-    }
-
-    /**
      * Log a message with the <code>WARN</code> level with message formatting
      * done according to the value of <code>messagePattern</code> and
      * <code>arg</code> parameters.
@@ -936,62 +596,4 @@ public class Logger
         }
     }
 
-    /**
-     * Log a message with the code level priority.
-     *
-     * @param priority, the code level of the message
-     * @param msg       the message object to log.
-     */
-
-    public void log( Priority priority, Object msg )
-    {
-        log( priority, msg, null );
-    }
-
-    /**
-     * This generic form is intended to be used by wrappers.
-     */
-    public void log( Priority priority, Object message, Throwable t )
-    {
-        if( priority == Level.FATAL )
-        {
-            this.fatal( message, t );
-        }
-        if( priority == Level.ERROR )
-        {
-            this.error( message, t );
-        }
-        if( priority == Level.WARN )
-        {
-            this.warn( message, t );
-        }
-        if( priority == Level.INFO )
-        {
-            this.info( message, t );
-        }
-        if( priority == Level.DEBUG )
-        {
-            this.debug( message, t );
-        }
-        if( priority == Level.ALL )
-        {
-            this.trace( message, t );
-        }
-    }
-
-    /**
-     * This is the most generic printing method. It is intended to be
-     * invoked by <b>wrapper</b> classes.
-     *
-     * <b>Note:</b>In Pax Logging the callerFQCN is ignored.
-     *
-     * @param callerFQCN The wrapper class' fully qualified class name.
-     * @param level      The level of the logging request.
-     * @param message    The message of the logging request.
-     * @param t          The throwable of the logging request, may be null.
-     */
-    public void log( String callerFQCN, Priority level, Object message, Throwable t )
-    {
-        log( level, message, t );
-    }
 }
