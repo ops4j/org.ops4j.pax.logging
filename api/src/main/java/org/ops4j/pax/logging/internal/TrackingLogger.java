@@ -18,6 +18,7 @@
 package org.ops4j.pax.logging.internal;
 
 import org.ops4j.pax.logging.DefaultServiceLog;
+import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
@@ -131,5 +132,9 @@ public class TrackingLogger
     {
         m_service = null;
         m_delegate = new DefaultServiceLog( m_bundle, m_category );
+    }
+    
+    public PaxContext getPaxContext() {
+       return m_service.getPaxContext();
     }
 }

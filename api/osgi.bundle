@@ -3,6 +3,7 @@ Bundle-Activator: org.ops4j.pax.logging.internal.Activator
 Private-Package: org.apache.commons.logging.internal, \
                  org.apache.juli.logging.internal, \
                  org.apache.log4j.internal, \
+                 org.apache.log4j.helpers, \
                  org.ops4j.pax.logging.slf4j, \
                  org.slf4j.impl, \
                  org.ops4j.pax.logging.internal

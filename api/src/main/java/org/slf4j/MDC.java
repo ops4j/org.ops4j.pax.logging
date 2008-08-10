@@ -24,9 +24,10 @@
 
 package org.slf4j;
 
-import org.slf4j.helpers.Util;
-import org.slf4j.impl.StaticMDCBinder;
-import org.slf4j.spi.MDCAdapter;
+import org.ops4j.pax.logging.OSGIPaxLoggingManager;
+import org.ops4j.pax.logging.PaxContext;
+import org.ops4j.pax.logging.PaxLoggingManager;
+import org.osgi.framework.BundleContext;
 
 /**
  * This class hides and serves as a substitute for the underlying logging
@@ -56,34 +57,29 @@ import org.slf4j.spi.MDCAdapter;
  * @since 1.4.1
  */
 public class MDC {
+   private static PaxContext m_context;
+   private static PaxContext m_defaultContext = new PaxContext();
+       
+   private static PaxLoggingManager m_paxLogging;
+   public static void setBundleContext( BundleContext ctx )
+   {
+       m_paxLogging = new OSGIPaxLoggingManager( ctx );
+       // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
+       m_paxLogging.open();
+   }
 
-  static final String NULL_MDCA_URL = "http://www.slf4j.org/codes.html#null_MDCA";
-  static final String NO_STATIC_MDC_BINDER_URL = "http://www.slf4j.org/codes.html#no_static_mdc_binder";
-  static MDCAdapter mdcAdapter;
-
-  private MDC() {
-  }
-
-  static {
-    try {
-      mdcAdapter = StaticMDCBinder.SINGLETON.getMDCA();
-    } catch (NoClassDefFoundError ncde) {
-      String msg = ncde.getMessage();
-      if (msg != null && msg.indexOf("org/slf4j/impl/StaticMDCBinder") != -1) {
-        Util
-            .reportFailure("Failed to load class \"org.slf4j.impl.StaticMDCBinder\".");
-        Util.reportFailure("See " + NO_STATIC_MDC_BINDER_URL
-            + " for further details.");
-
-      }
-      throw ncde;
-    } catch (Exception e) {
-      // we should never get here
-      Util.reportFailure("Could not bind with an instance of class ["
-          + StaticMDCBinder.SINGLETON.getMDCAdapterClassStr() + "]", e);
-    }
-  }
-
+   /**
+     * For all the methods that operate against the context, return true if the MDC should use the PaxContext object ffrom the PaxLoggingManager,
+     * or if the logging manager is not set, or does not have its context available yet, use a default context local to this MDC.
+     * @return true if the MDC should use the PaxContext object ffrom the PaxLoggingManager,
+     * or if the logging manager is not set, or does not have its context available yet, use a default context local to this MDC.
+     */
+   private static boolean setContext(){
+       if( m_context==null && m_paxLogging!=null ){
+           m_context=(m_paxLogging.getPaxLoggingService()!=null)?m_paxLogging.getPaxLoggingService().getPaxContext():null;
+       }
+       return m_context!=null;
+   } 
   /**
    * Put a context value (the <code>val</code> parameter) as identified with
    * the <code>key</code> parameter into the current thread's context map.
@@ -99,11 +95,11 @@ public class MDC {
     if (key == null) {
       throw new IllegalArgumentException("key parameter cannot be null");
     }
-    if (mdcAdapter == null) {
-      throw new IllegalStateException("MDCAdapter cannot be null. See also "
-          + NULL_MDCA_URL);
+    if(setContext()){
+        m_context.put(key, val);
+    }else{
+        m_defaultContext.put(key, val);
     }
-    mdcAdapter.put(key, val);
   }
 
   /**
@@ -119,12 +115,11 @@ public class MDC {
     if (key == null) {
       throw new IllegalArgumentException("key parameter cannot be null");
     }
-
-    if (mdcAdapter == null) {
-      throw new IllegalStateException("MDCAdapter cannot be null. See also "
-          + NULL_MDCA_URL);
+    if(setContext()){
+        return m_context.get(key);
+    }else{
+        return m_defaultContext.get(key);
     }
-    return mdcAdapter.get(key);
   }
 
   /**
@@ -139,32 +134,21 @@ public class MDC {
     if (key == null) {
       throw new IllegalArgumentException("key parameter cannot be null");
     }
-
-    if (mdcAdapter == null) {
-      throw new IllegalStateException("MDCAdapter cannot be null. See also "
-          + NULL_MDCA_URL);
+    if(setContext()){
+        m_context.remove(key);
+    }else{
+        m_defaultContext.remove(key);
     }
-    mdcAdapter.remove(key);
   }
 
   /**
    * Clear all entries in the MDC of the underlying implementation.
    */
   public static void clear() {
-    if (mdcAdapter == null) {
-      throw new IllegalStateException("MDCAdapter cannot be null. See also "
-          + NULL_MDCA_URL);
-    }
-    mdcAdapter.clear();
-  }
-
-  /**
-   * Returns the MDCAdapter instance currently in use.
-   *
-   * @return the MDcAdapter instance currently in use.
-   * @since 1.4.2
-   */
-  public static MDCAdapter getMDCAdapter() {
-    return mdcAdapter;
+     if(setContext()){
+         m_context.clear();
+     }else{
+         m_defaultContext.clear();
+     }
   }
 }

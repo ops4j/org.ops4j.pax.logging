@@ -20,8 +20,10 @@ package org.ops4j.pax.logging.internal;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import java.util.Map;
+import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
-import org.osgi.framework.Bundle;
+
 
 /**
  * Experimental fallback strategy for non-availability.
@@ -59,6 +61,8 @@ public class BufferingLog
     }
 
     private ArrayList m_queue;
+    private PaxContext m_context = new PaxContext();
+    
 
     public BufferingLog()
     {
@@ -70,10 +74,10 @@ public class BufferingLog
         Iterator iterator = m_queue.iterator();
         while( iterator.hasNext() )
         {
-        LogPackage pack = (LogPackage) iterator.next();
+            LogPackage pack = (LogPackage) iterator.next();
             Throwable throwable = pack.getException();
             String message = pack.getMessage();
-            
+            getPaxContext().putAll(pack.getContext());
             LogType logType = pack.getType();
             int logTypeAsInt = logType.getType();
             switch( logTypeAsInt )
@@ -97,6 +101,7 @@ public class BufferingLog
                     destination.fatal( message, throwable );
                     break;
             }
+            getPaxContext().clear();
         }
     }
 
@@ -129,40 +134,40 @@ public class BufferingLog
     {
         return true;
     }
-
+  
     public void trace( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.trace, message, t );
+        LogPackage p = new LogPackage( LogType.trace, message, t,getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void debug( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.debug, message, t );
+        LogPackage p = new LogPackage( LogType.debug, message, t ,getPaxContext().getContext());
         m_queue.add( p );
     }
 
     public void inform( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.info, message, t );
+        LogPackage p = new LogPackage( LogType.info, message, t,getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void warn( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.warn, message, t );
+        LogPackage p = new LogPackage( LogType.warn, message, t,getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void error( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.error, message, t );
+        LogPackage p = new LogPackage( LogType.error, message, t ,getPaxContext().getContext());
         m_queue.add( p );
     }
 
     public void fatal( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.fatal, message, t );
+        LogPackage p = new LogPackage( LogType.fatal, message, t ,getPaxContext().getContext());
         m_queue.add( p );
     }
 
@@ -176,18 +181,23 @@ public class BufferingLog
         return "";
     }
 
+    public PaxContext getPaxContext(){
+        return m_context;
+    }
+    
     private static class LogPackage
     {
 
         private LogType m_type;
         private String m_message;
         private Throwable m_exception;
-
-        public LogPackage( LogType type, String message, Throwable exception )
+        private Map m_context;
+        public LogPackage( LogType type, String message, Throwable exception,Map context )
         {
             m_type = type;
             m_message = message;
             m_exception = exception;
+            m_context=context;
         }
 
         public String getMessage()
@@ -203,6 +213,11 @@ public class BufferingLog
         public LogType getType()
         {
             return m_type;
+        }
+        
+        public Map getContext()
+        {
+            return m_context;
         }
     }
 }

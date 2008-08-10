@@ -42,5 +42,7 @@ public interface PaxLogger
     int getLogLevel();
 
     String getName();
+    
+    PaxContext getPaxContext();
 }
 

@@ -20,12 +20,15 @@ package org.ops4j.pax.logging.internal;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PaxLoggingConfigurator;
 import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminTracker;
+import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
@@ -45,7 +48,8 @@ public class PaxLoggingServiceImpl
     private LogReaderServiceImpl m_logReader;
     private EventAdminTracker m_eventAdmin;
     private AppenderTracker m_appenderTracker;
-
+    private PaxContext m_context;
+    
     private int m_logLevel=LOG_DEBUG;
     
     public PaxLoggingServiceImpl( LogReaderServiceImpl logReader, EventAdminTracker eventAdmin,
@@ -54,6 +58,7 @@ public class PaxLoggingServiceImpl
         m_appenderTracker = appenderTracker;
         m_logReader = logReader;
         m_eventAdmin = eventAdmin;
+        m_context = new PaxContext();
         configureDefaults();
     }
 
@@ -137,7 +142,7 @@ public class PaxLoggingServiceImpl
             default:
                 logger.warn( "Undefined Level: " + level + " : " + message, exception );
         }
-        handleEvents( bundle, sr, level, message, exception );
+        handleEvents( bundle, sr, level, message, exception);
     }
 
     void handleEvents( Bundle bundle, ServiceReference sr, int level, String message, Throwable exception )
@@ -148,7 +153,7 @@ public class PaxLoggingServiceImpl
         // This should only be null for TestCases.
         if( m_eventAdmin != null )
         {
-            Event event = createEvent( bundle, level, entry, message, exception, sr );
+            Event event = createEvent( bundle, level, entry, message, exception, sr ,getPaxContext().getContext()) ;
             m_eventAdmin.postEvent( event );
         }
     }
@@ -205,7 +210,7 @@ public class PaxLoggingServiceImpl
     {
         String levelName = System.getProperty( "org.ops4j.pax.logging.DefaultServiceLog.level", "DEBUG" ).trim();
         m_logLevel=convertLevel( levelName );
-      
+
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
         Properties defaultProperties = new Properties();
         defaultProperties.put( "log4j.rootLogger", convertLevel(m_logLevel)+", A1" );
@@ -215,7 +220,7 @@ public class PaxLoggingServiceImpl
     }
 
     static Event createEvent( Bundle bundle, int level, LogEntry entry, String message,
-                              Throwable exception, ServiceReference sr )
+                              Throwable exception, ServiceReference sr,Map context )
     {
         String type;
         switch( level )
@@ -275,6 +280,13 @@ public class PaxLoggingServiceImpl
             String[] objClass = (String[]) sr.getProperty( Constants.OBJECTCLASS );
             props.put( "service.objectClass", objClass );
         }
+        if(context != null )
+        {
+            for(Iterator keys=context.keySet().iterator();keys.hasNext();){
+                String key=(String)keys.next();
+                props.put(key, context.get(key));
+            }
+        }
         return new Event( topic, props );
     }
 
@@ -322,6 +334,10 @@ public class PaxLoggingServiceImpl
             {
                 PaxLoggingServiceImpl.this.updated( configuration );
             }
+
+            public PaxContext getPaxContext() {
+                return PaxLoggingServiceImpl.this.getPaxContext();
+            }
         }
 
         return new ManagedPaxLoggingService();
@@ -330,6 +346,10 @@ public class PaxLoggingServiceImpl
     public void ungetService( Bundle bundle, ServiceRegistration registration, Object service )
     {
         // nothing to do...
+    }
+
+    public PaxContext getPaxContext() {
+        return m_context;
     }
     
     private static int convertLevel( String levelName )

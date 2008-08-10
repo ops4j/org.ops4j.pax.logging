@@ -43,6 +43,7 @@ public class DefaultServiceLog
 
     private Bundle m_bundle;
     private String m_categoryName;
+    private PaxContext m_context=new PaxContext();
 
     static
     {
@@ -202,5 +203,9 @@ public class DefaultServiceLog
         {
             level = DEBUG;
         }
+    }
+    
+    public PaxContext getPaxContext() {
+        return m_context;
     }
 }

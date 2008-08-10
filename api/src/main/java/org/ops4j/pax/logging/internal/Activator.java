@@ -31,11 +31,13 @@ public class Activator
         org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory.setBundleContext( bundleContext );
         String name = getClass().getName();
         org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger( name );
+        org.slf4j.MDC.setBundleContext(bundleContext);
         slf4jLogger.info( "Enabling SLF4J API support." );
         org.apache.commons.logging.LogFactory.setBundleContext( bundleContext );
         org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog( name );
         commonsLogger.info( "Enabling Jakarta Commons Logging API support." );
         org.apache.log4j.Logger.setBundleContext( bundleContext );
+        org.apache.log4j.MDC.setBundleContext( bundleContext );
         org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger( name );
         log4jLogger.info( "Enabling Log4J API support." );
         org.ops4j.pax.logging.avalon.AvalonLogFactory.setBundleContext( bundleContext );

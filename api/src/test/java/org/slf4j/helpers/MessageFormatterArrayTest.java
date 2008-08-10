@@ -18,6 +18,7 @@
 package org.slf4j.helpers;
 
 import junit.framework.TestCase;
+import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
@@ -79,7 +80,6 @@ public class MessageFormatterArrayTest extends TestCase
     public class TestLogger
         implements PaxLogger
     {
-
         public boolean isTraceEnabled()
         {
             return true;
@@ -149,6 +149,12 @@ public class MessageFormatterArrayTest extends TestCase
         {
             return null;
         }
+
+        public PaxContext getPaxContext() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+        
+        
     }
 
     public class TestLoggingManager

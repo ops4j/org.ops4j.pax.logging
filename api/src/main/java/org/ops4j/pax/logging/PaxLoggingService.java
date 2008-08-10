@@ -28,4 +28,7 @@ public interface PaxLoggingService extends LogService
     PaxLogger getLogger( Bundle bundle, String category, String fqcn );
 
     int getLogLevel();
+    
+    PaxContext getPaxContext();
+    
 }
