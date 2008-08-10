@@ -46,12 +46,15 @@ public class PaxLoggingServiceImpl
     private EventAdminTracker m_eventAdmin;
     private AppenderTracker m_appenderTracker;
 
+    private int m_logLevel=LOG_DEBUG;
+    
     public PaxLoggingServiceImpl( LogReaderServiceImpl logReader, EventAdminTracker eventAdmin,
                                   AppenderTracker appenderTracker )
     {
         m_appenderTracker = appenderTracker;
         m_logReader = logReader;
         m_eventAdmin = eventAdmin;
+        configureDefaults();
     }
 
     public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
@@ -62,7 +65,7 @@ public class PaxLoggingServiceImpl
 
     public int getLogLevel()
     {
-        return LOG_DEBUG;
+        return m_logLevel;
     }
 
     public void log( int level, String message )
@@ -200,9 +203,12 @@ public class PaxLoggingServiceImpl
 
     private void configureDefaults()
     {
+        String levelName = System.getProperty( "org.ops4j.pax.logging.DefaultServiceLog.level", "DEBUG" ).trim();
+        m_logLevel=convertLevel( levelName );
+      
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
         Properties defaultProperties = new Properties();
-        defaultProperties.put( "log4j.rootLogger", "ALL, A1" );
+        defaultProperties.put( "log4j.rootLogger", convertLevel(m_logLevel)+", A1" );
         defaultProperties.put( "log4j.appender.A1", "org.apache.log4j.ConsoleAppender" );
         defaultProperties.put( "log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout" );
         configurator.doConfigure( defaultProperties, LogManager.getLoggerRepository() );
@@ -324,5 +330,35 @@ public class PaxLoggingServiceImpl
     public void ungetService( Bundle bundle, ServiceRegistration registration, Object service )
     {
         // nothing to do...
+    }
+    
+    private static int convertLevel( String levelName )
+    {
+        if( "DEBUG".equals( levelName ) )
+        {
+            return LOG_DEBUG;
+        }
+        else if( "INFO".equals( levelName ) )
+        {
+            return LOG_INFO;
+        }
+        else if( "ERROR".equals( levelName ) )
+        {
+            return LOG_ERROR;
+        }
+        else
+        {
+            return LOG_DEBUG;
+        }
+    }
+    
+    private static String convertLevel(int level)
+    {
+        switch(level){
+            case LOG_DEBUG:return "DEBUG";
+            case LOG_INFO:return "INFO";
+            case LOG_ERROR:return "ERROR";
+            default: return "DEBUG";
+        }
     }
 }

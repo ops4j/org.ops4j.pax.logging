@@ -209,5 +209,11 @@
       <id>wouterv</id>
       <timezone>+1</timezone>
     </developer>
+    <developer>
+      <name>Matthew Roy</name>
+      <id>mooseroy</id>
+      <timezone>-5</timezone>
+      <email>mooseroy@gmail.com</email>
+    </developer>
   </developers>
 </project>
