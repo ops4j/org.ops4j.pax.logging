@@ -33,12 +33,30 @@ import org.osgi.service.log.LogService;
 public class FrameworkHandler
     implements BundleListener, FrameworkListener, ServiceListener
 {
+	private static final String FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME = "org.ops4j.pax.logging.service.frameworkEventsLogLevel";
 
     private PaxLoggingServiceImpl m_service;
+    private int loggingLevel;
 
     public FrameworkHandler( PaxLoggingServiceImpl service )
     {
         m_service = service;
+
+		loggingLevel = LogService.LOG_DEBUG;
+		String frameworkEventsLogLevelProperty = System.getProperty(FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME);
+		if ( frameworkEventsLogLevelProperty != null )
+		{
+			try
+			{
+				loggingLevel = Integer.parseInt(frameworkEventsLogLevelProperty);
+			}
+			catch ( NumberFormatException e )
+			{
+				throw new IllegalArgumentException( "Failed to parse system property "
+				    + FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME + " (value " + frameworkEventsLogLevelProperty
+					+ ").  Must be a valid level from the OSGi LogService." );
+			}
+		}
     }
 
     public void bundleChanged( BundleEvent bundleEvent )
@@ -79,8 +97,7 @@ public class FrameworkHandler
                 message = "BundleEvent [unknown:" + type + "]";
                 break;
         }
-        int level = LogService.LOG_INFO;
-        m_service.log( bundle, level, message, null );
+        m_service.log( bundle, loggingLevel, message, null );
     }
 
     public void frameworkEvent( FrameworkEvent frameworkEvent )
@@ -112,9 +129,8 @@ public class FrameworkHandler
                 break;
         }
         Bundle bundle = frameworkEvent.getBundle();
-        int level = LogService.LOG_INFO;
         Throwable exception = frameworkEvent.getThrowable();
-        m_service.log( bundle, level, message, exception );
+        m_service.log( bundle, loggingLevel, message, exception );
     }
 
     public void serviceChanged( ServiceEvent serviceEvent )
@@ -137,7 +153,6 @@ public class FrameworkHandler
                 message = "ServiceEvent [unknown:" + type + "]";
                 break;
         }
-        int level = LogService.LOG_INFO;
-        m_service.log( serviceRef, level, message );
+        m_service.log( serviceRef, loggingLevel, message );
     }
 }
