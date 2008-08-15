@@ -33,36 +33,36 @@ public class FrameworkHandlerTest extends TestCase
 
     public void testDefaultLogLevelIsDebug() throws Exception
     {
-        System.clearProperty(FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME);
+        System.clearProperty( FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME );
         logAnEvent();
-        assertEquals(LogService.LOG_DEBUG, lastLogEntry.getLevel());
+        assertEquals( LogService.LOG_DEBUG, lastLogEntry.getLevel() );
     }
 
     public void testLogLevelIsConfigurableViaSystemProperty() throws Exception
     {
-        System.setProperty(FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME, "INFO");
+        System.setProperty( FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME, "INFO" );
         try
         {
             logAnEvent();
-            assertEquals(LogService.LOG_INFO, lastLogEntry.getLevel());
+            assertEquals( LogService.LOG_INFO, lastLogEntry.getLevel() );
         }
         finally
         {
-            System.clearProperty(FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME);
+            System.clearProperty( FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME );
         }
     }
 
     public void testInvalidConfiguredLogLevelCausesDebugLevelToBeUsed() throws Exception
     {
-        System.setProperty(FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME, "GARBAGE");
+        System.setProperty( FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME, "GARBAGE" );
         try
         {
             logAnEvent();
-            assertEquals(LogService.LOG_DEBUG, lastLogEntry.getLevel());
+            assertEquals( LogService.LOG_DEBUG, lastLogEntry.getLevel() );
         }
         finally
         {
-            System.clearProperty(FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME);
+            System.clearProperty( FrameworkHandler.FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME );
         }
     }
 
@@ -70,32 +70,31 @@ public class FrameworkHandlerTest extends TestCase
 
     private void logAnEvent()
     {
-        createHandler().bundleChanged(anEvent());
+        createHandler().bundleChanged( anEvent() );
     }
 
     private FrameworkHandler createHandler()
     {
         final LogReaderServiceImpl reader = new LogReaderServiceImpl(10);
-        reader.addLogListener(new LogListener()
-        {
-            public void logged(final LogEntry entry)
+        reader.addLogListener( new LogListener() {
+            public void logged( final LogEntry entry )
             {
                 lastLogEntry = entry;
             }
         });
-        return new FrameworkHandler(new PaxLoggingServiceImpl(reader, null, null));
+        return new FrameworkHandler( new PaxLoggingServiceImpl( reader, null, null ) );
     }
 
     private BundleEvent anEvent()
     {
-        return new BundleEvent(BundleEvent.INSTALLED, aBundle());
+        return new BundleEvent( BundleEvent.INSTALLED, aBundle() );
     }
 
     private Bundle aBundle()
     {
-        final Mock bundleMock = new Mock(Bundle.class);
-        bundleMock.stubs().method("getSymbolicName").will(new ReturnStub("test-bundle"));
-        bundleMock.stubs().method("getBundleId").will(new ReturnStub(Integer.valueOf(42)));
-        return (Bundle)bundleMock.proxy();
+        final Mock bundleMock = new Mock( Bundle.class );
+        bundleMock.stubs().method( "getSymbolicName" ).will( new ReturnStub( "test-bundle" ) );
+        bundleMock.stubs().method( "getBundleId" ).will( new ReturnStub( Integer.valueOf(42) ) );
+        return (Bundle) bundleMock.proxy();
     }
 }
