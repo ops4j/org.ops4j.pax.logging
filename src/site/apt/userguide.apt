@@ -76,3 +76,11 @@ Default Logger
 
     The valid level strings are; "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL", "NONE", and if
     any other string is used or null, the "DEBUG" level will be set.
+    
+Framework Events
+
+    The Pax Logging Service automatically logs interesting framework events (e.g., bundle events, 
+    service events) at DEBUG level.  This can be changed to a higher level via the
+    system property -Dorg.ops4j.pax.logging.service.frameworkEventsLogLevel=<level>.  The valid
+    level strings are; "DEBUG", "INFO", "WARN", "ERROR", and if any other string is used or null,
+    the "DEBUG" level will be set.
