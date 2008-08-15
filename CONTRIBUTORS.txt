@@ -1,4 +1,4 @@
-
+ 
 The following people has contributed, at varying degree to
 the Pax Logging codebase;
 
