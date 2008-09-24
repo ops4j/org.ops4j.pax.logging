@@ -1,11 +1,18 @@
-Bundle-Activator:   org.ops4j.pax.logging.example.Activator
+Bundle-Activator: org.ops4j.pax.logging.example.Activator
 
-Private-Package:    org.mortbay.*, \
-                    org.ops4j.pax.logging.example
+Embed-Dependency: \
+ org.mortbay.jetty;inline=true
 
-Import-Package:     com.sun.net.ssl.*;resolution:=optional, \
-                    javax.net.ssl;resolution:=optional, \
-                    javax.security.cert;resolution:=optional, \
-                    *
+Private-Package: \
+ org.ops4j.pax.logging.example
+
+Import-Package: \
+ com.sun.net.ssl.*;resolution:=optional, \
+ !javax.*, \
+ *
+
+DynamicImport-Package: \
+ javax.*
 
 Export-Package:
+
