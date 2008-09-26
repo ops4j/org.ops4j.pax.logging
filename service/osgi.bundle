@@ -9,7 +9,7 @@ Private-Package: \
 
 Import-Package: \
  javax.xml.*, \
- !(com|sun|javax).*, \
+ (com|sun|javax).*;resolution:=optional, \
  org.knopflerfish.service.log; provider="paxlogging"; version="[1.1.0,2.0.0)", \
  org.ops4j.pax.logging; version="[0.9.5,2.0.0)", \
  org.osgi.framework; version="[1.0.0,2.0.0)", \
