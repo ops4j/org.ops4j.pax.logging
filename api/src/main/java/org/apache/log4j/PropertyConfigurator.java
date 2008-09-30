@@ -21,10 +21,9 @@ import org.apache.log4j.spi.Configurator;
 import java.net.URL;
 import java.util.Properties;
 
-/** Dummy class to allow more applications to be compatible with Pax Logging out of the box.
- *
+/**
+ * Dummy class to allow more applications to be compatible with Pax Logging out of the box.
  */
-
 public class PropertyConfigurator
     implements Configurator
 {

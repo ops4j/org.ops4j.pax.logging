@@ -17,9 +17,10 @@
  */
 package org.apache.log4j.spi;
 
-/** Dummy interface to allow more applications to be compatible with Pax Logging out of the box.
- *
+/**
+ * Dummy interface to allow more applications to be compatible with Pax Logging out of the box.
  */
 public interface Configurator
 {
+
 }
