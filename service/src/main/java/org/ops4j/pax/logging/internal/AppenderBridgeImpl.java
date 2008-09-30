@@ -42,7 +42,6 @@ public class AppenderBridgeImpl extends AppenderSkeleton
 
     public void close()
     {
-
     }
 
     public boolean requiresLayout()

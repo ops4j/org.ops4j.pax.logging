@@ -36,6 +36,7 @@ import org.osgi.service.log.LogService;
 public class Activator
     implements BundleActivator
 {
+
     /**
      * The Managed Service PID for the log4j configuration
      */

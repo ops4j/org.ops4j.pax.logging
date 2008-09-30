@@ -24,6 +24,7 @@ import org.ops4j.pax.logging.spi.PaxAppender;
 
 public class PaxLoggingConfigurator extends PropertyConfigurator
 {
+
     public static final String OSGI_APPENDER_PREFIX = "osgi:";
 
     private AppenderTracker m_appenderTracker;
@@ -35,8 +36,9 @@ public class PaxLoggingConfigurator extends PropertyConfigurator
 
     Appender parseAppender( Properties props, String appenderName )
     {
-        if (appenderName.startsWith( OSGI_APPENDER_PREFIX )) {
-            appenderName = appenderName.substring(  OSGI_APPENDER_PREFIX.length() );
+        if( appenderName.startsWith( OSGI_APPENDER_PREFIX ) )
+        {
+            appenderName = appenderName.substring( OSGI_APPENDER_PREFIX.length() );
             PaxAppender appender = m_appenderTracker.getAppender( appenderName );
             return new AppenderBridgeImpl( appender );
         }

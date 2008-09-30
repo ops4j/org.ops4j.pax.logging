@@ -22,13 +22,12 @@ import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.PaxAppender;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class AppenderTracker extends ServiceTracker
 {
+
     private HashMap m_appenders;
 
     public AppenderTracker( BundleContext bundleContext )
@@ -64,22 +63,24 @@ public class AppenderTracker extends ServiceTracker
         return new PaxAppenderProxy( name );
     }
 
-    public class PaxAppenderProxy implements PaxAppender {
+    public class PaxAppenderProxy
+        implements PaxAppender
+    {
 
-        private final String name;
+        private final String m_name;
 
         public PaxAppenderProxy( String name )
         {
-            this.name = name;
+            m_name = name;
         }
 
         public void doAppend( PaxLoggingEvent event )
         {
-            PaxAppender appender = (PaxAppender) m_appenders.get( name );
-            if( appender != null ) {
+            PaxAppender appender = (PaxAppender) m_appenders.get( m_name );
+            if( appender != null )
+            {
                 appender.doAppend( event );
             }
         }
     }
-
 }

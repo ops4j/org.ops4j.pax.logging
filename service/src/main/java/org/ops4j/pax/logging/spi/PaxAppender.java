@@ -19,7 +19,6 @@ package org.ops4j.pax.logging.spi;
 
 public interface PaxAppender
 {
-
     /**
      * Log in <code>Appender</code> specific way. When appropriate,
      * Loggers will call the <code>doAppend</code> method of appender
@@ -28,6 +27,4 @@ public interface PaxAppender
      * @param event The PaxLoggingEvent that has occurred.
      */
     void doAppend( PaxLoggingEvent event );
-
-
 }

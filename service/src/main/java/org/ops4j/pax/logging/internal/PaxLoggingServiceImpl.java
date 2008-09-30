@@ -49,9 +49,9 @@ public class PaxLoggingServiceImpl
     private EventAdminTracker m_eventAdmin;
     private AppenderTracker m_appenderTracker;
     private PaxContext m_context;
-    
-    private int m_logLevel=LOG_DEBUG;
-    
+
+    private int m_logLevel = LOG_DEBUG;
+
     public PaxLoggingServiceImpl( LogReaderServiceImpl logReader, EventAdminTracker eventAdmin,
                                   AppenderTracker appenderTracker )
     {
@@ -142,7 +142,7 @@ public class PaxLoggingServiceImpl
             default:
                 logger.warn( "Undefined Level: " + level + " : " + message, exception );
         }
-        handleEvents( bundle, sr, level, message, exception);
+        handleEvents( bundle, sr, level, message, exception );
     }
 
     void handleEvents( Bundle bundle, ServiceReference sr, int level, String message, Throwable exception )
@@ -153,7 +153,7 @@ public class PaxLoggingServiceImpl
         // This should only be null for TestCases.
         if( m_eventAdmin != null )
         {
-            Event event = createEvent( bundle, level, entry, message, exception, sr ,getPaxContext().getContext()) ;
+            Event event = createEvent( bundle, level, entry, message, exception, sr, getPaxContext().getContext() );
             m_eventAdmin.postEvent( event );
         }
     }
@@ -209,18 +209,18 @@ public class PaxLoggingServiceImpl
     private void configureDefaults()
     {
         String levelName = System.getProperty( "org.ops4j.pax.logging.DefaultServiceLog.level", "DEBUG" ).trim();
-        m_logLevel=convertLevel( levelName );
+        m_logLevel = convertLevel( levelName );
 
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
         Properties defaultProperties = new Properties();
-        defaultProperties.put( "log4j.rootLogger", convertLevel(m_logLevel)+", A1" );
+        defaultProperties.put( "log4j.rootLogger", convertLevel( m_logLevel ) + ", A1" );
         defaultProperties.put( "log4j.appender.A1", "org.apache.log4j.ConsoleAppender" );
         defaultProperties.put( "log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout" );
         configurator.doConfigure( defaultProperties, LogManager.getLoggerRepository() );
     }
 
     static Event createEvent( Bundle bundle, int level, LogEntry entry, String message,
-                              Throwable exception, ServiceReference sr,Map context )
+                              Throwable exception, ServiceReference sr, Map context )
     {
         String type;
         switch( level )
@@ -280,11 +280,12 @@ public class PaxLoggingServiceImpl
             String[] objClass = (String[]) sr.getProperty( Constants.OBJECTCLASS );
             props.put( "service.objectClass", objClass );
         }
-        if(context != null )
+        if( context != null )
         {
-            for(Iterator keys=context.keySet().iterator();keys.hasNext();){
-                String key=(String)keys.next();
-                props.put(key, context.get(key));
+            for( Iterator keys = context.keySet().iterator(); keys.hasNext(); )
+            {
+                String key = (String) keys.next();
+                props.put( key, context.get( key ) );
             }
         }
         return new Event( topic, props );
@@ -335,7 +336,8 @@ public class PaxLoggingServiceImpl
                 PaxLoggingServiceImpl.this.updated( configuration );
             }
 
-            public PaxContext getPaxContext() {
+            public PaxContext getPaxContext()
+            {
                 return PaxLoggingServiceImpl.this.getPaxContext();
             }
         }
@@ -348,10 +350,11 @@ public class PaxLoggingServiceImpl
         // nothing to do...
     }
 
-    public PaxContext getPaxContext() {
+    public PaxContext getPaxContext()
+    {
         return m_context;
     }
-    
+
     private static int convertLevel( String levelName )
     {
         if( "DEBUG".equals( levelName ) )
@@ -371,14 +374,19 @@ public class PaxLoggingServiceImpl
             return LOG_DEBUG;
         }
     }
-    
-    private static String convertLevel(int level)
+
+    private static String convertLevel( int level )
     {
-        switch(level){
-            case LOG_DEBUG:return "DEBUG";
-            case LOG_INFO:return "INFO";
-            case LOG_ERROR:return "ERROR";
-            default: return "DEBUG";
+        switch( level )
+        {
+            case LOG_DEBUG:
+                return "DEBUG";
+            case LOG_INFO:
+                return "INFO";
+            case LOG_ERROR:
+                return "ERROR";
+            default:
+                return "DEBUG";
         }
     }
 }
