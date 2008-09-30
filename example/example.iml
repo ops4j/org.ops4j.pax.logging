@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module relativePaths="true" type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
+<module relativePaths="true" MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_4" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/target/classes" />
     <exclude-output />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target/maven-dependency-plugin-markers" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="servletapi-2.3" level="project" />
-    <orderEntry type="library" name="org.mortbay.jetty-5.1.0" level="project" />
-    <orderEntry type="library" name="osgi_R4_core-1.0" level="project" />
-    <orderEntry type="library" name="avalon-framework-api-4.3" level="project" />
-    <orderEntry type="module" module-name="jcl" />
     <orderEntry type="module" module-name="api" />
-    <orderEntry type="module" module-name="log4j" />
-    <orderEntry type="module" module-name="slf4j" />
-    <orderEntry type="module" module-name="avalon" />
-    <orderEntry type="module-library">
-      <library>
+    <orderEntry type="module-library" exported="">
+      <library name="jetty:org.mortbay.jetty:5.1.0">
         <CLASSES>
-          <root url="jar://$M2_REPO$/org/apache/maven/plugins/maven-release-plugin/2.0-beta-6/maven-release-plugin-2.0-beta-6.jar!/" />
+          <root url="jar://$M2_REPO$/jetty/org.mortbay.jetty/5.1.0/org.mortbay.jetty-5.1.0.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="jar://$M2_REPO$/jetty/org.mortbay.jetty/5.1.0/org.mortbay.jetty-5.1.0-javadoc.jar!/" />
+        </JAVADOC>
         <SOURCES>
-          <root url="jar://$M2_REPO$/org/apache/maven/plugins/maven-release-plugin/2.0-beta-6/maven-release-plugin-2.0-beta-6-sources.jar!/" />
+          <root url="jar://$M2_REPO$/jetty/org.mortbay.jetty/5.1.0/org.mortbay.jetty-5.1.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library>
+      <library name="org.osgi:osgi_R4_core:1.0">
         <CLASSES>
-          <root url="jar://$M2_REPO$/org/apache/maven/release/maven-release-manager/1.0-alpha-3/maven-release-manager-1.0-alpha-3.jar!/" />
+          <root url="jar://$M2_REPO$/org/osgi/osgi_R4_core/1.0/osgi_R4_core-1.0.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="jar://$M2_REPO$/org/osgi/osgi_R4_core/1.0/osgi_R4_core-1.0-javadoc.jar!/" />
+        </JAVADOC>
         <SOURCES>
-          <root url="jar://$M2_REPO$/org/apache/maven/release/maven-release-manager/1.0-alpha-3/maven-release-manager-1.0-alpha-3-sources.jar!/" />
+          <root url="jar://$M2_REPO$/org/osgi/osgi_R4_core/1.0/osgi_R4_core-1.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
