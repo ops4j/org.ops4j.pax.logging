@@ -33,7 +33,7 @@
     <module>api</module>
     <module>service</module>
     <module>example</module>
-    <module>integrationTest</module>
+    <module>it</module>
   </modules>
 
   <build>
