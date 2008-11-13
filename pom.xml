@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.ops4j.pax</groupId>
-    <artifactId>project</artifactId>
-    <version>1.9</version>
+    <artifactId>master</artifactId>
+    <version>1.10</version>
   </parent>
 
   <groupId>org.ops4j.pax.logging</groupId>
@@ -14,12 +16,14 @@
   <packaging>pom</packaging>
 
   <name>OPS4J - Pax Logging</name>
+
   <url>http://www.ops4j.org/projects/pax/logging</url>
 
   <issueManagement>
     <system>jira</system>
     <url>http://issues.ops4j.org/jira/browse/PAXLOGGING</url>
   </issueManagement>
+
   <scm>
     <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</connection>
     <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
@@ -42,14 +46,23 @@
         </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>1.4.3</version>
+          <extensions>true</extensions>
+          <configuration>
+            <instructions>
+              <Bundle-DocURL>${pom.url}</Bundle-DocURL>
+              <_include>-osgi.bundle</_include>
+            </instructions>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
-
-  <distributionManagement>
-    <site>
-      <id>website</id>
-      <url>scpexe://www.ops4j.org/var/http/www.ops4j.org/projects/pax/logging</url>
-    </site>
-  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
@@ -102,22 +115,14 @@
 
   <repositories>
     <repository>
-      <id>ops4j-repository</id>
-      <name>The OPS4J Repository</name>
-      <url>http://repository.ops4j.org/maven2/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <url>http://repo1.maven.org/maven2</url>
+      <id>ops4j.releases</id>
+      <url>http://repository.ops4j.org/maven2</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </repository>
   </repositories>
+
   <developers>
     <developer>
       <name>Alin Dreghiciu</name>
