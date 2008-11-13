@@ -10,7 +10,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="api" />
+    <orderEntry type="module" module-name="pax-logging-api" />
     <orderEntry type="module-library" exported="">
       <library name="jetty:org.mortbay.jetty:5.1.0">
         <CLASSES>
@@ -38,9 +38,6 @@
       </library>
     </orderEntry>
     <orderEntryProperties />
-  </component>
-  <component name="PluginUploader.UploadConfigurable">
-    <option name="_archivePath" />
   </component>
 </module>
 

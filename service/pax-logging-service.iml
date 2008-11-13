@@ -14,6 +14,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="pax-logging-api" />
     <orderEntry type="module-library">
       <library name="jmock:jmock:1.0.1">
         <CLASSES>
@@ -28,15 +29,15 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="junit:junit:4.3.1">
+      <library name="junit:junit:4.4">
         <CLASSES>
-          <root url="jar://$M2_REPO$/junit/junit/4.3.1/junit-4.3.1.jar!/" />
+          <root url="jar://$M2_REPO$/junit/junit/4.4/junit-4.4.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$M2_REPO$/junit/junit/4.3.1/junit-4.3.1-javadoc.jar!/" />
+          <root url="jar://$M2_REPO$/junit/junit/4.4/junit-4.4-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$M2_REPO$/junit/junit/4.3.1/junit-4.3.1-sources.jar!/" />
+          <root url="jar://$M2_REPO$/junit/junit/4.4/junit-4.4-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -118,11 +119,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="api" />
     <orderEntryProperties />
-  </component>
-  <component name="PluginUploader.UploadConfigurable">
-    <option name="_archivePath" />
   </component>
 </module>
 
