@@ -370,7 +370,7 @@
       <module fileurl="file://$PROJECT_DIR$/logging.iml" filepath="$PROJECT_DIR$/logging.iml" />
       <module fileurl="file://$PROJECT_DIR$/api/pax-logging-api.iml" filepath="$PROJECT_DIR$/api/pax-logging-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/pax-logging-example.iml" filepath="$PROJECT_DIR$/example/pax-logging-example.iml" />
-      <module fileurl="file://$PROJECT_DIR$/integrationTest/pax-logging-it.iml" filepath="$PROJECT_DIR$/integrationTest/pax-logging-it.iml" />
+      <module fileurl="file://$PROJECT_DIR$/it/pax-logging-it.iml" filepath="$PROJECT_DIR$/it/pax-logging-it.iml" />
       <module fileurl="file://$PROJECT_DIR$/service/pax-logging-service.iml" filepath="$PROJECT_DIR$/service/pax-logging-service.iml" />
     </modules>
   </component>
