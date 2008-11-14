@@ -262,27 +262,28 @@ public abstract class Category
 //    }
 
     //
-/**
- * Log a message object with the FATAL Level.
- *
- * <p>
- * This method first checks if this category is <code>FATAL</code> enabled
- * by comparing the level of this category with FATAL
- * Level. If the category is <code>FATAL</code> enabled, then it converts
- * the message object passed as parameter to a string by invoking the
- * appropriate org.apache.log4j.or.ObjectRenderer. It proceeds to
- * call all the registered appenders in this category and also higher in
- * the hierarchy depending on the value of the additivity flag.
- * </p>
- *
- * <p>
- * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
- * print the name of the Throwable but no stack trace. To print a stack
- * trace use the {@link #fatal(Object,Throwable)} form instead.
- * </p>
- *
- * @param message the message object to log
- */
+
+    /**
+     * Log a message object with the FATAL Level.
+     *
+     * <p>
+     * This method first checks if this category is <code>FATAL</code> enabled
+     * by comparing the level of this category with FATAL
+     * Level. If the category is <code>FATAL</code> enabled, then it converts
+     * the message object passed as parameter to a string by invoking the
+     * appropriate org.apache.log4j.or.ObjectRenderer. It proceeds to
+     * call all the registered appenders in this category and also higher in
+     * the hierarchy depending on the value of the additivity flag.
+     * </p>
+     *
+     * <p>
+     * <b>WARNING</b> Note that passing a {@link Throwable} to this method will
+     * print the name of the Throwable but no stack trace. To print a stack
+     * trace use the {@link #fatal(Object,Throwable)} form instead.
+     * </p>
+     *
+     * @param message the message object to log
+     */
     public void fatal( Object message )
     {
         if( m_delegate.isFatalEnabled() && message != null )
