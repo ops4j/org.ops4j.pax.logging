@@ -71,6 +71,10 @@
       <artifactId>junit</artifactId>
     </dependency>
     <dependency>
+      <groupId>jmock</groupId>
+      <artifactId>jmock</artifactId>
+    </dependency>
+    <dependency>
       <groupId>avalon-framework</groupId>
       <artifactId>avalon-framework-api</artifactId>
       <scope>provided</scope>

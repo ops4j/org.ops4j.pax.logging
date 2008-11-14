@@ -702,22 +702,42 @@ public abstract class Category
         return m_delegate.isDebugEnabled();
     }
 
-//    /**
-//     * Check whether this category is enabled for a given {@link
-//     * Level} passed as parameter.
-//     *
-//     * See also {@link #isDebugEnabled}.
-//     *
-//     * @return boolean True if this category is enabled for <code>level</code>.
-//     */
-//    public boolean isEnabledFor( Priority level )
-//    {
-//        if( repository.isDisabled( level.level ) )
-//        {
-//            return false;
-//        }
-//        return level.isGreaterOrEqual( this.getEffectiveLevel() );
-//    }
+    /**
+     * Check whether this category is enabled for a given {@link
+     * Level} passed as parameter.
+     *
+     * See also {@link #isDebugEnabled}.
+     *
+     * @return boolean True if this category is enabled for <code>level</code>.
+     */
+    public boolean isEnabledFor( Priority priority )
+    {
+        if( priority == Level.FATAL )
+        {
+            return m_delegate.isFatalEnabled();
+        }
+        if( priority == Level.ERROR )
+        {
+            return m_delegate.isErrorEnabled();
+        }
+        if( priority == Level.WARN )
+        {
+            return m_delegate.isWarnEnabled();
+        }
+        if( priority == Level.INFO )
+        {
+            return m_delegate.isInfoEnabled();
+        }
+        if( priority == Level.DEBUG )
+        {
+            return m_delegate.isDebugEnabled();
+        }
+        if( priority == Level.ALL )
+        {
+            return m_delegate.isTraceEnabled();
+        }
+        return false;
+    }
 
     /**
      * Check whether this category is enabled for the info Level. See also
