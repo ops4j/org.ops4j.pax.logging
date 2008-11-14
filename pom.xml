@@ -55,7 +55,7 @@
           <configuration>
             <instructions>
               <Bundle-DocURL>${pom.url}</Bundle-DocURL>
-              <_include>-osgi.bundle</_include>
+              <_include>-osgi.bnd</_include>
             </instructions>
           </configuration>
         </plugin>
