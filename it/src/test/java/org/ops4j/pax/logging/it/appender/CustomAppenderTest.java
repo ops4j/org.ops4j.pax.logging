@@ -1,19 +1,21 @@
-/*  Copyright 2008 Edward Yakop.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-* implied.
-*
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+/*
+ * Copyright 2008 Edward Yakop.
+ * Copyright 2008 Alin Dreghiciu.
+ *
+ * Licensed  under the  Apache License,  Version 2.0  (the "License");
+ * you may not use  this file  except in  compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed  under the  License is distributed on an "AS IS" BASIS,
+ * WITHOUT  WARRANTIES OR CONDITIONS  OF ANY KIND, either  express  or
+ * implied.
+ *
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.ops4j.pax.logging.it.appender;
 
 import java.io.InputStream;
@@ -22,22 +24,26 @@ import java.util.List;
 import java.util.Properties;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.cm.ManagedService;
 import org.ops4j.pax.drone.api.DroneConnector;
-import org.ops4j.pax.drone.connector.paxrunner.PaxRunnerConnectorFactory;
+import org.ops4j.pax.drone.connector.paxrunner.GenericConnector;
 import org.ops4j.pax.drone.connector.paxrunner.Platforms;
 import org.ops4j.pax.drone.spi.junit.DroneTestCase;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.PaxAppender;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.cm.ManagedService;
 
 /**
+ * Integration tests for custom appender.
+ *
  * @author edward.yakop@gmail.com
+ * @author Alin Dreghiciu
  */
-public class CustomAppenderTest extends DroneTestCase
+public class CustomAppenderTest 
+    extends DroneTestCase
 {
 
     private static final String FILTER_PAX_LOGGING = "(" + Constants.SERVICE_PID + "=org.ops4j.pax.logging)";
@@ -47,17 +53,15 @@ public class CustomAppenderTest extends DroneTestCase
 
     public DroneConnector configure()
     {
-        return PaxRunnerConnectorFactory.create( this )
-            .setPlatform( Platforms.FELIX )
+        return GenericConnector.create( GenericConnector.createBundleProvision()
             .addBundle( "mvn:org.ops4j.pax.logging/pax-logging-service" )
-            .addBundle( "mvn:org.ops4j.pax.logging/pax-logging-api" );
+            .addBundle( "mvn:org.ops4j.pax.logging/pax-logging-api" )
+        ).setPlatform( Platforms.FELIX );
     }
 
     public final void testCustomAppender()
         throws Throwable
     {
-        BundleContext bundleContext = droneContext.getBundleContext();
-
         configurePaxLogging( bundleContext );
         CustomAppender customAppender = createAndRegisterCustomAppenderService( bundleContext );
 
