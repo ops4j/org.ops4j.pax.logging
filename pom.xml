@@ -11,7 +11,7 @@
 
   <groupId>org.ops4j.pax</groupId>
   <artifactId>logging</artifactId>
-  <version>1.2.1-SNAPSHOT</version>
+  <version>1.2.1</version>
   <packaging>pom</packaging>
 
   <name>OPS4J - Pax Logging</name>
@@ -24,8 +24,8 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</connection>
-    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
+    <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/logging-1.2.1</connection>
+    <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/qa/pax/logging-1.2.1</developerConnection>
   </scm>
 
   <modules>
