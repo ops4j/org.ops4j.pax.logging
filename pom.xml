@@ -31,7 +31,7 @@
   <modules>
     <module>api</module>
     <module>service</module>
-    <module>example</module>
+    <module>samples</module>
     <module>it</module>
   </modules>
 

@@ -117,27 +117,18 @@
         <option name="VARIABLE_ANNOTATION_WRAP" value="5" />
         <option name="SPACE_WITHIN_ANNOTATION_PARENTHESES" value="true" />
         <option name="ENUM_CONSTANTS_WRAP" value="5" />
+        <ADDITIONAL_INDENT_OPTIONS fileType="">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="java">
           <option name="INDENT_SIZE" value="4" />
           <option name="CONTINUATION_INDENT_SIZE" value="4" />
-          <option name="TAB_SIZE" value="4" />
-          <option name="USE_TAB_CHARACTER" value="false" />
-          <option name="SMART_TABS" value="false" />
-          <option name="LABEL_INDENT_SIZE" value="0" />
-          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
-        </ADDITIONAL_INDENT_OPTIONS>
-        <ADDITIONAL_INDENT_OPTIONS fileType="js">
-          <option name="INDENT_SIZE" value="4" />
-          <option name="CONTINUATION_INDENT_SIZE" value="8" />
-          <option name="TAB_SIZE" value="4" />
-          <option name="USE_TAB_CHARACTER" value="false" />
-          <option name="SMART_TABS" value="false" />
-          <option name="LABEL_INDENT_SIZE" value="0" />
-          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
-        </ADDITIONAL_INDENT_OPTIONS>
-        <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
-          <option name="INDENT_SIZE" value="4" />
-          <option name="CONTINUATION_INDENT_SIZE" value="8" />
           <option name="TAB_SIZE" value="4" />
           <option name="USE_TAB_CHARACTER" value="false" />
           <option name="SMART_TABS" value="false" />
@@ -402,8 +393,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/logging.iml" filepath="$PROJECT_DIR$/logging.iml" />
       <module fileurl="file://$PROJECT_DIR$/api/pax-logging-api.iml" filepath="$PROJECT_DIR$/api/pax-logging-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/example/pax-logging-example.iml" filepath="$PROJECT_DIR$/example/pax-logging-example.iml" />
       <module fileurl="file://$PROJECT_DIR$/it/pax-logging-it.iml" filepath="$PROJECT_DIR$/it/pax-logging-it.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" filepath="$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" group="pax-logging-samples and modules" />
+      <module fileurl="file://$PROJECT_DIR$/samples/pax-logging-samples.iml" filepath="$PROJECT_DIR$/samples/pax-logging-samples.iml" group="pax-logging-samples and modules" />
       <module fileurl="file://$PROJECT_DIR$/service/pax-logging-service.iml" filepath="$PROJECT_DIR$/service/pax-logging-service.iml" />
     </modules>
   </component>

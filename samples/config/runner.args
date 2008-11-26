@@ -1,0 +1,2 @@
+--profiles=log,config
+mvn:org.ops4j.pax.logging/pax-logging-sample-config@update
