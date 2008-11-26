@@ -10,12 +10,17 @@
   </parent>
 
   <groupId>org.ops4j.pax.logging</groupId>
-  <artifactId>pax-logging-example</artifactId>
+  <artifactId>pax-logging-sample-logger</artifactId>
   <version>1.2.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>OPS4J - Pax Logging - Example</name>
+  <name>OPS4J - Pax Logging - Samples - Logger</name>
   <description>A simple example of using the Pax Logging system.</description>
+
+  <properties>
+    <bundle.symbolicName>org.ops4j.pax.logging.example</bundle.symbolicName>
+    <bundle.namespace>org.ops4j.pax.logging.example</bundle.namespace>
+  </properties>
 
   <build>
     <plugins>

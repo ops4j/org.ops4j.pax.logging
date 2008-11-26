@@ -395,6 +395,7 @@
       <module fileurl="file://$PROJECT_DIR$/api/pax-logging-api.iml" filepath="$PROJECT_DIR$/api/pax-logging-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/it/pax-logging-it.iml" filepath="$PROJECT_DIR$/it/pax-logging-it.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" filepath="$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" group="pax-logging-samples and modules" />
+      <module fileurl="file://$PROJECT_DIR$/samples/logger/pax-logging-sample-logger.iml" filepath="$PROJECT_DIR$/samples/logger/pax-logging-sample-logger.iml" group="pax-logging-samples and modules" />
       <module fileurl="file://$PROJECT_DIR$/samples/pax-logging-samples.iml" filepath="$PROJECT_DIR$/samples/pax-logging-samples.iml" group="pax-logging-samples and modules" />
       <module fileurl="file://$PROJECT_DIR$/service/pax-logging-service.iml" filepath="$PROJECT_DIR$/service/pax-logging-service.iml" />
     </modules>

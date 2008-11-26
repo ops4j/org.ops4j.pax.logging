@@ -20,6 +20,7 @@
 
   <modules>
     <module>config</module>
+    <module>logger</module>
   </modules>
 
 </project>
