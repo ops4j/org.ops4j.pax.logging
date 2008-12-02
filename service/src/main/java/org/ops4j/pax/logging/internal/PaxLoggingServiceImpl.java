@@ -255,7 +255,8 @@ public class PaxLoggingServiceImpl
         }
         props.put( "log.level", new Integer( level ) );
         props.put( "log.entry", entry );
-        props.put( "message", message );
+        if( null != message )
+            props.put( "message", message );
         props.put( "timestamp", new Long( System.currentTimeMillis() ) );
         if( exception != null )
         {
