@@ -14,7 +14,7 @@
   <version>1.2.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>OPS4J - Pax Logging - API</name>
+  <name>OPS4J Pax Logging - API</name>
   <description>
     The Pax Logging API Library is to allow for the Pax Logging Service to be reloaded without stopping the many
     dependent bundles. It also contains the OSGi Log Service API and the Knopflerfish Log API.

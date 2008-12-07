@@ -14,7 +14,7 @@
   <version>1.2.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
-  <name>OPS4J - Pax Logging - Samples - Logger</name>
+  <name>OPS4J Pax Logging - Samples - Logger</name>
   <description>A simple example of using the Pax Logging system.</description>
 
   <properties>

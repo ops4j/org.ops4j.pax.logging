@@ -14,7 +14,7 @@
   <version>1.2.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>OPS4J - Pax Logging</name>
+  <name>OPS4J Pax Logging (Build POM)</name>
 
   <url>http://www.ops4j.org/projects/pax/logging</url>
 
