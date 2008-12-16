@@ -135,6 +135,15 @@
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
+        <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
+          <option name="INDENT_SIZE" value="4" />
+          <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          <option name="TAB_SIZE" value="4" />
+          <option name="USE_TAB_CHARACTER" value="false" />
+          <option name="SMART_TABS" value="false" />
+          <option name="LABEL_INDENT_SIZE" value="0" />
+          <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+        </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="xml">
           <option name="INDENT_SIZE" value="2" />
           <option name="CONTINUATION_INDENT_SIZE" value="4" />
@@ -156,15 +165,7 @@
       <entry name=".+\.(gif|png|jpeg|jpg)" />
     </resourceExtensions>
     <wildcardResourcePatterns>
-      <entry name="?*.properties" />
-      <entry name="?*.xml" />
-      <entry name="?*.gif" />
-      <entry name="?*.png" />
-      <entry name="?*.jpeg" />
-      <entry name="?*.jpg" />
-      <entry name="?*.html" />
-      <entry name="?*.dtd" />
-      <entry name="?*.tld" />
+      <entry name="!?*.java" />
     </wildcardResourcePatterns>
   </component>
   <component name="DependenciesAnalyzeManager">
@@ -394,13 +395,13 @@
       <module fileurl="file://$PROJECT_DIR$/logging.iml" filepath="$PROJECT_DIR$/logging.iml" />
       <module fileurl="file://$PROJECT_DIR$/api/pax-logging-api.iml" filepath="$PROJECT_DIR$/api/pax-logging-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/it/pax-logging-it.iml" filepath="$PROJECT_DIR$/it/pax-logging-it.iml" />
-      <module fileurl="file://$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" filepath="$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" group="pax-logging-samples and modules" />
-      <module fileurl="file://$PROJECT_DIR$/samples/logger/pax-logging-sample-logger.iml" filepath="$PROJECT_DIR$/samples/logger/pax-logging-sample-logger.iml" group="pax-logging-samples and modules" />
-      <module fileurl="file://$PROJECT_DIR$/samples/pax-logging-samples.iml" filepath="$PROJECT_DIR$/samples/pax-logging-samples.iml" group="pax-logging-samples and modules" />
+      <module fileurl="file://$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" filepath="$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/logger/pax-logging-sample-logger.iml" filepath="$PROJECT_DIR$/samples/logger/pax-logging-sample-logger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/pax-logging-samples.iml" filepath="$PROJECT_DIR$/samples/pax-logging-samples.iml" />
       <module fileurl="file://$PROJECT_DIR$/service/pax-logging-service.iml" filepath="$PROJECT_DIR$/service/pax-logging-service.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" assert-keyword="false" jdk-15="false" project-jdk-name="1.4" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" assert-keyword="false" jdk-15="false" project-jdk-name="1.5" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="ResourceManagerContainer">

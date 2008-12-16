@@ -22,8 +22,11 @@ Export-Package: \
  org.apache.log4j.xml; version=1.2.15; provider=paxlogging, \
  org.apache.log4j.spi; version=1.2.15; provider=paxlogging, \
  org.slf4j; version=1.4.3; provider=paxlogging, \
+ org.slf4j; version=1.5.6; provider=paxlogging, \
  org.slf4j.helpers; version=1.4.3; provider=paxlogging, \
+ org.slf4j.helpers; version=1.5.6; provider=paxlogging, \
  org.slf4j.spi; version=1.4.3; provider=paxlogging, \
+ org.slf4j.spi; version=1.5.6; provider=paxlogging, \
  org.ops4j.pax.logging.avalon; version=${pom.version}; provider=paxlogging, \
  org.apache.avalon.framework.logger; version=4.3; provider=paxlogging
 

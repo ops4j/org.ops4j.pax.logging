@@ -89,4 +89,11 @@ public class BasicMarkerFactory implements IMarkerFactory {
     return (markerMap.remove(name) != null);
   }
 
+
+  public Marker getDetachedMarker(String name) {
+    return  new BasicMarker(name);
+  }
+
+
+
 }

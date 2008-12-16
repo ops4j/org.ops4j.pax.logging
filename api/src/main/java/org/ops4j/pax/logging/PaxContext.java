@@ -98,4 +98,24 @@ public class PaxContext {
           context.clear();
       }
   }
+
+  public Map getCopyOfContextMap() {
+      Hashtable ht = (Hashtable) ((ThreadLocalMap)tlm).get();
+      if(ht != null) {
+          return new Hashtable(ht);
+      }else{
+          return null;
+      }
+  }
+
+  public void setContextMap( Map contextMap ) {
+      Hashtable ht = (Hashtable) ((ThreadLocalMap)tlm).get();
+      if(ht != null) {
+          ht.clear();
+      }else{
+          ht = new Hashtable(HT_SIZE);
+          ((ThreadLocalMap)tlm).set(ht);
+      }
+      ht.putAll(contextMap);
+  }
 }

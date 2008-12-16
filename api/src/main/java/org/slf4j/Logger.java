@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2007 QOS.ch
+ * Copyright (c) 2004-2008 QOS.ch
  * All rights reserved.
  *
  * Permission is hereby granted, free  of charge, to any person obtaining
@@ -26,10 +26,34 @@
 package org.slf4j;
 
 /**
+ * The org.slf4j.Logger interface is the main user entry point of SLF4J API.
+ * It is expected that logging takes place through concrete implementations
+ * of this interface.
  *
- * The main user interface to logging. It is expected that logging
- * takes place through concrete implementations of this interface.
+ * <h3>Typical usage pattern:</h3>
+ * <pre>
+ * import org.slf4j.Logger;
+ * import org.slf4j.LoggerFactory;
  *
+ * public class Wombat {
+ *
+ *   <span style="color:green">final static Logger logger = LoggerFactory.getLogger(Wombat.class);</span>
+ *   Integer t;
+ *   Integer oldT;
+ *
+ *   public void setTemperature(Integer temperature) {
+ *     oldT = t;
+ *     t = temperature;
+ *     <span style="color:green">logger.debug("Temperature set to {}. Old temperature was {}.", t, oldT);</span>
+ *     if(temperature.intValue() > 50) {
+ *       <span style="color:green">logger.info("Temperature has risen above 50 degrees.");</span>
+ *     }
+ *   }
+ * }
+ </pre>
+
+
+
  * @author Ceki G&uuml;lc&uuml;
  */
 public interface Logger {

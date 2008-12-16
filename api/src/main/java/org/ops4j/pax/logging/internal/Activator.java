@@ -20,6 +20,7 @@ package org.ops4j.pax.logging.internal;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
+import org.ops4j.pax.logging.slf4j.Slf4jMDCAdapter;
 
 public class Activator
     implements BundleActivator
@@ -31,7 +32,7 @@ public class Activator
         org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory.setBundleContext( bundleContext );
         String name = getClass().getName();
         org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger( name );
-        org.slf4j.MDC.setBundleContext(bundleContext);
+        Slf4jMDCAdapter.setBundleContext(bundleContext);
         slf4jLogger.info( "Enabling SLF4J API support." );
         org.apache.commons.logging.LogFactory.setBundleContext( bundleContext );
         org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog( name );

@@ -26,8 +26,10 @@ package org.slf4j.impl;
 
 import org.slf4j.IMarkerFactory;
 import org.slf4j.MarkerFactory;
+import org.slf4j.ILoggerFactory;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.slf4j.spi.MarkerFactoryBinder;
+import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
 
 /**
  *
@@ -47,6 +49,10 @@ public class StaticMarkerBinder implements MarkerFactoryBinder {
    */
   public static final StaticMarkerBinder SINGLETON = new StaticMarkerBinder();
 
+  private static final String markerFactoryClassStr = BasicMarkerFactory.class.getName();
+
+  private final IMarkerFactory markerFactory = new BasicMarkerFactory();
+
   private StaticMarkerBinder() {
   }
 
@@ -55,7 +61,7 @@ public class StaticMarkerBinder implements MarkerFactoryBinder {
    * {@link BasicMarkerFactory}.
    */
   public IMarkerFactory getMarkerFactory() {
-    return new BasicMarkerFactory();
+    return markerFactory;
   }
 
   /**
@@ -63,7 +69,7 @@ public class StaticMarkerBinder implements MarkerFactoryBinder {
    * {@link BasicMarkerFactory}.
    */
   public String getMarkerFactoryClassStr() {
-    return BasicMarkerFactory.class.getName();
+    return markerFactoryClassStr;
   }
 
 
