@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.Collections;
 import org.apache.avalon.framework.logger.Logger;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
@@ -32,11 +33,11 @@ public class AvalonLogFactory
 {
 
     private static PaxLoggingManager m_paxLogging;
-    private static WeakHashMap m_loggers;
+    private static Map m_loggers;
 
     static
     {
-        m_loggers = new WeakHashMap();
+        m_loggers = Collections.synchronizedMap( new WeakHashMap() );
     }
 
     public static void setBundleContext( BundleContext context )

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.Collections;
 import org.apache.log4j.internal.MessageFormatter;
 import org.apache.log4j.spi.LoggerFactory;
 import org.ops4j.pax.logging.DefaultServiceLog;
@@ -59,11 +60,11 @@ public class Logger extends Category
     private static final String LOG4J_FQCN = Logger.class.getName();
 
     private static PaxLoggingManager m_paxLogging;
-    private static WeakHashMap m_loggers;
+    private static Map m_loggers;
 
     static
     {
-        m_loggers = new WeakHashMap();
+        m_loggers = Collections.synchronizedMap( new WeakHashMap() );
     }
 
     public static void setBundleContext( BundleContext ctx )

@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.Collections;
 import org.osgi.framework.BundleContext;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -151,11 +152,11 @@ public class LogFactory {
 
     private static LogFactory singleton;
     private static PaxLoggingManager m_paxLogging;
-    private static WeakHashMap m_loggers;
+    private static Map m_loggers;
 
     static
     {
-        m_loggers = new WeakHashMap();
+        m_loggers = Collections.synchronizedMap( new WeakHashMap() );
         singleton = new LogFactory();
     }
     /**
