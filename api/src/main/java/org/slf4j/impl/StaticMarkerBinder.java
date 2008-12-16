@@ -55,7 +55,7 @@ public class StaticMarkerBinder implements MarkerFactoryBinder {
    * {@link BasicMarkerFactory}.
    */
   public IMarkerFactory getMarkerFactory() {
-    return null;
+    return new BasicMarkerFactory();
   }
 
   /**
