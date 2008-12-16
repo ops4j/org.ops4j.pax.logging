@@ -13,7 +13,7 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 // Modified to fit into Pax Logging. Not same as original class.
 
@@ -99,7 +99,7 @@ public abstract class Category
 
     protected PaxLogger m_delegate;
 
-    public Category( PaxLogger delegate )
+    public Category( final PaxLogger delegate )
     {
         m_delegate = delegate;
     }
@@ -118,7 +118,7 @@ public abstract class Category
      *
      * @since 1.2
      */
-    public void assertLog( boolean assertion, String msg )
+    public void assertLog( final boolean assertion, final String msg )
     {
         if( !assertion )
         {
@@ -159,7 +159,7 @@ public abstract class Category
      *
      * @param message the message object to log.
      */
-    public void debug( Object message )
+    public void debug( final Object message )
     {
         if( m_delegate.isDebugEnabled() && message != null )
         {
@@ -178,7 +178,7 @@ public abstract class Category
      * @param message the message object to log.
      * @param t       the exception to log, including its stack trace.
      */
-    public void debug( Object message, Throwable t )
+    public void debug( final Object message, final Throwable t )
     {
         if( m_delegate.isDebugEnabled() )
         {
@@ -215,7 +215,7 @@ public abstract class Category
      *
      * @param message the message object to log
      */
-    public void error( Object message )
+    public void error( final Object message )
     {
         if( m_delegate.isErrorEnabled() && message != null )
         {
@@ -234,7 +234,7 @@ public abstract class Category
      * @param message the message object to log.
      * @param t       the exception to log, including its stack trace.
      */
-    public void error( Object message, Throwable t )
+    public void error( final Object message, final Throwable t )
     {
         if( m_delegate.isErrorEnabled() )
         {
@@ -284,7 +284,7 @@ public abstract class Category
      *
      * @param message the message object to log
      */
-    public void fatal( Object message )
+    public void fatal( final Object message )
     {
         if( m_delegate.isFatalEnabled() && message != null )
         {
@@ -303,7 +303,7 @@ public abstract class Category
      * @param message the message object to log.
      * @param t       the exception to log, including its stack trace.
      */
-    public void fatal( Object message, Throwable t )
+    public void fatal( final Object message, final Throwable t )
     {
         if( m_delegate.isFatalEnabled() )
         {
@@ -458,7 +458,7 @@ public abstract class Category
      *
      * @deprecated Make sure to use {@link Logger#getLogger(String)} instead.
      */
-    public static Category getInstance( String name )
+    public static Category getInstance( final String name )
     {
         return Logger.getLogger( name );
     }
@@ -470,7 +470,7 @@ public abstract class Category
      *
      * @deprecated Please make sure to use {@link Logger#getLogger(Class)} instead.
      */
-    public static Category getInstance( Class clazz )
+    public static Category getInstance( final Class clazz )
     {
         return Logger.getLogger( clazz );
     }
@@ -607,7 +607,7 @@ public abstract class Category
      *
      * @param message the message object to log
      */
-    public void info( Object message )
+    public void info( final Object message )
     {
         if( m_delegate.isInfoEnabled() && message != null )
         {
@@ -626,7 +626,7 @@ public abstract class Category
      * @param message the message object to log.
      * @param t       the exception to log, including its stack trace.
      */
-    public void info( Object message, Throwable t )
+    public void info( final Object message, final Throwable t )
     {
         if( m_delegate.isInfoEnabled() )
         {
@@ -711,33 +711,31 @@ public abstract class Category
      *
      * @return boolean True if this category is enabled for <code>level</code>.
      */
-    public boolean isEnabledFor( Priority priority )
+    public boolean isEnabledFor( final Priority priority )
     {
-        if( priority == Level.FATAL )
+        if ( priority == null )
         {
-            return m_delegate.isFatalEnabled();
+            return false;
         }
-        if( priority == Level.ERROR )
+
+        switch ( priority.level )
         {
-            return m_delegate.isErrorEnabled();
+            case Level.FATAL_INT:
+                return m_delegate.isFatalEnabled();
+            case Level.ERROR_INT:
+                return m_delegate.isErrorEnabled();
+            case Level.WARN_INT:
+                return m_delegate.isWarnEnabled();
+            case Level.INFO_INT:
+                return m_delegate.isInfoEnabled();
+            case Level.DEBUG_INT:
+                return m_delegate.isDebugEnabled();
+            case Level.TRACE_INT:
+            case Level.ALL_INT:
+                return m_delegate.isTraceEnabled();
+            default:
+                return false;
         }
-        if( priority == Level.WARN )
-        {
-            return m_delegate.isWarnEnabled();
-        }
-        if( priority == Level.INFO )
-        {
-            return m_delegate.isInfoEnabled();
-        }
-        if( priority == Level.DEBUG )
-        {
-            return m_delegate.isDebugEnabled();
-        }
-        if( priority == Level.ALL )
-        {
-            return m_delegate.isTraceEnabled();
-        }
-        return false;
     }
 
     /**
@@ -817,7 +815,7 @@ public abstract class Category
      * @param msg       the message object to log.
      */
 
-    public void log( Priority priority, Object msg )
+    public void log( final Priority priority, final Object msg )
     {
         log( priority, msg, null );
     }
@@ -829,31 +827,36 @@ public abstract class Category
      * @param message  the message to log
      * @param t        an Exception to be logged, if any.
      */
-    public void log( Priority priority, Object message, Throwable t )
+    public void log( final Priority priority, final Object message, final Throwable t )
     {
-        if( priority == Level.FATAL )
+        if ( priority == null )
         {
-            this.fatal( message, t );
+            return;
         }
-        if( priority == Level.ERROR )
+
+        switch (priority.level)
         {
-            this.error( message, t );
-        }
-        if( priority == Level.WARN )
-        {
-            this.warn( message, t );
-        }
-        if( priority == Level.INFO )
-        {
-            this.info( message, t );
-        }
-        if( priority == Level.DEBUG )
-        {
-            this.debug( message, t );
-        }
-        if( priority == Level.ALL )
-        {
-            this.trace( message, t );
+            case Level.FATAL_INT:
+                this.fatal( message, t );
+                break;
+            case Level.ERROR_INT:
+                this.error( message, t );
+                break;
+            case Level.WARN_INT:
+                this.warn( message, t );
+                break;
+            case Level.INFO_INT:
+                this.info( message, t );
+                break;
+            case Level.DEBUG_INT:
+                this.debug( message, t );
+                break;
+            case Level.TRACE_INT:
+            case Level.ALL_INT:
+                this.trace( message, t );
+                break;
+            default:
+                break;
         }
     }
 
@@ -870,7 +873,7 @@ public abstract class Category
      * @param message    The message of the logging request.
      * @param t          The throwable of the logging request, may be null.
      */
-    public void log( String callerFQCN, Priority level, Object message, Throwable t )
+    public void log( final String callerFQCN, final Priority level, final Object message, final Throwable t )
     {
         log( level, message, t );
     }
@@ -1057,7 +1060,7 @@ public abstract class Category
      *
      * @param message the message object to log.
      */
-    public void warn( Object message )
+    public void warn( final Object message )
     {
         if( m_delegate.isWarnEnabled() && message != null )
         {
@@ -1076,7 +1079,7 @@ public abstract class Category
      * @param message the message object to log.
      * @param t       the exception to log, including its stack trace.
      */
-    public void warn( Object message, Throwable t )
+    public void warn( final Object message, final Throwable t )
     {
         if( m_delegate.isWarnEnabled() )
         {
