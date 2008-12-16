@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogReaderService;
@@ -31,7 +32,7 @@ import org.osgi.service.log.LogReaderService;
 public class LogReaderServiceImpl
     implements LogReaderService
 {
-    private ArrayList m_listeners;
+    private List m_listeners;
     private final LinkedList m_entries;
     private int m_maxEntries;
 
@@ -45,6 +46,9 @@ public class LogReaderServiceImpl
     {
         synchronized( this )
         {
+            // Do not update the list directly to avoid
+            // the cost of a synchronized block when iterating
+            // listeners in fireEvent()
             ArrayList clone;
             if( m_listeners == null )
             {
@@ -63,6 +67,9 @@ public class LogReaderServiceImpl
     {
         synchronized( this )
         {
+            // Do not update the list directly to avoid
+            // the cost of a synchronized block when iterating
+            // listeners in fireEvent()
             if( m_listeners == null )
             {
                 return;
@@ -82,7 +89,9 @@ public class LogReaderServiceImpl
 
     public Enumeration getLog()
     {
-        return Collections.enumeration( m_entries );
+        // Need to do a copy to avoid a ConcurrentModificationException if
+        // a new event is logged while the enumeration is iterated.
+        return Collections.enumeration( new ArrayList(m_entries) );
     }
 
     private void cleanUp()
@@ -100,11 +109,12 @@ public class LogReaderServiceImpl
             m_entries.addFirst( entry );
             cleanUp();
         }
-        if( m_listeners == null )
+        final List listeners = m_listeners;
+        if( listeners == null )
         {
             return;
         }
-        Iterator iterator = m_listeners.iterator();
+        Iterator iterator = listeners.iterator();
         while( iterator.hasNext() )
         {
             LogListener listener = (LogListener) iterator.next();
