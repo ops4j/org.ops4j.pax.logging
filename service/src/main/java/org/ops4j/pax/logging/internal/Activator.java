@@ -20,8 +20,6 @@ package org.ops4j.pax.logging.internal;
 import java.util.Hashtable;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.EventAdminTracker;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -29,6 +27,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
+import org.ops4j.pax.logging.EventAdminTracker;
+import org.ops4j.pax.logging.PaxLoggingService;
 
 /**
  * Starts the Log4j log services.
@@ -91,10 +91,12 @@ public class Activator
         m_RegistrationPaxLogging = bundleContext.registerService( LOGSERVICE_NAMES, paxLogging, serviceProperties );
 
         // Add a global handler for all JDK Logging (java.util.logging).
-        m_JdkHandler = new JdkHandler( paxLogging );
-        Logger rootLogger = LogManager.getLogManager().getLogger( "" );
-        rootLogger.addHandler( m_JdkHandler );
-
+        if( !Boolean.getBoolean( "org.ops4j.pax.logging.skipJUL" ) )
+        {
+            m_JdkHandler = new JdkHandler( paxLogging );
+            Logger rootLogger = LogManager.getLogManager().getLogger( "" );
+            rootLogger.addHandler( m_JdkHandler );
+        }
         m_frameworkHandler = new FrameworkHandler( paxLogging );
         bundleContext.addBundleListener( m_frameworkHandler );
         bundleContext.addFrameworkListener( m_frameworkHandler );
@@ -117,12 +119,15 @@ public class Activator
         bundleContext.removeServiceListener( m_frameworkHandler );
 
         // Remove the global handler for all JDK Logging (java.util.logging).
-        Logger rootLogger = LogManager.getLogManager().getLogger( "" );
-        rootLogger.removeHandler( m_JdkHandler );
-        m_JdkHandler.flush();
-        m_JdkHandler.close();
-        m_JdkHandler = null;
-
+        if( m_JdkHandler != null )
+        {
+            Logger rootLogger = LogManager.getLogManager().getLogger( "" );
+            rootLogger.removeHandler( m_JdkHandler );
+            m_JdkHandler.flush();
+            m_JdkHandler.close();
+            m_JdkHandler = null;
+        }
+        
         m_RegistrationPaxLogging.unregister();
         m_RegistrationPaxLogging = null;
 

@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.log4j.helpers.ThreadLocalMap;
 
 /**
-   The MDC class is similar to the {@link NDC} class except that it is
+   The MDC class is similar to the {@link org.apache.log4j.NDC} class except that it is
    based on a map instead of a stack. It provides <em>mapped
    diagnostic contexts</em>. A <em>Mapped Diagnostic Context</em>, or
    MDC in short, is an instrument for distinguishing interleaved log
