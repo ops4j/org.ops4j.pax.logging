@@ -27,6 +27,9 @@
         <artifactId>maven-bundle-plugin</artifactId>
       </plugin>
       <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+      <plugin>
         <groupId>org.ops4j.pax.construct</groupId>
         <artifactId>maven-pax-plugin</artifactId>
       </plugin>
