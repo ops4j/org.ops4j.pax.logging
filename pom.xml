@@ -127,7 +127,7 @@
   <repositories>
     <repository>
       <id>ops4j.releases</id>
-      <url>http://repository.ops4j.org/maven2</url>
+      <url>http://repository.ops4j.org/mvn-releases</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
