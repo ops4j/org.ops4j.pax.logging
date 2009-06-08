@@ -17,12 +17,6 @@
 
 package org.apache.log4j;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.Collections;
 import org.apache.log4j.internal.MessageFormatter;
 import org.apache.log4j.spi.LoggerFactory;
 import org.ops4j.pax.logging.DefaultServiceLog;
@@ -30,6 +24,13 @@ import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.osgi.framework.BundleContext;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 /**
  * This is the central class in the log4j package. Most logging
@@ -597,4 +598,48 @@ public class Logger extends Category
         }
     }
 
+  /*Here are added overriden methods from the Category class (all methods that can be potentially used for logging).
+    It is needed, because Category class is included in the stack trace in which log4j backend is looking for the LocationInfo instead of Logger class.
+    These methods just call their super methods in the Category class
+  */
+
+  public void debug(final Object message) {
+    super.debug(message);
+  }
+
+  public void debug(final Object message, final Throwable t) {
+    super.debug(message, t);
+  }
+
+  public void error(final Object message) {
+    super.error(message);
+  }
+
+  public void error(final Object message, final Throwable t) {
+    super.error(message, t);
+  }
+
+  public void fatal(final Object message) {
+    super.fatal(message);
+  }
+
+  public void fatal(final Object message, final Throwable t) {
+    super.fatal(message, t);
+  }
+
+  public void info(final Object message) {
+    super.info(message);
+  }
+
+  public void info(final Object message, final Throwable t) {
+    super.info(message, t);
+  }
+
+  public void warn(final Object message) {
+    super.warn(message);
+  }
+
+  public void warn(final Object message, final Throwable t) {
+    super.warn(message, t);
+  }
 }

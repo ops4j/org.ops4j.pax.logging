@@ -23,6 +23,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PaxLoggingConfigurator;
@@ -204,6 +206,7 @@ public class PaxLoggingServiceImpl
         }
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
         configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
+        setLevelToJavaLogging(configuration);
     }
 
     private void configureDefaults()
@@ -217,6 +220,8 @@ public class PaxLoggingServiceImpl
         defaultProperties.put( "log4j.appender.A1", "org.apache.log4j.ConsoleAppender" );
         defaultProperties.put( "log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout" );
         configurator.doConfigure( defaultProperties, LogManager.getLoggerRepository() );
+        final java.util.logging.Logger rootLogger  = java.util.logging.Logger.getLogger("");
+        rootLogger.setLevel(Level.FINE);
     }
 
     static Event createEvent( Bundle bundle, int level, LogEntry entry, String message,
@@ -390,4 +395,47 @@ public class PaxLoggingServiceImpl
                 return "DEBUG";
         }
     }
+
+  //Here are added methods for setting level to root logger of the Java Logging API
+
+  private static void setLevelToJavaLogging(final Dictionary configuration) {
+        String levelProperty = null;
+        final Enumeration en = configuration.keys();
+        while(en.hasMoreElements()) {
+            final Object key = en.nextElement();
+            if(key != null && key instanceof String) {
+                final String keyString =( (String) key).trim().toLowerCase();
+                if(keyString.startsWith("log4j") && keyString.indexOf("rootlogger") != -1) {
+                  final Object value= configuration.get(key);
+                    if(value != null && value instanceof String) {
+                        levelProperty = ((String) value).toUpperCase();
+                    }
+                }
+            }
+        }
+        if(levelProperty == null) {
+            return;
+        }
+        setLevelToRootLogger(levelProperty);
+    }
+
+  private static void setLevelToRootLogger(final String levelProperty) {
+    final java.util.logging.Logger rootLogger  = java.util.logging.Logger.getLogger("");
+
+    if(levelProperty.indexOf("OFF") != -1) {
+        rootLogger.setLevel(Level.OFF);
+    } else if(levelProperty.indexOf("FATAL") != -1) {
+        rootLogger.setLevel(Level.SEVERE);
+    } else if(levelProperty.indexOf("ERROR") != -1) {
+        rootLogger.setLevel(Level.SEVERE);
+    } else if(levelProperty.indexOf("WARN") != -1) {
+       rootLogger.setLevel(Level.WARNING);
+    } else if(levelProperty.indexOf("INFO") != -1) {
+       rootLogger.setLevel(Level.INFO);
+    } else if(levelProperty.indexOf("DEBUG") != -1) {
+       rootLogger.setLevel(Level.FINE);
+    } else if(levelProperty.indexOf("TRACE") != -1) {
+       rootLogger.setLevel(Level.FINEST);
+    }
+  }
 }

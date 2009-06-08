@@ -36,12 +36,16 @@ public class AvalonLogger
 
     public void debug( String string )
     {
+      if (m_delegate.isDebugEnabled()) {
         m_delegate.debug( string, null );
+      }
     }
 
     public void debug( String string, Throwable throwable )
     {
+      if (m_delegate.isDebugEnabled()) {
         m_delegate.debug( string, throwable );
+      }
     }
 
     public boolean isDebugEnabled()
@@ -51,12 +55,16 @@ public class AvalonLogger
 
     public void info( String string )
     {
+      if (m_delegate.isInfoEnabled()) {
         m_delegate.inform( string, null );
+      }
     }
 
     public void info( String string, Throwable throwable )
     {
+      if (m_delegate.isInfoEnabled()) {
         m_delegate.inform( string, throwable );
+      }
     }
 
     public boolean isInfoEnabled()
@@ -66,12 +74,16 @@ public class AvalonLogger
 
     public void warn( String string )
     {
+      if (m_delegate.isWarnEnabled()) {
         m_delegate.warn( string, null );
+      }
     }
 
     public void warn( String string, Throwable throwable )
     {
+      if (m_delegate.isWarnEnabled()) {
         m_delegate.warn( string, throwable );
+      }
     }
 
     public boolean isWarnEnabled()
@@ -81,12 +93,16 @@ public class AvalonLogger
 
     public void error( String string )
     {
+      if (m_delegate.isErrorEnabled()) {
         m_delegate.error( string, null );
+      }
     }
 
     public void error( String string, Throwable throwable )
     {
+      if (m_delegate.isErrorEnabled()) {
         m_delegate.error( string, throwable );
+      }
     }
 
     public boolean isErrorEnabled()
@@ -96,12 +112,16 @@ public class AvalonLogger
 
     public void fatalError( String string )
     {
+      if (m_delegate.isFatalEnabled()) {
         m_delegate.fatal( string, null );
+      }
     }
 
     public void fatalError( String string, Throwable throwable )
     {
+      if (m_delegate.isFatalEnabled()) {
         m_delegate.fatal( string, throwable );
+      }
     }
 
     public boolean isFatalErrorEnabled()

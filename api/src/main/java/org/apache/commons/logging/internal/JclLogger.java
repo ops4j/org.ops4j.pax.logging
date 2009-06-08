@@ -66,7 +66,7 @@ public class JclLogger
 
     public void trace( Object message )
     {
-        if( message != null )
+        if( m_delegate.isTraceEnabled() && message != null )
         {
             m_delegate.trace( message.toString(), null );
         }
@@ -74,6 +74,8 @@ public class JclLogger
 
     public void trace( Object message, Throwable t )
     {
+      if (m_delegate.isTraceEnabled()) {
+
         if( message != null )
         {
             m_delegate.trace( message.toString(), t );
@@ -82,11 +84,12 @@ public class JclLogger
         {
             m_delegate.trace( null, t );
         }
+      }
     }
 
     public void debug( Object message )
     {
-        if( message != null )
+        if( m_delegate.isDebugEnabled() && message != null )
         {
             m_delegate.debug( message.toString(), null );
         }
@@ -94,6 +97,8 @@ public class JclLogger
 
     public void debug( Object message, Throwable t )
     {
+      if (m_delegate.isDebugEnabled()) {
+
         if( message != null )
         {
             m_delegate.debug( message.toString(), t );
@@ -102,11 +107,12 @@ public class JclLogger
         {
             m_delegate.debug( null, t );
         }
+      }
     }
 
     public void info( Object message )
     {
-        if( message != null )
+        if( m_delegate.isInfoEnabled() && message != null )
         {
             m_delegate.inform( message.toString(), null );
         }
@@ -114,15 +120,23 @@ public class JclLogger
 
     public void info( Object message, Throwable t )
     {
+      if (m_delegate.isInfoEnabled()) {
+
         if( message != null )
         {
-            m_delegate.inform( message.toString(), null );
+            m_delegate.inform( message.toString(), t );
         }
+        else
+        {
+            m_delegate.inform( null, t );
+        }
+      }
+
     }
 
     public void warn( Object message )
     {
-        if( message != null )
+        if( m_delegate.isWarnEnabled() && message != null )
         {
             m_delegate.warn( message.toString(), null );
         }
@@ -130,6 +144,7 @@ public class JclLogger
 
     public void warn( Object message, Throwable t )
     {
+      if (m_delegate.isWarnEnabled()) {
         if( message != null )
         {
             m_delegate.warn( message.toString(), t );
@@ -138,11 +153,12 @@ public class JclLogger
         {
             m_delegate.warn( null, t );
         }
+      }
     }
 
     public void error( Object message )
     {
-        if( message != null )
+        if( m_delegate.isErrorEnabled() && message != null )
         {
             m_delegate.error( message.toString(), null );
         }
@@ -151,6 +167,7 @@ public class JclLogger
 
     public void error( Object message, Throwable t )
     {
+      if (m_delegate.isErrorEnabled()) {
         if( message != null )
         {
             m_delegate.error( message.toString(), t );
@@ -159,11 +176,12 @@ public class JclLogger
         {
             m_delegate.error( null, t );
         }
+      }
     }
 
     public void fatal( Object message )
     {
-        if( message != null )
+        if( m_delegate.isFatalEnabled() && message != null )
         {
             m_delegate.fatal( message.toString(), null );
         }
@@ -171,6 +189,8 @@ public class JclLogger
 
     public void fatal( Object message, Throwable t )
     {
+      if (m_delegate.isFatalEnabled()) {
+
         if( message != null )
         {
             m_delegate.fatal( message.toString(), t );
@@ -179,6 +199,7 @@ public class JclLogger
         {
             m_delegate.fatal( null, t );
         }
+      }
     }
 
     public int getLogLevel()

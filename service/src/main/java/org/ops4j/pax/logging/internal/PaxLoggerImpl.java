@@ -158,13 +158,10 @@ public class PaxLoggerImpl
         return m_delegate.getName();
     }
 
-    public void log( String callerFQCN, Priority level, Object message, Throwable t ) 
+  //Fixed bug instead of the fully qualified class name of the logger was given the name of the caller
+    public void log( Priority level, Object message, Throwable t )
     {
-        if( callerFQCN == null ) 
-        {
-            callerFQCN = m_fqcn;
-        }
-        m_delegate.log( callerFQCN, level, message, t );
+        m_delegate.log( m_fqcn, level, message, t );
     }
     
     public PaxContext getPaxContext() 

@@ -17,11 +17,11 @@
  */
 package org.ops4j.pax.logging.internal;
 
+import org.ops4j.pax.logging.PaxLoggingService;
+
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.Locale;
-import org.ops4j.pax.logging.PaxLoggingService;
 
 public class JdkHandler extends Handler
 {
@@ -109,8 +109,8 @@ public class JdkHandler extends Handler
         {
             log4jlevel = org.apache.log4j.Level.INFO;
         }
-        String callerFQCN = record.getSourceClassName();
-        logger.log( callerFQCN, log4jlevel, message, throwable );
+      //bug fixed here
+        logger.log( log4jlevel, message, throwable );
     }
 
 }
