@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.ops4j.pax</groupId>
     <artifactId>master</artifactId>
-    <version>2.2</version>
+    <version>3.0.0</version>
   </parent>
 
   <groupId>org.ops4j.pax</groupId>
@@ -27,13 +27,6 @@
     <connection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</connection>
     <developerConnection>scm:svn:https://scm.ops4j.org/repos/ops4j/projects/pax/logging</developerConnection>
   </scm>
-
-  <modules>
-    <module>api</module>
-    <module>service</module>
-    <module>samples</module>
-    <module>it</module>
-  </modules>
 
   <build>
     <plugins>
@@ -121,6 +114,19 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!-- Test dependencies-->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.4</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>2.3</version>
+        <scope>test</scope>
+      </dependency>      
     </dependencies>
   </dependencyManagement>
 
@@ -240,5 +246,12 @@
       </roles>
     </developer>
   </developers>
+
+  <modules>
+    <module>api</module>
+    <module>service</module>
+    <module>samples</module>
+    <module>it</module>
+  </modules>
 
 </project>
