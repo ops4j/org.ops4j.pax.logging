@@ -1,6 +1,7 @@
 /*
  * Copyright 2008 Edward Yakop.
  * Copyright 2008 Alin Dreghiciu.
+ * Copyright 2009 Toni Menzel.
  *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
@@ -24,14 +25,18 @@ import java.util.List;
 import java.util.Properties;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.junit.runner.RunWith;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ManagedService;
-import org.ops4j.pax.drone.api.DroneConnector;
-import org.ops4j.pax.drone.connector.paxrunner.GenericConnector;
-import org.ops4j.pax.drone.connector.paxrunner.Platforms;
-import org.ops4j.pax.drone.spi.junit.DroneTestCase;
+import org.ops4j.pax.exam.junit.JUnit4TestRunner;
+import org.ops4j.pax.exam.junit.Configuration;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.Inject;
+import static org.ops4j.pax.exam.CoreOptions.*;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.PaxAppender;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
@@ -41,9 +46,11 @@ import org.ops4j.pax.logging.spi.PaxLoggingEvent;
  *
  * @author edward.yakop@gmail.com
  * @author Alin Dreghiciu
+ * @author Toni Menzel
  */
+@RunWith( JUnit4TestRunner.class )
 public class CustomAppenderTest 
-    extends DroneTestCase
+   
 {
 
     private static final String FILTER_PAX_LOGGING = "(" + Constants.SERVICE_PID + "=org.ops4j.pax.logging)";
@@ -51,14 +58,20 @@ public class CustomAppenderTest
     private static final String SERVICE_NAME = PaxAppender.class.getName();
     private static final String EXPECTED_MESSAGE = "Hello";
 
-    public DroneConnector configure()
+    @Inject
+    private BundleContext bundleContext;
+
+    @Configuration
+    public Option[] configure()
     {
-        return GenericConnector.create( GenericConnector.createBundleProvision()
-            .addBundle( "mvn:org.ops4j.pax.logging/pax-logging-service" )
-            .addBundle( "mvn:org.ops4j.pax.logging/pax-logging-api" )
-        ).setPlatform( Platforms.FELIX );
+        return options(
+            mavenBundle().artifactId( "pax-logging-api" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
+            mavenBundle().artifactId( "pax-logging-service" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject()
+
+        );
     }
 
+    @Test
     public final void testCustomAppender()
         throws Throwable
     {
