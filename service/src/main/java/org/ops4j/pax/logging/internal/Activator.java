@@ -18,17 +18,21 @@
 package org.ops4j.pax.logging.internal;
 
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
-import org.ops4j.pax.logging.EventAdminTracker;
+import org.osgi.service.log.LogEntry;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.EventAdminPoster;
 
 /**
  * Starts the Log4j log services.
@@ -56,7 +60,7 @@ public class Activator
     private JdkHandler m_JdkHandler;
     private ServiceRegistration m_registrationLogReaderService;
     private FrameworkHandler m_frameworkHandler;
-    private EventAdminTracker m_eventAdmin;
+    private EventAdminPoster m_eventAdmin;
     private AppenderTracker m_appenderTracker;
 
     /**
@@ -78,8 +82,21 @@ public class Activator
             bundleContext.registerService( LogReaderService.class.getName(), logReader, null );
 
         // Tracking for the EventAdmin
-        m_eventAdmin = new EventAdminTracker( bundleContext );
-        m_eventAdmin.open();
+        try {
+            m_eventAdmin = new EventAdminTracker( bundleContext );
+        } catch (NoClassDefFoundError e) {
+            // If we hit a NCDFE, this means the event admin package is not available,
+            // so use a dummy poster
+            m_eventAdmin = new EventAdminPoster() {
+                public void postEvent( Bundle bundle, int level, LogEntry entry, String message, Throwable exception,
+                                       ServiceReference sr, Map context )
+                {
+                }
+                public void destroy()
+                {
+                }
+            };
+        }
 
         // register the Pax Logging service
         m_appenderTracker = new AppenderTracker( bundleContext );
@@ -111,7 +128,7 @@ public class Activator
     {
         // shut down the trackers.
         m_appenderTracker.close();
-        m_eventAdmin.close();
+        m_eventAdmin.destroy();
 
         // Clean up the listeners.
         bundleContext.removeBundleListener( m_frameworkHandler );

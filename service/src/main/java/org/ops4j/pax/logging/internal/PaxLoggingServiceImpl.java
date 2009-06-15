@@ -19,9 +19,6 @@ package org.ops4j.pax.logging.internal;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -29,18 +26,16 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PaxLoggingConfigurator;
 import org.knopflerfish.service.log.LogService;
-import org.ops4j.pax.logging.EventAdminTracker;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.EventAdminPoster;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
-import org.osgi.service.event.Event;
 import org.osgi.service.log.LogEntry;
 
 public class PaxLoggingServiceImpl
@@ -48,13 +43,13 @@ public class PaxLoggingServiceImpl
 {
 
     private LogReaderServiceImpl m_logReader;
-    private EventAdminTracker m_eventAdmin;
+    private EventAdminPoster m_eventAdmin;
     private AppenderTracker m_appenderTracker;
     private PaxContext m_context;
 
     private int m_logLevel = LOG_DEBUG;
 
-    public PaxLoggingServiceImpl( LogReaderServiceImpl logReader, EventAdminTracker eventAdmin,
+    public PaxLoggingServiceImpl( LogReaderServiceImpl logReader, EventAdminPoster eventAdmin,
                                   AppenderTracker appenderTracker )
     {
         m_appenderTracker = appenderTracker;
@@ -155,8 +150,7 @@ public class PaxLoggingServiceImpl
         // This should only be null for TestCases.
         if( m_eventAdmin != null )
         {
-            Event event = createEvent( bundle, level, entry, message, exception, sr, getPaxContext().getContext() );
-            m_eventAdmin.postEvent( event );
+            m_eventAdmin.postEvent( bundle, level, entry, message, exception, sr, getPaxContext().getContext() );
         }
     }
 
@@ -222,79 +216,6 @@ public class PaxLoggingServiceImpl
         configurator.doConfigure( defaultProperties, LogManager.getLoggerRepository() );
         final java.util.logging.Logger rootLogger  = java.util.logging.Logger.getLogger("");
         rootLogger.setLevel(Level.FINE);
-    }
-
-    static Event createEvent( Bundle bundle, int level, LogEntry entry, String message,
-                              Throwable exception, ServiceReference sr, Map context )
-    {
-        String type;
-        switch( level )
-        {
-            case LOG_ERROR:
-                type = "LOG_ERROR";
-                break;
-            case LOG_WARNING:
-                type = "LOG_WARNING";
-                break;
-            case LOG_INFO:
-                type = "LOG_INFO";
-                break;
-            case LOG_DEBUG:
-                type = "LOG_DEBUG";
-                break;
-            default:
-                type = "LOG_OTHER";
-        }
-        String topic = "org/osgi/service/log/LogEntry/" + type;
-        Dictionary props = new Hashtable();
-        if( bundle != null )
-        {
-            props.put( "bundle", bundle );
-            Long bundleId = new Long( bundle.getBundleId() );
-            props.put( "bundle.id", bundleId );
-            String symbolicName = bundle.getSymbolicName();
-            if( symbolicName != null )
-            {
-                props.put( "bundle.symbolicname", symbolicName );
-            }
-        }
-        props.put( "log.level", new Integer( level ) );
-        props.put( "log.entry", entry );
-        if( null != message )
-            props.put( "message", message );
-        props.put( "timestamp", new Long( System.currentTimeMillis() ) );
-        if( exception != null )
-        {
-            props.put( "exception", exception );
-            props.put( "exception.class", exception.getClass() );
-            // Only save message if message is not null otherwise NPE is thrown
-            if( exception.getMessage() != null )
-            {
-                props.put( "exception.message", exception.getMessage() );
-            }
-        }
-        if( sr != null )
-        {
-            props.put( "service", sr );
-            Long id = (Long) sr.getProperty( Constants.SERVICE_ID );
-            props.put( "service.id", id );
-            String pid = (String) sr.getProperty( Constants.SERVICE_PID );
-            if( pid != null )
-            {
-                props.put( "service.pid", pid );
-            }
-            String[] objClass = (String[]) sr.getProperty( Constants.OBJECTCLASS );
-            props.put( "service.objectClass", objClass );
-        }
-        if( context != null )
-        {
-            for( Iterator keys = context.keySet().iterator(); keys.hasNext(); )
-            {
-                String key = (String) keys.next();
-                props.put( key, context.get( key ) );
-            }
-        }
-        return new Event( topic, props );
     }
 
     /*
