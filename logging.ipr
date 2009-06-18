@@ -402,12 +402,12 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/logging.iml" filepath="$PROJECT_DIR$/logging.iml" />
-      <module fileurl="file://$PROJECT_DIR$/api/pax-logging-api.iml" filepath="$PROJECT_DIR$/api/pax-logging-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/it/pax-logging-it.iml" filepath="$PROJECT_DIR$/it/pax-logging-it.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pax-logging-api/pax-logging-api.iml" filepath="$PROJECT_DIR$/pax-logging-api/pax-logging-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pax-logging-it/pax-logging-it.iml" filepath="$PROJECT_DIR$/pax-logging-it/pax-logging-it.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" filepath="$PROJECT_DIR$/samples/config/pax-logging-sample-config.iml" group="pax-logging-samples and modules" />
       <module fileurl="file://$PROJECT_DIR$/samples/logger/pax-logging-sample-logger.iml" filepath="$PROJECT_DIR$/samples/logger/pax-logging-sample-logger.iml" group="pax-logging-samples and modules" />
       <module fileurl="file://$PROJECT_DIR$/samples/pax-logging-samples.iml" filepath="$PROJECT_DIR$/samples/pax-logging-samples.iml" group="pax-logging-samples and modules" />
-      <module fileurl="file://$PROJECT_DIR$/service/pax-logging-service.iml" filepath="$PROJECT_DIR$/service/pax-logging-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pax-logging-service/pax-logging-service.iml" filepath="$PROJECT_DIR$/pax-logging-service/pax-logging-service.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_3" assert-keyword="false" jdk-15="false" project-jdk-name="1.5" project-jdk-type="JavaSDK">
@@ -621,28 +621,6 @@
         <root url="jar://$M2_REPO$/jetty/org.mortbay.jetty/5.1.0/org.mortbay.jetty-5.1.0-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: jmock:jmock:1.0.1">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/jmock/jmock/1.0.1/jmock-1.0.1.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/jmock/jmock/1.0.1/jmock-1.0.1-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/jmock/jmock/1.0.1/jmock-1.0.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: junit:junit:4.4">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/junit/junit/4.4/junit-4.4.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/junit/junit/4.4/junit-4.4-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/junit/junit/4.4/junit-4.4-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: log4j:log4j:1.2.15">
       <CLASSES>
         <root url="jar://$M2_REPO$/log4j/log4j/1.2.15/log4j-1.2.15.jar!/" />
@@ -685,17 +663,6 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$M2_REPO$/javax/jms/jms/1.1/jms-1.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: avalon-framework:avalon-framework-api:4.3">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/avalon-framework/avalon-framework-api/4.3/avalon-framework-api-4.3.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/avalon-framework/avalon-framework-api/4.3/avalon-framework-api-4.3-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/avalon-framework/avalon-framework-api/4.3/avalon-framework-api-4.3-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.ops4j.pax.exam:pax-exam:0.6.0">
@@ -819,6 +786,17 @@
         <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit/0.6.0/pax-exam-junit-0.6.0-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Maven: junit:junit:4.4">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/junit/junit/4.4/junit-4.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/junit/junit/4.4/junit-4.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/junit/junit/4.4/junit-4.4-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: org.ops4j.pax.exam:pax-exam-runtime:0.6.0">
       <CLASSES>
         <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-runtime/0.6.0/pax-exam-runtime-0.6.0.jar!/" />
@@ -850,6 +828,28 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit-extender/0.6.0/pax-exam-junit-extender-0.6.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: jmock:jmock:1.0.1">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/jmock/jmock/1.0.1/jmock-1.0.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/jmock/jmock/1.0.1/jmock-1.0.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/jmock/jmock/1.0.1/jmock-1.0.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: avalon-framework:avalon-framework-api:4.3">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/avalon-framework/avalon-framework-api/4.3/avalon-framework-api-4.3.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/avalon-framework/avalon-framework-api/4.3/avalon-framework-api-4.3-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/avalon-framework/avalon-framework-api/4.3/avalon-framework-api-4.3-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

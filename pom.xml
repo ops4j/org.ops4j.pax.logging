@@ -256,17 +256,17 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>api</module>
-        <module>service</module>
+        <module>pax-logging-api</module>
+        <module>pax-logging-service</module>
+        <module>pax-logging-it</module>
         <module>samples</module>
-        <module>it</module>
       </modules>
     </profile>
     <profile>
       <id>release</id>
       <modules>
-        <module>api</module>
-        <module>service</module>
+        <module>pax-logging-api</module>
+        <module>pax-logging-service</module>
       </modules>
     </profile>
   </profiles>
