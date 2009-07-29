@@ -38,9 +38,9 @@ package org.ops4j.pax.logging.internal;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
+import org.ops4j.pax.logging.spi.PaxLevel;
 import org.ops4j.pax.logging.spi.PaxLocationInfo;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
-import org.ops4j.pax.logging.spi.PaxLevel;
 
 // Contributors:   Nelson Minar <nelson@monkey.org>
 //                 Wolf Siberski

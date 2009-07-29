@@ -17,12 +17,13 @@
  */
 package org.ops4j.pax.logging.internal;
 
-import org.ops4j.pax.logging.spi.PaxLocationInfo;
 import org.apache.log4j.spi.LocationInfo;
+import org.ops4j.pax.logging.spi.PaxLocationInfo;
 
 public class PaxLocationInfoImpl
     implements PaxLocationInfo
 {
+
     private LocationInfo m_delegate;
 
     public PaxLocationInfoImpl( LocationInfo delegate )

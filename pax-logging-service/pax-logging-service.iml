@@ -14,13 +14,12 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.osgi:org.osgi.core:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.osgi:org.osgi.compendium:4.0.1" level="project" />
-    <orderEntry type="module" module-name="pax-logging-api" />
     <orderEntry type="library" name="Maven: jmock:jmock:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.4" level="project" />
     <orderEntry type="library" exported="" name="Maven: log4j:log4j:1.2.15" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.mail:mail:1.4" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: javax.jms:jms:1.1" level="project" />
+    <orderEntry type="module" module-name="pax-logging-api" />
   </component>
 </module>
 

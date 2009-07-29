@@ -82,7 +82,7 @@ public class FrameworkHandlerTest extends TestCase
                 lastLogEntry = entry;
             }
         });
-        return new FrameworkHandler( new PaxLoggingServiceImpl( reader, null, null ) );
+        return new FrameworkHandler( new PaxLoggingServiceImpl( null, reader, null, null ) );
     }
 
     private BundleEvent anEvent()

@@ -18,12 +18,12 @@
 package org.ops4j.pax.logging.internal;
 
 import java.util.HashMap;
-import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.spi.PaxAppender;
-import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.spi.PaxAppender;
+import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 
 public class AppenderTracker extends ServiceTracker
 {

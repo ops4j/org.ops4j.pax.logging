@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 Niclas Hedhman.
+ * Copyright 2005-2009 Niclas Hedhman.
  *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
@@ -19,24 +19,26 @@ package org.ops4j.pax.logging.internal;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PaxLoggingConfigurator;
 import org.knopflerfish.service.log.LogService;
-import org.ops4j.pax.logging.PaxContext;
-import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.EventAdminPoster;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
+import org.ops4j.pax.logging.EventAdminPoster;
+import org.ops4j.pax.logging.PaxContext;
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingService;
 
 public class PaxLoggingServiceImpl
     implements PaxLoggingService, LogService, ManagedService, ServiceFactory
@@ -44,14 +46,17 @@ public class PaxLoggingServiceImpl
 
     private LogReaderServiceImpl m_logReader;
     private EventAdminPoster m_eventAdmin;
+    private BundleContext m_bundleContext;
     private AppenderTracker m_appenderTracker;
     private PaxContext m_context;
 
     private int m_logLevel = LOG_DEBUG;
+    private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.DefaultServiceLog.level";
 
-    public PaxLoggingServiceImpl( LogReaderServiceImpl logReader, EventAdminPoster eventAdmin,
+    public PaxLoggingServiceImpl( BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin,
                                   AppenderTracker appenderTracker )
     {
+        m_bundleContext = context;
         m_appenderTracker = appenderTracker;
         m_logReader = logReader;
         m_eventAdmin = eventAdmin;
@@ -162,35 +167,8 @@ public class PaxLoggingServiceImpl
             configureDefaults();
             return;
         }
-        Properties extracted = new Properties();
-        Enumeration list = configuration.keys();
-        while( list.hasMoreElements() )
-        {
-            Object obj = list.nextElement();
-            if( obj instanceof String )
-            {
-                String key = (String) obj;
-                Object value = configuration.get( obj );
-                if( key.startsWith( "log4j" ) )
-                {
-                    extracted.put( key, value );
-                }
-                else if( key.startsWith( "pax." ) )
-                {
-                    if( "pax.logging.entries.size".equals( key ) )
-                    {
-                        try
-                        {
-                            m_logReader.setMaxEntries( Integer.parseInt( (String) value ) );
-                        }
-                        catch( Exception e )
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
+        Properties extracted = extractKeys( configuration );
+
         // If the updated() method is called without any log4j properties,
         // then keep the default/previous configuration.
         if( extracted.size() == 0 )
@@ -200,22 +178,95 @@ public class PaxLoggingServiceImpl
         }
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
         configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
-        setLevelToJavaLogging(configuration);
+        setLevelToJavaLogging( configuration );
+    }
+
+    private Properties extractKeys( Dictionary configuration )
+    {
+        Properties extracted = new Properties();
+        Enumeration list = configuration.keys();
+        while( list.hasMoreElements() )
+        {
+            Object obj = list.nextElement();
+            if( obj instanceof String )
+            {
+                extractKey( extracted, configuration, obj );
+            }
+        }
+        return extracted;
+    }
+
+    private void extractKey( Properties extracted, Dictionary configuration, Object obj )
+    {
+        String key = (String) obj;
+        Object value = configuration.get( obj );
+        if( key.startsWith( "log4j" ) )
+        {
+            extracted.put( key, value );
+        }
+        else if( key.startsWith( "pax." ) )
+        {
+            if( "pax.logging.entries.size".equals( key ) )
+            {
+                try
+                {
+                    m_logReader.setMaxEntries( Integer.parseInt( (String) value ) );
+                }
+                catch( Exception e )
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void configureDefaults()
     {
-        String levelName = System.getProperty( "org.ops4j.pax.logging.DefaultServiceLog.level", "DEBUG" ).trim();
+        String levelName;
+        if( m_bundleContext == null )
+        {
+            levelName = System.getProperty( DEFAULT_SERVICE_LOG_LEVEL, "DEBUG" ).trim();
+        }
+        else
+        {
+            levelName = m_bundleContext.getProperty( DEFAULT_SERVICE_LOG_LEVEL );
+            if( levelName == null )
+            {
+                levelName = "DEBUG";
+            }
+            else
+            {
+                levelName = levelName.trim();
+            }
+        }
         m_logLevel = convertLevel( levelName );
 
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
         Properties defaultProperties = new Properties();
+        // Extract System Properties prefixed with "pax.log4j", and drop the "pax." and include these
+        extractSystemProperties( defaultProperties );
         defaultProperties.put( "log4j.rootLogger", convertLevel( m_logLevel ) + ", A1" );
         defaultProperties.put( "log4j.appender.A1", "org.apache.log4j.ConsoleAppender" );
         defaultProperties.put( "log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout" );
         configurator.doConfigure( defaultProperties, LogManager.getLoggerRepository() );
-        final java.util.logging.Logger rootLogger  = java.util.logging.Logger.getLogger("");
-        rootLogger.setLevel(Level.FINE);
+        final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger( "" );
+        rootLogger.setLevel( Level.FINE );
+    }
+
+    private void extractSystemProperties( Properties output )
+    {
+        Iterator list = System.getProperties().entrySet().iterator();
+        while( list.hasNext() )
+        {
+            Map.Entry entry = (Map.Entry) list.next();
+            String key = (String) entry.getKey();
+            String value = (String) entry.getValue();
+            if( key.startsWith( "pax.log4j" ) )
+            {
+                key = key.substring( 4 );
+                output.put( key, value );
+            }
+        }
     }
 
     /*
@@ -317,46 +368,66 @@ public class PaxLoggingServiceImpl
         }
     }
 
-  //Here are added methods for setting level to root logger of the Java Logging API
+    //Here are added methods for setting level to root logger of the Java Logging API
 
-  private static void setLevelToJavaLogging(final Dictionary configuration) {
+    private static void setLevelToJavaLogging( final Dictionary configuration )
+    {
         String levelProperty = null;
         final Enumeration en = configuration.keys();
-        while(en.hasMoreElements()) {
+        while( en.hasMoreElements() )
+        {
             final Object key = en.nextElement();
-            if(key != null && key instanceof String) {
-                final String keyString =( (String) key).trim().toLowerCase();
-                if(keyString.startsWith("log4j") && keyString.indexOf("rootlogger") != -1) {
-                  final Object value= configuration.get(key);
-                    if(value != null && value instanceof String) {
-                        levelProperty = ((String) value).toUpperCase();
+            if( key != null && key instanceof String )
+            {
+                final String keyString = ( (String) key ).trim().toLowerCase();
+                if( keyString.startsWith( "log4j" ) && keyString.indexOf( "rootlogger" ) != -1 )
+                {
+                    final Object value = configuration.get( key );
+                    if( value != null && value instanceof String )
+                    {
+                        levelProperty = ( (String) value ).trim().toUpperCase();
                     }
                 }
             }
         }
-        if(levelProperty == null) {
+        if( levelProperty == null )
+        {
             return;
         }
-        setLevelToRootLogger(levelProperty);
+        setLevelToRootLogger( levelProperty );
     }
 
-  private static void setLevelToRootLogger(final String levelProperty) {
-    final java.util.logging.Logger rootLogger  = java.util.logging.Logger.getLogger("");
+    private static void setLevelToRootLogger( final String levelProperty )
+    {
+        final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger( "" );
 
-    if(levelProperty.indexOf("OFF") != -1) {
-        rootLogger.setLevel(Level.OFF);
-    } else if(levelProperty.indexOf("FATAL") != -1) {
-        rootLogger.setLevel(Level.SEVERE);
-    } else if(levelProperty.indexOf("ERROR") != -1) {
-        rootLogger.setLevel(Level.SEVERE);
-    } else if(levelProperty.indexOf("WARN") != -1) {
-       rootLogger.setLevel(Level.WARNING);
-    } else if(levelProperty.indexOf("INFO") != -1) {
-       rootLogger.setLevel(Level.INFO);
-    } else if(levelProperty.indexOf("DEBUG") != -1) {
-       rootLogger.setLevel(Level.FINE);
-    } else if(levelProperty.indexOf("TRACE") != -1) {
-       rootLogger.setLevel(Level.FINEST);
+        if( levelProperty.indexOf( "OFF" ) != -1 )
+        {
+            rootLogger.setLevel( Level.OFF );
+        }
+        else if( levelProperty.indexOf( "FATAL" ) != -1 )
+        {
+            rootLogger.setLevel( Level.SEVERE );
+        }
+        else if( levelProperty.indexOf( "ERROR" ) != -1 )
+        {
+            rootLogger.setLevel( Level.SEVERE );
+        }
+        else if( levelProperty.indexOf( "WARN" ) != -1 )
+        {
+            rootLogger.setLevel( Level.WARNING );
+        }
+        else if( levelProperty.indexOf( "INFO" ) != -1 )
+        {
+            rootLogger.setLevel( Level.INFO );
+        }
+        else if( levelProperty.indexOf( "DEBUG" ) != -1 )
+        {
+            rootLogger.setLevel( Level.FINE );
+        }
+        else if( levelProperty.indexOf( "TRACE" ) != -1 )
+        {
+            rootLogger.setLevel( Level.FINEST );
+        }
     }
-  }
 }

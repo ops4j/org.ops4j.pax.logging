@@ -13,7 +13,7 @@
 
   <groupId>org.ops4j.pax</groupId>
   <artifactId>logging</artifactId>
-  <version>1.4.0-SNAPSHOT</version>
+  <version>1.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>OPS4J Pax Logging (Build POM)</name>

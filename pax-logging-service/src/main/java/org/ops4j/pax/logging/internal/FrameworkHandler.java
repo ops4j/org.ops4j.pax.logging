@@ -37,7 +37,9 @@ import org.osgi.service.log.LogService;
 public class FrameworkHandler
     implements BundleListener, FrameworkListener, ServiceListener
 {
-    public static final String FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME = "org.ops4j.pax.logging.service.frameworkEventsLogLevel";
+
+    public static final String FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME =
+        "org.ops4j.pax.logging.service.frameworkEventsLogLevel";
 
     private final PaxLoggingServiceImpl m_service;
     private final int loggingLevel;

@@ -32,6 +32,7 @@ import org.osgi.service.log.LogReaderService;
 public class LogReaderServiceImpl
     implements LogReaderService
 {
+
     private List m_listeners;
     private final LinkedList m_entries;
     private int m_maxEntries;
@@ -91,7 +92,7 @@ public class LogReaderServiceImpl
     {
         // Need to do a copy to avoid a ConcurrentModificationException if
         // a new event is logged while the enumeration is iterated.
-        return Collections.enumeration( new ArrayList(m_entries) );
+        return Collections.enumeration( new ArrayList( m_entries ) );
     }
 
     private void cleanUp()
@@ -127,7 +128,8 @@ public class LogReaderServiceImpl
         try
         {
             listener.logged( entry );
-        } catch( Throwable e )
+        }
+        catch( Throwable e )
         {
             //TODO: Log that we are removing the LogListener, since it is throwing exception. For now System.err
             System.err.println( "'" + listener + "' is removed as a LogListener, since it threw an exception." );

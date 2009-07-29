@@ -143,7 +143,7 @@ public class LogFactory
     public static Log getLog( Class clazz )
         throws LogConfigurationException
     {
-        return getFactory().getInstance( clazz.getName() );
+        return getLog( clazz.getName() );
     }
 
     /**

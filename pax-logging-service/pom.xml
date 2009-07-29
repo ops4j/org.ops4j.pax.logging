@@ -8,13 +8,13 @@
   <parent>
     <groupId>org.ops4j.pax</groupId>
     <artifactId>logging</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.ops4j.pax.logging</groupId>
   <artifactId>pax-logging-service</artifactId>
-  <version>1.4.0-SNAPSHOT</version>
+  <version>1.4-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>OPS4J Pax Logging - Service</name>
@@ -73,18 +73,24 @@
       <artifactId>org.osgi.compendium</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.ops4j.pax.logging</groupId>
-      <artifactId>pax-logging-api</artifactId>
-      <version>1.4.0-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>jmock</groupId>
       <artifactId>jmock</artifactId>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.jms</groupId>
+          <artifactId>jms</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-api</artifactId>
+      <version>1.4-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

@@ -18,6 +18,7 @@
 package org.apache.commons.logging.internal;
 
 import org.apache.commons.logging.Log;
+import org.osgi.framework.BundleContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 
@@ -205,6 +206,10 @@ public class JclLogger
     public int getLogLevel()
     {
         return m_delegate.getLogLevel();
+    }
+
+    public void setBundleContext( BundleContext context )
+    {
     }
 
     /**

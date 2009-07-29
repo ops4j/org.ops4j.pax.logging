@@ -14,7 +14,6 @@
     <orderEntry type="library" exported="" name="Maven: log4j:log4j:1.2.15" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.mail:mail:1.4" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: javax.jms:jms:1.1" level="project" />
     <orderEntry type="module" module-name="pax-logging-api" exported="" />
     <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam:0.6.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.ops4j.base:ops4j-base-lang:0.5.3" level="project" />

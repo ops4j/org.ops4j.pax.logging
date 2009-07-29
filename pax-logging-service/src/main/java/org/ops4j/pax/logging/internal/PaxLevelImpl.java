@@ -17,12 +17,13 @@
  */
 package org.ops4j.pax.logging.internal;
 
-import org.ops4j.pax.logging.spi.PaxLevel;
 import org.apache.log4j.Level;
+import org.ops4j.pax.logging.spi.PaxLevel;
 
 public class PaxLevelImpl
     implements PaxLevel
 {
+
     private Level m_delegate;
 
     public PaxLevelImpl( Level delegate )

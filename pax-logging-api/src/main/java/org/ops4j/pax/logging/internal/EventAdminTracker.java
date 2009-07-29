@@ -16,15 +16,15 @@
  */
 package org.ops4j.pax.logging.internal;
 
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Iterator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import java.util.LinkedList;
+import java.util.Map;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.log.LogEntry;
@@ -93,17 +93,25 @@ public class EventAdminTracker extends ServiceTracker
         {
             return;
         }
-        while( m_queue.size() > 0 ) // Still not ok: this must be volatile or sync'd too!
+        while( m_queue.size() > 0 ) // Peter Doornbosch: Still not ok: this must be volatile or sync'd too!
+                                    // Niclas: volatile is meaningless semantics on a final reference.
+                                    //         I can't see while synchronized would be needed, since sync have
+                                    //         just happened, and if size is slightly incorrectly computed, nothing
+                                    //         will be harmed by it.
         {
             Event event = null;
             synchronized( m_queue )
             {
                 // Make sure queue is still not empty (due to race conditions)
-                if ( m_queue.size() > 0 )
+                if( m_queue.size() > 0 )
+                {
                     event = (Event) m_queue.remove( 0 );
+                }
             }
-            if ( event != null )
+            if( event != null )
+            {
                 forDelivery.postEvent( event );
+            }
         }
     }
 
@@ -176,7 +184,9 @@ public class EventAdminTracker extends ServiceTracker
         props.put( "log.level", new Integer( level ) );
         props.put( "log.entry", entry );
         if( null != message )
+        {
             props.put( "message", message );
+        }
         props.put( "timestamp", new Long( System.currentTimeMillis() ) );
         if( exception != null )
         {

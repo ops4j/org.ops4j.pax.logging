@@ -21,18 +21,18 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedService;
+import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
-import org.osgi.service.log.LogEntry;
-import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.EventAdminPoster;
+import org.ops4j.pax.logging.PaxLoggingService;
 
 /**
  * Starts the Log4j log services.
@@ -78,20 +78,25 @@ public class Activator
     {
         // register the LogReaderService
         LogReaderServiceImpl logReader = new LogReaderServiceImpl( 100 );
-        m_registrationLogReaderService =
-            bundleContext.registerService( LogReaderService.class.getName(), logReader, null );
+        String readerServiceName = LogReaderService.class.getName();
+        m_registrationLogReaderService = bundleContext.registerService( readerServiceName, logReader, null );
 
         // Tracking for the EventAdmin
-        try {
+        try
+        {
             m_eventAdmin = new EventAdminTracker( bundleContext );
-        } catch (NoClassDefFoundError e) {
+        }
+        catch( NoClassDefFoundError e )
+        {
             // If we hit a NCDFE, this means the event admin package is not available,
             // so use a dummy poster
-            m_eventAdmin = new EventAdminPoster() {
+            m_eventAdmin = new EventAdminPoster()
+            {
                 public void postEvent( Bundle bundle, int level, LogEntry entry, String message, Throwable exception,
                                        ServiceReference sr, Map context )
                 {
                 }
+
                 public void destroy()
                 {
                 }
@@ -101,7 +106,8 @@ public class Activator
         // register the Pax Logging service
         m_appenderTracker = new AppenderTracker( bundleContext );
         m_appenderTracker.open( true );
-        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( logReader, m_eventAdmin, m_appenderTracker );
+        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( bundleContext, logReader,
+                                                                      m_eventAdmin, m_appenderTracker );
         Hashtable serviceProperties = new Hashtable();
         serviceProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
         serviceProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
@@ -144,7 +150,7 @@ public class Activator
             m_JdkHandler.close();
             m_JdkHandler = null;
         }
-        
+
         m_RegistrationPaxLogging.unregister();
         m_RegistrationPaxLogging = null;
 
