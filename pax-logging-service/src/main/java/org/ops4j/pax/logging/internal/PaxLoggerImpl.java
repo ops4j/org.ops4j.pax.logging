@@ -108,7 +108,6 @@ public class PaxLoggerImpl
         setDelegateContext();
         m_delegate.log( m_fqcn, Level.TRACE, message, t );
         clearDelegateContext();
-        m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
     }
 
     public void debug( String message, Throwable t )
@@ -116,7 +115,6 @@ public class PaxLoggerImpl
         setDelegateContext();
         m_delegate.log( m_fqcn, Level.DEBUG, message, t );
         clearDelegateContext();
-        m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
     }
 
     public void inform( String message, Throwable t )
@@ -124,7 +122,6 @@ public class PaxLoggerImpl
         setDelegateContext();
         m_delegate.log( m_fqcn, Level.INFO, message, t );
         clearDelegateContext();
-        m_service.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
     }
 
     public void warn( String message, Throwable t )
@@ -132,7 +129,6 @@ public class PaxLoggerImpl
         setDelegateContext();
         m_delegate.log( m_fqcn, Level.WARN, message, t );
         clearDelegateContext();
-        m_service.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
     }
 
     public void error( String message, Throwable t )
@@ -140,7 +136,6 @@ public class PaxLoggerImpl
         setDelegateContext();
         m_delegate.log( m_fqcn, Level.ERROR, message, t );
         clearDelegateContext();
-        m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
     }
 
     public void fatal( String message, Throwable t )
@@ -148,7 +143,6 @@ public class PaxLoggerImpl
         setDelegateContext();
         m_delegate.log( m_fqcn, Level.FATAL, message, t );
         clearDelegateContext();
-        m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
     }
 
     public int getLogLevel()
