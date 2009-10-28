@@ -347,6 +347,10 @@ public class PaxLoggingServiceImpl
         {
             return LOG_ERROR;
         }
+        else if( "WARN".equals( levelName ) )
+        {
+            return LOG_WARNING;
+        }
         else
         {
             return LOG_DEBUG;
@@ -363,6 +367,8 @@ public class PaxLoggingServiceImpl
                 return "INFO";
             case LOG_ERROR:
                 return "ERROR";
+            case LOG_WARNING:
+                return "WARN";
             default:
                 return "DEBUG";
         }
