@@ -103,4 +103,12 @@ public class MDC {
             return m_defaultContext.getContext();
         }
     }
+
+    /** Pax Logging internal method. Should never be used directly. */
+    public static void dispose()
+    {
+        m_paxLogging.close();
+        m_paxLogging.dispose();
+        m_paxLogging = null;
+    }
 }

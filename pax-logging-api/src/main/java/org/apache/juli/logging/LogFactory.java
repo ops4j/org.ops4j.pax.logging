@@ -390,4 +390,12 @@ public class LogFactory {
         }
         m_paxLogging.open();
     }
+
+    /** Pax Logging internal method. Should never be used directly. */
+    public static void dispose()
+    {
+        m_paxLogging.close();
+        m_paxLogging.dispose();
+        m_paxLogging = null;
+    }
 }

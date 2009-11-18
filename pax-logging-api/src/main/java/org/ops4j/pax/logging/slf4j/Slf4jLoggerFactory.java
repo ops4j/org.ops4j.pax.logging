@@ -64,8 +64,6 @@ public class Slf4jLoggerFactory
      */
     public static void release()
     {
-        m_paxLogging.close();
-        m_paxLogging.dispose();
     }
 
     /**
@@ -93,5 +91,13 @@ public class Slf4jLoggerFactory
         Slf4jLogger logger = new Slf4jLogger( name, paxLogger );
         m_loggers.put( logger, name );
         return logger;
+    }
+
+    /** Pax Logging internal method. Should never be used directly. */
+    public static void dispose()
+    {
+        m_paxLogging.close();
+        m_paxLogging.dispose();
+        m_paxLogging = null;
     }
 }

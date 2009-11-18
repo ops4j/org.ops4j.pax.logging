@@ -186,7 +186,6 @@ public class LogFactory
      */
     public static void releaseAll()
     {
-        release();
     }
 
     private LogFactory()
@@ -305,5 +304,13 @@ public class LogFactory
      */
     public void setAttribute( String name, Object value )
     {
+    }
+
+    /** Pax Logging internal method. Should never be used directly. */
+    public static void dispose()
+    {
+        m_paxLogging.close();
+        m_paxLogging.dispose();
+        m_paxLogging = null;
     }
 }

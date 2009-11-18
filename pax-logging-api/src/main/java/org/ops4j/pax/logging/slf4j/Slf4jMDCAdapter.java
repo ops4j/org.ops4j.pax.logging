@@ -81,4 +81,12 @@ public class Slf4jMDCAdapter
     {
         getContext().setContextMap(contextMap);
     }
+
+    /** Pax Logging internal method. Should never be used directly. */
+    public static void dispose()
+    {
+        m_paxLogging.close();
+        m_paxLogging.dispose();
+        m_paxLogging = null;
+    }
 }

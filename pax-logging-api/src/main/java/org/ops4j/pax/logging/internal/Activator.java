@@ -54,21 +54,28 @@ public class Activator
         throws Exception
     {
         String name = getClass().getName();
+
         org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger( name );
         slf4jLogger.info( "Disabling SLF4J API support." );
-        Slf4jLoggerFactory.release();
+
         org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog( name );
         commonsLogger.info( "Disabling Jakarta Commons Logging API support." );
-        org.apache.commons.logging.LogFactory.release();
+
         org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger( name );
         log4jLogger.info( "Disabling Log4J API support." );
-        org.apache.log4j.Logger.release();
+
         org.apache.avalon.framework.logger.Logger avalonLogger = org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger( name );
         avalonLogger.info( "Disabling Avalon Logger API support." );
-        org.ops4j.pax.logging.avalon.AvalonLogFactory.release();
 
         org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog( name );
         juliLogger.info( "Disabling JULI Logger API support." );
-        org.apache.juli.logging.LogFactory.releaseAll();
+
+        org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory.dispose();
+        Slf4jMDCAdapter.dispose();
+        org.apache.commons.logging.LogFactory.dispose();
+        org.apache.log4j.Logger.dispose();
+        org.apache.log4j.MDC.dispose();
+        org.ops4j.pax.logging.avalon.AvalonLogFactory.dispose();
+        org.apache.juli.logging.LogFactory.dispose();
     }
 }

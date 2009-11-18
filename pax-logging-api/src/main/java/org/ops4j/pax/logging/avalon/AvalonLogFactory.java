@@ -60,8 +60,6 @@ public class AvalonLogFactory
      */
     public static void release()
     {
-        m_paxLogging.close();
-        m_paxLogging.dispose();
     }
 
     public static Logger getLogger( String name )
@@ -84,5 +82,13 @@ public class AvalonLogFactory
         AvalonLogger avalonLogger = new AvalonLogger( logger );
         m_loggers.put( avalonLogger, newName );
         return avalonLogger;
+    }
+
+    /** Pax Logging internal method. Should never be used directly. */
+    public static void dispose()
+    {
+        m_paxLogging.close();
+        m_paxLogging.dispose();
+        m_paxLogging = null;
     }
 }

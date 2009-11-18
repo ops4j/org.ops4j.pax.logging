@@ -94,9 +94,6 @@ public class Logger extends Category
      */
     public static void release()
     {
-        m_paxLogging.close();
-        m_paxLogging.dispose();
-        m_paxLogging = null;
     }
 
     /**
@@ -642,4 +639,13 @@ public class Logger extends Category
   public void warn(final Object message, final Throwable t) {
     super.warn(message, t);
   }
+
+    /** Pax Logging internal method. Should never be used directly. */
+    public static void dispose()
+    {
+        m_paxLogging.close();
+        m_paxLogging.dispose();
+        m_paxLogging = null;
+    }
+
 }
