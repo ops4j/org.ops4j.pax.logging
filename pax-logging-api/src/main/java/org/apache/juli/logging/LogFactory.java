@@ -213,7 +213,6 @@ public class LogFactory {
      * class loader would prevent garbage collection.
      */
     public void release() {
-        release( null );
     }
 
     /**
@@ -344,9 +343,6 @@ public class LogFactory {
      * @param classLoader ClassLoader for which to release the LogFactory
      */
     public static void release(ClassLoader classLoader) {
-        m_paxLogging.close();
-        m_paxLogging.dispose();
-        m_paxLogging = null;
     }
 
 
@@ -359,7 +355,6 @@ public class LogFactory {
      * garbage collection.
      */
     public static void releaseAll() {
-        release( null );
     }
 
     /**
