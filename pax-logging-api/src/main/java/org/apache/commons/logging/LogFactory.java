@@ -282,9 +282,6 @@ public class LogFactory
      */
     static public void release()
     {
-        m_paxLogging.close();
-        m_paxLogging.dispose();
-        m_paxLogging = null;
     }
 
     /**
