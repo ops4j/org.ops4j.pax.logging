@@ -280,6 +280,11 @@
         <role>OSGi expert and Scala enthusiast</role>
       </roles>
     </developer>
+    <developer>
+      <name>David Jencks</name>
+      <id>djencks</id>
+      <email>david_jencks@yahoo.com</email>
+    </developer>
   </developers>
 
   <modules>
