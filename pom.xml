@@ -291,7 +291,7 @@
     <module>pax-logging-api</module>
     <module>pax-logging-service</module>
     <module>pax-logging-it</module>
-    <module>samples</module>
+    <module>pax-logging-samples</module>
   </modules>
 
   <repositories>
