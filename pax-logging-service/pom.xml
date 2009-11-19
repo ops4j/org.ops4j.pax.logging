@@ -6,7 +6,6 @@
     <groupId>org.ops4j.pax</groupId>
     <artifactId>logging</artifactId>
     <version>1.4.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <groupId>org.ops4j.pax.logging</groupId>
