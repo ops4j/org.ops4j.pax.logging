@@ -83,7 +83,7 @@ public class LogFactory
      * The fully qualified class name of the fallback <code>LogFactory</code>
      * implementation class to use, if no other can be found.
      */
-    public static final String FACTORY_DEFAULT = "org.apache.commons.logging.impl.LogFactoryImpl";
+    public static final String FACTORY_DEFAULT = "org.apache.commons.logging.LogFactory";
 
     /**
      * The name of the properties file to search for.
@@ -188,7 +188,7 @@ public class LogFactory
     {
     }
 
-    private LogFactory()
+    public LogFactory()
     {
     }
 
