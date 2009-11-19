@@ -15,37 +15,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.service.internal;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.spi.LoggingEvent;
-import org.ops4j.pax.logging.spi.PaxAppender;
-import org.ops4j.pax.logging.spi.PaxLoggingEvent;
+import org.apache.log4j.spi.LocationInfo;
+import org.ops4j.pax.logging.spi.PaxLocationInfo;
 
-public class AppenderBridgeImpl extends AppenderSkeleton
-    implements Appender
+public class PaxLocationInfoImpl
+    implements PaxLocationInfo
 {
 
-    private PaxAppender m_delegate;
+    private LocationInfo m_delegate;
 
-    public AppenderBridgeImpl( PaxAppender delegate )
+    public PaxLocationInfoImpl( LocationInfo delegate )
     {
         m_delegate = delegate;
     }
 
-    protected void append( LoggingEvent event )
+    public String getFileName()
     {
-        PaxLoggingEvent paxEvent = new PaxLoggingEventImpl( event );
-        m_delegate.doAppend( paxEvent );
+        return m_delegate.getFileName();
     }
 
-    public void close()
+    public String getClassName()
     {
+        return m_delegate.getClassName();
     }
 
-    public boolean requiresLayout()
+    public String getLineNumber()
     {
-        return false;
+        return m_delegate.getLineNumber();
+    }
+
+    public String getMethodName()
+    {
+        return m_delegate.getMethodName();
     }
 }

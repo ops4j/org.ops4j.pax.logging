@@ -18,8 +18,8 @@
 package org.apache.log4j;
 
 import java.util.Properties;
-import org.ops4j.pax.logging.internal.AppenderTracker;
-import org.ops4j.pax.logging.internal.AppenderBridgeImpl;
+import org.ops4j.pax.logging.service.internal.AppenderTracker;
+import org.ops4j.pax.logging.service.internal.AppenderBridgeImpl;
 import org.ops4j.pax.logging.spi.PaxAppender;
 
 public class PaxLoggingConfigurator extends PropertyConfigurator

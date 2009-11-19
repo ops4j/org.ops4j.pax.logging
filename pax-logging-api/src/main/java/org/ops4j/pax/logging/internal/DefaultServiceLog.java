@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging;
+package org.ops4j.pax.logging.internal;
 
 import org.osgi.framework.Bundle;
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxContext;
 
 /**
  * This Logger will be used when the Pax Logging Service is not available.
@@ -51,7 +53,7 @@ public class DefaultServiceLog
         convertLevel( levelName );
     }
 
-    public DefaultServiceLog( Bundle bundle, String categoryName )
+    DefaultServiceLog( Bundle bundle, String categoryName )
     {
         m_bundle = bundle;
         m_categoryName = categoryName;

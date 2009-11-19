@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.service.internal;
 
 import junit.framework.TestCase;
 
@@ -26,6 +26,9 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogService;
+import org.ops4j.pax.logging.service.internal.FrameworkHandler;
+import org.ops4j.pax.logging.service.internal.LogReaderServiceImpl;
+import org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl;
 
 public class FrameworkHandlerTest extends TestCase
 {

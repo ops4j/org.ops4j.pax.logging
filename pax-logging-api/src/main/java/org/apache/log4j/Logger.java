@@ -19,7 +19,8 @@ package org.apache.log4j;
 
 import org.apache.log4j.internal.MessageFormatter;
 import org.apache.log4j.spi.LoggerFactory;
-import org.ops4j.pax.logging.DefaultServiceLog;
+import org.ops4j.pax.logging.internal.DefaultServiceLog;
+import org.ops4j.pax.logging.internal.FallbackLogFactory;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -129,7 +130,7 @@ public class Logger extends Category
         PaxLogger paxLogger;
         if( m_paxLogging == null )
         {
-            paxLogger = new DefaultServiceLog( null, name );
+            paxLogger = FallbackLogFactory.createFallbackLog( null, name );
         }
         else
         {

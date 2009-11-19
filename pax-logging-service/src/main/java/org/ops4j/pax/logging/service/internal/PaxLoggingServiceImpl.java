@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.service.internal;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -51,7 +51,7 @@ public class PaxLoggingServiceImpl
     private PaxContext m_context;
 
     private int m_logLevel = LOG_DEBUG;
-    private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.DefaultServiceLog.level";
+    private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.internal.DefaultServiceLog.level";
 
     public PaxLoggingServiceImpl( BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin,
                                   AppenderTracker appenderTracker )

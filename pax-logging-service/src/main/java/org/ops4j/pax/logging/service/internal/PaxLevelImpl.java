@@ -15,39 +15,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.service.internal;
 
-import org.apache.log4j.spi.LocationInfo;
-import org.ops4j.pax.logging.spi.PaxLocationInfo;
+import org.apache.log4j.Level;
+import org.ops4j.pax.logging.spi.PaxLevel;
 
-public class PaxLocationInfoImpl
-    implements PaxLocationInfo
+public class PaxLevelImpl
+    implements PaxLevel
 {
 
-    private LocationInfo m_delegate;
+    private Level m_delegate;
 
-    public PaxLocationInfoImpl( LocationInfo delegate )
+    public PaxLevelImpl( Level delegate )
     {
         m_delegate = delegate;
     }
 
-    public String getFileName()
+    public boolean isGreaterOrEqual( PaxLevel r )
     {
-        return m_delegate.getFileName();
+        PaxLevelImpl impl = (PaxLevelImpl) r;
+        return m_delegate.isGreaterOrEqual( impl.m_delegate );
     }
 
-    public String getClassName()
+    public int toInt()
     {
-        return m_delegate.getClassName();
+        return m_delegate.toInt();
     }
 
-    public String getLineNumber()
+    public int getSyslogEquivalent()
     {
-        return m_delegate.getLineNumber();
+        return m_delegate.getSyslogEquivalent();
     }
 
-    public String getMethodName()
+    public String toString()
     {
-        return m_delegate.getMethodName();
+        return m_delegate.toString();
     }
+
 }

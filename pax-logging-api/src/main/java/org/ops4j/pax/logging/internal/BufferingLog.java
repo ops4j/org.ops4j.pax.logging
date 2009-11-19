@@ -19,11 +19,10 @@ package org.ops4j.pax.logging.internal;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import java.util.Map;
+import org.osgi.framework.Bundle;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
-
 
 /**
  * Experimental fallback strategy for non-availability.
@@ -31,29 +30,31 @@ import org.ops4j.pax.logging.PaxLogger;
 public class BufferingLog
     implements PaxLogger
 {
+
     private static class LogType
     {
+
         private static final int TRACE_INT = 0;
         private static final int DEBUG_INT = 1;
         private static final int INFO_INT = 2;
         private static final int WARN_INT = 3;
         private static final int ERROR_INT = 4;
         private static final int FATAL_INT = 5;
-        
+
         private static LogType trace = new LogType( TRACE_INT );
         private static LogType debug = new LogType( DEBUG_INT );
         private static LogType info = new LogType( INFO_INT );
         private static LogType warn = new LogType( WARN_INT );
         private static LogType error = new LogType( ERROR_INT );
         private static LogType fatal = new LogType( FATAL_INT );
-        
+
         private final int m_type;
-        
+
         private LogType( int type )
         {
             m_type = type;
         }
-        
+
         private int getType()
         {
             return m_type;
@@ -62,9 +63,8 @@ public class BufferingLog
 
     private ArrayList m_queue;
     private PaxContext m_context = new PaxContext();
-    
 
-    public BufferingLog()
+    public BufferingLog( Bundle bundle, String categoryName )
     {
         m_queue = new ArrayList();
     }
@@ -77,7 +77,7 @@ public class BufferingLog
             LogPackage pack = (LogPackage) iterator.next();
             Throwable throwable = pack.getException();
             String message = pack.getMessage();
-            getPaxContext().putAll(pack.getContext());
+            getPaxContext().putAll( pack.getContext() );
             LogType logType = pack.getType();
             int logTypeAsInt = logType.getType();
             switch( logTypeAsInt )
@@ -134,40 +134,40 @@ public class BufferingLog
     {
         return true;
     }
-  
+
     public void trace( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.trace, message, t,getPaxContext().getContext() );
+        LogPackage p = new LogPackage( LogType.trace, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void debug( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.debug, message, t ,getPaxContext().getContext());
+        LogPackage p = new LogPackage( LogType.debug, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void inform( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.info, message, t,getPaxContext().getContext() );
+        LogPackage p = new LogPackage( LogType.info, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void warn( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.warn, message, t,getPaxContext().getContext() );
+        LogPackage p = new LogPackage( LogType.warn, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void error( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.error, message, t ,getPaxContext().getContext());
+        LogPackage p = new LogPackage( LogType.error, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void fatal( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.fatal, message, t ,getPaxContext().getContext());
+        LogPackage p = new LogPackage( LogType.fatal, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
@@ -181,10 +181,11 @@ public class BufferingLog
         return "";
     }
 
-    public PaxContext getPaxContext(){
+    public PaxContext getPaxContext()
+    {
         return m_context;
     }
-    
+
     private static class LogPackage
     {
 
@@ -192,12 +193,13 @@ public class BufferingLog
         private String m_message;
         private Throwable m_exception;
         private Map m_context;
-        public LogPackage( LogType type, String message, Throwable exception,Map context )
+
+        public LogPackage( LogType type, String message, Throwable exception, Map context )
         {
             m_type = type;
             m_message = message;
             m_exception = exception;
-            m_context=context;
+            m_context = context;
         }
 
         public String getMessage()
@@ -214,7 +216,7 @@ public class BufferingLog
         {
             return m_type;
         }
-        
+
         public Map getContext()
         {
             return m_context;

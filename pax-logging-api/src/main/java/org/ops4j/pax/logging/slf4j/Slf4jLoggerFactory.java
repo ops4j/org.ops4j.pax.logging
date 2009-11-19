@@ -23,7 +23,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Collections;
-import org.ops4j.pax.logging.DefaultServiceLog;
+import org.ops4j.pax.logging.internal.DefaultServiceLog;
+import org.ops4j.pax.logging.internal.FallbackLogFactory;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -82,7 +83,7 @@ public class Slf4jLoggerFactory
         PaxLogger paxLogger;
         if( m_paxLogging == null )
         {
-            paxLogger = new DefaultServiceLog( null, name );
+            paxLogger = FallbackLogFactory.createFallbackLog( null, name );
         }
         else
         {

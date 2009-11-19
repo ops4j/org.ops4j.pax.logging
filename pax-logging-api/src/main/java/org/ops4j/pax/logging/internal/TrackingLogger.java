@@ -17,7 +17,7 @@
  */
 package org.ops4j.pax.logging.internal;
 
-import org.ops4j.pax.logging.DefaultServiceLog;
+import org.ops4j.pax.logging.internal.DefaultServiceLog;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;

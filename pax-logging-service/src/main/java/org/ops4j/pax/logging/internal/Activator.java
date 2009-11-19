@@ -33,6 +33,12 @@ import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.service.internal.JdkHandler;
+import org.ops4j.pax.logging.service.internal.FrameworkHandler;
+import org.ops4j.pax.logging.service.internal.AppenderTracker;
+import org.ops4j.pax.logging.service.internal.LogReaderServiceImpl;
+import org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl;
+import org.ops4j.pax.logging.internal.EventAdminTracker;
 
 /**
  * Starts the Log4j log services.

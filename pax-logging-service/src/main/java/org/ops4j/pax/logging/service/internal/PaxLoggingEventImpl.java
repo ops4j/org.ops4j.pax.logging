@@ -33,7 +33,7 @@
  * limitations under the License.
  */
 
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.service.internal;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LocationInfo;

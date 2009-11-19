@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.service.internal;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.Priority;
 import org.osgi.framework.Bundle;
-import org.osgi.service.log.LogService;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 

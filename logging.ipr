@@ -735,94 +735,6 @@
         <root url="jar://$M2_REPO$/javax/activation/activation/1.1/activation-1.1-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ops4j.pax.logging:pax-logging-service:1.4-SNAPSHOT">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/logging/pax-logging-service/1.4-SNAPSHOT/pax-logging-service-1.4-SNAPSHOT.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/logging/pax-logging-service/1.4-SNAPSHOT/pax-logging-service-1.4-SNAPSHOT-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/logging/pax-logging-service/1.4-SNAPSHOT/pax-logging-service-1.4-SNAPSHOT-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.pax.logging:pax-logging-api:1.4-SNAPSHOT">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/logging/pax-logging-api/1.4-SNAPSHOT/pax-logging-api-1.4-SNAPSHOT.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/logging/pax-logging-api/1.4-SNAPSHOT/pax-logging-api-1.4-SNAPSHOT-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/logging/pax-logging-api/1.4-SNAPSHOT/pax-logging-api-1.4-SNAPSHOT-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.pax.exam:pax-exam:0.6.0">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam/0.6.0/pax-exam-0.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam/0.6.0/pax-exam-0.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam/0.6.0/pax-exam-0.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.base:ops4j-base-lang:0.5.3">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-lang/0.5.3/ops4j-base-lang-0.5.3.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-lang/0.5.3/ops4j-base-lang-0.5.3-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-lang/0.5.3/ops4j-base-lang-0.5.3-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.pax.exam:pax-exam-container-default:0.6.0">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-default/0.6.0/pax-exam-container-default-0.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-default/0.6.0/pax-exam-container-default-0.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-default/0.6.0/pax-exam-container-default-0.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.pax.exam:pax-exam-spi:0.6.0">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-spi/0.6.0/pax-exam-spi-0.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-spi/0.6.0/pax-exam-spi-0.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-spi/0.6.0/pax-exam-spi-0.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.pax.exam:pax-exam-container-rbc-client:0.6.0">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc-client/0.6.0/pax-exam-container-rbc-client-0.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc-client/0.6.0/pax-exam-container-rbc-client-0.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc-client/0.6.0/pax-exam-container-rbc-client-0.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.pax.exam:pax-exam-container-rbc:0.6.0">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc/0.6.0/pax-exam-container-rbc-0.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc/0.6.0/pax-exam-container-rbc-0.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc/0.6.0/pax-exam-container-rbc-0.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: commons-logging:commons-logging:1.1">
       <CLASSES>
         <root url="jar://$M2_REPO$/commons-logging/commons-logging/1.1/commons-logging-1.1.jar!/" />
@@ -832,28 +744,6 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$M2_REPO$/commons-logging/commons-logging/1.1/commons-logging-1.1-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.base:ops4j-base-net:0.5.3">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-net/0.5.3/ops4j-base-net-0.5.3.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-net/0.5.3/ops4j-base-net-0.5.3-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-net/0.5.3/ops4j-base-net-0.5.3-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.base:ops4j-base-monitors:0.5.3">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-monitors/0.5.3/ops4j-base-monitors-0.5.3.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-monitors/0.5.3/ops4j-base-monitors-0.5.3-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-monitors/0.5.3/ops4j-base-monitors-0.5.3-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.ops4j.pax.runner:pax-runner-no-jcl:1.1.0">
@@ -867,28 +757,6 @@
         <root url="jar://$M2_REPO$/org/ops4j/pax/runner/pax-runner-no-jcl/1.1.0/pax-runner-no-jcl-1.1.0-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ops4j.pax.exam:pax-exam-junit:0.6.0">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit/0.6.0/pax-exam-junit-0.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit/0.6.0/pax-exam-junit-0.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit/0.6.0/pax-exam-junit-0.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Maven: org.ops4j.pax.exam:pax-exam-runtime:0.6.0">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-runtime/0.6.0/pax-exam-runtime-0.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-runtime/0.6.0/pax-exam-runtime-0.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-runtime/0.6.0/pax-exam-runtime-0.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: commons-discovery:commons-discovery:0.4">
       <CLASSES>
         <root url="jar://$M2_REPO$/commons-discovery/commons-discovery/0.4/commons-discovery-0.4.jar!/" />
@@ -900,17 +768,6 @@
         <root url="jar://$M2_REPO$/commons-discovery/commons-discovery/0.4/commons-discovery-0.4-sources.jar!/" />
       </SOURCES>
     </library>
-    <library name="Maven: org.ops4j.pax.exam:pax-exam-junit-extender:0.6.0">
-      <CLASSES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit-extender/0.6.0/pax-exam-junit-extender-0.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit-extender/0.6.0/pax-exam-junit-extender-0.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit-extender/0.6.0/pax-exam-junit-extender-0.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
     <library name="Maven: jetty:org.mortbay.jetty:5.1.0">
       <CLASSES>
         <root url="jar://$M2_REPO$/jetty/org.mortbay.jetty/5.1.0/org.mortbay.jetty-5.1.0.jar!/" />
@@ -920,6 +777,127 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$M2_REPO$/jetty/org.mortbay.jetty/5.1.0/org.mortbay.jetty-5.1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.pax.exam:pax-exam:1.1.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam/1.1.0/pax-exam-1.1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam/1.1.0/pax-exam-1.1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam/1.1.0/pax-exam-1.1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.base:ops4j-base-lang:1.0.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-lang/1.0.0/ops4j-base-lang-1.0.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-lang/1.0.0/ops4j-base-lang-1.0.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-lang/1.0.0/ops4j-base-lang-1.0.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.pax.exam:pax-exam-container-default:1.1.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-default/1.1.0/pax-exam-container-default-1.1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-default/1.1.0/pax-exam-container-default-1.1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-default/1.1.0/pax-exam-container-default-1.1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.pax.exam:pax-exam-spi:1.1.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-spi/1.1.0/pax-exam-spi-1.1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-spi/1.1.0/pax-exam-spi-1.1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-spi/1.1.0/pax-exam-spi-1.1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.pax.exam:pax-exam-container-rbc-client:1.1.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc-client/1.1.0/pax-exam-container-rbc-client-1.1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc-client/1.1.0/pax-exam-container-rbc-client-1.1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc-client/1.1.0/pax-exam-container-rbc-client-1.1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.pax.exam:pax-exam-container-rbc:1.1.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc/1.1.0/pax-exam-container-rbc-1.1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc/1.1.0/pax-exam-container-rbc-1.1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-container-rbc/1.1.0/pax-exam-container-rbc-1.1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.base:ops4j-base-net:1.0.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-net/1.0.0/ops4j-base-net-1.0.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-net/1.0.0/ops4j-base-net-1.0.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-net/1.0.0/ops4j-base-net-1.0.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.base:ops4j-base-monitors:1.0.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-monitors/1.0.0/ops4j-base-monitors-1.0.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-monitors/1.0.0/ops4j-base-monitors-1.0.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/base/ops4j-base-monitors/1.0.0/ops4j-base-monitors-1.0.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.pax.exam:pax-exam-junit:1.1.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit/1.1.0/pax-exam-junit-1.1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit/1.1.0/pax-exam-junit-1.1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit/1.1.0/pax-exam-junit-1.1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.pax.exam:pax-exam-runtime:1.1.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-runtime/1.1.0/pax-exam-runtime-1.1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-runtime/1.1.0/pax-exam-runtime-1.1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-runtime/1.1.0/pax-exam-runtime-1.1.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.ops4j.pax.exam:pax-exam-junit-extender:1.1.0">
+      <CLASSES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit-extender/1.1.0/pax-exam-junit-extender-1.1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit-extender/1.1.0/pax-exam-junit-extender-1.1.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$M2_REPO$/org/ops4j/pax/exam/pax-exam-junit-extender/1.1.0/pax-exam-junit-extender-1.1.0-sources.jar!/" />
       </SOURCES>
     </library>
   </component>

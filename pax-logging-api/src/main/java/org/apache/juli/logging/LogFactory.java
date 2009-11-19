@@ -44,7 +44,8 @@ import org.osgi.framework.BundleContext;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.DefaultServiceLog;
+import org.ops4j.pax.logging.internal.DefaultServiceLog;
+import org.ops4j.pax.logging.internal.FallbackLogFactory;
 import org.apache.juli.logging.internal.JuliLogger;
 
 /**
@@ -193,7 +194,7 @@ public class LogFactory {
         PaxLogger logger;
         if( m_paxLogging == null )
         {
-            logger = new DefaultServiceLog( null, name );
+            logger = FallbackLogFactory.createFallbackLog( null, name );
         }
         else
         {

@@ -15,41 +15,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.service.internal;
 
-import org.apache.log4j.Level;
-import org.ops4j.pax.logging.spi.PaxLevel;
+import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.spi.LoggingEvent;
+import org.ops4j.pax.logging.spi.PaxAppender;
+import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 
-public class PaxLevelImpl
-    implements PaxLevel
+public class AppenderBridgeImpl extends AppenderSkeleton
+    implements Appender
 {
 
-    private Level m_delegate;
+    private PaxAppender m_delegate;
 
-    public PaxLevelImpl( Level delegate )
+    public AppenderBridgeImpl( PaxAppender delegate )
     {
         m_delegate = delegate;
     }
 
-    public boolean isGreaterOrEqual( PaxLevel r )
+    protected void append( LoggingEvent event )
     {
-        PaxLevelImpl impl = (PaxLevelImpl) r;
-        return m_delegate.isGreaterOrEqual( impl.m_delegate );
+        PaxLoggingEvent paxEvent = new PaxLoggingEventImpl( event );
+        m_delegate.doAppend( paxEvent );
     }
 
-    public int toInt()
+    public void close()
     {
-        return m_delegate.toInt();
     }
 
-    public int getSyslogEquivalent()
+    public boolean requiresLayout()
     {
-        return m_delegate.getSyslogEquivalent();
+        return false;
     }
-
-    public String toString()
-    {
-        return m_delegate.toString();
-    }
-
 }

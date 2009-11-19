@@ -10,26 +10,26 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.logging:pax-logging-service:1.4-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="pax-logging-service" exported="" />
     <orderEntry type="library" exported="" name="Maven: log4j:log4j:1.2.15" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.mail:mail:1.4" level="project" />
     <orderEntry type="library" exported="" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.logging:pax-logging-api:1.4-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam:0.6.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.base:ops4j-base-lang:0.5.3" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-container-default:0.6.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-spi:0.6.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-container-rbc-client:0.6.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-container-rbc:0.6.0" level="project" />
+    <orderEntry type="module" module-name="pax-logging-api" exported="" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam:1.1.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.base:ops4j-base-lang:1.0.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-container-default:1.1.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-spi:1.1.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-container-rbc-client:1.1.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-container-rbc:1.1.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-logging:commons-logging:1.1" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.base:ops4j-base-net:0.5.3" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.base:ops4j-base-monitors:0.5.3" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.base:ops4j-base-net:1.0.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.base:ops4j-base-monitors:1.0.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.runner:pax-runner-no-jcl:1.1.0" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-junit:0.6.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-junit:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.4" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-runtime:0.6.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-runtime:1.1.0" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-discovery:commons-discovery:0.4" level="project" />
-    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-junit-extender:0.6.0" level="project" />
+    <orderEntry type="library" exported="" name="Maven: org.ops4j.pax.exam:pax-exam-junit-extender:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.osgi:org.osgi.core:4.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.osgi:org.osgi.compendium:4.0.1" level="project" />
   </component>
