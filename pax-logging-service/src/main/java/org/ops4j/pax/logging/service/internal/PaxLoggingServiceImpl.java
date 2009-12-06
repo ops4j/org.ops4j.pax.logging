@@ -27,6 +27,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PaxLoggingConfigurator;
 import org.knopflerfish.service.log.LogService;
+import org.ops4j.pax.logging.EventAdminPoster;
+import org.ops4j.pax.logging.PaxContext;
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
@@ -35,10 +39,6 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
-import org.ops4j.pax.logging.EventAdminPoster;
-import org.ops4j.pax.logging.PaxContext;
-import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.PaxLoggingService;
 
 public class PaxLoggingServiceImpl
     implements PaxLoggingService, LogService, ManagedService, ServiceFactory
@@ -54,7 +54,8 @@ public class PaxLoggingServiceImpl
     private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.internal.DefaultServiceLog.level";
 
     public PaxLoggingServiceImpl( BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin,
-                                  AppenderTracker appenderTracker )
+                                  AppenderTracker appenderTracker
+    )
     {
         m_bundleContext = context;
         m_appenderTracker = appenderTracker;
@@ -66,7 +67,17 @@ public class PaxLoggingServiceImpl
 
     public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
     {
-        Logger log4jLogger = Logger.getLogger( category );
+
+        Logger log4jLogger;
+        if( category == null )
+        {
+            // Anonymous Logger in JDK Util Logging will have a category of null.
+            log4jLogger = Logger.getRootLogger();
+        }
+        else
+        {
+            log4jLogger = Logger.getLogger( category );
+        }
         return new PaxLoggerImpl( bundle, log4jLogger, fqcn, this );
     }
 
@@ -129,20 +140,20 @@ public class PaxLoggingServiceImpl
         PaxLogger logger = getLogger( bundle, category, "" );
         switch( level )
         {
-            case LOG_ERROR:
-                logger.error( message, exception );
-                break;
-            case LOG_WARNING:
-                logger.warn( message, exception );
-                break;
-            case LOG_INFO:
-                logger.inform( message, exception );
-                break;
-            case LOG_DEBUG:
-                logger.debug( message, exception );
-                break;
-            default:
-                logger.warn( "Undefined Level: " + level + " : " + message, exception );
+        case LOG_ERROR:
+            logger.error( message, exception );
+            break;
+        case LOG_WARNING:
+            logger.warn( message, exception );
+            break;
+        case LOG_INFO:
+            logger.inform( message, exception );
+            break;
+        case LOG_DEBUG:
+            logger.debug( message, exception );
+            break;
+        default:
+            logger.warn( "Undefined Level: " + level + " : " + message, exception );
         }
         handleEvents( bundle, sr, level, message, exception );
     }
@@ -361,16 +372,16 @@ public class PaxLoggingServiceImpl
     {
         switch( level )
         {
-            case LOG_DEBUG:
-                return "DEBUG";
-            case LOG_INFO:
-                return "INFO";
-            case LOG_ERROR:
-                return "ERROR";
-            case LOG_WARNING:
-                return "WARN";
-            default:
-                return "DEBUG";
+        case LOG_DEBUG:
+            return "DEBUG";
+        case LOG_INFO:
+            return "INFO";
+        case LOG_ERROR:
+            return "ERROR";
+        case LOG_WARNING:
+            return "WARN";
+        default:
+            return "DEBUG";
         }
     }
 
