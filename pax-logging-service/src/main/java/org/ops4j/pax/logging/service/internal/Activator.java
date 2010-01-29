@@ -19,6 +19,7 @@ package org.ops4j.pax.logging.service.internal;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import org.osgi.framework.Bundle;
@@ -122,8 +123,19 @@ public class Activator
         // Add a global handler for all JDK Logging (java.util.logging).
         if( !Boolean.getBoolean( "org.ops4j.pax.logging.skipJUL" ) )
         {
+            LogManager manager = LogManager.getLogManager();
+            manager.reset();
+            
+            // clear out old handlers
+            Logger rootLogger = manager.getLogger( "" );
+            Handler[] handlers = rootLogger.getHandlers();
+            for (int i = 0; i < handlers.length;i++) {
+            	rootLogger.removeHandler(handlers[i]);
+            }
+
+            rootLogger.setFilter(null);
+
             m_JdkHandler = new JdkHandler( paxLogging );
-            Logger rootLogger = LogManager.getLogManager().getLogger( "" );
             rootLogger.addHandler( m_JdkHandler );
         }
         m_frameworkHandler = new FrameworkHandler( paxLogging );
