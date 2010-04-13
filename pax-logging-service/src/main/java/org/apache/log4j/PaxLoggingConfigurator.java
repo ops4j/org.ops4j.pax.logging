@@ -17,7 +17,23 @@
  */
 package org.apache.log4j;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import org.apache.log4j.config.PaxPropertySetter;
+import org.apache.log4j.config.PropertySetter;
+import org.apache.log4j.helpers.LogLog;
+import org.apache.log4j.helpers.OptionConverter;
+import org.apache.log4j.spi.AppenderAttachable;
+import org.apache.log4j.spi.ErrorHandler;
+import org.apache.log4j.spi.Filter;
+import org.apache.log4j.spi.LoggerRepository;
+import org.apache.log4j.spi.OptionHandler;
 import org.ops4j.pax.logging.service.internal.AppenderTracker;
 import org.ops4j.pax.logging.service.internal.AppenderBridgeImpl;
 import org.ops4j.pax.logging.spi.PaxAppender;
@@ -27,6 +43,11 @@ public class PaxLoggingConfigurator extends PropertyConfigurator
 
     public static final String OSGI_APPENDER_PREFIX = "osgi:";
 
+    private static final String LOGGER_REF	= "logger-ref";
+    private static final String ROOT_REF		= "root-ref";
+    private static final String APPENDER_REF_TAG 	= "appender-ref";
+
+    private LoggerRepository repository;
     private AppenderTracker m_appenderTracker;
 
     public PaxLoggingConfigurator( AppenderTracker appenderTracker )
@@ -34,17 +55,275 @@ public class PaxLoggingConfigurator extends PropertyConfigurator
         m_appenderTracker = appenderTracker;
     }
 
+    public void doConfigure(Properties properties, LoggerRepository hierarchy)
+    {
+        repository = hierarchy;
+        super.doConfigure(properties, hierarchy);
+    }
+
     Appender parseAppender( Properties props, String appenderName )
     {
+        Appender appender = registryGet( appenderName );
+        if( appender != null )
+        {
+            LogLog.debug("Appender \"" + appenderName + "\" was already parsed.");
+            return appender;
+        }
         if( appenderName.startsWith( OSGI_APPENDER_PREFIX ) )
         {
-            appenderName = appenderName.substring( OSGI_APPENDER_PREFIX.length() );
-            PaxAppender appender = m_appenderTracker.getAppender( appenderName );
-            return new AppenderBridgeImpl( appender );
+            String osgiAppenderName = appenderName.substring( OSGI_APPENDER_PREFIX.length() );
+            PaxAppender paxAppender = m_appenderTracker.getAppender( osgiAppenderName );
+            appender = new AppenderBridgeImpl( paxAppender );
+            appender.setName(appenderName);
         }
         else
         {
-            return super.parseAppender( props, appenderName );
+            // Appender was not previously initialized.
+            String prefix = APPENDER_PREFIX + appenderName;
+            String layoutPrefix = prefix + ".layout";
+
+            appender = (Appender) OptionConverter.instantiateByKey(props, prefix,
+                    org.apache.log4j.Appender.class,
+                    null);
+            if (appender == null)
+            {
+                LogLog.error("Could not instantiate appender named \"" + appenderName + "\".");
+                return null;
+            }
+            appender.setName(appenderName);
+
+            if (appender instanceof OptionHandler)
+            {
+                if (appender.requiresLayout())
+                {
+                    Layout layout = (Layout) OptionConverter.instantiateByKey(props,
+                            layoutPrefix,
+                            Layout.class,
+                            null);
+                    if (layout != null)
+                    {
+                        appender.setLayout(layout);
+                        LogLog.debug("Parsing layout options for \"" + appenderName + "\".");
+                        //configureOptionHandler(layout, layoutPrefix + ".", props);
+                        PaxPropertySetter.setProperties(layout, props, layoutPrefix + ".");
+                        LogLog.debug("End of parsing for \"" + appenderName + "\".");
+                    }
+                }
+                final String errorHandlerPrefix = prefix + ".errorhandler";
+                String errorHandlerClass = OptionConverter.findAndSubst(errorHandlerPrefix, props);
+                if (errorHandlerClass != null)
+                {
+                      ErrorHandler eh = (ErrorHandler) OptionConverter.instantiateByKey(props,
+                                errorHandlerPrefix,
+                                ErrorHandler.class,
+                                null);
+                      if (eh != null)
+                      {
+                            appender.setErrorHandler(eh);
+                            LogLog.debug("Parsing errorhandler options for \"" + appenderName +"\".");
+                            parseErrorHandler(eh, errorHandlerPrefix, props, repository);
+                            final Properties edited = new Properties();
+                            final String[] keys = new String[] {
+                                    errorHandlerPrefix + "." + ROOT_REF,
+                                    errorHandlerPrefix + "." + LOGGER_REF,
+                                    errorHandlerPrefix + "." + APPENDER_REF_TAG
+                            };
+                            for(Iterator iter = props.entrySet().iterator();iter.hasNext();)
+                            {
+                                Map.Entry entry = (Map.Entry) iter.next();
+                                int i = 0;
+                                for(; i < keys.length; i++)
+                                {
+                                    if(keys[i].equals(entry.getKey())) break;
+                                }
+                                if (i == keys.length)
+                                {
+                                    edited.put(entry.getKey(), entry.getValue());
+                                }
+                            }
+                            PaxPropertySetter.setProperties(eh, edited, errorHandlerPrefix + ".");
+                            LogLog.debug("End of errorhandler parsing for \"" + appenderName +"\".");
+                      }
+
+                }
+                if (appender instanceof AppenderAttachable)
+                {
+                    final String appenderPrefix = prefix + ".appenders";
+                    String appenderNames = OptionConverter.findAndSubst(appenderPrefix, props);
+                    StringTokenizer st = new StringTokenizer(appenderNames, ",");
+                    Appender childAppender;
+                    String childAppenderName;
+                    while(st.hasMoreTokens())
+                    {
+                        childAppenderName = st.nextToken().trim();
+                        if( childAppenderName == null || childAppenderName.equals(",") )
+                        {
+                            continue;
+                        }
+                        LogLog.debug("Parsing appender named \"" + childAppenderName +"\".");
+                        childAppender = parseAppender(props, childAppenderName);
+                        if( childAppender != null )
+                        {
+                            ((AppenderAttachable) appender).addAppender(childAppender);
+                        }
+                    }
+                }
+                //configureOptionHandler((OptionHandler) appender, prefix + ".", props);
+                PaxPropertySetter.setProperties(appender, props, prefix + ".");
+                LogLog.debug("Parsed \"" + appenderName + "\" options.");
+            }
+        }
+        parseAppenderFilters(props, appenderName, appender);
+        registryPut(appender);
+        return appender;
+    }
+
+    private void parseErrorHandler(
+            final ErrorHandler eh,
+            final String errorHandlerPrefix,
+            final Properties props,
+            final LoggerRepository hierarchy)
+    {
+        boolean rootRef = OptionConverter.toBoolean(
+                OptionConverter.findAndSubst(errorHandlerPrefix + ROOT_REF, props), false);
+        if (rootRef)
+        {
+            eh.setLogger(hierarchy.getRootLogger());
+        }
+        String loggerName = OptionConverter.findAndSubst(errorHandlerPrefix + LOGGER_REF, props);
+        if (loggerName != null)
+        {
+            Logger logger = (loggerFactory == null) ? hierarchy.getLogger(loggerName)
+                    : hierarchy.getLogger(loggerName, loggerFactory);
+            eh.setLogger(logger);
+        }
+        String appenderName = OptionConverter.findAndSubst(errorHandlerPrefix + APPENDER_REF_TAG, props);
+        if (appenderName != null)
+        {
+            Appender backup = parseAppender(props, appenderName);
+            if (backup != null)
+            {
+                eh.setBackupAppender(backup);
+            }
         }
     }
+
+    void parseAppenderFilters(Properties props, String appenderName, Appender appender)
+    {
+        // extract filters and filter options from props into a hashtable mapping
+        // the property name defining the filter class to a list of pre-parsed
+        // name-value pairs associated to that filter
+        final String filterPrefix = APPENDER_PREFIX + appenderName + ".filter.";
+        int fIdx = filterPrefix.length();
+        Hashtable filters = new Hashtable();
+        Enumeration e = props.keys();
+        String name = "";
+        while (e.hasMoreElements())
+        {
+            String key = (String) e.nextElement();
+            if (key.startsWith(filterPrefix))
+            {
+                int dotIdx = key.indexOf('.', fIdx);
+                String filterKey = key;
+                if (dotIdx != -1)
+                {
+                    filterKey = key.substring(0, dotIdx);
+                    name = key.substring(dotIdx+1);
+                }
+                Vector filterOpts = (Vector) filters.get(filterKey);
+                if (filterOpts == null)
+                {
+                    filterOpts = new Vector();
+                    filters.put(filterKey, filterOpts);
+                }
+                if (dotIdx != -1)
+                {
+                    String value = OptionConverter.findAndSubst(key, props);
+                    filterOpts.add(new NameValue(name, value));
+                }
+            }
+        }
+
+        // sort filters by IDs, insantiate filters, set filter options,
+        // add filters to the appender
+        Enumeration g = new SortedKeyEnumeration(filters);
+        while (g.hasMoreElements())
+        {
+            String key = (String) g.nextElement();
+            String clazz = props.getProperty(key);
+            if (clazz != null)
+            {
+                LogLog.debug("Filter key: ["+key+"] class: ["+props.getProperty(key) +"] props: "+filters.get(key));
+                Filter filter = (Filter) OptionConverter.instantiateByClassName(clazz, Filter.class, null);
+                if (filter != null)
+                {
+                    PropertySetter propSetter = new PropertySetter(filter);
+                    Vector v = (Vector)filters.get(key);
+                    Enumeration filterProps = v.elements();
+                    while (filterProps.hasMoreElements())
+                    {
+                        NameValue kv = (NameValue)filterProps.nextElement();
+                        propSetter.setProperty(kv.key, kv.value);
+                    }
+                    propSetter.activate();
+                    LogLog.debug("Adding filter of type ["+filter.getClass()
+                        +"] to appender named ["+appender.getName()+"].");
+                    appender.addFilter(filter);
+                }
+            }
+            else
+            {
+                LogLog.warn("Missing class definition for filter: ["+key+"]");
+            }
+        }
+    }
+
+    static class NameValue {
+        String key, value;
+
+        public NameValue(String key, String value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+
+        public String toString()
+        {
+            return key + "=" + value;
+        }
+    }
+
+    static class SortedKeyEnumeration implements Enumeration
+    {
+
+        private Enumeration e;
+
+        public SortedKeyEnumeration(Hashtable ht)
+        {
+            Enumeration f = ht.keys();
+            Vector keys = new Vector(ht.size());
+            for (int i, last = 0; f.hasMoreElements(); ++last)
+            {
+                String key = (String) f.nextElement();
+                for (i = 0; i < last; ++i)
+                {
+                    String s = (String) keys.get(i);
+                    if (key.compareTo(s) <= 0) break;
+                }
+                keys.add(i, key);
+            }
+            e = keys.elements();
+        }
+
+        public boolean hasMoreElements()
+        {
+            return e.hasMoreElements();
+        }
+
+        public Object nextElement()
+        {
+            return e.nextElement();
+        }
+    }
+
 }
