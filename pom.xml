@@ -15,7 +15,6 @@
   <packaging>pom</packaging>
 
   <name>OPS4J Pax Logging (Build POM)</name>
-
   <url>http://www.ops4j.org/projects/pax/logging</url>
 
   <issueManagement>
