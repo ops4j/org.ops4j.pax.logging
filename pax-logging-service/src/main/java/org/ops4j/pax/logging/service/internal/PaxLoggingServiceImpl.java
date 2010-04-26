@@ -188,6 +188,7 @@ public class PaxLoggingServiceImpl
             return;
         }
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
+        LogManager.resetConfiguration();
         configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
         setLevelToJavaLogging( configuration );
     }
