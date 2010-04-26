@@ -17,6 +17,8 @@
  */
 package org.ops4j.pax.logging.spi;
 
+import java.util.Map;
+
 public interface PaxLoggingEvent
 {
     PaxLocationInfo getLocationInformation();
@@ -38,4 +40,6 @@ public interface PaxLoggingEvent
     long getTimeStamp();
 
     String getFQNOfLoggerClass();
+
+    Map getProperties();
 }

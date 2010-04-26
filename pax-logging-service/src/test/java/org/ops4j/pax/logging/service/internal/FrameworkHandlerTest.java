@@ -17,6 +17,8 @@
  */
 package org.ops4j.pax.logging.service.internal;
 
+import java.util.Hashtable;
+
 import junit.framework.TestCase;
 
 import org.jmock.Mock;
@@ -97,7 +99,8 @@ public class FrameworkHandlerTest extends TestCase
     {
         final Mock bundleMock = new Mock( Bundle.class );
         bundleMock.stubs().method( "getSymbolicName" ).will( new ReturnStub( "test-bundle" ) );
-        bundleMock.stubs().method( "getBundleId" ).will( new ReturnStub( Integer.valueOf(42) ) );
+        bundleMock.stubs().method( "getBundleId" ).will( new ReturnStub( Long.valueOf(42) ) );
+        bundleMock.stubs().method( "getHeaders" ).will( new ReturnStub( new Hashtable() ) );
         return (Bundle) bundleMock.proxy();
     }
 }

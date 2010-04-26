@@ -35,6 +35,8 @@
 
 package org.ops4j.pax.logging.service.internal;
 
+import java.util.Map;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
@@ -162,5 +164,21 @@ public class PaxLoggingEventImpl
     public String getFQNOfLoggerClass()
     {
         return m_delegate.getFQNOfLoggerClass();
+    }
+
+    /**
+     * Returns the set of properties for the event.
+     *
+     * The returned set is unmodifiable by the caller.
+     *
+     * Provided for compatibility with log4j 1.3
+     *
+     * @return Set an unmodifiable map of the properties.
+     *
+     * @since 1.2.15
+     */
+    public Map getProperties()
+    {
+        return m_delegate.getProperties();
     }
 }

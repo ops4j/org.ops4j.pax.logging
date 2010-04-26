@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.ops4j.pax.logging.internal.BundleHelper;
 import org.ops4j.pax.logging.internal.TrackingLogger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -91,7 +92,8 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         TrackingLogger logger = (TrackingLogger) m_loggers.get( key );
         if( logger == null )
         {
-            logger = new TrackingLogger( m_service, category, m_context.getBundle(), fqcn );
+            Bundle bundle = BundleHelper.getCallerBundle(m_context.getBundle()); 
+            logger = new TrackingLogger( m_service, category, bundle, fqcn );
             m_loggers.put( key, logger );
         }
         return logger;

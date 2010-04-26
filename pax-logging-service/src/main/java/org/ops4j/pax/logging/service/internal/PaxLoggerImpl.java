@@ -26,6 +26,7 @@ import org.apache.log4j.Priority;
 import org.osgi.framework.Bundle;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.osgi.framework.Constants;
 
 public class PaxLoggerImpl
     implements PaxLogger
@@ -91,6 +92,20 @@ public class PaxLoggerImpl
                 Object value = context.get( key );
                 MDC.put( key, value );
             }
+        }
+        if (m_bundle != null)
+        {
+            put("bundle.id", new Long(m_bundle.getBundleId()));
+            put("bundle.name", m_bundle.getSymbolicName());
+            put("bundle.version", m_bundle.getHeaders().get(Constants.BUNDLE_VERSION));
+        }
+    }
+
+    private void put(String name, Object o)
+    {
+        if (o != null)
+        {
+            MDC.put(name, o);
         }
     }
 
