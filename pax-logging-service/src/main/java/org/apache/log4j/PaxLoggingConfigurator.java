@@ -17,21 +17,16 @@
  */
 package org.apache.log4j;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.apache.log4j.config.PaxPropertySetter;
-import org.apache.log4j.config.PropertySetter;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.OptionConverter;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.apache.log4j.spi.ErrorHandler;
-import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.spi.OptionHandler;
 import org.ops4j.pax.logging.service.internal.AppenderTracker;
@@ -205,124 +200,6 @@ public class PaxLoggingConfigurator extends PropertyConfigurator
             {
                 eh.setBackupAppender(backup);
             }
-        }
-    }
-
-    void parseAppenderFilters(Properties props, String appenderName, Appender appender)
-    {
-        // extract filters and filter options from props into a hashtable mapping
-        // the property name defining the filter class to a list of pre-parsed
-        // name-value pairs associated to that filter
-        final String filterPrefix = APPENDER_PREFIX + appenderName + ".filter.";
-        int fIdx = filterPrefix.length();
-        Hashtable filters = new Hashtable();
-        Enumeration e = props.keys();
-        String name = "";
-        while (e.hasMoreElements())
-        {
-            String key = (String) e.nextElement();
-            if (key.startsWith(filterPrefix))
-            {
-                int dotIdx = key.indexOf('.', fIdx);
-                String filterKey = key;
-                if (dotIdx != -1)
-                {
-                    filterKey = key.substring(0, dotIdx);
-                    name = key.substring(dotIdx+1);
-                }
-                Vector filterOpts = (Vector) filters.get(filterKey);
-                if (filterOpts == null)
-                {
-                    filterOpts = new Vector();
-                    filters.put(filterKey, filterOpts);
-                }
-                if (dotIdx != -1)
-                {
-                    String value = OptionConverter.findAndSubst(key, props);
-                    filterOpts.add(new NameValue(name, value));
-                }
-            }
-        }
-
-        // sort filters by IDs, insantiate filters, set filter options,
-        // add filters to the appender
-        Enumeration g = new SortedKeyEnumeration(filters);
-        while (g.hasMoreElements())
-        {
-            String key = (String) g.nextElement();
-            String clazz = props.getProperty(key);
-            if (clazz != null)
-            {
-                LogLog.debug("Filter key: ["+key+"] class: ["+props.getProperty(key) +"] props: "+filters.get(key));
-                Filter filter = (Filter) OptionConverter.instantiateByClassName(clazz, Filter.class, null);
-                if (filter != null)
-                {
-                    PropertySetter propSetter = new PropertySetter(filter);
-                    Vector v = (Vector)filters.get(key);
-                    Enumeration filterProps = v.elements();
-                    while (filterProps.hasMoreElements())
-                    {
-                        NameValue kv = (NameValue)filterProps.nextElement();
-                        propSetter.setProperty(kv.key, kv.value);
-                    }
-                    propSetter.activate();
-                    LogLog.debug("Adding filter of type ["+filter.getClass()
-                        +"] to appender named ["+appender.getName()+"].");
-                    appender.addFilter(filter);
-                }
-            }
-            else
-            {
-                LogLog.warn("Missing class definition for filter: ["+key+"]");
-            }
-        }
-    }
-
-    static class NameValue {
-        String key, value;
-
-        public NameValue(String key, String value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-
-        public String toString()
-        {
-            return key + "=" + value;
-        }
-    }
-
-    static class SortedKeyEnumeration implements Enumeration
-    {
-
-        private Enumeration e;
-
-        public SortedKeyEnumeration(Hashtable ht)
-        {
-            Enumeration f = ht.keys();
-            Vector keys = new Vector(ht.size());
-            for (int i, last = 0; f.hasMoreElements(); ++last)
-            {
-                String key = (String) f.nextElement();
-                for (i = 0; i < last; ++i)
-                {
-                    String s = (String) keys.get(i);
-                    if (key.compareTo(s) <= 0) break;
-                }
-                keys.add(i, key);
-            }
-            e = keys.elements();
-        }
-
-        public boolean hasMoreElements()
-        {
-            return e.hasMoreElements();
-        }
-
-        public Object nextElement()
-        {
-            return e.nextElement();
         }
     }
 
