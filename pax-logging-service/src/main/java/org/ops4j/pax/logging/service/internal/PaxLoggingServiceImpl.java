@@ -51,7 +51,7 @@ public class PaxLoggingServiceImpl
     private PaxContext m_context;
 
     private int m_logLevel = LOG_DEBUG;
-    private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.internal.DefaultServiceLog.level";
+    private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.DefaultServiceLog.level";
 
     public PaxLoggingServiceImpl( BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin,
                                   AppenderTracker appenderTracker
