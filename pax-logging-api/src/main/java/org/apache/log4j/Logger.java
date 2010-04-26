@@ -535,7 +535,7 @@ public class Logger extends Category
         }
         if( priority == Level.INFO )
         {
-            return m_delegate.isDebugEnabled();
+            return m_delegate.isInfoEnabled();
         }
         if( priority == Level.DEBUG )
         {
