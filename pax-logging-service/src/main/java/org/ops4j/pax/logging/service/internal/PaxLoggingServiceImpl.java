@@ -180,6 +180,7 @@ public class PaxLoggingServiceImpl
         }
         Properties extracted = extractKeys( configuration );
 
+        LogManager.resetConfiguration();
         // If the updated() method is called without any log4j properties,
         // then keep the default/previous configuration.
         if( extracted.size() == 0 )
@@ -188,7 +189,6 @@ public class PaxLoggingServiceImpl
             return;
         }
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
-        LogManager.resetConfiguration();
         configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
         setLevelToJavaLogging( configuration );
     }
