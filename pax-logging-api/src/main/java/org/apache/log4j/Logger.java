@@ -512,43 +512,6 @@ public class Logger extends Category
     }
 
     /**
-     * Check whether this category is enabled for the given Level.
-     *
-     * @param priority the level to check
-     *
-     * @return boolean - <code>true</code> if this category is enabled for the given
-     *         level, <code>false</code> otherwise.
-     */
-    public boolean isEnabledFor( Priority priority )
-    {
-        if( priority == Level.FATAL )
-        {
-            return m_delegate.isFatalEnabled();
-        }
-        if( priority == Level.ERROR )
-        {
-            return m_delegate.isErrorEnabled();
-        }
-        if( priority == Level.WARN )
-        {
-            return m_delegate.isWarnEnabled();
-        }
-        if( priority == Level.INFO )
-        {
-            return m_delegate.isInfoEnabled();
-        }
-        if( priority == Level.DEBUG )
-        {
-            return m_delegate.isDebugEnabled();
-        }
-        if( priority == Level.ALL )
-        {
-            return m_delegate.isTraceEnabled();
-        }
-        return false;
-    }
-
-    /**
      * Log a message with the <code>WARN</code> level with message formatting
      * done according to the value of <code>messagePattern</code> and
      * <code>arg</code> parameters.
