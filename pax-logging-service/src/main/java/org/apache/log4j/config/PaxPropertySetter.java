@@ -20,11 +20,14 @@
 package org.apache.log4j.config;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
+import org.apache.log4j.PaxLoggingConfigurator;
 import org.apache.log4j.Priority;
 import org.apache.log4j.config.PropertySetterException;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.OptionConverter;
+import org.apache.log4j.spi.OptionFactory;
 import org.apache.log4j.spi.OptionHandler;
 import org.apache.log4j.spi.ErrorHandler;
 
@@ -36,6 +39,7 @@ import java.io.InterruptedIOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -122,14 +126,14 @@ public class PaxPropertySetter {
       if (key.startsWith(prefix)) {
 
 
-	// ignore key if it contains dots after the prefix
+	    // ignore key if it contains dots after the prefix
         if (key.indexOf('.', len + 1) > 0) {
-	  //System.err.println("----------Ignoring---["+key
-	  //	     +"], prefix=["+prefix+"].");
-	  continue;
-	}
+	      //System.err.println("----------Ignoring---["+key
+	      //	     +"], prefix=["+prefix+"].");
+	      continue;
+	    }
 
-	String value = OptionConverter.findAndSubst(key, properties);
+	    String value = OptionConverter.findAndSubst(key, properties);
         key = key.substring(len);
         if (("layout".equals(key) || "errorHandler".equals(key) || "appenders".equals(key)) && obj instanceof Appender) {
           continue;
@@ -165,12 +169,73 @@ public class PaxPropertySetter {
             }
             continue;
         }
+        else if (prop != null
+                    && OptionFactory.class.isAssignableFrom(prop.getPropertyType())
+                    && prop.getWriteMethod() != null)
+        {
+            OptionFactory factory = new ObjectFactory(properties, prefix + key);
+            try {
+                prop.getWriteMethod().invoke(this.obj, new Object[] { factory });
+            } catch(IllegalAccessException ex) {
+                LogLog.warn("Failed to set property [" + key +
+                            "] to value \"" + value + "\". ", ex);
+            } catch(InvocationTargetException ex) {
+                if (ex.getTargetException() instanceof InterruptedException
+                        || ex.getTargetException() instanceof InterruptedIOException) {
+                    Thread.currentThread().interrupt();
+                }
+                LogLog.warn("Failed to set property [" + key +
+                            "] to value \"" + value + "\". ", ex);
+            } catch(RuntimeException ex) {
+                LogLog.warn("Failed to set property [" + key +
+                            "] to value \"" + value + "\". ", ex);
+            }
+            continue;
+        }
 
         setProperty(key, value);
       }
     }
     activate();
   }
+
+    public static class ObjectFactory implements OptionFactory
+    {
+        private final Properties properties;
+        private final String prefix;
+
+        public ObjectFactory(Properties properties, String prefix)
+        {
+            this.properties = properties;
+            this.prefix = prefix;
+        }
+
+        public OptionHandler create(Properties variables)
+        {
+            Properties props = new Properties();
+            props.putAll(variables);
+            props.putAll(properties);
+
+            OptionHandler opt = (OptionHandler) OptionConverter.instantiateByKey(props, prefix,
+                                  OptionHandler.class,
+                                  null);
+            if (opt instanceof Appender && ((Appender) opt).requiresLayout())
+            {
+                Layout layout = (Layout) OptionConverter.instantiateByKey(props,
+                        prefix + ".layout",
+                        Layout.class,
+                        null);
+                if (layout != null)
+                {
+                    ((Appender) opt).setLayout(layout);
+                    PaxPropertySetter.setProperties(layout, props, prefix + ".layout.");
+                }
+            }
+            PaxPropertySetter.setProperties(opt, props, prefix + ".");
+            opt.activateOptions();
+            return opt;
+        }
+    }
 
   /**
      Set a property on this PaxPropertySetter's Object. If successful, this
