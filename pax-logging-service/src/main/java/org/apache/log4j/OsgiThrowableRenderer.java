@@ -24,7 +24,9 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,43 +49,67 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
      */
     public String[] doRender(final Throwable throwable) {
         try {
-            StackTraceElement[] elements = throwable.getStackTrace();
-            String[] lines = new String[elements.length + 1];
-            lines[0] = throwable.toString();
-            Map classMap = new HashMap();
-            Class[] classCtx;
-            try {
-                classCtx = (Class[]) Exception.class.getMethod("getClassContext", null).invoke(throwable, null);
-            } catch (Exception e) {
-                classCtx = sm.getClassContext();
-            }
-            Class lastClass = null;
-            for (int i = 0; i < elements.length && i < classCtx.length; i++) {
-                Class clazz = classCtx[classCtx.length - 1 - i];
-                if (elements[elements.length - 1 - i].getClassName().equals(clazz.getName())) {
-                    String classDetails = getClassDetail(clazz);
-                    classMap.put(clazz.getName(), classDetails);
-                    lastClass = clazz;
-                } else if (lastClass != null) {
-                    try {
-                        clazz = lastClass.getClassLoader().loadClass(elements[elements.length - 1 - i].getClassName());
-                        String classDetails = getClassDetail(clazz);
-                        classMap.put(clazz.getName(), classDetails);
-                        lastClass = clazz;
-                    } catch (ClassNotFoundException e) {
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            }
-            for(int i = 0; i < elements.length; i++) {
-                lines[i+1] = formatElement(elements[i], classMap);
-            }
-            return lines;
+            List lines = new ArrayList();
+            doRender(throwable, null, lines);
+           return (String[]) lines.toArray(new String[lines.size()]);
         } catch(Exception ex) {
         }
         return DefaultThrowableRenderer.render(throwable);
+    }
+
+    protected void doRender(final Throwable throwable, StackTraceElement[]  causedTrace, List lines) {
+        StackTraceElement[] elements = throwable.getStackTrace();
+        Map classMap = new HashMap();
+        Class[] classCtx;
+        try {
+            classCtx = (Class[]) Exception.class.getMethod("getClassContext", null).invoke(throwable, null);
+        } catch (Exception e) {
+            classCtx = sm.getClassContext();
+        }
+        Class lastClass = null;
+        for (int i = 0; i < elements.length && i < classCtx.length; i++) {
+            Class clazz = classCtx[classCtx.length - 1 - i];
+            if (elements[elements.length - 1 - i].getClassName().equals(clazz.getName())) {
+                String classDetails = getClassDetail(clazz);
+                classMap.put(clazz.getName(), classDetails);
+                lastClass = clazz;
+            } else if (lastClass != null) {
+                try {
+                    clazz = lastClass.getClassLoader().loadClass(elements[elements.length - 1 - i].getClassName());
+                    String classDetails = getClassDetail(clazz);
+                    classMap.put(clazz.getName(), classDetails);
+                    lastClass = clazz;
+                } catch (ClassNotFoundException e) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        if (causedTrace != null) {
+
+            int m = elements.length-1, n = causedTrace.length-1;
+            while (m >= 0 && n >=0 && elements[m].equals(causedTrace[n])) {
+                m--; n--;
+            }
+            int framesInCommon = elements.length - 1 - m;
+            lines.add("Caused by: " + throwable.toString());
+            for (int i=0; i <= m; i++) {
+                lines.add(formatElement(elements[i], classMap));
+            }
+            if (framesInCommon != 0) {
+                lines.add("\t... " + framesInCommon + " more");
+            }
+        } else {
+            lines.add(throwable.toString());
+            for (int i = 0; i < elements.length; i++) {
+                lines.add(formatElement(elements[i], classMap));
+            }
+        }
+        Throwable cause = throwable.getCause();
+        if (cause != null) {
+            doRender(cause, elements, lines);
+        }
     }
 
     /**
