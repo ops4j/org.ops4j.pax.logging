@@ -88,11 +88,11 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         {
             fqcn = PaxLogger.class.getName();
         }
-        String key = fqcn + "#" + category;
+        Bundle bundle = BundleHelper.getCallerBundle(m_context.getBundle());
+        String key = fqcn + "#" + category + "#" + (bundle != null ? Long.toString(bundle.getBundleId()) : "0");
         TrackingLogger logger = (TrackingLogger) m_loggers.get( key );
         if( logger == null )
         {
-            Bundle bundle = BundleHelper.getCallerBundle(m_context.getBundle()); 
             logger = new TrackingLogger( m_service, category, bundle, fqcn );
             m_loggers.put( key, logger );
         }
