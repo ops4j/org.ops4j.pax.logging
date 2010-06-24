@@ -75,11 +75,12 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
                 lastClass = clazz;
             } else if (lastClass != null) {
                 try {
-                    clazz = lastClass.getClassLoader().loadClass(elements[elements.length - 1 - i].getClassName());
+                    ClassLoader cl = lastClass.getClassLoader();
+                    clazz = cl.loadClass(elements[elements.length - 1 - i].getClassName());
                     String classDetails = getClassDetail(clazz);
                     classMap.put(clazz.getName(), classDetails);
                     lastClass = clazz;
-                } catch (ClassNotFoundException e) {
+                } catch (Exception e) {
                     break;
                 }
             } else {
@@ -141,15 +142,17 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
         try {
             Method getBundleMethod = FrameworkUtil.class.getMethod("getBundle", new Class[] { Class.class });
             Bundle bundle = (Bundle) getBundleMethod.invoke(null, new Object[] { cls });
-            StringBuffer buf = new StringBuffer();
-            buf.append('[');
-            buf.append(bundle.getBundleId());
-            buf.append(":");
-            buf.append(bundle.getSymbolicName());
-            buf.append(":");
-            buf.append(bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION));
-            buf.append(']');
-            return buf.toString();
+            if (bundle != null) {
+                StringBuffer buf = new StringBuffer();
+                buf.append('[');
+                buf.append(bundle.getBundleId());
+                buf.append(":");
+                buf.append(bundle.getSymbolicName());
+                buf.append(":");
+                buf.append(bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION));
+                buf.append(']');
+                return buf.toString();
+            }
         } catch (Exception e) {
         }
 
