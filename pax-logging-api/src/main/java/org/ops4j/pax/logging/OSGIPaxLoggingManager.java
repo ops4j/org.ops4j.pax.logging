@@ -82,7 +82,7 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         }
     }
 
-    public PaxLogger getLogger( String category, String fqcn )
+    public synchronized PaxLogger getLogger( String category, String fqcn )
     {
         if( fqcn == null )
         {
