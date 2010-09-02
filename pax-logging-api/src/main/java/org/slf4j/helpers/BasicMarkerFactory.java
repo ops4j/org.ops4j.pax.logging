@@ -1,7 +1,7 @@
-/*
+/* 
  * Copyright (c) 2004-2007 QOS.ch
  * All rights reserved.
- *
+ * 
  * Permission is hereby granted, free  of charge, to any person obtaining
  * a  copy  of this  software  and  associated  documentation files  (the
  * "Software"), to  deal in  the Software without  restriction, including
@@ -9,10 +9,10 @@
  * distribute,  sublicense, and/or sell  copies of  the Software,  and to
  * permit persons to whom the Software  is furnished to do so, subject to
  * the following conditions:
- *
+ * 
  * The  above  copyright  notice  and  this permission  notice  shall  be
  * included in all copies or substantial portions of the Software.
- *
+ * 
  * THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
  * EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
  * MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
@@ -33,7 +33,7 @@ import org.slf4j.Marker;
 /**
  * An almost trivial implementation of the {@link IMarkerFactory}
  * interface which creates {@link BasicMarker} instances.
- *
+ * 
  * <p>Simple logging systems can conform to the SLF4J API by binding
  * {@link org.slf4j.MarkerFactory} with an instance of this class.
  *
@@ -42,7 +42,7 @@ import org.slf4j.Marker;
 public class BasicMarkerFactory implements IMarkerFactory {
 
   Map markerMap = new HashMap();
-
+  
   /**
    * Regular users should <em>not</em> create
    * <code>BasicMarkerFactory</code> instances. <code>Marker</code>
@@ -53,9 +53,9 @@ public class BasicMarkerFactory implements IMarkerFactory {
   }
 
   /**
-   * Manufacture a {@link BasicMarker} instance by name. If the instance has been
-   * created earlier, return the previously created instance.
-   *
+   * Manufacture a {@link BasicMarker} instance by name. If the instance has been 
+   * created earlier, return the previously created instance. 
+   * 
    * @param name the name of the marker to be created
    * @return a Marker instance
    */
@@ -71,7 +71,7 @@ public class BasicMarkerFactory implements IMarkerFactory {
     }
     return marker;
   }
-
+  
   /**
    * Does the name marked already exist?
    */
@@ -89,11 +89,11 @@ public class BasicMarkerFactory implements IMarkerFactory {
     return (markerMap.remove(name) != null);
   }
 
-
+  
   public Marker getDetachedMarker(String name) {
     return  new BasicMarker(name);
   }
-
-
-
+  
+  
+  
 }

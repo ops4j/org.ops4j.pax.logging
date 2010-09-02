@@ -52,7 +52,7 @@ public class NOPLogger extends MarkerIgnoringBase {
   public static final NOPLogger NOP_LOGGER = new NOPLogger();
 
   /**
-   * There is no point in creating multiple instances of NOPLOgger,
+   * There is no point in creating multiple instances of NOPLOgger, 
    * except by derived classes, hence the protected  access for the constructor.
    */
   protected NOPLogger() {
@@ -92,7 +92,7 @@ public class NOPLogger extends MarkerIgnoringBase {
   public final void trace(String format, Object[] argArray) {
     // NOP
   }
-
+  
   /** A NOP implementation. */
   final public void trace(String msg, Throwable t) {
     // NOP
@@ -125,9 +125,9 @@ public class NOPLogger extends MarkerIgnoringBase {
   public final void debug(String format, Object[] argArray) {
     // NOP
   }
-
-
-
+  
+  
+  
   /** A NOP implementation. */
   final public void debug(String msg, Throwable t) {
     // NOP
@@ -157,7 +157,7 @@ public class NOPLogger extends MarkerIgnoringBase {
   final public void info(String format, Object arg1, Object arg2) {
     // NOP
   }
-
+  
   /** A NOP implementation.  */
   public final void info(String format, Object[] argArray) {
     // NOP
@@ -192,7 +192,7 @@ public class NOPLogger extends MarkerIgnoringBase {
   final public void warn(String format, Object arg1, Object arg2) {
     // NOP
   }
-
+  
   /** A NOP implementation.  */
   public final void warn(String format, Object[] argArray) {
     // NOP
@@ -224,7 +224,7 @@ public class NOPLogger extends MarkerIgnoringBase {
   final public void error(String format, Object arg1, Object arg2) {
     // NOP
   }
-
+  
   /** A NOP implementation.  */
   public final void error(String format, Object[] argArray) {
     // NOP

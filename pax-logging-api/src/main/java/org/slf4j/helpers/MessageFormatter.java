@@ -1,7 +1,7 @@
-/*
+/* 
  * Copyright (c) 2004-2007 QOS.ch
  * All rights reserved.
- *
+ * 
  * Permission is hereby granted, free  of charge, to any person obtaining
  * a  copy  of this  software  and  associated  documentation files  (the
  * "Software"), to  deal in  the Software without  restriction, including
@@ -9,10 +9,10 @@
  * distribute,  sublicense, and/or sell  copies of  the Software,  and to
  * permit persons to whom the Software  is furnished to do so, subject to
  * the following conditions:
- *
+ * 
  * The  above  copyright  notice  and  this permission  notice  shall  be
  * included in all copies or substantial portions of the Software.
- *
+ * 
  * THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
  * EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
  * MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
@@ -24,61 +24,71 @@
 
 package org.slf4j.helpers;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 // contributors: lizongbo: proposed special treatment of array parameter values
-// Jšrn Huxhorn: pointed out double[] omission, suggested deep array copy
+// Jörn Huxhorn: pointed out double[] omission, suggested deep array copy
 /**
  * Formats messages according to very simple substitution rules. Substitutions
  * can be made 1, 2 or more arguments.
+ * 
  * <p>
  * For example,
- *
- * <pre>MessageFormatter.format(&quot;Hi {}.&quot;, &quot;there&quot;)</pre>
- *
+ * 
+ * <pre>
+ * MessageFormatter.format(&quot;Hi {}.&quot;, &quot;there&quot;)
+ * </pre>
+ * 
  * will return the string "Hi there.".
  * <p>
- * The {} pair is called the <em>formatting anchor</em>. It serves to
- * designate the location where arguments need to be substituted within the
- * message pattern.
+ * The {} pair is called the <em>formatting anchor</em>. It serves to designate
+ * the location where arguments need to be substituted within the message
+ * pattern.
  * <p>
  * In case your message contains the '{' or the '}' character, you do not have
  * to do anything special unless the '}' character immediately follows '{'. For
  * example,
- *
+ * 
  * <pre>
  * MessageFormatter.format(&quot;Set {1,2,3} is not equal to {}.&quot;, &quot;1,2&quot;);
  * </pre>
- *
+ * 
  * will return the string "Set {1,2,3} is not equal to 1,2.".
- *
- * <p>If for whatever reason you need to place the string "{}" in the message
+ * 
+ * <p>
+ * If for whatever reason you need to place the string "{}" in the message
  * without its <em>formatting anchor</em> meaning, then you need to escape the
  * '{' character with '\', that is the backslash character. Only the '{'
  * character should be escaped. There is no need to escape the '}' character.
  * For example,
- *
- * <pre>
- * MessageFormatter.format(&quot;Set \\{} is not equal to {}.&quot;, &quot;1,2&quot;);
- * </pre>
- *
+ * 
+ * <pre>MessageFormatter.format(&quot;Set \\{} is not equal to {}.&quot;, &quot;1,2&quot;);</pre>
+ * 
  * will return the string "Set {} is not equal to 1,2.".
- *
+ * 
  * <p>
  * The escaping behavior just described can be overridden by escaping the escape
  * character '\'. Calling
- *
  * <pre>
  * MessageFormatter.format(&quot;File name is C:\\\\{}.&quot;, &quot;file.zip&quot;);
  * </pre>
- *
+ * 
  * will return the string "File name is C:\file.zip".
- *
+ * 
  * <p>
- * See {@link #format(String, Object)}, {@link #format(String, Object, Object)}
- * and {@link #arrayFormat(String, Object[])} methods for more details.
- *
+ * The formatting conventions are different than those of {@link MessageFormat}
+ * which ships with the Java platform. This is justified by the fact that
+ * SLF4J's implementation is 10 times faster than that of {@link MessageFormat}.
+ * This local performance difference is both measurable and significant in the
+ * larger context of the complete logging processing chain.
+ * 
+ * <p>
+ * See also {@link #format(String, Object)},
+ * {@link #format(String, Object, Object)} and
+ * {@link #arrayFormat(String, Object[])} methods for more details.
+ * 
  * @author Ceki G&uuml;lc&uuml;
  */
 final public class MessageFormatter {
@@ -92,19 +102,18 @@ final public class MessageFormatter {
    * parameter.
    * <p>
    * For example,
-   *
+   * 
    * <pre>
    * MessageFormatter.format(&quot;Hi {}.&quot;, &quot;there&quot;);
    * </pre>
-   *
+   * 
    * will return the string "Hi there.".
    * <p>
-   *
+   * 
    * @param messagePattern
-   *                The message pattern which will be parsed and formatted
+   *          The message pattern which will be parsed and formatted
    * @param argument
-   *                The argument to be substituted in place of the formatting
-   *                anchor
+   *          The argument to be substituted in place of the formatting anchor
    * @return The formatted message
    */
   final public static String format(String messagePattern, Object arg) {
@@ -112,29 +121,30 @@ final public class MessageFormatter {
   }
 
   /**
-   *
+   * 
    * Performs a two argument substitution for the 'messagePattern' passed as
    * parameter.
    * <p>
    * For example,
-   *
+   * 
    * <pre>
    * MessageFormatter.format(&quot;Hi {}. My name is {}.&quot;, &quot;Alice&quot;, &quot;Bob&quot;);
    * </pre>
-   *
+   * 
    * will return the string "Hi Alice. My name is Bob.".
-   *
+   * 
    * @param messagePattern
-   *                The message pattern which will be parsed and formatted
+   *          The message pattern which will be parsed and formatted
    * @param arg1
-   *                The argument to be substituted in place of the first
-   *                formatting anchor
+   *          The argument to be substituted in place of the first formatting
+   *          anchor
    * @param arg2
-   *                The argument to be substituted in place of the second
-   *                formatting anchor
+   *          The argument to be substituted in place of the second formatting
+   *          anchor
    * @return The formatted message
    */
-  final public static String format(final String messagePattern, Object arg1, Object arg2) {
+  final public static String format(final String messagePattern, Object arg1,
+      Object arg2) {
     return arrayFormat(messagePattern, new Object[] { arg1, arg2 });
   }
 
@@ -142,12 +152,12 @@ final public class MessageFormatter {
    * Same principle as the {@link #format(String, Object)} and
    * {@link #format(String, Object, Object)} methods except that any number of
    * arguments can be passed in an array.
-   *
+   * 
    * @param messagePattern
-   *                The message pattern which will be parsed and formatted
+   *          The message pattern which will be parsed and formatted
    * @param argArray
-   *                An array of arguments to be substituted in place of
-   *                formatting anchors
+   *          An array of arguments to be substituted in place of formatting
+   *          anchors
    * @return The formatted message
    */
   final public static String arrayFormat(final String messagePattern,
@@ -183,7 +193,7 @@ final public class MessageFormatter {
             sbuf.append(DELIM_START);
             i = j + 1;
           } else {
-            // The escape character preceding the delemiter start is
+            // The escape character preceding the delimiter start is
             // itself escaped: "abc x:\\{}"
             // we have to consume one backward slash
             sbuf.append(messagePattern.substring(i, j - 1));
@@ -217,7 +227,8 @@ final public class MessageFormatter {
     }
   }
 
-  final static boolean isDoubleEscaped(String messagePattern, int delimeterStartIndex) {
+  final static boolean isDoubleEscaped(String messagePattern,
+      int delimeterStartIndex) {
     if (delimeterStartIndex >= 2
         && messagePattern.charAt(delimeterStartIndex - 2) == ESCAPE_CHAR) {
       return true;
@@ -234,7 +245,7 @@ final public class MessageFormatter {
       return;
     }
     if (!o.getClass().isArray()) {
-      sbuf.append(o);
+      safeObjectAppend(sbuf, o);
     } else {
       // check for primitive array types because they
       // unfortunately cannot be cast to Object[]
@@ -258,6 +269,20 @@ final public class MessageFormatter {
         objectArrayAppend(sbuf, (Object[]) o, seenMap);
       }
     }
+  }
+
+  private static void safeObjectAppend(StringBuffer sbuf, Object o) {
+    try {
+      String oAsString = o.toString();
+      sbuf.append(oAsString);
+    } catch (Throwable t) {
+      System.err
+          .println("SLF4J: Failed toString() invocation on an object of type ["
+              + o.getClass().getName() + "]");
+      t.printStackTrace();
+      sbuf.append("[FAILED toString()]");
+    }
+
   }
 
   private static void objectArrayAppend(StringBuffer sbuf, Object[] a,

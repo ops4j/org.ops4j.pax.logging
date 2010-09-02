@@ -7,10 +7,10 @@ import org.slf4j.spi.MDCAdapter;
 /**
  * This adapter is an empty implementation of the {@link MDCAdapter} interface.
  * It is used for all logging systems which do not support mapped
- * diagnostic contexts such as JDK14, simple and NOP.
- *
+ * diagnostic contexts such as JDK14, simple and NOP. 
+ * 
  * @author Ceki G&uuml;lc&uuml;
- *
+ * 
  * @since 1.4.1
  */
 public class NOPMakerAdapter implements MDCAdapter {
