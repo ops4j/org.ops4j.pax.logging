@@ -37,6 +37,8 @@ import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.Inject;
 import static org.ops4j.pax.exam.CoreOptions.*;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.compendiumProfile;
+
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.PaxAppender;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
@@ -66,8 +68,8 @@ public class CustomAppenderTest
     {
         return options(
             mavenBundle().artifactId( "pax-logging-api" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
-            mavenBundle().artifactId( "pax-logging-service" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject()
-
+            mavenBundle().artifactId( "pax-logging-service" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
+            compendiumProfile()
         );
     }
 
