@@ -29,6 +29,7 @@
       <plugin>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>maven-paxexam-plugin</artifactId>
+		<version>1.2.2</version>
         <executions>
           <execution>
             <id>generate-config</id>
@@ -76,28 +77,6 @@
       <artifactId>org.osgi.compendium</artifactId>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>ops4j.releases</id>
-      <name>OPS4J Releases Repository</name>
-      <url>http://repository.ops4j.org/mvn-releases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>ops4j.releases</id>
-      <name>OPS4J Releases Repository</name>
-      <url>http://repository.ops4j.org/mvn-releases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
 
   <profiles>
     <profile>
