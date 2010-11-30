@@ -20,6 +20,8 @@ package org.ops4j.pax.logging.service.internal;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+import java.util.logging.SimpleFormatter;
+
 import org.ops4j.pax.logging.PaxLoggingService;
 
 public class JdkHandler extends Handler
@@ -30,6 +32,7 @@ public class JdkHandler extends Handler
     public JdkHandler( PaxLoggingService logService )
     {
         m_logService = logService;
+        setFormatter( new SimpleFormatter() );
     }
 
     /**
@@ -77,7 +80,15 @@ public class JdkHandler extends Handler
         // TODO: Can't associate a bundle with the JDK logger. So how??
         String fqcn = java.util.logging.Logger.class.getName();
         PaxLoggerImpl logger = (PaxLoggerImpl) m_logService.getLogger( null, loggerName, fqcn );
-        String message = record.getMessage();
+        String message;
+        try
+        {
+            message = getFormatter().formatMessage( record );
+        }
+        catch (Exception ex)
+        {
+            message = record.getMessage();
+        }
         Throwable throwable = record.getThrown();
         org.apache.log4j.Level log4jlevel;
         if( level == Level.OFF )

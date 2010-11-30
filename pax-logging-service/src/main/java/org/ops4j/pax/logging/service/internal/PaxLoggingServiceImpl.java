@@ -386,66 +386,86 @@ public class PaxLoggingServiceImpl
         }
     }
 
-    //Here are added methods for setting level to root logger of the Java Logging API
-
+    /**
+	 * Configure Java Util Logging according to the provided configuration.
+	 * Convert the log4j configuration to JUL config.
+	 *
+	 * It's necessary to do that, because with pax logging, JUL loggers are not replaced.
+	 * So we need to configure JUL loggers in order that log messages goes correctly to log Handlers.
+	 *
+	 * @param configuration	Properties coming from the configuration.
+	 */
     private static void setLevelToJavaLogging( final Dictionary configuration )
     {
-        String levelProperty = null;
-        final Enumeration en = configuration.keys();
-        while( en.hasMoreElements() )
-        {
-            final Object key = en.nextElement();
-            if( key != null && key instanceof String )
-            {
-                final String keyString = ( (String) key ).trim().toLowerCase();
-                if( keyString.startsWith( "log4j" ) && keyString.indexOf( "rootlogger" ) != -1 )
-                {
-                    final Object value = configuration.get( key );
-                    if( value != null && value instanceof String )
-                    {
-                        levelProperty = ( (String) value ).trim().toUpperCase();
-                    }
-                }
-            }
+        for( Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements();) {
+            String name = (String) enum_.nextElement();
+            java.util.logging.Logger.getLogger(name).setLevel( null );
         }
-        if( levelProperty == null )
-        {
-            return;
-        }
-        setLevelToRootLogger( levelProperty );
-    }
 
-    private static void setLevelToRootLogger( final String levelProperty )
+        for( Enumeration keys = configuration.keys(); keys.hasMoreElements(); )
+        {
+            String name = (String) keys.nextElement();
+			String value = (String) configuration.get( name );
+			if (name.equals( "log4j.rootLogger" ))
+			{
+                setJULLevel( java.util.logging.Logger.getLogger(""), value );
+                setJULLevel( java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME), value );
+			}
+
+            if (name.startsWith("log4j.logger."))
+			{
+				String packageName = name.substring( "log4j.logger.".length() );
+				setJULLevel( java.util.logging.Logger.getLogger(packageName), value );
+			}
+		}
+	}
+
+	/**
+	 * Set the log level to the specified JUL logger.
+	 *
+	 * @param logger			The logger to configure
+	 * @param log4jLevelConfig	The value contained in the property file. (For example: "ERROR, file")
+	 */
+	private static void setJULLevel( java.util.logging.Logger logger, String log4jLevelConfig )
+	{
+		String crumb[] = log4jLevelConfig.split( "," );
+		if (crumb.length > 0)
+		{
+			Level level = log4jLevelToJULLevel( crumb[0].trim() );
+			logger.setLevel( level );
+		}
+	}
+
+    private static Level log4jLevelToJULLevel( final String levelProperty )
     {
-        final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger( "" );
-
         if( levelProperty.indexOf( "OFF" ) != -1 )
         {
-            rootLogger.setLevel( Level.OFF );
+            return Level.OFF;
         }
         else if( levelProperty.indexOf( "FATAL" ) != -1 )
         {
-            rootLogger.setLevel( Level.SEVERE );
+            return Level.SEVERE;
         }
         else if( levelProperty.indexOf( "ERROR" ) != -1 )
         {
-            rootLogger.setLevel( Level.SEVERE );
+            return Level.SEVERE;
         }
         else if( levelProperty.indexOf( "WARN" ) != -1 )
         {
-            rootLogger.setLevel( Level.WARNING );
+            return Level.WARNING;
         }
         else if( levelProperty.indexOf( "INFO" ) != -1 )
         {
-            rootLogger.setLevel( Level.INFO );
+            return Level.INFO;
         }
         else if( levelProperty.indexOf( "DEBUG" ) != -1 )
         {
-            rootLogger.setLevel( Level.FINE );
+            return Level.FINE;
         }
         else if( levelProperty.indexOf( "TRACE" ) != -1 )
         {
-            rootLogger.setLevel( Level.FINEST );
+            return Level.FINEST;
         }
+        return Level.INFO;
     }
 }
