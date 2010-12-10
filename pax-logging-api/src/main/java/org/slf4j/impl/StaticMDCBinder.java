@@ -1,8 +1,6 @@
 package org.slf4j.impl;
 
 import org.slf4j.spi.MDCAdapter;
-import org.slf4j.helpers.NOPMakerAdapter;
-import org.slf4j.helpers.BasicMarkerFactory;
 import org.ops4j.pax.logging.slf4j.Slf4jMDCAdapter;
 
 /**

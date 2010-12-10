@@ -51,8 +51,8 @@ public class MarkerFactory {
       markerFactory = StaticMarkerBinder.SINGLETON.getMarkerFactory();
     } catch (Exception e) {
       // we should never get here
-      Util.reportFailure("Could not instantiate instance of class ["
-          + StaticMarkerBinder.SINGLETON.getMarkerFactoryClassStr() + "]", e);
+      Util.report("Could not instantiate instance of class ["
+              + StaticMarkerBinder.SINGLETON.getMarkerFactoryClassStr() + "]", e);
     }
   }
 

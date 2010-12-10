@@ -74,16 +74,16 @@ public class MDC {
       String msg = ncde.getMessage();
       if (msg != null && msg.indexOf("org/slf4j/impl/StaticMDCBinder") != -1) {
         Util
-            .reportFailure("Failed to load class \"org.slf4j.impl.StaticMDCBinder\".");
-        Util.reportFailure("See " + NO_STATIC_MDC_BINDER_URL
-            + " for further details.");
+            .report("Failed to load class \"org.slf4j.impl.StaticMDCBinder\".");
+        Util.report("See " + NO_STATIC_MDC_BINDER_URL
+                + " for further details.");
 
       }
       throw ncde;
     } catch (Exception e) {
       // we should never get here
-      Util.reportFailure("Could not bind with an instance of class ["
-          + StaticMDCBinder.SINGLETON.getMDCAdapterClassStr() + "]", e);
+      Util.report("Could not bind with an instance of class ["
+              + StaticMDCBinder.SINGLETON.getMDCAdapterClassStr() + "]", e);
     }
   }
 

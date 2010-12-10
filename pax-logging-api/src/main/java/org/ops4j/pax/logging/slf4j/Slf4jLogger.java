@@ -19,6 +19,7 @@ package org.ops4j.pax.logging.slf4j;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -84,8 +85,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.trace( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -104,8 +105,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.trace( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -123,8 +124,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.trace( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -180,8 +181,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.trace( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -199,8 +200,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.trace( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -217,8 +218,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.trace( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -276,8 +277,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.debug( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -296,8 +297,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.debug( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -315,8 +316,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.debug( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -372,8 +373,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.debug( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -391,8 +392,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.debug( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -409,8 +410,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.debug( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -468,8 +469,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.inform( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -488,8 +489,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.inform( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -507,8 +508,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.inform( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -564,8 +565,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.inform( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -583,8 +584,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.inform( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -601,8 +602,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.inform( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -660,8 +661,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.warn( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -679,8 +680,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.warn( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -699,8 +700,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.warn( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -756,8 +757,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.warn( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -775,8 +776,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.warn( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -793,8 +794,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.warn( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -852,8 +853,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.error( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -872,8 +873,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.error( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -891,8 +892,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.error( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -948,8 +949,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            String message = MessageFormatter.format( format, arg );
-            m_delegate.error( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg );
+            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -967,8 +968,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            String message = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.error( message, null );
+            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 
@@ -985,8 +986,8 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            String message = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.error( message, null );
+            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
         }
     }
 

@@ -126,17 +126,17 @@ public final class LoggerFactory {
       String msg = ncde.getMessage();
       if (msg != null && msg.indexOf("org/slf4j/impl/StaticLoggerBinder") != -1) {
         Util
-            .reportFailure("Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".");
-        Util.reportFailure("See " + NO_STATICLOGGERBINDER_URL
-            + " for further details.");
+            .report("Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".");
+        Util.report("See " + NO_STATICLOGGERBINDER_URL
+                + " for further details.");
 
       }
       throw ncde;
     } catch (Exception e) {
       INITIALIZATION_STATE = FAILED_INITILIZATION;
       // we should never get here
-      Util.reportFailure("Failed to instantiate logger ["
-          + getSingleton().getLoggerFactoryClassStr() + "]", e);
+      Util.report("Failed to instantiate logger ["
+              + getSingleton().getLoggerFactoryClassStr() + "]", e);
     }
   }
 
@@ -146,13 +146,13 @@ public final class LoggerFactory {
       return;
     }
     Util
-        .reportFailure("The following loggers will not work becasue they were created");
+        .report("The following loggers will not work becasue they were created");
     Util
-        .reportFailure("during the default configuration phase of the underlying logging system.");
-    Util.reportFailure("See also " + SUBSTITUTE_LOGGER_URL);
+        .report("during the default configuration phase of the underlying logging system.");
+    Util.report("See also " + SUBSTITUTE_LOGGER_URL);
     for (int i = 0; i < loggerNameList.size(); i++) {
       String loggerName = (String) loggerNameList.get(i);
-      Util.reportFailure(loggerName);
+      Util.report(loggerName);
     }
   }
 
@@ -167,10 +167,10 @@ public final class LoggerFactory {
         }
       }
       if (!match) {
-        Util.reportFailure("The requested version " + requested
-            + " by your slf4j binding is not compatible with "
-            + Arrays.asList(API_COMPATIBILITY_LIST).toString());
-        Util.reportFailure("See " + VERSION_MISMATCH + " for further details.");
+        Util.report("The requested version " + requested
+                + " by your slf4j binding is not compatible with "
+                + Arrays.asList(API_COMPATIBILITY_LIST).toString());
+        Util.report("See " + VERSION_MISMATCH + " for further details.");
       }
     } catch (java.lang.NoSuchFieldError nsfe) {
       // given our large user base and SLF4J's commitment to backward
@@ -179,8 +179,8 @@ public final class LoggerFactory {
       // emit compatibility warnings.
     } catch (Throwable e) {
       // we should never reach here
-      Util.reportFailure(
-          "Unexpected problem occured during version sanity check", e);
+      Util.report(
+              "Unexpected problem occured during version sanity check", e);
     }
   }
 
@@ -204,16 +204,16 @@ public final class LoggerFactory {
         implementationList.add(path);
       }
       if (implementationList.size() > 1) {
-        Util.reportFailure("Class path contains multiple SLF4J bindings.");
+        Util.report("Class path contains multiple SLF4J bindings.");
         for (int i = 0; i < implementationList.size(); i++) {
-          Util.reportFailure("Found binding in [" + implementationList.get(i)
-              + "]");
+          Util.report("Found binding in [" + implementationList.get(i)
+                  + "]");
         }
-        Util.reportFailure("See " + MULTIPLE_BINDINGS_URL
-            + " for an explanation.");
+        Util.report("See " + MULTIPLE_BINDINGS_URL
+                + " for an explanation.");
       }
     } catch (IOException ioe) {
-      Util.reportFailure("Error getting resources from path", ioe);
+      Util.report("Error getting resources from path", ioe);
     }
   }
 
