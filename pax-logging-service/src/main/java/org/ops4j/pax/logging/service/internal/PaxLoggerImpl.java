@@ -17,6 +17,8 @@
  */
 package org.ops4j.pax.logging.service.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Level;
@@ -83,6 +85,7 @@ public class PaxLoggerImpl
 
     private void setDelegateContext()
     {
+
         Map context = getPaxContext().getContext();
         if( context != null )
         {
@@ -95,9 +98,16 @@ public class PaxLoggerImpl
         }
         if (m_bundle != null)
         {
-            put("bundle.id", new Long(m_bundle.getBundleId()));
-            put("bundle.name", m_bundle.getSymbolicName());
-            put("bundle.version", m_bundle.getHeaders().get(Constants.BUNDLE_VERSION));
+            AccessController.doPrivileged(new PrivilegedAction()
+            {
+                public Object run()
+                {
+                    put("bundle.id", new Long(m_bundle.getBundleId()));
+                    put("bundle.name", m_bundle.getSymbolicName());
+                    put("bundle.version", m_bundle.getHeaders().get(Constants.BUNDLE_VERSION));
+                    return null;
+                }
+            });
         }
     }
 
