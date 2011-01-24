@@ -20,7 +20,6 @@ package org.ops4j.pax.logging.service.internal;
 import java.util.Hashtable;
 
 import junit.framework.TestCase;
-
 import org.jmock.Mock;
 import org.jmock.core.stub.ReturnStub;
 import org.osgi.framework.Bundle;
@@ -28,9 +27,6 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogService;
-import org.ops4j.pax.logging.service.internal.FrameworkHandler;
-import org.ops4j.pax.logging.service.internal.LogReaderServiceImpl;
-import org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl;
 
 public class FrameworkHandlerTest extends TestCase
 {
@@ -87,7 +83,7 @@ public class FrameworkHandlerTest extends TestCase
                 lastLogEntry = entry;
             }
         });
-        return new FrameworkHandler( new PaxLoggingServiceImpl( null, reader, null, null ) );
+        return new FrameworkHandler( new PaxLoggingServiceImpl( null, reader, null ) );
     }
 
     private BundleEvent anEvent()

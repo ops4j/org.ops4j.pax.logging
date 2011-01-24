@@ -29,9 +29,10 @@ import org.apache.log4j.spi.AppenderAttachable;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.spi.OptionHandler;
-import org.ops4j.pax.logging.service.internal.AppenderTracker;
 import org.ops4j.pax.logging.service.internal.AppenderBridgeImpl;
+import org.ops4j.pax.logging.service.internal.PaxAppenderProxy;
 import org.ops4j.pax.logging.spi.PaxAppender;
+import org.osgi.framework.BundleContext;
 
 public class PaxLoggingConfigurator extends PropertyConfigurator
 {
@@ -43,11 +44,11 @@ public class PaxLoggingConfigurator extends PropertyConfigurator
     private static final String APPENDER_REF_TAG 	= "appender-ref";
 
     private LoggerRepository repository;
-    private AppenderTracker m_appenderTracker;
+    private BundleContext m_bundleContext;
 
-    public PaxLoggingConfigurator( AppenderTracker appenderTracker )
+    public PaxLoggingConfigurator( BundleContext bundleContext )
     {
-        m_appenderTracker = appenderTracker;
+        m_bundleContext = bundleContext;
     }
 
     public void doConfigure(Properties properties, LoggerRepository hierarchy)
@@ -67,7 +68,7 @@ public class PaxLoggingConfigurator extends PropertyConfigurator
         if( appenderName.startsWith( OSGI_APPENDER_PREFIX ) )
         {
             String osgiAppenderName = appenderName.substring( OSGI_APPENDER_PREFIX.length() );
-            PaxAppender paxAppender = m_appenderTracker.getAppender( osgiAppenderName );
+            PaxAppenderProxy paxAppender = new PaxAppenderProxy( m_bundleContext, osgiAppenderName );
             appender = new AppenderBridgeImpl( paxAppender );
             appender.setName(appenderName);
         }

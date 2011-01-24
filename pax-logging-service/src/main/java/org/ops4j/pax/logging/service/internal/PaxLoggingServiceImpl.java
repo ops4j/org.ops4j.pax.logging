@@ -47,18 +47,14 @@ public class PaxLoggingServiceImpl
     private LogReaderServiceImpl m_logReader;
     private EventAdminPoster m_eventAdmin;
     private BundleContext m_bundleContext;
-    private AppenderTracker m_appenderTracker;
     private PaxContext m_context;
 
     private int m_logLevel = LOG_DEBUG;
     private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.DefaultServiceLog.level";
 
-    public PaxLoggingServiceImpl( BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin,
-                                  AppenderTracker appenderTracker
-    )
+    public PaxLoggingServiceImpl( BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin )
     {
         m_bundleContext = context;
-        m_appenderTracker = appenderTracker;
         m_logReader = logReader;
         m_eventAdmin = eventAdmin;
         m_context = new PaxContext();
@@ -188,7 +184,7 @@ public class PaxLoggingServiceImpl
             configureDefaults();
             return;
         }
-        PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
+        PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_bundleContext );
         configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
         setLevelToJavaLogging( configuration );
     }
@@ -253,7 +249,7 @@ public class PaxLoggingServiceImpl
         }
         m_logLevel = convertLevel( levelName );
 
-        PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_appenderTracker );
+        PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_bundleContext );
         Properties defaultProperties = new Properties();
         // Extract System Properties prefixed with "pax.log4j", and drop the "pax." and include these
         extractSystemProperties( defaultProperties );

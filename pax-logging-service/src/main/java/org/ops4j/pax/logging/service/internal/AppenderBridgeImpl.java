@@ -20,16 +20,15 @@ package org.ops4j.pax.logging.service.internal;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
-import org.ops4j.pax.logging.spi.PaxAppender;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 
 public class AppenderBridgeImpl extends AppenderSkeleton
     implements Appender
 {
 
-    private PaxAppender m_delegate;
+    private PaxAppenderProxy m_delegate;
 
-    public AppenderBridgeImpl( PaxAppender delegate )
+    public AppenderBridgeImpl( PaxAppenderProxy delegate )
     {
         m_delegate = delegate;
     }
@@ -42,6 +41,7 @@ public class AppenderBridgeImpl extends AppenderSkeleton
 
     public void close()
     {
+        m_delegate.close();
     }
 
     public boolean requiresLayout()

@@ -34,11 +34,6 @@ import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.service.internal.JdkHandler;
-import org.ops4j.pax.logging.service.internal.FrameworkHandler;
-import org.ops4j.pax.logging.service.internal.AppenderTracker;
-import org.ops4j.pax.logging.service.internal.LogReaderServiceImpl;
-import org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl;
 import org.ops4j.pax.logging.internal.EventAdminTracker;
 
 /**
@@ -68,7 +63,6 @@ public class Activator
     private ServiceRegistration m_registrationLogReaderService;
     private FrameworkHandler m_frameworkHandler;
     private EventAdminPoster m_eventAdmin;
-    private AppenderTracker m_appenderTracker;
 
     /**
      * Default constructor
@@ -111,10 +105,7 @@ public class Activator
         }
 
         // register the Pax Logging service
-        m_appenderTracker = new AppenderTracker( bundleContext );
-        m_appenderTracker.open( true );
-        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( bundleContext, logReader,
-                                                                      m_eventAdmin, m_appenderTracker );
+        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( bundleContext, logReader, m_eventAdmin );
         Hashtable serviceProperties = new Hashtable();
         serviceProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
         serviceProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
@@ -151,7 +142,6 @@ public class Activator
         throws Exception
     {
         // shut down the trackers.
-        m_appenderTracker.close();
         m_eventAdmin.destroy();
 
         // Clean up the listeners.
