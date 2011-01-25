@@ -287,6 +287,10 @@
       <id>djencks</id>
       <email>david_jencks@yahoo.com</email>
     </developer>
+    <developer>
+      <name>Jean-Baptiste Onofré</name>
+      <id>jbonofre</id>
+    </developer>
   </developers>
 
   <modules>
