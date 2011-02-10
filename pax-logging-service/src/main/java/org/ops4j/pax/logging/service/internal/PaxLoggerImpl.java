@@ -172,7 +172,9 @@ public class PaxLoggerImpl
     //Fixed bug instead of the fully qualified class name of the logger was given the name of the caller
     public void log( Priority level, Object message, Throwable t )
     {
+        setDelegateContext();
         m_delegate.log( m_fqcn, level, message, t );
+        clearDelegateContext();
     }
 
     public PaxContext getPaxContext()
