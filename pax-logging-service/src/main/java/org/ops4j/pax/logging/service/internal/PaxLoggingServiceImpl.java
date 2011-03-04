@@ -151,7 +151,6 @@ public class PaxLoggingServiceImpl
         default:
             logger.warn( "Undefined Level: " + level + " : " + message, exception );
         }
-        handleEvents( bundle, sr, level, message, exception );
     }
 
     void handleEvents( Bundle bundle, ServiceReference sr, int level, String message, Throwable exception )
