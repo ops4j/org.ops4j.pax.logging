@@ -117,23 +117,20 @@ public class MDCSiftingAppender extends AppenderSkeleton
             }
             appenders.put(valStr, node);
         } else {
-            node.timestamp = timestamp;
-            if (head != node)
-            {
-                Node p = node.prev;
-                Node n = node.next;
-                node.next = head;
-                node.prev = null;
-                head = node;
-                if (p != null) {
-                    p.next = n;
-                }
-                if (n != null) {
-                    n.prev = p;
-                } else {
-                    tail = p;
-                }
+            Node p = node.prev;
+            Node n = node.next;
+            node.next = head;
+            node.prev = null;
+            head = node;
+            if (p != null) {
+                p.next = n;
             }
+            if (n != null) {
+                n.prev = p;
+            } else {
+                tail = p;
+            }
+            node.timestamp = timestamp;
         }
         // Do not check too often
         if (timestamp - lastCheck > 1000)
