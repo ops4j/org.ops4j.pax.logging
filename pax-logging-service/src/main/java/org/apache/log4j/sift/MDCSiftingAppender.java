@@ -38,9 +38,8 @@ public class MDCSiftingAppender extends AppenderSkeleton
     private OptionFactory appender;
     private Map appenders = new HashMap();
 
-    private Node head = null;
-    private Node tail = null;
-    private long lastCheck;
+    private Node head = Node.constructHead();
+    private long lastCheck = 0;
 
     public String getKey()
     {
@@ -82,11 +81,12 @@ public class MDCSiftingAppender extends AppenderSkeleton
 
     public synchronized void close()
     {
-        for (Iterator it = appenders.values().iterator(); it.hasNext();)
-        {
-            Node node = (Node) it.next();
-            node.appender.close();
+        Node n = head.next;
+        while (n.timestamp != 0) {
+            n.appender.close();
+            n = n.next;
         }
+        head.prev = head.next = head;
         appenders.clear();
     }
 
@@ -101,56 +101,45 @@ public class MDCSiftingAppender extends AppenderSkeleton
         Node node = (Node) appenders.get(valStr);
         if (node == null)
         {
+            // create new appender and insert at the beginning of the queue
             node = new Node();
             node.key = valStr;
             Properties props = new Properties();
             props.put(key, valStr);
-            node.next = head;
-            node.prev = null;
             node.appender = (Appender) appender.create(props);
             node.appender.setName(getName() + "[" + valStr + "]");
             node.timestamp = timestamp;
-            head.prev = node;
-            head = node;
-            if (tail == null) {
-                tail = node;
-            }
+
+            node.next = head.next;
+            head.next = node;
+            node.prev = head;
+            node.next.prev = node;
+
             appenders.put(valStr, node);
         } else {
+            // move existing appender to the beginning of the queue
             node.timestamp = timestamp;
-            if (head != node)
-            {
-                Node p = node.prev;
-                Node n = node.next;
-                node.next = head;
-                node.prev = null;
-                head = node;
-                if (p != null) {
-                    p.next = n;
-                }
-                if (n != null) {
-                    n.prev = p;
-                } else {
-                    tail = p;
-                }
-            }
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+
+            node.next = head.next;
+            head.next = node;
+            node.prev = head;
+            node.next.prev = node;
         }
+
         // Do not check too often
         if (timestamp - lastCheck > 1000)
         {
             lastCheck = timestamp;
-            Node n = tail;
-            while (n != null && timestamp - n.timestamp > 30 * 60 * 1000) {
+            Node n = head.prev;
+            while (n.timestamp != 0 && timestamp - n.timestamp > 30 * 60 * 1000) {
                 n.appender.close();
                 appenders.remove(n.key);
                 n = n.prev;
             }
-            if (n == null) {
-                tail = head = null;
-            } else {
-                n.next = null;
-                tail = n;
-            }
+            head.prev = n;
+            n.next = head;
         }
         return node.appender;
     }
@@ -162,6 +151,17 @@ public class MDCSiftingAppender extends AppenderSkeleton
         Node prev;
         Appender appender;
         long timestamp;
+
+        public static Node constructHead()
+        {
+            Node head = new Node();
+            head.next = head;
+            head.prev = head;
+            head.timestamp = 0;
+            head.key = null;
+            head.appender = null;
+            return head;
+        }
     }
 
 }
