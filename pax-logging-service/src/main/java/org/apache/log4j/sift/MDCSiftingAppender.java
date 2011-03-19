@@ -110,7 +110,6 @@ public class MDCSiftingAppender extends AppenderSkeleton
             node.appender = (Appender) appender.create(props);
             node.appender.setName(getName() + "[" + valStr + "]");
             node.timestamp = timestamp;
-            head.prev = node;
             head = node;
             if (tail == null) {
                 tail = node;
