@@ -102,6 +102,7 @@ public class MDCSiftingAppender extends AppenderSkeleton
         if (node == null)
         {
             node = new Node();
+            node.key = valStr;
             Properties props = new Properties();
             props.put(key, valStr);
             node.next = head;
@@ -133,9 +134,11 @@ public class MDCSiftingAppender extends AppenderSkeleton
         // Do not check too often
         if (timestamp - lastCheck > 1000)
         {
+            lastCheck = timestamp;
             Node n = tail;
             while (n != null && timestamp - n.timestamp > 30 * 60 * 1000) {
                 n.appender.close();
+                appenders.remove(n.key);
                 n = n.prev;
             }
             if (n == null) {
@@ -150,11 +153,11 @@ public class MDCSiftingAppender extends AppenderSkeleton
 
     protected static class Node
     {
+        String key;
         Node next;
         Node prev;
         Appender appender;
         long timestamp;
     }
-
 
 }
