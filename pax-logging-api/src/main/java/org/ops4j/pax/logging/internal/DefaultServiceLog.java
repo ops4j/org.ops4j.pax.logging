@@ -17,6 +17,7 @@
  */
 package org.ops4j.pax.logging.internal;
 
+import org.ops4j.pax.logging.FqcnIgnoringPaxLogger;
 import org.osgi.framework.Bundle;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxContext;
@@ -29,8 +30,7 @@ import org.ops4j.pax.logging.PaxContext;
  * OR by calling the static method <code>DefaultServiceLog.setLogLevel( String <b>level</b> )</code>, where
  * <b>level</b> is one of the same strings.
  */
-public class DefaultServiceLog
-    implements PaxLogger
+public class DefaultServiceLog extends FqcnIgnoringPaxLogger
 {
 
     private static final int TRACE = 0;

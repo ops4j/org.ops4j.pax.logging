@@ -17,7 +17,7 @@
  */
 package org.ops4j.pax.logging.slf4j;
 
-import org.slf4j.Logger;
+import org.slf4j.spi.LocationAwareLogger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
@@ -25,7 +25,7 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 
 public class Slf4jLogger
-    implements Logger
+    implements LocationAwareLogger
 {
 
     public static final String SLF4J_FQCN = Slf4jLogger.class.getName();
@@ -1008,8 +1008,54 @@ public class Slf4jLogger
         }
     }
 
+    public void log(Marker marker, String fqcn, int level, String message, Object[] argArray, Throwable t)
+    {
+       switch(level)
+       {
+           case(TRACE_INT):
+               if( m_delegate.isTraceEnabled() )
+               {
+                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
+                   m_delegate.trace( tuple.getMessage(), t, fqcn );
+               }
+               break;
+           case(DEBUG_INT):
+               if( m_delegate.isDebugEnabled() )
+               {
+                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
+                   m_delegate.debug( tuple.getMessage(), t, fqcn );
+               }
+               break;
+           case(INFO_INT):
+               if( m_delegate.isInfoEnabled() )
+               {
+                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
+                   m_delegate.inform( tuple.getMessage(), t, fqcn );
+               }
+               break;
+           case(WARN_INT):
+               if( m_delegate.isWarnEnabled() )
+               {
+                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
+                   m_delegate.warn( tuple.getMessage(), t, fqcn );
+               }
+               break;
+           case(ERROR_INT):
+               if( m_delegate.isErrorEnabled() )
+               {
+                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
+                   m_delegate.error( tuple.getMessage(), t, fqcn );
+               }
+               break;
+           default:
+               break;
+       }
+    }
+
+
     void setPaxLoggingManager( PaxLoggingManager loggingManager, String name )
     {
         m_delegate = loggingManager.getLogger( name, SLF4J_FQCN );
     }
+
 }
