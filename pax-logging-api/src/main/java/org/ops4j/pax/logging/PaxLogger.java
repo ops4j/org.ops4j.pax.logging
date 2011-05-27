@@ -17,8 +17,6 @@
  */
 package org.ops4j.pax.logging;
 
-import org.osgi.framework.BundleContext;
-
 public interface PaxLogger
 {
     int LEVEL_TRACE = 0;
@@ -40,6 +38,13 @@ public interface PaxLogger
     void warn( String message, Throwable t );
     void error( String message, Throwable t );
     void fatal( String message, Throwable t );
+
+    void trace( String message, Throwable t, String fqcn);
+    void debug( String message, Throwable t, String fqcn);
+    void inform( String message, Throwable t, String fqcn);
+    void warn( String message, Throwable t, String fqcn);
+    void error( String message, Throwable t, String fqcn);
+    void fatal( String message, Throwable t, String fqcn);
 
     int getLogLevel();
 

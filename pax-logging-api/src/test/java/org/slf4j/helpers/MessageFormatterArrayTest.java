@@ -140,6 +140,36 @@ public class MessageFormatterArrayTest extends TestCase
             output = message;
         }
 
+        public void trace( String message, Throwable t, String fqcn )
+        {
+            trace(message, t);
+        }
+
+        public void debug( String message, Throwable t, String fqcn )
+        {
+            trace(message, t);
+        }
+
+        public void inform( String message, Throwable t, String fqcn )
+        {
+            trace(message, t);
+        }
+
+        public void warn( String message, Throwable t, String fqcn )
+        {
+            trace(message, t);
+        }
+
+        public void error( String message, Throwable t, String fqcn )
+        {
+            trace(message, t);
+        }
+
+        public void fatal( String message, Throwable t, String fqcn )
+        {
+            trace(message, t);
+        }
+
         public int getLogLevel()
         {
             return 0;
