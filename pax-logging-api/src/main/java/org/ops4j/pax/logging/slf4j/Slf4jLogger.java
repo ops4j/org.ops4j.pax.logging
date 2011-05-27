@@ -1008,6 +1008,18 @@ public class Slf4jLogger
         }
     }
 
+   /**
+     * This method implements LocationAwareLogger.log
+     *
+     * The caller passes in it's own Fully Qualified Class Name (fqcn).
+     *
+     * @param marker
+     * @param fqcn the fully qualified class name (FQCN) of the <b>caller</b>
+     * @param level Integer representation of the log level as defined in LocationAwareLogger
+     * @param message the message as a format string
+     * @param argArray an array of arguments to use in the message format string
+     * @param t the throwable to log
+     */
     public void log(Marker marker, String fqcn, int level, String message, Object[] argArray, Throwable t)
     {
        switch(level)

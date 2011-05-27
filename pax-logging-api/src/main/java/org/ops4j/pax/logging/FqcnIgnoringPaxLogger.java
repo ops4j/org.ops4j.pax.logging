@@ -19,34 +19,38 @@ package org.ops4j.pax.logging;
 
 public abstract class FqcnIgnoringPaxLogger implements PaxLogger
 {
+    private static String appendToMessage(String message, String fqcn)
+    {
+        return message + " Ignored FQCN: " + fqcn;
+    }
 
     public void trace( String message, Throwable t, String fqcn )
     {
-        trace(message, t);
+        trace(appendToMessage(message,fqcn), t);
     }
 
     public void debug( String message, Throwable t, String fqcn )
     {
-        debug(message, t);
+        debug(appendToMessage(message,fqcn), t);
     }
 
     public void inform( String message, Throwable t, String fqcn )
     {
-        inform(message, t);
+        inform(appendToMessage(message,fqcn), t);
     }
 
     public void warn( String message, Throwable t, String fqcn )
     {
-        warn(message, t);
+        warn(appendToMessage(message,fqcn), t);
     }
 
     public void error( String message, Throwable t, String fqcn )
     {
-        error(message, t);
+        error(appendToMessage(message,fqcn), t);
     }
 
     public void fatal( String message, Throwable t, String fqcn )
     {
-        fatal(message, t);
+        fatal(appendToMessage(message,fqcn), t);
     }
 }
