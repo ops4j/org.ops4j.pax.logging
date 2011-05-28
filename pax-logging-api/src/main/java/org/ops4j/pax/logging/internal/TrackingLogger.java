@@ -17,14 +17,14 @@
  */
 package org.ops4j.pax.logging.internal;
 
-import org.ops4j.pax.logging.internal.DefaultServiceLog;
+import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
 
 public class TrackingLogger
-    implements PaxLogger
+        implements PaxLogger
 {
 
     private PaxLoggingService m_service;
@@ -99,6 +99,36 @@ public class TrackingLogger
     public void fatal( String message, Throwable t )
     {
         m_delegate.fatal( message, t );
+    }
+
+    public void trace( String message, Throwable t, String fqcn )
+    {
+        m_delegate.trace( message, t, fqcn );
+    }
+
+    public void debug( String message, Throwable t, String fqcn  )
+    {
+        m_delegate.debug( message, t, fqcn );
+    }
+
+    public void inform( String message, Throwable t, String fqcn )
+    {
+        m_delegate.inform( message, t, fqcn );
+    }
+
+    public void warn( String message, Throwable t, String fqcn )
+    {
+        m_delegate.warn( message, t, fqcn );
+    }
+
+    public void error( String message, Throwable t, String fqcn )
+    {
+        m_delegate.error( message, t, fqcn );
+    }
+
+    public void fatal( String message, Throwable t, String fqcn )
+    {
+        m_delegate.fatal( message, t, fqcn );
     }
 
     public int getLogLevel()

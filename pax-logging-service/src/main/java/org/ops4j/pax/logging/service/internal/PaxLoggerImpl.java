@@ -23,10 +23,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.Priority;
+import org.ops4j.pax.logging.PaxLogger;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
 import org.ops4j.pax.logging.PaxContext;
-import org.ops4j.pax.logging.PaxLogger;
 import org.osgi.framework.Constants;
 
 public class PaxLoggerImpl
@@ -162,6 +162,54 @@ public class PaxLoggerImpl
     {
         setDelegateContext();
         m_delegate.log( m_fqcn, Level.FATAL, message, t );
+        clearDelegateContext();
+        m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+    }
+
+    public void trace( String message, Throwable t, String fqcn )
+    {
+        setDelegateContext();
+        m_delegate.log( fqcn, Level.TRACE, message, t);
+        clearDelegateContext();
+        m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
+    }
+
+    public void debug( String message, Throwable t, String fqcn )
+    {
+        setDelegateContext();
+        m_delegate.log( fqcn, Level.DEBUG, message, t );
+        clearDelegateContext();
+        m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
+    }
+
+    public void inform( String message, Throwable t, String fqcn )
+    {
+        setDelegateContext();
+        m_delegate.log( fqcn, Level.INFO, message, t );
+        clearDelegateContext();
+        m_service.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
+    }
+
+    public void warn( String message, Throwable t, String fqcn )
+    {
+        setDelegateContext();
+        m_delegate.log( fqcn, Level.WARN, message, t );
+        clearDelegateContext();
+        m_service.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
+    }
+
+    public void error( String message, Throwable t, String fqcn )
+    {
+        setDelegateContext();
+        m_delegate.log( fqcn, Level.ERROR, message, t );
+        clearDelegateContext();
+        m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+    }
+
+    public void fatal( String message, Throwable t, String fqcn )
+    {
+        setDelegateContext();
+        m_delegate.log( fqcn, Level.FATAL, message, t );
         clearDelegateContext();
         m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
     }

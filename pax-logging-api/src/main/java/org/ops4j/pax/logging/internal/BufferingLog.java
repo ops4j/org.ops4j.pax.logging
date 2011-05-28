@@ -20,6 +20,8 @@ package org.ops4j.pax.logging.internal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.ops4j.pax.logging.FqcnIgnoringPaxLogger;
 import org.osgi.framework.Bundle;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
@@ -27,8 +29,7 @@ import org.ops4j.pax.logging.PaxLogger;
 /**
  * Experimental fallback strategy for non-availability.
  */
-public class BufferingLog
-    implements PaxLogger
+public class BufferingLog extends FqcnIgnoringPaxLogger
 {
 
     private static class LogType
