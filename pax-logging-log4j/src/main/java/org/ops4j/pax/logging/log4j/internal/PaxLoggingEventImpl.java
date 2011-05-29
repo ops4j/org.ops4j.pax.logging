@@ -33,7 +33,7 @@
  * limitations under the License.
  */
 
-package org.ops4j.pax.logging.service.internal;
+package org.ops4j.pax.logging.log4j.internal;
 
 import java.util.Map;
 

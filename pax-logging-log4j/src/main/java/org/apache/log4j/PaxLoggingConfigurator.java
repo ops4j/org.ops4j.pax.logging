@@ -29,8 +29,8 @@ import org.apache.log4j.spi.AppenderAttachable;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.spi.OptionHandler;
-import org.ops4j.pax.logging.service.internal.AppenderBridgeImpl;
-import org.ops4j.pax.logging.service.internal.PaxAppenderProxy;
+import org.ops4j.pax.logging.log4j.internal.AppenderBridgeImpl;
+import org.ops4j.pax.logging.log4j.internal.PaxAppenderProxy;
 import org.ops4j.pax.logging.spi.PaxAppender;
 import org.osgi.framework.BundleContext;
 

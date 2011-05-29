@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.service.internal;
+package org.ops4j.pax.logging.log4j.internal;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -34,7 +34,7 @@ import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.internal.EventAdminTracker;
+import org.ops4j.pax.logging.EventAdminTracker;
 
 /**
  * Starts the Log4j log services.

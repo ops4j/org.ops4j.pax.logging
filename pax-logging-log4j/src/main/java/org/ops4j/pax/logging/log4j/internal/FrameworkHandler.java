@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.service.internal;
+package org.ops4j.pax.logging.log4j.internal;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;

@@ -15,11 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ops4j.pax.logging.service.internal;
+package org.ops4j.pax.logging.log4j.internal;
 
 import junit.framework.TestCase;
-import org.ops4j.pax.logging.service.internal.LogReaderServiceImpl;
-import org.ops4j.pax.logging.service.internal.LogEntryImpl;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogEntry;
 import java.util.ArrayList;
