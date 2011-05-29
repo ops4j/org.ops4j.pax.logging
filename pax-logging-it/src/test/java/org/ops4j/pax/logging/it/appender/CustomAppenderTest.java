@@ -68,7 +68,8 @@ public class CustomAppenderTest
     {
         return options(
             mavenBundle().artifactId( "pax-logging-api" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
-            mavenBundle().artifactId( "pax-logging-service" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
+            mavenBundle().artifactId( "pax-logging-spi" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
+            mavenBundle().artifactId( "pax-logging-log4j" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
             compendiumProfile()
         );
     }
