@@ -86,35 +86,22 @@ public class JdkHandler extends Handler
             message = record.getMessage();
         }
         Throwable throwable = record.getThrown();
+
         org.apache.log4j.Level log4jlevel;
-        if( level == Level.OFF )
-        {
-            log4jlevel = org.apache.log4j.Level.OFF;
-        }
-        else if( level == Level.FINE )
-        {
-            log4jlevel = org.apache.log4j.Level.DEBUG;
-        }
-        else if( level == Level.FINER || level == Level.FINEST )
-        {
+        int levelInt = level.intValue();
+        if (levelInt <= Level.FINEST.intValue())
             log4jlevel = org.apache.log4j.Level.TRACE;
-        }
-        else if( level == Level.INFO )
-        {
+        else if (levelInt <= Level.FINE.intValue())
+            log4jlevel = org.apache.log4j.Level.DEBUG;
+        else if (levelInt <= Level.INFO.intValue())
             log4jlevel = org.apache.log4j.Level.INFO;
-        }
-        else if( level == Level.WARNING )
-        {
+        else if (levelInt <= Level.WARNING.intValue())
             log4jlevel = org.apache.log4j.Level.WARN;
-        }
-        else if( level == Level.SEVERE )
-        {
+        else if (levelInt <= Level.SEVERE.intValue())
             log4jlevel = org.apache.log4j.Level.ERROR;
-        }
         else
-        {
-            log4jlevel = org.apache.log4j.Level.INFO;
-        }
+            log4jlevel = org.apache.log4j.Level.OFF;
+
         //bug fixed here
         logger.log( log4jlevel, message, throwable );
     }
