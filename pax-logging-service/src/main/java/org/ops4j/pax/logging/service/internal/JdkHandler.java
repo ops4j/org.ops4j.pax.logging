@@ -72,10 +72,6 @@ public class JdkHandler extends Handler
     public void publish( LogRecord record )
     {
         Level level = record.getLevel();
-        if( level.intValue() == Level.CONFIG.intValue() )
-        {
-            return;
-        }
         String loggerName = record.getLoggerName();
         // TODO: Can't associate a bundle with the JDK logger. So how??
         String fqcn = java.util.logging.Logger.class.getName();
