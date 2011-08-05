@@ -112,7 +112,8 @@ public class Activator
         m_RegistrationPaxLogging = bundleContext.registerService( LOGSERVICE_NAMES, paxLogging, serviceProperties );
 
         // Add a global handler for all JDK Logging (java.util.logging).
-        if( !Boolean.valueOf(bundleContext.getProperty( "org.ops4j.pax.logging.skipJUL" ) ).booleanValue() )
+        String skipJULProperty=bundleContext.getProperty("org.ops4j.pax.logging.skipJUL");
+        if( !Boolean.parseBoolean(skipJULProperty))
         {
             LogManager manager = LogManager.getLogManager();
             manager.reset();
