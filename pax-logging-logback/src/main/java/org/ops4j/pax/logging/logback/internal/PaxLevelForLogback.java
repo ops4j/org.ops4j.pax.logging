@@ -1,6 +1,4 @@
 /*
- * Copyright 2006 Niclas Hedhman.
- *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +20,7 @@ import org.ops4j.pax.logging.spi.PaxLevel;
 
 /**
  * A straightforward facade to make a Logback Level instance look like a PaxLevel.
+ * @author Chris Dolan
  */
 public class PaxLevelForLogback implements PaxLevel {
     private Level m_delegate;

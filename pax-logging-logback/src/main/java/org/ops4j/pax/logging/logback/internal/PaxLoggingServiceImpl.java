@@ -1,6 +1,4 @@
 /*
- * Copyright 2005-2009 Niclas Hedhman.
- *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
  * You may obtain a copy of the License at
@@ -53,6 +51,37 @@ import java.net.UnknownHostException;
 import java.util.Dictionary;
 import java.util.Locale;
 
+/**
+ * An implementation of PaxLoggingService that delegates to Logback.
+ *
+ * <p>
+ * This implementation is registered with the
+ * OSGi ConfigAdmin with a configuration PID of "org.ops4j.pax.logging". That configuration should have a property
+ * "org.ops4j.pax.logging.logback.config.file" which should be a path to a Logback Joran XML configuration file.
+ *
+ * <p>
+ * This code was originally derived from org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl v1.6.0.
+ * Changes include:
+ * <ul>
+ *     <li>massive overhaul for logback vs. log4j</li>
+ *     <li>configuration is completely different</li>
+ *     <li>removed setLevelToJavaLogging() because logback already has it's own support for synchronizing with JUL.
+ *     See below!</li>
+ * </ul>
+ *
+ * <p>
+ * To sync java.util.logging logger levels with Logback logger levels, be sure to include this in your logback.xml:
+ * <pre>
+ *    &lt;contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"&gt;
+ *        &lt;resetJUL&gt;true&lt;/resetJUL&gt;
+ *    &lt;/contextListener&gt;
+ * </pre>
+ * This is an important performance optimization, as discussed in the <a href="http://logback.qos.ch/manual/configuration.html#LevelChangePropagator"></a>Logback docs</a>
+ * </p>
+ * setLevelToJavaLogging
+ *
+ * @author Chris Dolan
+ */
 public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfish.service.log.LogService,
         ManagedService, ServiceFactory { // if you add an interface here, add it to the ManagedService below too
 
@@ -313,7 +342,6 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         return consoleAppender;
     }
 
-    @SuppressWarnings("rawtypes") // to match interface
     private void configurePax(Dictionary config) {
         Object size = config.get("pax.logging.entries.size");
         if ( null != size )

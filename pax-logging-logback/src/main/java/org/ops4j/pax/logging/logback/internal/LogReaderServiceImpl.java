@@ -28,6 +28,16 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
+ * Implements LogReaderService: holds the last N log messages in memory for clients to access later.
+ * 
+ * <p>
+ * This code was originally derived from org.ops4j.pax.logging.service.internal.LogReaderServiceImpl v1.6.0.
+ * Changes include:
+ * <ul>
+ *     <li>converted listener array to CopyOnWriteArrayList for brevity</li>
+ *     <li>generics</li>
+ * </ul>
+ *
  * @noinspection SynchronizeOnNonFinalField
  */
 public class LogReaderServiceImpl

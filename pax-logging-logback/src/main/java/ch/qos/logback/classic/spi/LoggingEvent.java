@@ -39,9 +39,11 @@ import java.util.Map;
  * {@link #prepareForDeferredProcessing()} method for the exact list.
  * </p>
  *
- * @author Chris Dolan -- monkeypatching logback 0.9.28 to work around http://jira.qos.ch/browse/LBCLASSIC-275 and https://ops4j1.jira.com/browse/PAXLOGGING-103
  * @author Ceki G&uuml;lc&uuml;
  * @author S&eacute;bastien Pennec
+ * @author Chris Dolan -- monkeypatching logback 0.9.28 to work around http://jira.qos.ch/browse/LBCLASSIC-275 and https://ops4j1.jira.com/browse/PAXLOGGING-103
+ *
+ * TODO: remove this class and instead simply use the version from Logback 0.9.30 or later which has a fix for LBCLASSIC-275
  */
 @SuppressWarnings({ "unchecked" }) // because this is copy-paste code
 public class LoggingEvent implements ILoggingEvent {

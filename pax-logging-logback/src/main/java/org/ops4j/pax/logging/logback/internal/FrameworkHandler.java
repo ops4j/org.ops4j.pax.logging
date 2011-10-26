@@ -33,6 +33,13 @@ import org.osgi.service.log.LogService;
  * <p>By default, all events log by this class are logged at the DEBUG level.  This can be
  * changed to a different level by setting the system property
  * "org.ops4j.pax.logging.service.frameworkEventsLogLevel" to DEBUG, INFO, WARNING, or ERROR.</p>
+ *
+ * <p>
+ * This code was originally derived from org.ops4j.pax.logging.service.internal.FrameworkHandler v1.6.0.
+ * Changes include:
+ * <ul>
+ *     <li>added the bundle symbolic name to the messages</li>
+ * </ul>
  */
 public class FrameworkHandler
     implements BundleListener, FrameworkListener, ServiceListener

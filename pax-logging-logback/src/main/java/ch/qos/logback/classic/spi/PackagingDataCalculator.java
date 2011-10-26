@@ -24,7 +24,10 @@ import sun.reflect.Reflection;
  * Given a classname locate associated PackageInfo (jar name, version name).
  *
  * @author James Strachan
- * @Ceki G&uuml;lc&uuml;
+ * @author Ceki G&uuml;lc&uuml;
+ * @author Chris Dolan -- backport of http://jira.qos.ch/browse/LBCLASSIC-296 "Allow hook/override in PackagingDataCalculator"
+ *
+ * TODO - remove this class when LBCLASSIC-296 is resolved and we pull in a Logback jar that has that fix
  */
 public class PackagingDataCalculator {
 

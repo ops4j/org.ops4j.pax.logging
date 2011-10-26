@@ -29,6 +29,19 @@ import org.slf4j.spi.LocationAwareLogger;
 
 import java.util.Map;
 
+/**
+ * A logger implementation specialized for Logback.
+ *
+ * <p>
+ * This code was originally derived from org.ops4j.pax.logging.service.internal.PaxLoggerImpl v1.6.0.
+ * Changes include:
+ * <ul>
+ *     <li>tweaks for logback API instead of log4j API</li>
+ *     <li>no longer needed special log(level, message, exception) call</li>
+ *     <li>send events to a separate eventHandler instead of assuming the service is also the event handler</li>
+ *     <li>generics</li>
+ * </ul>
+ */
 public class PaxLoggerImpl
     implements PaxLogger
 {
@@ -46,7 +59,7 @@ public class PaxLoggerImpl
      * @param service  The service to be used to handle the logging events.
      * @param eventHandler helper to process log events
      */
-    PaxLoggerImpl(Bundle bundle, Logger delegate, String fqcn, PaxLoggingService service, PaxEventHandler eventHandler)
+    PaxLoggerImpl( Bundle bundle, Logger delegate, String fqcn, PaxLoggingService service, PaxEventHandler eventHandler )
     {
         m_delegate = delegate;
         m_fqcn = fqcn;

@@ -39,6 +39,15 @@ import org.ops4j.pax.logging.internal.EventAdminTracker;
 
 /**
  * Starts the logback log services.
+ *
+ * <p>
+ * This code was originally derived from org.ops4j.pax.logging.service.internal.Activator v1.6.0. Changes include:
+ * <ul>
+ *     <li>added a call to stop the service</li>
+ *     <li>added more logging to detect failures at start, which may be otherwise lost in early boot</li>
+ * </ul>
+ *
+ * @author Chris Dolan
  */
 @edu.umd.cs.findbugs.annotations.SuppressWarnings("LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE")
 public class Activator implements BundleActivator {
@@ -102,7 +111,6 @@ public class Activator implements BundleActivator {
             // so use a dummy poster
             m_eventAdmin = new EventAdminPoster()
             {
-            	@SuppressWarnings({ "rawtypes" }) // must match interface
                 public void postEvent( Bundle bundle, int level, LogEntry entry, String message, Throwable exception,
                                        ServiceReference sr, Map context )
                 {

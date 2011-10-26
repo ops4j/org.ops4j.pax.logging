@@ -1,3 +1,18 @@
+/*
+ * Licensed  under the  Apache License,  Version 2.0  (the "License");
+ * you may not use  this file  except in  compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed  under the  License is distributed on an "AS IS" BASIS,
+ * WITHOUT  WARRANTIES OR CONDITIONS  OF ANY KIND, either  express  or
+ * implied.
+ *
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.ops4j.pax.logging.logback.appender;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -8,8 +23,18 @@ import org.osgi.framework.BundleContext;
 
 /**
  * <p>
- * Forwards log messages to any services registered with OSGi with the interface org.ops4j.pax.logging.spi.PaxAppender.
- * That list of appender services is possibly filtered by the paxname setting.
+ * This is a Logback appender that forwards log messages to any services registered with OSGi with the interface
+ * org.ops4j.pax.logging.spi.PaxAppender. That list of appender services is possibly filtered by the paxname setting.
+ * </p>
+ * <p>
+ * For example, you can use it like this in your logback.xml file:
+ * <pre>
+ *   &lt;appender name="OSGI" class="com.avid.ime.paxlogback.appender.PaxAppenderDelegate"&gt;
+ *       &lt;paxname&gt;*&lt;/paxname&gt;
+ *   &lt;/appender&gt;
+ * </pre>
+ * The paxname argument is a filter for the bundle property "org.ops4j.pax.logging.appender.name". In this example,
+ * the "*" means to accept all delegatees.
  * </p>
  * <p>
  * This class is inspired by PaxLoggingConfigurator.parseAppender(), PaxAppenderProxy and AppenderBridgeImpl in the

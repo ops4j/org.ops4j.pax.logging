@@ -26,34 +26,42 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class PaxAppenderProxy extends ServiceTracker implements PaxAppender {
+public class PaxAppenderProxy extends ServiceTracker implements PaxAppender
+{
 
     private volatile int count = -1;
     private Object[] appenders = null;
 
-    public PaxAppenderProxy(BundleContext bundleContext, String name) {
+    public PaxAppenderProxy(BundleContext bundleContext, String name)
+    {
         super( bundleContext, createFilter( bundleContext, name ), null);
         open();
     }
 
-    public static Filter createFilter( BundleContext bundleContext, String name ) {
-        try {
+    public static Filter createFilter( BundleContext bundleContext, String name )
+    {
+        try
+        {
             return bundleContext.createFilter(
                         "(&(" + Constants.OBJECTCLASS + "=" + PaxAppender.class.getName() + ")" +
                             "(" + PaxLoggingService.APPENDER_NAME_PROPERTY + "=" + name + "))");
-        } catch (InvalidSyntaxException e) {
+        }
+        catch (InvalidSyntaxException e)
+        {
             throw new IllegalStateException("unable to create appender tracker", e);
         }
     }
 
-    public void doAppend( PaxLoggingEvent event ) {
+
+    public void doAppend( PaxLoggingEvent event )
+    {
         if (count != getTrackingCount()) {
             count = getTrackingCount();
             appenders = getServices();
         }
         if (appenders != null) {
-            for (Object appender : appenders) {
-                ((PaxAppender) appender).doAppend(event);
+            for (int i = 0; i < appenders.length; i++) {
+                ((PaxAppender) appenders[i]).doAppend( event );
             }
         }
     }
