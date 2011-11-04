@@ -27,7 +27,8 @@ import sun.reflect.Reflection;
  * @author Ceki G&uuml;lc&uuml;
  * @author Chris Dolan -- backport of http://jira.qos.ch/browse/LBCLASSIC-296 "Allow hook/override in PackagingDataCalculator"
  *
- * TODO - remove this class when LBCLASSIC-296 is resolved and we pull in a Logback jar that has that fix
+ * TODO - remove this class from pax-logging-logback when LBCLASSIC-296 is resolved and we pull in a Logback jar
+ *     that has that fix
  */
 public class PackagingDataCalculator {
 

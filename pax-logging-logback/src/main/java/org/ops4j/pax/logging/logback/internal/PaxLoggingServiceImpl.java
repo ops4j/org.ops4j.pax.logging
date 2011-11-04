@@ -1,4 +1,6 @@
 /*
+ * Copyright 2011 Avid Technology, Inc.
+ *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
  * You may obtain a copy of the License at
@@ -60,13 +62,13 @@ import java.util.Locale;
  * "org.ops4j.pax.logging.logback.config.file" which should be a path to a Logback Joran XML configuration file.
  *
  * <p>
- * This code was originally derived from org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl v1.6.0.
+ * This class has a fair bit of code copied from from org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl v1.6.0.
  * Changes include:
  * <ul>
  *     <li>massive overhaul for logback vs. log4j</li>
  *     <li>configuration is completely different</li>
  *     <li>removed setLevelToJavaLogging() because logback already has it's own support for synchronizing with JUL.
- *     See below!</li>
+ *         See below!</li>
  * </ul>
  *
  * <p>
@@ -78,7 +80,6 @@ import java.util.Locale;
  * </pre>
  * This is an important performance optimization, as discussed in the <a href="http://logback.qos.ch/manual/configuration.html#LevelChangePropagator"></a>Logback docs</a>
  * </p>
- * setLevelToJavaLogging
  *
  * @author Chris Dolan
  */

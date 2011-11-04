@@ -1,5 +1,6 @@
 /*
  * Copyright 2005 Niclas Hedhman.
+ * Copyright 2011 Avid Technology, Inc.
  *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
@@ -47,7 +48,7 @@ import org.ops4j.pax.logging.internal.EventAdminTracker;
  *     <li>added more logging to detect failures at start, which may be otherwise lost in early boot</li>
  * </ul>
  *
- * @author Chris Dolan
+ * @author Chris Dolan -- some code derived from from pax-logging-service v1.6.0
  */
 @edu.umd.cs.findbugs.annotations.SuppressWarnings("LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE")
 public class Activator implements BundleActivator {

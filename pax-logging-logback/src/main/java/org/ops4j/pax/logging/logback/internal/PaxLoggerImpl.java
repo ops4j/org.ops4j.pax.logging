@@ -1,5 +1,6 @@
 /*
  * Copyright 2005 Niclas Hedhman.
+ * Copyright 2011 Avid Technology, Inc.
  *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
@@ -41,6 +42,8 @@ import java.util.Map;
  *     <li>send events to a separate eventHandler instead of assuming the service is also the event handler</li>
  *     <li>generics</li>
  * </ul>
+ *
+ * @author Chris Dolan
  */
 public class PaxLoggerImpl
     implements PaxLogger

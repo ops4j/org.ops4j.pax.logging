@@ -1,4 +1,6 @@
 /*
+ * Copyright 2011 Avid Technology, Inc.
+ * 
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +22,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
 /**
+ * Simple delegate API for a logger to hand events back to the log service.
  * @author Chris Dolan
  * @since 9/6/11 1:08 PM
  */

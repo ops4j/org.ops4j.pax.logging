@@ -1,4 +1,5 @@
 /*  Copyright 2007 Niclas Hedhman.
+ * Copyright 2011 Avid Technology, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +41,8 @@ import org.osgi.service.log.LogService;
  * <ul>
  *     <li>added the bundle symbolic name to the messages</li>
  * </ul>
+ *
+ * @author Chris Dolan -- adapted from pax-logging-service v1.6.0
  */
 public class FrameworkHandler
     implements BundleListener, FrameworkListener, ServiceListener
