@@ -103,6 +103,16 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>[0.9.29]</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>[0.9.29]</version>
+      </dependency>
+      <dependency>
         <groupId>avalon-framework</groupId>
         <artifactId>avalon-framework-api</artifactId>
         <version>4.3</version>
@@ -297,11 +307,16 @@
       <name>Jean-Baptiste Onofré</name>
       <id>jbonofre</id>
     </developer>
+    <developer>
+      <name>Chris Dolan</name>
+      <email>chrisdolan@apache.org</email>
+    </developer>
   </developers>
 
   <modules>
     <module>pax-logging-api</module>
     <module>pax-logging-service</module>
+    <module>pax-logging-logback</module>
     <module>pax-logging-it</module>
     <module>pax-logging-samples</module>
   </modules>
