@@ -22,18 +22,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.Collections;
-import org.ops4j.pax.logging.internal.DefaultServiceLog;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
+
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.internal.FallbackLogFactory;
 import org.osgi.framework.BundleContext;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
 public class Slf4jLoggerFactory
-    implements ILoggerFactory
+        implements ILoggerFactory
 {
 
     private static PaxLoggingManager m_paxLogging;
@@ -41,23 +40,25 @@ public class Slf4jLoggerFactory
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap() );
+        m_loggers = new WeakHashMap();
     }
 
-    public static void setBundleContext( BundleContext context )
+    public static void setBundleContext(BundleContext context)
     {
-        m_paxLogging = new OSGIPaxLoggingManager( context );
-        // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-        Set entrySet = m_loggers.entrySet();
-        Iterator iterator = entrySet.iterator();
-        while( iterator.hasNext() )
-        {
-            Map.Entry entry = (Entry) iterator.next();
-            String name = (String) entry.getValue();
-            Slf4jLogger logger = (Slf4jLogger) entry.getKey();
-            logger.setPaxLoggingManager( m_paxLogging, name );
+        synchronized (m_loggers) {
+            m_paxLogging = new OSGIPaxLoggingManager(context);
+            // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
+            Set entrySet = m_loggers.entrySet();
+            Iterator iterator = entrySet.iterator();
+            while (iterator.hasNext())
+            {
+                Map.Entry entry = (Entry) iterator.next();
+                String name = (String) entry.getValue();
+                Slf4jLogger logger = (Slf4jLogger) entry.getKey();
+                logger.setPaxLoggingManager(m_paxLogging, name);
+            }
+            m_paxLogging.open();
         }
-        m_paxLogging.open();
     }
 
     /**
@@ -68,29 +69,32 @@ public class Slf4jLoggerFactory
     }
 
     /**
-     * Return an appropriate {@link org.slf4j.Logger} instance as specified by the
-     * <code>name</code> parameter.
-     *
-     * <p>Null-valued name arguments are considered invalid.
-     *
-     * <p>Certain extremely simple logging systems, e.g. NOP, may always
-     * return the same logger instance regardless of the requested name.
-     *
+     * Return an appropriate {@link org.slf4j.Logger} instance as specified by the <code>name</code> parameter.
+     * 
+     * <p>
+     * Null-valued name arguments are considered invalid.
+     * 
+     * <p>
+     * Certain extremely simple logging systems, e.g. NOP, may always return the same logger instance regardless of the
+     * requested name.
+     * 
      * @param name the name of the Logger to return
      */
-    public Logger getLogger( String name )
+    public Logger getLogger(String name)
     {
         PaxLogger paxLogger;
-        if( m_paxLogging == null )
+        if (m_paxLogging == null)
         {
-            paxLogger = FallbackLogFactory.createFallbackLog( null, name );
+            paxLogger = FallbackLogFactory.createFallbackLog(null, name);
         }
         else
         {
-            paxLogger = m_paxLogging.getLogger( name, Slf4jLogger.SLF4J_FQCN );
+            paxLogger = m_paxLogging.getLogger(name, Slf4jLogger.SLF4J_FQCN);
         }
-        Slf4jLogger logger = new Slf4jLogger( name, paxLogger );
-        m_loggers.put( logger, name );
+        Slf4jLogger logger = new Slf4jLogger(name, paxLogger);
+        synchronized (m_loggers) {
+            m_loggers.put(logger, name);
+        }
         return logger;
     }
 

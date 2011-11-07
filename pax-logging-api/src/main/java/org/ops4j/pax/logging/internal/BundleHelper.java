@@ -47,33 +47,39 @@ public final class BundleHelper
 
     public static Bundle getCallerBundle(Bundle defaultBundle)
     {
-        if (getBundleMethod != null)
+        if (getBundleMethod == null) {
+            return defaultBundle;
+        }
+
+        try
         {
-            try
+            Class[] classCtx = securityManager.getClassContext();
+            /* Skip first 2 classes on call stack since:
+             *  classCtx[0] is always SecurityManagerEx.getClassContext()
+             *  classCtx[1] is always BundleHelper.getCallerBundle()
+             */
+            Bundle curBundle = null;
+            for (int i = 2; i < classCtx.length; i++)
             {
-                Class[] classCtx = new SecurityManagerEx().getClassContext();
-                Bundle curBundle = null;
-                for (int i = 0; i < classCtx.length; i++)
+                Bundle bundle = FrameworkUtil.getBundle(classCtx[i]);
+                if (bundle == null)
                 {
-                    Bundle bundle = (Bundle) getBundleMethod.invoke(null, new Object[] { classCtx[i] });
-                    if (bundle == null)
-                    {
-                        return defaultBundle;
-                    }
-                    else if (curBundle == null)
-                    {
-                        curBundle = bundle;
-                    }
-                    else if (bundle != curBundle)
-                    {
-                        return bundle;
-                    }
+                    return defaultBundle;
+                }
+                else if (curBundle == null)
+                {
+                    curBundle = bundle;
+                }
+                else if (bundle != curBundle)
+                {
+                    return bundle;
                 }
             }
-            catch (Exception e)
-            {
-            }
         }
+        catch (Exception e)
+        {
+        }
+        
         return defaultBundle;
     }
 
