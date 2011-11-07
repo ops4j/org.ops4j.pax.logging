@@ -19,9 +19,9 @@ package org.ops4j.pax.logging.internal;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import org.ops4j.pax.logging.FqcnIgnoringPaxLogger;
 import org.osgi.framework.Bundle;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
@@ -29,7 +29,7 @@ import org.ops4j.pax.logging.PaxLogger;
 /**
  * Experimental fallback strategy for non-availability.
  */
-public class BufferingLog extends FqcnIgnoringPaxLogger
+public class BufferingLog implements PaxLogger
 {
 
     private static class LogType
@@ -62,11 +62,13 @@ public class BufferingLog extends FqcnIgnoringPaxLogger
         }
     }
 
-    private ArrayList m_queue;
+    private final List m_queue;
+    private final String m_fqcn;
     private PaxContext m_context = new PaxContext();
 
     public BufferingLog( Bundle bundle, String categoryName )
     {
+        m_fqcn = getClass().getName();
         m_queue = new ArrayList();
     }
 
@@ -76,6 +78,7 @@ public class BufferingLog extends FqcnIgnoringPaxLogger
         while( iterator.hasNext() )
         {
             LogPackage pack = (LogPackage) iterator.next();
+            String fqcn = pack.getFqcn();
             Throwable throwable = pack.getException();
             String message = pack.getMessage();
             getPaxContext().putAll( pack.getContext() );
@@ -84,22 +87,22 @@ public class BufferingLog extends FqcnIgnoringPaxLogger
             switch( logTypeAsInt )
             {
                 case LogType.DEBUG_INT:
-                    destination.debug( message, throwable );
+                    destination.debug( message, throwable, fqcn );
                     break;
                 case LogType.TRACE_INT:
-                    destination.trace( message, throwable );
+                    destination.trace( message, throwable, fqcn );
                     break;
                 case LogType.INFO_INT:
-                    destination.inform( message, throwable );
+                    destination.inform( message, throwable, fqcn );
                     break;
                 case LogType.WARN_INT:
-                    destination.warn( message, throwable );
+                    destination.warn( message, throwable, fqcn );
                     break;
                 case LogType.ERROR_INT:
-                    destination.error( message, throwable );
+                    destination.error( message, throwable, fqcn );
                     break;
                 case LogType.FATAL_INT:
-                    destination.fatal( message, throwable );
+                    destination.fatal( message, throwable, fqcn );
                     break;
             }
             getPaxContext().clear();
@@ -138,37 +141,73 @@ public class BufferingLog extends FqcnIgnoringPaxLogger
 
     public void trace( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.trace, message, t, getPaxContext().getContext() );
+        LogPackage p = new LogPackage( m_fqcn, LogType.trace, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void debug( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.debug, message, t, getPaxContext().getContext() );
+        LogPackage p = new LogPackage( m_fqcn, LogType.debug, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void inform( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.info, message, t, getPaxContext().getContext() );
+        LogPackage p = new LogPackage( m_fqcn, LogType.info, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void warn( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.warn, message, t, getPaxContext().getContext() );
+        LogPackage p = new LogPackage( m_fqcn, LogType.warn, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void error( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.error, message, t, getPaxContext().getContext() );
+        LogPackage p = new LogPackage( m_fqcn, LogType.error, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
     public void fatal( String message, Throwable t )
     {
-        LogPackage p = new LogPackage( LogType.fatal, message, t, getPaxContext().getContext() );
+        LogPackage p = new LogPackage( m_fqcn, LogType.fatal, message, t, getPaxContext().getContext() );
+        m_queue.add( p );
+    }
+
+    public void trace( String message, Throwable t, String fqcn )
+    {
+        LogPackage p = new LogPackage( fqcn, LogType.trace, message, t, getPaxContext().getContext() );
+        m_queue.add( p );
+    }
+
+    public void debug( String message, Throwable t, String fqcn )
+    {
+        LogPackage p = new LogPackage( fqcn, LogType.debug, message, t, getPaxContext().getContext() );
+        m_queue.add( p );
+    }
+
+    public void inform( String message, Throwable t, String fqcn )
+    {
+        LogPackage p = new LogPackage( fqcn, LogType.info, message, t, getPaxContext().getContext() );
+        m_queue.add( p );
+    }
+
+    public void warn( String message, Throwable t, String fqcn )
+    {
+        LogPackage p = new LogPackage( fqcn, LogType.warn, message, t, getPaxContext().getContext() );
+        m_queue.add( p );
+    }
+
+    public void error( String message, Throwable t, String fqcn )
+    {
+        LogPackage p = new LogPackage( fqcn, LogType.error, message, t, getPaxContext().getContext() );
+        m_queue.add( p );
+    }
+
+    public void fatal( String message, Throwable t, String fqcn )
+    {
+        LogPackage p = new LogPackage( fqcn, LogType.fatal, message, t, getPaxContext().getContext() );
         m_queue.add( p );
     }
 
@@ -190,17 +229,25 @@ public class BufferingLog extends FqcnIgnoringPaxLogger
     private static class LogPackage
     {
 
-        private LogType m_type;
-        private String m_message;
-        private Throwable m_exception;
-        private Map m_context;
+        private final String m_fqcn;
+        private final LogType m_type;
+        private final String m_message;
+        private final Throwable m_exception;
+        private final Map m_context;
 
-        public LogPackage( LogType type, String message, Throwable exception, Map context )
+        public LogPackage( String fqcn, LogType type, String message, Throwable exception, Map context )
         {
+            m_fqcn = fqcn;
             m_type = type;
             m_message = message;
             m_exception = exception;
             m_context = context;
+            if (m_exception != null)
+                m_exception.fillInStackTrace();
+        }
+
+        public String getFqcn() {
+            return m_fqcn;
         }
 
         public String getMessage()

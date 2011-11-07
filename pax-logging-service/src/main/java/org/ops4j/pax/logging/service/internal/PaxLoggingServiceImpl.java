@@ -404,7 +404,8 @@ public class PaxLoggingServiceImpl
 			if (name.equals( "log4j.rootLogger" ))
 			{
                 setJULLevel( java.util.logging.Logger.getLogger(""), value );
-                setJULLevel( java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME), value );
+                // "global" comes from java.util.logging.Logger.GLOBAL_LOGGER_NAME, but that constant wasn't added until Java 1.6
+                setJULLevel( java.util.logging.Logger.getLogger("global"), value );
 			}
 
             if (name.startsWith("log4j.logger."))

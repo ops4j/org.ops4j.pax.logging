@@ -33,8 +33,17 @@ public class PaxLevelImpl
 
     public boolean isGreaterOrEqual( PaxLevel r )
     {
-        PaxLevelImpl impl = (PaxLevelImpl) r;
-        return m_delegate.isGreaterOrEqual( impl.m_delegate );
+        if (r instanceof PaxLevelImpl)
+        {
+            PaxLevelImpl impl = (PaxLevelImpl) r;
+            return m_delegate.isGreaterOrEqual( impl.m_delegate );
+        }
+        else
+        {
+            // fallback case: the syslog numbers are portable
+            return getSyslogEquivalent() <= r.getSyslogEquivalent();
+        }
+
     }
 
     public int toInt()
