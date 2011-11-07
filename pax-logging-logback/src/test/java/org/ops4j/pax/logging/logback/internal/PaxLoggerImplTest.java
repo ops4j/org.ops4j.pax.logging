@@ -13,6 +13,7 @@ import org.eclipse.osgi.framework.util.Headers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.ops4j.pax.logging.PaxContext;
+import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
@@ -31,13 +32,15 @@ public class PaxLoggerImplTest {
     @Test
     public void test() {
         String fqcn = "blarg";
+        String fqcn2 = "other";
         LoggerContext context = new LoggerContext();
         Logger logger = context.getLogger("foo");
+        PaxContext paxContext = new PaxContext();
 
         Bundle bundle = makeBundle();
         PaxLoggingService svc = EasyMock.createStrictMock(PaxLoggingService.class);
+        EasyMock.expect(svc.getPaxContext()).andReturn(paxContext).once();
         PaxEventHandler eventHandler = EasyMock.createNiceMock(PaxEventHandler.class);
-        EasyMock.expect(svc.getPaxContext()).andReturn(new PaxContext()).anyTimes();
 
         Appender<ILoggingEvent> appender = EasyMock.createStrictMock(LogAppender.class);
         MDC.put("bundle.name", "bundle1");
@@ -47,17 +50,42 @@ public class PaxLoggerImplTest {
         appender.doAppend(eqLogEvent(fqcn, logger, Level.INFO,  "i"));  EasyMock.expectLastCall();
         appender.doAppend(eqLogEvent(fqcn, logger, Level.WARN,  "w"));  EasyMock.expectLastCall();
         appender.doAppend(eqLogEvent(fqcn, logger, Level.ERROR, "e"));  EasyMock.expectLastCall();
+        appender.doAppend(eqLogEvent(fqcn, logger, Level.ERROR, "f"));  EasyMock.expectLastCall();
+        appender.doAppend(eqLogEvent(fqcn2, logger, Level.DEBUG, "d"));  EasyMock.expectLastCall();
+        appender.doAppend(eqLogEvent(fqcn2, logger, Level.INFO,  "i"));  EasyMock.expectLastCall();
+        appender.doAppend(eqLogEvent(fqcn2, logger, Level.WARN,  "w"));  EasyMock.expectLastCall();
+        appender.doAppend(eqLogEvent(fqcn2, logger, Level.ERROR, "e"));  EasyMock.expectLastCall();
+        appender.doAppend(eqLogEvent(fqcn2, logger, Level.ERROR, "f"));  EasyMock.expectLastCall();
         MDC.clear();
 
         EasyMock.replay(bundle, svc, eventHandler, appender);
 
         logger.addAppender(appender);
         PaxLoggerImpl paxLogger = new PaxLoggerImpl(bundle, logger, fqcn, svc, eventHandler);
+
+        Assert.assertEquals(PaxLogger.LEVEL_DEBUG, paxLogger.getLogLevel());
+        Assert.assertEquals("foo", paxLogger.getName());
+        Assert.assertSame(paxContext, paxLogger.getPaxContext());
+
         paxLogger.trace("t", null); // won't be logged, default level is DEBUG
         paxLogger.debug("d", null);
         paxLogger.inform("i", null);
         paxLogger.warn("w", null);
         paxLogger.error("e", null);
+        paxLogger.fatal("f", null);
+        paxLogger.trace("t", null, fqcn2); // won't be logged, default level is DEBUG
+        paxLogger.debug("d", null, fqcn2);
+        paxLogger.inform("i", null, fqcn2);
+        paxLogger.warn("w", null, fqcn2);
+        paxLogger.error("e", null, fqcn2);
+        paxLogger.fatal("f", null, fqcn2);
+
+        Assert.assertFalse(paxLogger.isTraceEnabled());
+        Assert.assertTrue(paxLogger.isDebugEnabled());
+        Assert.assertTrue(paxLogger.isInfoEnabled());
+        Assert.assertTrue(paxLogger.isWarnEnabled());
+        Assert.assertTrue(paxLogger.isErrorEnabled());
+        Assert.assertTrue(paxLogger.isFatalEnabled());
 
         EasyMock.verify(bundle, svc, eventHandler, appender);
     }

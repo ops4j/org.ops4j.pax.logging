@@ -225,7 +225,7 @@ public class PaxLoggerImpl
 
     public int getLogLevel()
     {
-        return m_delegate.getLevel().toInt();
+        return new PaxLevelForLogback(m_delegate.getEffectiveLevel()).toInt();
     }
 
     public String getName()

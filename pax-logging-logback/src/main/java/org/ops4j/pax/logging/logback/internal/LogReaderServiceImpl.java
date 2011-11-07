@@ -84,18 +84,6 @@ public class LogReaderServiceImpl
         }
     }
 
-    final void fireEvent( LogEntry entry )
-    {
-        synchronized( m_entries )
-        {
-            m_entries.addFirst( entry );
-            cleanUp();
-        }
-        for (LogListener listener : m_listeners) {
-            fire(listener, entry);
-        }
-    }
-
     private void fire( LogListener listener, LogEntry entry )
     {
         try
@@ -110,13 +98,25 @@ public class LogReaderServiceImpl
         }
     }
 
-    /**
-     * Sets the max number of entries that should be allowed in the LogReader buffer.
-     *
-     * @param maxSize the maximum number of entries in the LogReader buffer.
-     */
-    final void setMaxEntries( int maxSize )
+    LogReaderServiceAccess getAccessDelegate()
     {
-        m_maxEntries = maxSize;
+    	return new LogReaderServiceAccess()
+    	{
+			public void fireEvent(LogEntry entry)
+			{
+		        synchronized( m_entries )
+		        {
+		            m_entries.addFirst( entry );
+		            cleanUp();
+		        }
+		        for (LogListener listener : m_listeners) {
+		            fire(listener, entry);
+		        }
+			}
+			public void setMaxEntries(int maxSize)
+			{
+		        m_maxEntries = maxSize;
+			}
+		};
     }
 }

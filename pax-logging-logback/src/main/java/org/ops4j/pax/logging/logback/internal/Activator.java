@@ -124,7 +124,7 @@ public class Activator implements BundleActivator {
         }
 
         // register the Pax Logging service
-        m_paxLogging = new PaxLoggingServiceImpl( bundleContext, logReader, m_eventAdmin );
+        m_paxLogging = new PaxLoggingServiceImpl( bundleContext, logReader.getAccessDelegate(), m_eventAdmin );
         Hashtable<String, String> serviceProperties = new Hashtable<String, String>();
         serviceProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
         serviceProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );

@@ -18,6 +18,8 @@
 package org.ops4j.pax.logging.logback.internal;
 
 import ch.qos.logback.classic.Level;
+
+import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.spi.PaxLevel;
 
 /**
@@ -41,7 +43,15 @@ public class PaxLevelForLogback implements PaxLevel {
     }
 
     public int toInt() {
-        return m_delegate.toInt();
+    	if (m_delegate.isGreaterOrEqual(Level.ERROR))
+    		return PaxLogger.LEVEL_ERROR;
+    	if (m_delegate.isGreaterOrEqual(Level.WARN))
+    		return PaxLogger.LEVEL_WARNING;
+    	if (m_delegate.isGreaterOrEqual(Level.INFO))
+    		return PaxLogger.LEVEL_INFO;
+    	if (m_delegate.isGreaterOrEqual(Level.DEBUG))
+    		return PaxLogger.LEVEL_DEBUG;
+    	return PaxLogger.LEVEL_TRACE;
     }
 
     public int getSyslogEquivalent() {

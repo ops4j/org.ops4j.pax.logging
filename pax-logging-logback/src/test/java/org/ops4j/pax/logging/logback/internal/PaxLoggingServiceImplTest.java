@@ -19,6 +19,9 @@ import static org.easymock.EasyMock.isA;
  * @since 6/10/11 11:13 AM
  */
 public class PaxLoggingServiceImplTest {
+	/**
+	 * Tests the maijn functionality of the logging service.
+	 */
     @Test
     public void test() {
         BundleContext bundleContext = EasyMock.createNiceMock(BundleContext.class);
@@ -42,7 +45,7 @@ public class PaxLoggingServiceImplTest {
 
         EasyMock.replay(bundleContext, eventPoster, mockBundle, serviceReference, logger1, logger2);
 
-        PaxLoggingServiceImpl service = new PaxLoggingServiceImpl(bundleContext, new LogReaderServiceImpl(0), eventPoster) {
+        PaxLoggingServiceImpl service = new PaxLoggingServiceImpl(bundleContext, new LogReaderServiceImpl(0).getAccessDelegate(), eventPoster) {
             public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
                 Assert.assertEquals(getClass().getName(), fqcn);
                 if (bundle == null && "[undefined]".equals(category))
@@ -69,6 +72,9 @@ public class PaxLoggingServiceImplTest {
         EasyMock.verify(bundleContext, eventPoster, mockBundle, serviceReference, logger1, logger2);
     }
 
+    /**
+     * Tests the ManagedService inner class.
+     */
     @Test
     public void testInner() {
         BundleContext bundleContext = EasyMock.createNiceMock(BundleContext.class);
@@ -85,7 +91,7 @@ public class PaxLoggingServiceImplTest {
 
         EasyMock.replay(mockBundle, logger);
 
-        PaxLoggingServiceImpl service = new PaxLoggingServiceImpl(bundleContext, new LogReaderServiceImpl(0), eventPoster) {
+        PaxLoggingServiceImpl service = new PaxLoggingServiceImpl(bundleContext, new LogReaderServiceImpl(0).getAccessDelegate(), eventPoster) {
             public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
                 Assert.assertEquals(PaxLoggingServiceImpl.class.getName() + "$1ManagedPaxLoggingService", fqcn);
                 if (bundle == mockBundle && "bundle1".equals(category))
@@ -114,5 +120,18 @@ public class PaxLoggingServiceImplTest {
         EasyMock.expect(bundle.getBundleId()).andReturn(1L).anyTimes();
         EasyMock.expect(bundle.getSymbolicName()).andReturn("bundle1").anyTimes();
         return bundle;
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testNullBundleContext() {
+    	new PaxLoggingServiceImpl((BundleContext)null, EasyMock.createMock(LogReaderServiceAccess.class), EasyMock.createMock(EventAdminPoster.class));
+    }
+    @Test(expected=NullPointerException.class)
+    public void testNullLogReader() {
+    	new PaxLoggingServiceImpl(EasyMock.createMock(BundleContext.class), (LogReaderServiceAccess)null, EasyMock.createMock(EventAdminPoster.class));
+    }
+    @Test(expected=NullPointerException.class)
+    public void testNullEventPoster() {
+    	new PaxLoggingServiceImpl(EasyMock.createMock(BundleContext.class), EasyMock.createMock(LogReaderServiceAccess.class), (EventAdminPoster)null);
     }
 }

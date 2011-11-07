@@ -25,7 +25,7 @@ import static org.easymock.EasyMock.same;
 public class PaxAppenderDelegateTest {
     @Test
     public void test() throws InvalidSyntaxException {
-        String filterStr = "(&(objectClass=org.ops4j.pax.logging.spi.PaxAppender)(org.ops4j.pax.logging.appender.name=*))";
+        String filterStr = "(&(objectClass=org.ops4j.pax.logging.spi.PaxAppender)(org.ops4j.pax.logging.appender.name=foo-pax-name))";
 
         ILoggingEvent evt = new LoggingEventVO();
 
@@ -57,13 +57,21 @@ public class PaxAppenderDelegateTest {
 
         PaxAppenderDelegate delegate = new PaxAppenderDelegate();
         delegate.setContext(context);
+        delegate.setPaxname("foo-pax-name");
         delegate.start();
+        delegate.start(); // second start is a no-op
         try {
             delegate.doAppend(evt);
         } finally {
             delegate.stop();
+            delegate.stop(); // second stop is a no-op
         }
 
         EasyMock.verify(context, bundlecontext, sr, appender);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void testPropertyPaxnameNull() {
+    	new PaxAppenderDelegate().setPaxname(null);
     }
 }

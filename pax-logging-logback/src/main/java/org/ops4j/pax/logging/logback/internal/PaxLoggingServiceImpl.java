@@ -86,7 +86,7 @@ import java.util.Locale;
 public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfish.service.log.LogService,
         ManagedService, ServiceFactory { // if you add an interface here, add it to the ManagedService below too
 
-    private final LogReaderServiceImpl m_logReader;
+    private final LogReaderServiceAccess m_logReader;
     private final EventAdminPoster m_eventAdmin;
     private final BundleContext m_bundleContext;
     private final PaxContext m_paxContext;
@@ -98,7 +98,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
     private static final String LOGBACK_CONFIG_FILE_KEY = "org.ops4j.pax.logging.logback.config.file";
     public static final String LOGGER_CONTEXT_BUNDLECONTEXT_KEY = "org.ops4j.pax.logging.logback.bundlecontext";
 
-    public PaxLoggingServiceImpl(@NonNull BundleContext bundleContext, @NonNull LogReaderServiceImpl logReader,
+    public PaxLoggingServiceImpl(@NonNull BundleContext bundleContext, @NonNull LogReaderServiceAccess logReader,
                                  @NonNull EventAdminPoster eventAdmin)
     {
         m_fqcn = getClass().getName();
