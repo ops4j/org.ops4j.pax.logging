@@ -79,7 +79,7 @@ public class Activator implements BundleActivator {
      * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
      */
     public void start( BundleContext bundleContext ) throws Exception {
-        // This try/catch is to detect failures to load the logging framework, which otherwise are silent under TSF...
+        // This try/catch is to detect failures to load the logging framework, which otherwise are silent...
         try {
             startInternal(bundleContext);
         } catch (Exception e) {
@@ -107,7 +107,6 @@ public class Activator implements BundleActivator {
         }
         catch( NoClassDefFoundError e )
         {
-            e.printStackTrace();
             // If we hit a NoClassDefFoundError, this means the event admin package is not available,
             // so use a dummy poster
             m_eventAdmin = new EventAdminPoster()
