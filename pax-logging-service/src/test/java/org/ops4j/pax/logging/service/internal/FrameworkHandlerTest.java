@@ -24,6 +24,7 @@ import org.jmock.Mock;
 import org.jmock.core.stub.ReturnStub;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.Version;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogService;
@@ -95,6 +96,7 @@ public class FrameworkHandlerTest extends TestCase
     {
         final Mock bundleMock = new Mock( Bundle.class );
         bundleMock.stubs().method( "getSymbolicName" ).will( new ReturnStub( "test-bundle" ) );
+        bundleMock.stubs().method( "getVersion" ).will( new ReturnStub( Version.emptyVersion ) );
         bundleMock.stubs().method( "getBundleId" ).will( new ReturnStub( Long.valueOf(42) ) );
         bundleMock.stubs().method( "getHeaders" ).will( new ReturnStub( new Hashtable() ) );
         return (Bundle) bundleMock.proxy();

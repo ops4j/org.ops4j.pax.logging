@@ -17,7 +17,6 @@
 package org.apache.log4j;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
@@ -26,9 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.spi.ThrowableRenderer;
+import org.ops4j.pax.logging.util.OsgiUtil;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleReference;
-import org.osgi.framework.FrameworkUtil;
 
 /**
  * Enhanced implementation of ThrowableRenderer.
@@ -77,7 +75,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
             } else if (lastClass != null) {
                 try {
                     ClassLoader cl = lastClass.getClassLoader();
-                    clazz = loadClass(cl, elements[elements.length - 1 - i].getClassName());
+                    clazz = OsgiUtil.loadClass(cl, elements[elements.length - 1 - i].getClassName());
                     String classDetails = getClassDetail(clazz);
                     classMap.put(clazz.getName(), classDetails);
                     lastClass = clazz;
@@ -141,8 +139,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
 
     private String getClassDetail(Class cls) {
         try {
-            Method getBundleMethod = FrameworkUtil.class.getMethod("getBundle", new Class[] { Class.class });
-            Bundle bundle = (Bundle) getBundleMethod.invoke(null, new Object[] { cls });
+            Bundle bundle = OsgiUtil.getBundleOrNull(cls);
             if (bundle != null) {
                 StringBuffer buf = new StringBuffer();
                 buf.append('[');
@@ -215,24 +212,14 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
      */
     private Class findClass(final String className) throws ClassNotFoundException {
         try {
-            return loadClass(Thread.currentThread().getContextClassLoader(), className);
+            return OsgiUtil.loadClass(Thread.currentThread().getContextClassLoader(), className);
         } catch (ClassNotFoundException e) {
             try {
                 return Class.forName(className);
             } catch (ClassNotFoundException e1) {
-                return loadClass(getClass().getClassLoader(), className);
+                return OsgiUtil.loadClass(getClass().getClassLoader(), className);
             }
         }
-    }
-
-    private Class loadClass(ClassLoader loader, String className) throws ClassNotFoundException {
-        if (loader instanceof BundleReference) {
-            Bundle b = ((BundleReference) loader).getBundle();
-            if (b == null || b.getState() == Bundle.INSTALLED || b.getState() == Bundle.UNINSTALLED) {
-                throw new ClassNotFoundException(className);
-            }
-        }
-        return loader.loadClass(className);
     }
 
     static class SecurityManagerEx extends SecurityManager

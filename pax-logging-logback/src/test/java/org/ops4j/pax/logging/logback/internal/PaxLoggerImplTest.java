@@ -1,5 +1,8 @@
 package org.ops4j.pax.logging.logback.internal;
 
+import java.util.Arrays;
+import java.util.Map;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -19,9 +22,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.slf4j.MDC;
 
-import java.util.Arrays;
-import java.util.Map;
-
 /**
  * @author Chris Dolan
  * @since 6/13/11 11:13 AM
@@ -39,7 +39,7 @@ public class PaxLoggerImplTest {
 
         Bundle bundle = makeBundle();
         PaxLoggingService svc = EasyMock.createStrictMock(PaxLoggingService.class);
-        EasyMock.expect(svc.getPaxContext()).andReturn(paxContext).once();
+        EasyMock.expect(svc.getPaxContext()).andReturn(paxContext).anyTimes();
         PaxEventHandler eventHandler = EasyMock.createNiceMock(PaxEventHandler.class);
 
         Appender<ILoggingEvent> appender = EasyMock.createStrictMock(LogAppender.class);

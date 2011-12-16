@@ -9,7 +9,8 @@ Private-Package: \
  org.apache.log4j.sift; -split-package:=merge-first, \
  org.apache.log4j.spi; -split-package:=merge-first, \
  org.ops4j.pax.logging.internal, \
- org.ops4j.pax.logging.service.internal
+ org.ops4j.pax.logging.service.internal, \
+ org.ops4j.pax.logging.util
 
 Import-Package: \
  javax.xml.*, \
