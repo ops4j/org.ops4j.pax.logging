@@ -84,16 +84,6 @@
                                 <include>${project.groupId}:${project.artifactId}</include>
                             </includes>
                         </artifactSet>
-                        <!--
-                        <filters>
-                            <filter>
-                                <artifact>log4j:log4j</artifact>
-                                <excludes>
-                                    <exclude>org/**</exclude>
-                                </excludes>
-                            </filter>
-                        </filters>
-                        -->
                         <createSourcesJar>true</createSourcesJar>
                         <promoteTransitiveDependencies>false</promoteTransitiveDependencies>
                         <createDependencyReducedPom>false</createDependencyReducedPom>
