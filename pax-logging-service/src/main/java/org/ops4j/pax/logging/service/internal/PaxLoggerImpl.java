@@ -19,15 +19,16 @@ package org.ops4j.pax.logging.service.internal;
 
 import java.util.Iterator;
 import java.util.Map;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.Priority;
+import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.util.OsgiUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
-import org.ops4j.pax.logging.PaxContext;
-import org.osgi.framework.Constants;
 
 public class PaxLoggerImpl
     implements PaxLogger
@@ -97,8 +98,8 @@ public class PaxLoggerImpl
         if (m_bundle != null)
         {
             put("bundle.id", new Long(m_bundle.getBundleId()));
-            put("bundle.name", m_bundle.getSymbolicName());
-            put("bundle.version", m_bundle.getHeaders().get(Constants.BUNDLE_VERSION));
+            put("bundle.name", OsgiUtil.getBundleSymbolicName(m_bundle));
+            put("bundle.version", OsgiUtil.getVersion(m_bundle));
         }
     }
 
