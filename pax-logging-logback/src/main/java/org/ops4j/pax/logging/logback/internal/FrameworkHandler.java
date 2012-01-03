@@ -160,6 +160,7 @@ public class FrameworkHandler
                 message = "ServiceEvent [unknown:" + type + "]";
                 break;
         }
+        message += " - " + serviceRef;
         Bundle bundle = serviceRef.getBundle();
         if (bundle != null)
             message += " - " + bundle.getSymbolicName();
