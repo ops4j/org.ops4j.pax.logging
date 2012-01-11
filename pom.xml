@@ -25,7 +25,7 @@
   <scm>
     <connection>scm:git:git://github.com/ops4j/org.ops4j.pax.logging.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/ops4j/org.ops4j.pax.logging.git</developerConnection>
-    <url>http://github.com/ops4j/org.ops4j.pax.logging/tree/master</url>
+    <url>http://github.com/ops4j/org.ops4j.pax.logging/tree/paxlogging-1.6.x</url>
   </scm>
 
   <build>
