@@ -142,22 +142,22 @@
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam</artifactId>
-        <version>1.2.2</version>
+        <version>1.2.4</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-container-default</artifactId>
-        <version>1.2.2</version>
+        <version>1.2.4</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-junit</artifactId>
-        <version>1.2.2</version>
+        <version>1.2.4</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.runner</groupId>
         <artifactId>pax-runner-no-jcl</artifactId>
-        <version>1.5.0</version>
+        <version>1.7.6</version>
       </dependency>
 
       <!-- sample dependencies -->
