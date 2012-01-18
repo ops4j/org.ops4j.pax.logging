@@ -92,11 +92,15 @@ public class LogReaderServiceImpl
     {
         // Need to do a copy to avoid a ConcurrentModificationException if
         // a new event is logged while the enumeration is iterated.
-        return Collections.enumeration( new ArrayList( m_entries ) );
+        synchronized (m_entries)
+        {
+            return Collections.enumeration( new ArrayList( m_entries ) );
+        }
     }
 
     private void cleanUp()
     {
+        // caller must synchronize on m_entries
         while( m_entries.size() > m_maxEntries )
         {
             m_entries.removeLast();
@@ -144,6 +148,9 @@ public class LogReaderServiceImpl
      */
     final void setMaxEntries( int maxSize )
     {
-        m_maxEntries = maxSize;
+        synchronized (m_entries)
+        {
+            m_maxEntries = maxSize;
+        }
     }
 }

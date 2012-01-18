@@ -90,6 +90,8 @@ public class FrameworkHandler
                 message = "BundleEvent [unknown:" + type + "]";
                 break;
         }
+        if (bundle != null)
+            message += " - " + bundle.getSymbolicName();
         m_service.log( bundle, loggingLevel, message, null );
     }
 
@@ -123,6 +125,8 @@ public class FrameworkHandler
         }
         final Bundle bundle = frameworkEvent.getBundle();
         final Throwable exception = frameworkEvent.getThrowable();
+        if (bundle != null)
+            message += " - " + bundle.getSymbolicName();
         m_service.log( bundle, loggingLevel, message, exception );
     }
 
@@ -146,6 +150,10 @@ public class FrameworkHandler
                 message = "ServiceEvent [unknown:" + type + "]";
                 break;
         }
+        message += " - " + serviceRef;
+        Bundle bundle = serviceRef.getBundle();
+        if (bundle != null)
+            message += " - " + bundle.getSymbolicName();
         m_service.log( serviceRef, loggingLevel, message );
     }
 

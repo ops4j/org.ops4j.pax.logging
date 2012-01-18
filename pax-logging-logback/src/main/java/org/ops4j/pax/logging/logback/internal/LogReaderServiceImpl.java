@@ -115,7 +115,10 @@ public class LogReaderServiceImpl
 			}
 			public void setMaxEntries(int maxSize)
 			{
-		        m_maxEntries = maxSize;
+                synchronized( m_entries )
+                {
+    		        m_maxEntries = maxSize;
+                }
 			}
 		};
     }
