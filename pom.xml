@@ -55,7 +55,7 @@
         <plugin>
           <groupId>org.ops4j</groupId>
           <artifactId>maven-pax-plugin</artifactId>
-          <version>1.4</version>
+          <version>1.5</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
