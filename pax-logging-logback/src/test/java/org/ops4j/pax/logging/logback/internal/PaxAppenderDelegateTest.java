@@ -23,6 +23,7 @@ import static org.easymock.EasyMock.same;
  * @since 6/14/11 10:59 AM
  */
 public class PaxAppenderDelegateTest {
+
     @Test
     public void test() throws InvalidSyntaxException {
         String filterStr = "(&(objectClass=org.ops4j.pax.logging.spi.PaxAppender)(org.ops4j.pax.logging.appender.name=foo-pax-name))";
@@ -44,7 +45,7 @@ public class PaxAppenderDelegateTest {
         EasyMock.expect(bundlecontext.getProperty(Constants.FRAMEWORK_VERSION)).andReturn("0").times(0,1); // it seems that different OSGi versions call this differently
         bundlecontext.addServiceListener(EasyMock.<ServiceListener>anyObject(), EasyMock.<String>isNull());
         EasyMock.expectLastCall().once();
-        EasyMock.expect(bundlecontext.getServiceReferences(null, filterStr)).andReturn(new ServiceReference[]{sr}).once();
+        EasyMock.expect(bundlecontext.getServiceReferences((String) null, filterStr)).andReturn(new ServiceReference[]{sr}).once();
         EasyMock.expect(bundlecontext.getService(same(sr))).andReturn(appender).once();
         bundlecontext.removeServiceListener(EasyMock.<ServiceListener>anyObject());
         EasyMock.expectLastCall().once();
