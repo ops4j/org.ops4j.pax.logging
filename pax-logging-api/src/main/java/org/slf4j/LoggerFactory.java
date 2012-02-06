@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2008 QOS.ch
+ * Copyright (c) 2004-2011 QOS.ch
  * All rights reserved.
  * 
  * Permission is hereby granted, free  of charge, to any person obtaining
@@ -26,10 +26,7 @@ package org.slf4j;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 import org.slf4j.helpers.SubstituteLoggerFactory;
 import org.slf4j.helpers.Util;
@@ -115,6 +112,16 @@ public final class LoggerFactory {
 
   }
 
+  private static boolean messageContainsOrgSlf4jImplStaticLoggerBinder(String msg) {
+    if(msg == null)
+      return false;
+    if(msg.indexOf("org/slf4j/impl/StaticLoggerBinder") != -1)
+      return true;
+    if(msg.indexOf("org.slf4j.impl.StaticLoggerBinder") != -1)
+      return true;
+    return false;
+  }
+
   private final static void bind() {
     try {
       // the next line does the binding
@@ -124,7 +131,7 @@ public final class LoggerFactory {
     } catch (NoClassDefFoundError ncde) {
       INITIALIZATION_STATE = FAILED_INITILIZATION;
       String msg = ncde.getMessage();
-      if (msg != null && msg.indexOf("org/slf4j/impl/StaticLoggerBinder") != -1) {
+      if (messageContainsOrgSlf4jImplStaticLoggerBinder(msg)) {
         Util
             .report("Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".");
         Util.report("See " + NO_STATICLOGGERBINDER_URL
@@ -146,7 +153,7 @@ public final class LoggerFactory {
       return;
     }
     Util
-        .report("The following loggers will not work becasue they were created");
+        .report("The following loggers will not work because they were created");
     Util
         .report("during the default configuration phase of the underlying logging system.");
     Util.report("See also " + SUBSTITUTE_LOGGER_URL);
@@ -185,7 +192,7 @@ public final class LoggerFactory {
   }
 
   // We need to use the name of the StaticLoggerBinder class, we can't reference
-  // the class itseld.
+  // the class itself.
   private static String STATIC_LOGGER_BINDER_PATH = "org/slf4j/impl/StaticLoggerBinder.class";
 
   private static void singleImplementationSanityCheck() {
@@ -198,16 +205,19 @@ public final class LoggerFactory {
       }
       Enumeration paths = loggerFactoryClassLoader
           .getResources(STATIC_LOGGER_BINDER_PATH);
-      List implementationList = new ArrayList();
+      // use Set instead of list in order to deal with bug #138
+      // LinkedHashSet appropriate here because it preserves insertion order during iteration
+      Set implementationSet = new LinkedHashSet();
       while (paths.hasMoreElements()) {
         URL path = (URL) paths.nextElement();
-        implementationList.add(path);
+        implementationSet.add(path);
       }
-      if (implementationList.size() > 1) {
+      if (implementationSet.size() > 1) {
         Util.report("Class path contains multiple SLF4J bindings.");
-        for (int i = 0; i < implementationList.size(); i++) {
-          Util.report("Found binding in [" + implementationList.get(i)
-                  + "]");
+        Iterator iterator = implementationSet.iterator();
+        while(iterator.hasNext()) {
+          URL path = (URL) iterator.next();
+          Util.report("Found binding in [" + path + "]");
         }
         Util.report("See " + MULTIPLE_BINDINGS_URL
                 + " for an explanation.");
