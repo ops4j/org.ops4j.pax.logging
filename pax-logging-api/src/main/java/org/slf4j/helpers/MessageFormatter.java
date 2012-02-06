@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004-2007 QOS.ch
+ * Copyright (c) 2004-2011 QOS.ch
  * All rights reserved.
  *
  * Permission is hereby granted, free  of charge, to any person obtaining
@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 // contributors: lizongbo: proposed special treatment of array parameter values
-// Jörn Huxhorn: pointed out double[] omission, suggested deep array copy
+// Jï¿½rn Huxhorn: pointed out double[] omission, suggested deep array copy
 /**
  * Formats messages according to very simple substitution rules. Substitutions
  * can be made 1, 2 or more arguments.

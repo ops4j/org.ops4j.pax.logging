@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2004-2007 QOS.ch
+ * Copyright (c) 2004-2011 QOS.ch
  * All rights reserved.
  * 
  * Permission is hereby granted, free  of charge, to any person obtaining
@@ -26,6 +26,7 @@ package org.slf4j;
 
 import java.util.Map;
 
+import org.slf4j.helpers.NOPMDCAdapter;
 import org.slf4j.helpers.BasicMDCAdapter;
 import org.slf4j.helpers.Util;
 import org.slf4j.impl.StaticMDCBinder;
@@ -71,8 +72,9 @@ public class MDC {
     try {
       mdcAdapter = StaticMDCBinder.SINGLETON.getMDCA();
     } catch (NoClassDefFoundError ncde) {
+      mdcAdapter = new NOPMDCAdapter();
       String msg = ncde.getMessage();
-      if (msg != null && msg.indexOf("org/slf4j/impl/StaticMDCBinder") != -1) {
+      if (msg != null && msg.indexOf("StaticMDCBinder") != -1) {
         Util
             .report("Failed to load class \"org.slf4j.impl.StaticMDCBinder\".");
         Util.report("See " + NO_STATIC_MDC_BINDER_URL
