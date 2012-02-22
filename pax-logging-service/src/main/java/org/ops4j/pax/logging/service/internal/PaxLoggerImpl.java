@@ -101,6 +101,7 @@ public class PaxLoggerImpl
             put("bundle.name", OsgiUtil.getBundleSymbolicName(m_bundle));
             put("bundle.version", OsgiUtil.getVersion(m_bundle));
         }
+        m_service.getConfigLock().readLock().lock();
     }
 
     private void put(String name, Object o)
@@ -113,6 +114,7 @@ public class PaxLoggerImpl
 
     private void clearDelegateContext()
     {
+        m_service.getConfigLock().readLock().unlock();
         if( MDC.getContext() != null )
         {
             MDC.getContext().clear();
