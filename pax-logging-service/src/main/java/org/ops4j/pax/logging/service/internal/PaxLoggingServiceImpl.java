@@ -22,6 +22,8 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -48,6 +50,7 @@ public class PaxLoggingServiceImpl
     private EventAdminPoster m_eventAdmin;
     private BundleContext m_bundleContext;
     private PaxContext m_context;
+    private ReadWriteLock m_configLock;
 
     private int m_logLevel = LOG_DEBUG;
     private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.DefaultServiceLog.level";
@@ -58,7 +61,12 @@ public class PaxLoggingServiceImpl
         m_logReader = logReader;
         m_eventAdmin = eventAdmin;
         m_context = new PaxContext();
+        m_configLock = new ReentrantReadWriteLock();
         configureDefaults();
+    }
+
+    ReadWriteLock getConfigLock() {
+        return m_configLock;
     }
 
     public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
@@ -114,7 +122,7 @@ public class PaxLoggingServiceImpl
     {
         log( bundle, null, level, message, exception );
     }
-
+    
     private void log( Bundle bundle, ServiceReference sr, int level, String message, Throwable exception )
     {
         // failsafe in case bundle is null
@@ -175,16 +183,21 @@ public class PaxLoggingServiceImpl
         }
         Properties extracted = extractKeys( configuration );
 
-        LogManager.resetConfiguration();
-        // If the updated() method is called without any log4j properties,
-        // then keep the default/previous configuration.
-        if( extracted.size() == 0 )
-        {
-            configureDefaults();
-            return;
+        getConfigLock().writeLock().lock();
+        try {
+            LogManager.resetConfiguration();
+            // If the updated() method is called without any log4j properties,
+            // then keep the default/previous configuration.
+            if( extracted.size() == 0 )
+            {
+                configureDefaults();
+                return;
+            }
+            PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_bundleContext );
+            configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
+        } finally {
+            getConfigLock().writeLock().unlock();
         }
-        PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_bundleContext );
-        configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
         setLevelToJavaLogging( configuration );
     }
 
