@@ -87,7 +87,6 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
             }
         }
         if (causedTrace != null) {
-
             int m = elements.length-1, n = causedTrace.length-1;
             while (m >= 0 && n >=0 && elements[m].equals(causedTrace[n])) {
                 m--; n--;
@@ -106,9 +105,16 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
                 lines.add(formatElement(elements[i], classMap));
             }
         }
-        Throwable cause = throwable.getCause();
-        if (cause != null) {
-            doRender(cause, elements, lines);
+        try {
+            Throwable[] causes = (Throwable[]) throwable.getClass().getMethod("getCauses", null).invoke(throwable, null);
+            for (int i = 0; i < causes.length; i++) {
+                doRender(causes[i], elements, lines);
+            }
+        } catch (Exception e) {
+            Throwable cause = throwable.getCause();
+            if (cause != null) {
+                doRender(cause, elements, lines);
+            }
         }
     }
 
