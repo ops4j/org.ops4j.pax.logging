@@ -184,7 +184,10 @@ public class PaxLoggingServiceImpl
         Properties extracted = extractKeys( configuration );
 
         getConfigLock().writeLock().lock();
+        ClassLoader loader = null;
         try {
+            loader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             LogManager.resetConfiguration();
             // If the updated() method is called without any log4j properties,
             // then keep the default/previous configuration.
@@ -197,6 +200,7 @@ public class PaxLoggingServiceImpl
             configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
         } finally {
             getConfigLock().writeLock().unlock();
+            Thread.currentThread().setContextClassLoader(loader);
         }
         setLevelToJavaLogging( configuration );
     }
