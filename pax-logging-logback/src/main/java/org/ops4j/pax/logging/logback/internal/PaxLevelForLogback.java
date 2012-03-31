@@ -27,6 +27,13 @@ import org.ops4j.pax.logging.spi.PaxLevel;
  * @author Chris Dolan
  */
 public class PaxLevelForLogback implements PaxLevel {
+    // this data comes from the log4j level class
+    public static final int SYSLOG_DEBUG = 7;
+    public static final int SYSLOG_INFO = 6;
+    public static final int SYSLOG_WARN = 4;
+    public static final int SYSLOG_ERROR = 3;
+    public static final int SYSLOG_OFF = 0;
+
     private Level m_delegate;
 
     public PaxLevelForLogback(Level delegate) {
@@ -55,23 +62,22 @@ public class PaxLevelForLogback implements PaxLevel {
     }
 
     public int getSyslogEquivalent() {
-        // this data comes from the log4j level class
         if (m_delegate == Level.TRACE)
-            return 7;
+            return SYSLOG_DEBUG;
         if (m_delegate == Level.DEBUG)
-            return 7;
+            return SYSLOG_DEBUG;
         if (m_delegate == Level.INFO)
-            return 6;
+            return SYSLOG_INFO;
         if (m_delegate == Level.WARN)
-            return 4;
+            return SYSLOG_WARN;
         if (m_delegate == Level.ERROR)
-            return 3;
+            return SYSLOG_ERROR;
         if (m_delegate == Level.OFF)
-            return 0;
+            return SYSLOG_OFF;
         //noinspection IfStatementWithIdenticalBranches
         if (m_delegate == Level.ALL)
-            return 7;
-        return 7; // fallback case...
+            return SYSLOG_DEBUG;
+        return SYSLOG_DEBUG; // fallback case...
     }
 
     @Override
