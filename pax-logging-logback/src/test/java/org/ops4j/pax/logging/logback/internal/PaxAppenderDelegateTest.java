@@ -71,7 +71,7 @@ public class PaxAppenderDelegateTest {
         EasyMock.verify(context, bundlecontext, sr, appender);
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected=IllegalArgumentException.class)
     public void testPropertyPaxnameNull() {
     	new PaxAppenderDelegate().setPaxname(null);
     }

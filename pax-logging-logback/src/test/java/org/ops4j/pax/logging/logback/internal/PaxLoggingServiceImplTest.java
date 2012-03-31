@@ -20,7 +20,7 @@ import static org.easymock.EasyMock.isA;
  */
 public class PaxLoggingServiceImplTest {
 	/**
-	 * Tests the maijn functionality of the logging service.
+	 * Tests the main functionality of the logging service.
 	 */
     @Test
     public void test() {
@@ -122,15 +122,15 @@ public class PaxLoggingServiceImplTest {
         return bundle;
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected=IllegalArgumentException.class)
     public void testNullBundleContext() {
     	new PaxLoggingServiceImpl((BundleContext)null, EasyMock.createMock(LogReaderServiceAccess.class), EasyMock.createMock(EventAdminPoster.class));
     }
-    @Test(expected=NullPointerException.class)
+    @Test(expected=IllegalArgumentException.class)
     public void testNullLogReader() {
     	new PaxLoggingServiceImpl(EasyMock.createMock(BundleContext.class), (LogReaderServiceAccess)null, EasyMock.createMock(EventAdminPoster.class));
     }
-    @Test(expected=NullPointerException.class)
+    @Test(expected=IllegalArgumentException.class)
     public void testNullEventPoster() {
     	new PaxLoggingServiceImpl(EasyMock.createMock(BundleContext.class), EasyMock.createMock(LogReaderServiceAccess.class), (EventAdminPoster)null);
     }

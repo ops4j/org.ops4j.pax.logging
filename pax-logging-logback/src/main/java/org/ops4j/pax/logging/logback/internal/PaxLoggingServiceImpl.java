@@ -104,15 +104,15 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         m_fqcn = getClass().getName();
 
         if (bundleContext == null)
-            throw new NullPointerException("bundleContext cannot be null");
+            throw new IllegalArgumentException("bundleContext cannot be null");
         m_bundleContext = bundleContext;
 
         if (logReader == null)
-            throw new NullPointerException("logReader cannot be null");
+            throw new IllegalArgumentException("logReader cannot be null");
         m_logReader = logReader;
 
         if (eventAdmin == null)
-            throw new NullPointerException("eventAdmin cannot be null");
+            throw new IllegalArgumentException("eventAdmin cannot be null");
         m_eventAdmin = eventAdmin;
 
         m_paxContext = new PaxContext();

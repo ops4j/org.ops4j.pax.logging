@@ -23,6 +23,7 @@ import org.osgi.service.log.LogReaderService;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class LogReaderServiceImpl
 {
 
     private List<LogListener> m_listeners = new CopyOnWriteArrayList<LogListener>();
-    private final LinkedList<LogEntry> m_entries;
+    private final Deque<LogEntry> m_entries;
     private int m_maxEntries;
 
     public LogReaderServiceImpl(int maxEntries)

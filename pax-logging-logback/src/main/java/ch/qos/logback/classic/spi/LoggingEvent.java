@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The org.ops4j.pax.logging.logback.internal representation of logging events. When an affirmative decision
+ * The internal representation of logging events. When an affirmative decision
  * is made to log then a <code>LoggingEvent</code> instance is created. This
  * instance is passed around to the different logback-classic components.
  * 

@@ -57,7 +57,7 @@ public class PaxAppenderDelegate extends UnsynchronizedAppenderBase<ILoggingEven
      */
     public void setPaxname(String paxname) {
         if (null == paxname)
-            throw new NullPointerException("paxname cannot be null");
+            throw new IllegalArgumentException("paxname cannot be null");
         this.paxname = paxname;
     }
 
@@ -68,7 +68,7 @@ public class PaxAppenderDelegate extends UnsynchronizedAppenderBase<ILoggingEven
                 return;
             BundleContext bundleContext = (BundleContext) getContext().getObject("org.ops4j.pax.logging.logback.bundlecontext");
             if (bundleContext == null)
-                throw new NullPointerException("missing BundleContext, expected in org.ops4j.pax.logging.logback.bundlecontext");
+                throw new IllegalArgumentException("missing BundleContext, expected in org.ops4j.pax.logging.logback.bundlecontext");
             super.start();
             proxy = new PaxAppenderProxy(bundleContext, paxname);
         }
