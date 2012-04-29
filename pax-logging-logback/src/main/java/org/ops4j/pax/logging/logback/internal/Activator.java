@@ -18,12 +18,9 @@
  */
 package org.ops4j.pax.logging.logback.internal;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
+import org.ops4j.pax.logging.EventAdminPoster;
+import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.internal.EventAdminTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -34,9 +31,12 @@ import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
-import org.ops4j.pax.logging.EventAdminPoster;
-import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.internal.EventAdminTracker;
+
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * Starts the logback log services.

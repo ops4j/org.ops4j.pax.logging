@@ -17,9 +17,10 @@
  */
 package org.ops4j.pax.logging.logback.internal;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
+
+import javax.annotation.Nullable;
 
 /**
  * Simple delegate API for a logger to hand events back to the log service.

@@ -28,8 +28,6 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusListener;
 import ch.qos.logback.core.status.WarnStatus;
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.Nullable;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
@@ -44,6 +42,8 @@ import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogService;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -98,8 +98,8 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
     private static final String LOGBACK_CONFIG_FILE_KEY = "org.ops4j.pax.logging.logback.config.file";
     public static final String LOGGER_CONTEXT_BUNDLECONTEXT_KEY = "org.ops4j.pax.logging.logback.bundlecontext";
 
-    public PaxLoggingServiceImpl(@NonNull BundleContext bundleContext, @NonNull LogReaderServiceAccess logReader,
-                                 @NonNull EventAdminPoster eventAdmin)
+    public PaxLoggingServiceImpl(@Nonnull BundleContext bundleContext, @Nonnull LogReaderServiceAccess logReader,
+                                 @Nonnull EventAdminPoster eventAdmin)
     {
         m_fqcn = getClass().getName();
 

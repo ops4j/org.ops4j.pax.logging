@@ -1,6 +1,5 @@
 package org.ops4j.pax.logging.logback.internal;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.ops4j.pax.logging.PaxLogger;
@@ -8,6 +7,7 @@ import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
@@ -61,7 +61,7 @@ public class JdkHandlerTest {
         EasyMock.verify(bundle, logger, logService);
     }
 
-    private LogRecord mkRecord(@NonNull Level lvl, @NonNull String msg, @CheckForNull Throwable t) {
+    private LogRecord mkRecord(@Nonnull Level lvl, @Nonnull String msg, @CheckForNull Throwable t) {
         LogRecord record = new LogRecord(lvl, msg);
         if (t != null)
             record.setThrown(t);

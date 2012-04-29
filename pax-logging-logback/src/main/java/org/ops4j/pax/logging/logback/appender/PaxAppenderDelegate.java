@@ -31,7 +31,7 @@ import org.osgi.framework.BundleContext;
  * <p>
  * For example, you can use it like this in your logback.xml file:
  * <pre>
- *   &lt;appender name="OSGI" class="com.avid.ime.paxlogback.appender.PaxAppenderDelegate"&gt;
+ *   &lt;appender name="OSGI" class="org.ops4j.pax.logging.logback.appender.PaxAppenderDelegate"&gt;
  *       &lt;paxname&gt;*&lt;/paxname&gt;
  *   &lt;/appender&gt;
  * </pre>
