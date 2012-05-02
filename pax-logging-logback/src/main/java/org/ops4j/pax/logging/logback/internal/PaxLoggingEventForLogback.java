@@ -70,9 +70,9 @@ public class PaxLoggingEventForLogback implements PaxLoggingEvent {
     public String[] getThrowableStrRep() {
         StringBuilder sb = new StringBuilder();
         for (IThrowableProxy tp = event.getThrowableProxy(); tp != null; tp = tp.getCause()) {
-            ThrowableProxyUtil.printFirstLine(sb, tp);
+            ThrowableProxyUtil.subjoinFirstLine(sb, tp);
             sb.append(CoreConstants.LINE_SEPARATOR);
-            ThrowableProxyUtil.printSTEPArray(sb, tp);
+            ThrowableProxyUtil.subjoinSTEPArray(sb, ThrowableProxyUtil.REGULAR_EXCEPTION_INDENT, tp);
         }
         return sb.toString().split(CoreConstants.LINE_SEPARATOR);
     }

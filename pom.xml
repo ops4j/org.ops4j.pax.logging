@@ -105,12 +105,12 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>[0.9.29]</version>
+        <version>[1.0.2,2)</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>[0.9.29]</version>
+        <version>[1.0.2,2)</version>
       </dependency>
       <dependency>
         <groupId>avalon-framework</groupId>

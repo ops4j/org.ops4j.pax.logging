@@ -84,4 +84,21 @@ public class PaxLevelForLogback implements PaxLevel {
     public String toString() {
         return m_delegate.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PaxLevelForLogback that = (PaxLevelForLogback) o;
+
+        if (!m_delegate.equals(that.m_delegate)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return m_delegate.hashCode();
+    }
 }
