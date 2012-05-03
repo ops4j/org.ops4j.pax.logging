@@ -23,11 +23,19 @@ import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 public class JdkHandler extends Handler
 {
-
+    private static final SecurityManagerEx securityManager;
+    
     private PaxLoggingService m_logService;
+    
+    static
+    {
+        securityManager = new SecurityManagerEx();
+    }
 
     public JdkHandler( PaxLoggingService logService )
     {
@@ -73,9 +81,9 @@ public class JdkHandler extends Handler
     {
         Level level = record.getLevel();
         String loggerName = record.getLoggerName();
-        // TODO: Can't associate a bundle with the JDK logger. So how??
+        Bundle callerBundle = getCallerBundle();
         String fqcn = java.util.logging.Logger.class.getName();
-        PaxLoggerImpl logger = (PaxLoggerImpl) m_logService.getLogger( null, loggerName, fqcn );
+        PaxLoggerImpl logger = (PaxLoggerImpl) m_logService.getLogger( callerBundle, loggerName, fqcn );
         String message;
         try
         {
@@ -104,6 +112,27 @@ public class JdkHandler extends Handler
 
         //bug fixed here
         logger.log( log4jlevel, message, throwable );
+    }
+    
+    private Bundle getCallerBundle() {
+        Bundle ret = null;
+        Class[] classCtx = securityManager.getClassContext();
+        for (int i = 0; i < classCtx.length; i++) {
+            if (!classCtx[i].getName().startsWith("org.ops4j.pax.logging")
+                && !classCtx[i].getName().startsWith("java.util.logging")) {
+                ret = FrameworkUtil.getBundle(classCtx[i]);
+                break;
+            }
+        }
+        return ret;
+    }
+
+    static class SecurityManagerEx extends SecurityManager
+    {
+        public Class[] getClassContext()
+        {
+            return super.getClassContext();
+        }
     }
 
 }
