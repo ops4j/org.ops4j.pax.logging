@@ -20,6 +20,8 @@ package org.ops4j.pax.logging.logback.internal;
 
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -32,7 +34,14 @@ import java.util.logging.SimpleFormatter;
 public class JdkHandler extends Handler
 {
 
+    private static final SecurityManagerEx securityManager;
+
     private PaxLoggingService m_logService;
+
+    static
+    {
+        securityManager = new SecurityManagerEx();
+    }
 
     public JdkHandler( PaxLoggingService logService )
     {
@@ -78,9 +87,9 @@ public class JdkHandler extends Handler
     {
         Level level = record.getLevel();
         String loggerName = record.getLoggerName();
-        // TODO: Can't associate a bundle with the JDK logger. So how??
+        Bundle callerBundle = getCallerBundle();
         String fqcn = java.util.logging.Logger.class.getName();
-        PaxLogger logger = m_logService.getLogger( null, loggerName, fqcn );
+        PaxLogger logger = m_logService.getLogger( callerBundle, loggerName, fqcn );
         String message;
         try
         {
@@ -102,5 +111,26 @@ public class JdkHandler extends Handler
             logger.warn(message, throwable);
         else
             logger.error(message, throwable);
+    }
+    
+    private Bundle getCallerBundle() {
+        Bundle ret = null;
+        Class[] classCtx = securityManager.getClassContext();
+        for (int i = 0; i < classCtx.length; i++) {
+            if (!classCtx[i].getName().startsWith("org.ops4j.pax.logging")
+                && !classCtx[i].getName().startsWith("java.util.logging")) {
+                ret = FrameworkUtil.getBundle(classCtx[i]);
+                break;
+            }
+        }
+        return ret;
+    }
+
+    static class SecurityManagerEx extends SecurityManager
+    {
+        public Class[] getClassContext()
+        {
+            return super.getClassContext();
+        }
     }
 }
