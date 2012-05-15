@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PaxLoggingConfigurator;
@@ -63,6 +64,14 @@ public class PaxLoggingServiceImpl
         m_context = new PaxContext();
         m_configLock = new ReentrantReadWriteLock();
         configureDefaults();
+    }
+
+    /**
+     * Shut down the Pax Logging service.  This will reset the logging configuration entirely, so it should only be
+     * used just before disposing of the service instance.
+     */
+    protected void shutdown() {
+        LogManager.resetConfiguration();
     }
 
     ReadWriteLock getConfigLock() {

@@ -58,6 +58,7 @@ public class Activator
     /**
      * Reference to the registered service
      */
+    private PaxLoggingServiceImpl m_PaxLogging;
     private ServiceRegistration m_RegistrationPaxLogging;
     private JdkHandler m_JdkHandler;
     private ServiceRegistration m_registrationLogReaderService;
@@ -105,11 +106,11 @@ public class Activator
         }
 
         // register the Pax Logging service
-        PaxLoggingServiceImpl paxLogging = new PaxLoggingServiceImpl( bundleContext, logReader, m_eventAdmin );
+        m_PaxLogging = new PaxLoggingServiceImpl( bundleContext, logReader, m_eventAdmin );
         Hashtable serviceProperties = new Hashtable();
         serviceProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
         serviceProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
-        m_RegistrationPaxLogging = bundleContext.registerService( LOGSERVICE_NAMES, paxLogging, serviceProperties );
+        m_RegistrationPaxLogging = bundleContext.registerService( LOGSERVICE_NAMES, m_PaxLogging, serviceProperties );
 
         // Add a global handler for all JDK Logging (java.util.logging).
         String skipJULProperty=bundleContext.getProperty("org.ops4j.pax.logging.skipJUL");
@@ -127,10 +128,10 @@ public class Activator
 
             rootLogger.setFilter(null);
 
-            m_JdkHandler = new JdkHandler( paxLogging );
+            m_JdkHandler = new JdkHandler( m_PaxLogging );
             rootLogger.addHandler( m_JdkHandler );
         }
-        m_frameworkHandler = new FrameworkHandler( paxLogging );
+        m_frameworkHandler = new FrameworkHandler( m_PaxLogging );
         bundleContext.addBundleListener( m_frameworkHandler );
         bundleContext.addFrameworkListener( m_frameworkHandler );
         bundleContext.addServiceListener( m_frameworkHandler );
@@ -162,6 +163,12 @@ public class Activator
 
         m_RegistrationPaxLogging.unregister();
         m_RegistrationPaxLogging = null;
+
+        // Shutdown Pax Logging to ensure appender file locks get released
+        if (m_PaxLogging != null) {
+            m_PaxLogging.shutdown();
+            m_PaxLogging = null;
+        }
 
         m_registrationLogReaderService.unregister();
         m_registrationLogReaderService = null;
