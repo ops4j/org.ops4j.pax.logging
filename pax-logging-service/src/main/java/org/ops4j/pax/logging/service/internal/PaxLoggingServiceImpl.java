@@ -20,6 +20,7 @@ package org.ops4j.pax.logging.service.internal;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -52,6 +53,7 @@ public class PaxLoggingServiceImpl
     private BundleContext m_bundleContext;
     private PaxContext m_context;
     private ReadWriteLock m_configLock;
+    private LinkedList m_julLoggers;
 
     private int m_logLevel = LOG_DEBUG;
     private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.DefaultServiceLog.level";
@@ -63,6 +65,7 @@ public class PaxLoggingServiceImpl
         m_eventAdmin = eventAdmin;
         m_context = new PaxContext();
         m_configLock = new ReentrantReadWriteLock();
+        m_julLoggers = new LinkedList();
         configureDefaults();
     }
 
@@ -211,7 +214,9 @@ public class PaxLoggingServiceImpl
             getConfigLock().writeLock().unlock();
             Thread.currentThread().setContextClassLoader(loader);
         }
-        setLevelToJavaLogging( configuration );
+        LinkedList julLoggers = setLevelToJavaLogging( configuration );
+        m_julLoggers.clear();
+        m_julLoggers.addAll( julLoggers );
     }
 
     private Properties extractKeys( Dictionary configuration )
@@ -416,12 +421,14 @@ public class PaxLoggingServiceImpl
 	 *
 	 * @param configuration	Properties coming from the configuration.
 	 */
-    private static void setLevelToJavaLogging( final Dictionary configuration )
+    private static LinkedList setLevelToJavaLogging( final Dictionary configuration )
     {
         for( Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements();) {
             String name = (String) enum_.nextElement();
             java.util.logging.Logger.getLogger(name).setLevel( null );
         }
+
+        LinkedList loggers = new LinkedList();
 
         for( Enumeration keys = configuration.keys(); keys.hasMoreElements(); )
         {
@@ -434,11 +441,15 @@ public class PaxLoggingServiceImpl
 			}
 
             if (name.startsWith("log4j.logger."))
-			{
-				String packageName = name.substring( "log4j.logger.".length() );
-				setJULLevel( java.util.logging.Logger.getLogger(packageName), value );
-			}
+            {
+                String packageName = name.substring( "log4j.logger.".length() );
+                java.util.logging.Logger logger = java.util.logging.Logger.getLogger(packageName);
+                setJULLevel( logger, value );
+                loggers.add( logger );
+            }
 		}
+
+        return loggers;
 	}
 
 	/**
