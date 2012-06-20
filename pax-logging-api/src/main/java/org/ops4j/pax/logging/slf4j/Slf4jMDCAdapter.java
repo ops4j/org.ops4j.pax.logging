@@ -59,7 +59,8 @@ public class Slf4jMDCAdapter
 
     public String get( String key )
     {
-        return getContext().get(key);
+		Object value = null;
+        return ( (value = getContext().get(key) ) != null ) ? value.toString() : null;
     }
 
     public void remove( String key )
