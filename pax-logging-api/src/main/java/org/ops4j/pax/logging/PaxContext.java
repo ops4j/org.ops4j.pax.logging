@@ -71,10 +71,10 @@ public class PaxContext {
     ht.put(key, o); 
   }
   
-  public String get(String key) {
+  public Object get(String key) {
     Hashtable ht = (Hashtable) ((ThreadLocalMap)tlm).get();
     if(ht != null && key != null) {
-        return (String) ht.get(key);
+        return ht.get(key);
     } else {
         return null;
     }    
