@@ -22,3 +22,5 @@ Import-Package: \
 Export-Package: \
  org.ops4j.pax.logging.spi; version=${pom.version}; provider=paxlogging
 
+Ignore-Package: \
+ com.sun.jdmk.comm
