@@ -21,6 +21,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -197,6 +198,7 @@ public class PaxLoggingServiceImpl
 
         getConfigLock().writeLock().lock();
         ClassLoader loader = null;
+        List proxies;
         try {
             loader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -210,9 +212,17 @@ public class PaxLoggingServiceImpl
             }
             PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_bundleContext );
             configurator.doConfigure( extracted, LogManager.getLoggerRepository() );
+            proxies = configurator.getProxies();
         } finally {
             getConfigLock().writeLock().unlock();
             Thread.currentThread().setContextClassLoader(loader);
+        }
+        // Avoid holding the configuration lock when starting proxies
+        // It could cause deadlock if opening the service trackers block on the log because
+        // the service itself wants to log anything
+        for (Iterator iterator = proxies.iterator(); iterator.hasNext(); ) {
+            PaxAppenderProxy proxy = (PaxAppenderProxy) iterator.next();
+            proxy.open();
         }
         LinkedList loggers = setLevelToJavaLogging( configuration );
         m_julLoggers.clear();
