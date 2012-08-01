@@ -35,7 +35,6 @@ public class PaxAppenderProxy extends ServiceTracker implements PaxAppender
     public PaxAppenderProxy(BundleContext bundleContext, String name)
     {
         super( bundleContext, createFilter( bundleContext, name ), null);
-        open();
     }
 
     public static Filter createFilter( BundleContext bundleContext, String name )
