@@ -88,6 +88,21 @@
         						<ignore></ignore>
         					</action>
         				</pluginExecution>
+        				<pluginExecution>
+        					<pluginExecutionFilter>
+        						<groupId>org.ops4j.pax.exam</groupId>
+        						<artifactId>
+        							maven-paxexam-plugin
+        						</artifactId>
+        						<versionRange>[0,)</versionRange>
+        						<goals>
+        							<goal>generate-depends-file</goal>
+        						</goals>
+        					</pluginExecutionFilter>
+        					<action>
+        						<ignore></ignore>
+        					</action>
+        				</pluginExecution>
         			</pluginExecutions>
         		</lifecycleMappingMetadata>
         	</configuration>
