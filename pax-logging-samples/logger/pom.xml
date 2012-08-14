@@ -31,31 +31,6 @@
         <groupId>org.ops4j</groupId>
         <artifactId>maven-pax-plugin</artifactId>
       </plugin>
-<!--       <plugin> -->
-<!--         <groupId>org.apache.maven.plugins</groupId> -->
-<!--         <artifactId>maven-dependency-plugin</artifactId> -->
-<!-- 	    <executions> -->
-<!--           <execution> -->
-<!--             <id>unpack</id> -->
-<!--             <phase>generate-resources</phase> -->
-<!--             <goals> -->
-<!--               <goal>unpack</goal> -->
-<!--             </goals> -->
-<!--             <configuration> -->
-<!--               <artifactItems> -->
-<!--                 <artifactItem> -->
-<!--                   <groupId>jetty</groupId> -->
-<!--                   <artifactId>org.mortbay.jetty</artifactId> -->
-<!--                   <version>5.1.0</version> -->
-<!--                 </artifactItem> -->
-<!--               </artifactItems> -->
-<!--               <outputDirectory> -->
-<!--                 ${project.build.directory}/classes -->
-<!--               </outputDirectory> -->
-<!--             </configuration> -->
-<!--           </execution> -->
-<!--         </executions> -->
-<!--       </plugin> -->
     </plugins>
   </build>
 
