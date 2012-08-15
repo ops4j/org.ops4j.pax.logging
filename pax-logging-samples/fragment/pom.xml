@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.ops4j.pax.logging</groupId>
+		<artifactId>pax-logging-samples</artifactId>
+		<version>1.7.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>org.ops4j.pax.logging</groupId>
+	<artifactId>pax-logging-sample-fragment</artifactId>
+	<packaging>bundle</packaging>
+
+	<name>OPS4J Pax Logging - Samples - Fragment</name>
+	<description>
+		Adding Custom Log-Appender to Pax-Logging
+		http://nierbeck.de/cgi-bin/weblog_basic/index.php?p=201
+	</description>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Import-Package>!*</Import-Package>
+						<!-- embed all compile and runtime scope dependencies -->
+						<Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
+						<!-- the host bundle for this fragment bundle to attach to -->
+						<Fragment-Host>org.ops4j.pax.logging.pax-logging-service</Fragment-Host>
+					</instructions>
+				</configuration>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>
