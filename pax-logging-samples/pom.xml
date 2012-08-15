@@ -21,6 +21,7 @@
   <modules>
     <module>config</module>
     <module>logger</module>
+    <module>fragment</module>
   </modules>
 
   <profiles>
