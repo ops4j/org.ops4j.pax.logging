@@ -25,6 +25,12 @@ public interface PaxLoggingService extends LogService
 
     String APPENDER_NAME_PROPERTY = "org.ops4j.pax.logging.appender.name";
 
+    String LAYOUT_NAME_PROPERTY = "org.ops4j.pax.logging.layout.name";
+
+    String FILTER_NAME_PROPERTY = "org.ops4j.pax.logging.filter.name";
+
+    String ERRORHANDLER_NAME_PROPERTY = "org.ops4j.pax.logging.errorhandler.name";
+
     PaxLogger getLogger( Bundle bundle, String category, String fqcn );
 
     int getLogLevel();

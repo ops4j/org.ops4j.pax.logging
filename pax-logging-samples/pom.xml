@@ -22,6 +22,7 @@
     <module>config</module>
     <module>logger</module>
     <module>fragment</module>
+    <module>dynamic</module>
   </modules>
 
   <profiles>
