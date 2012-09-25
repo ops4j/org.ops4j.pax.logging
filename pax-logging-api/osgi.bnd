@@ -24,16 +24,16 @@ Export-Package: \
  org.ops4j.pax.logging.avalon; version=${pom.version}; provider=paxlogging, \
  org.ops4j.pax.logging.slf4j; version=${pom.version}; provider=paxlogging, \
  org.osgi.service.log; version=1.3;-split-package:=merge-first, \
- org.slf4j; version=1.6.4; provider=paxlogging, \
- org.slf4j; version=1.6.1; provider=paxlogging, \
+ org.slf4j; version=1.7.1; provider=paxlogging, \
+ org.slf4j; version=1.6.6; provider=paxlogging, \
  org.slf4j; version=1.5.11; provider=paxlogging, \
  org.slf4j; version=1.4.3; provider=paxlogging, \
- org.slf4j.helpers; version=1.6.4; provider=paxlogging, \
- org.slf4j.helpers; version=1.6.1; provider=paxlogging, \
+ org.slf4j.helpers; version=1.7.1; provider=paxlogging, \
+ org.slf4j.helpers; version=1.6.6; provider=paxlogging, \
  org.slf4j.helpers; version=1.5.11; provider=paxlogging, \
  org.slf4j.helpers; version=1.4.3; provider=paxlogging, \
- org.slf4j.spi; version=1.6.4; provider=paxlogging, \
- org.slf4j.spi; version=1.6.1; provider=paxlogging, \
+ org.slf4j.spi; version=1.7.1; provider=paxlogging, \
+ org.slf4j.spi; version=1.6.6; provider=paxlogging, \
  org.slf4j.spi; version=1.5.11; provider=paxlogging, \
  org.slf4j.spi; version=1.4.3; provider=paxlogging, \
 

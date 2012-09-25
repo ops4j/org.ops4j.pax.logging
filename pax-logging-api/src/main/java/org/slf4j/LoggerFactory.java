@@ -1,7 +1,7 @@
-/*
+/**
  * Copyright (c) 2004-2011 QOS.ch
  * All rights reserved.
- * 
+ *
  * Permission is hereby granted, free  of charge, to any person obtaining
  * a  copy  of this  software  and  associated  documentation files  (the
  * "Software"), to  deal in  the Software without  restriction, including
@@ -9,10 +9,10 @@
  * distribute,  sublicense, and/or sell  copies of  the Software,  and to
  * permit persons to whom the Software  is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The  above  copyright  notice  and  this permission  notice  shall  be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
  * EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
  * MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
@@ -20,14 +20,15 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
-
 package org.slf4j;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+import org.slf4j.helpers.NOPLoggerFactory;
 import org.slf4j.helpers.SubstituteLoggerFactory;
 import org.slf4j.helpers.Util;
 import org.slf4j.impl.StaticLoggerBinder;
@@ -37,52 +38,50 @@ import org.slf4j.impl.StaticLoggerBinder;
  * various logging APIs, most notably for log4j, logback and JDK 1.4 logging.
  * Other implementations such as {@link org.slf4j.impl.NOPLogger NOPLogger} and
  * {@link org.slf4j.impl.SimpleLogger SimpleLogger} are also supported.
- * 
- * <p>
+ * <p/>
+ * <p/>
  * <code>LoggerFactory</code> is essentially a wrapper around an
  * {@link ILoggerFactory} instance bound with <code>LoggerFactory</code> at
  * compile time.
- * 
- * <p>
+ * <p/>
+ * <p/>
  * Please note that all methods in <code>LoggerFactory</code> are static.
- * 
+ *
  * @author Ceki G&uuml;lc&uuml;
  * @author Robert Elliot
  */
 public final class LoggerFactory {
 
-  static final String NO_STATICLOGGERBINDER_URL = "http://www.slf4j.org/codes.html#StaticLoggerBinder";
-  static final String MULTIPLE_BINDINGS_URL = "http://www.slf4j.org/codes.html#multiple_bindings";
-  static final String NULL_LF_URL = "http://www.slf4j.org/codes.html#null_LF";
-  static final String VERSION_MISMATCH = "http://www.slf4j.org/codes.html#version_mismatch";
-  static final String SUBSTITUTE_LOGGER_URL = "http://www.slf4j.org/codes.html#substituteLogger";
+  static final String CODES_PREFIX = "http://www.slf4j.org/codes.html";
 
-  static final String UNSUCCESSFUL_INIT_URL = "http://www.slf4j.org/codes.html#unsuccessfulInit";
+  static final String NO_STATICLOGGERBINDER_URL = CODES_PREFIX + "#StaticLoggerBinder";
+  static final String MULTIPLE_BINDINGS_URL = CODES_PREFIX + "#multiple_bindings";
+  static final String NULL_LF_URL = CODES_PREFIX + "#null_LF";
+  static final String VERSION_MISMATCH = CODES_PREFIX + "#version_mismatch";
+  static final String SUBSTITUTE_LOGGER_URL = CODES_PREFIX + "#substituteLogger";
+
+  static final String UNSUCCESSFUL_INIT_URL = CODES_PREFIX + "#unsuccessfulInit";
   static final String UNSUCCESSFUL_INIT_MSG = "org.slf4j.LoggerFactory could not be successfully initialized. See also "
-      + UNSUCCESSFUL_INIT_URL;
+          + UNSUCCESSFUL_INIT_URL;
 
   static final int UNINITIALIZED = 0;
-  static final int ONGOING_INITILIZATION = 1;
-  static final int FAILED_INITILIZATION = 2;
-  static final int SUCCESSFUL_INITILIZATION = 3;
-
-  static final int GET_SINGLETON_INEXISTENT = 1;
-  static final int GET_SINGLETON_EXISTS = 2;
+  static final int ONGOING_INITIALIZATION = 1;
+  static final int FAILED_INITIALIZATION = 2;
+  static final int SUCCESSFUL_INITIALIZATION = 3;
+  static final int NOP_FALLBACK_INITIALIZATION = 4;
 
   static int INITIALIZATION_STATE = UNINITIALIZED;
-  static int GET_SINGLETON_METHOD = UNINITIALIZED;
   static SubstituteLoggerFactory TEMP_FACTORY = new SubstituteLoggerFactory();
+  static NOPLoggerFactory NOP_FALLBACK_FACTORY = new NOPLoggerFactory();
 
   /**
    * It is LoggerFactory's responsibility to track version changes and manage
    * the compatibility list.
-   * 
-   * <p>
-   * It is assumed that qualifiers after the 3rd digit have no impact on
-   * compatibility. Thus, 1.5.7-SNAPSHOT, 1.5.7.RC0 are compatible with 1.5.7.
+   * <p/>
+   * <p/>
+   * It is assumed that all versions in the 1.6 are mutually compatible.
    */
-  static private final String[] API_COMPATIBILITY_LIST = new String[] {
-      "1.5.5", "1.5.6", "1.5.7", "1.5.8", "1.5.9", "1.5.10", "1.5.11" };
+  static private final String[] API_COMPATIBILITY_LIST = new String[]{"1.6", "1.7"};
 
   // private constructor prevents instantiation
   private LoggerFactory() {
@@ -90,61 +89,76 @@ public final class LoggerFactory {
 
   /**
    * Force LoggerFactory to consider itself uninitialized.
-   * 
-   * <p>
+   * <p/>
+   * <p/>
    * This method is intended to be called by classes (in the same package) for
    * testing purposes. This method is internal. It can be modified, renamed or
    * removed at any time without notice.
-   * 
-   * <p>
+   * <p/>
+   * <p/>
    * You are strongly discouraged from calling this method in production code.
    */
   static void reset() {
     INITIALIZATION_STATE = UNINITIALIZED;
-    GET_SINGLETON_METHOD = UNINITIALIZED;
     TEMP_FACTORY = new SubstituteLoggerFactory();
   }
 
   private final static void performInitialization() {
     bind();
-    versionSanityCheck();
-    singleImplementationSanityCheck();
-
+    if (INITIALIZATION_STATE == SUCCESSFUL_INITIALIZATION) {
+      versionSanityCheck();
+    }
   }
 
   private static boolean messageContainsOrgSlf4jImplStaticLoggerBinder(String msg) {
-    if(msg == null)
+    if (msg == null)
       return false;
-    if(msg.indexOf("org/slf4j/impl/StaticLoggerBinder") != -1)
+    if (msg.indexOf("org/slf4j/impl/StaticLoggerBinder") != -1)
       return true;
-    if(msg.indexOf("org.slf4j.impl.StaticLoggerBinder") != -1)
+    if (msg.indexOf("org.slf4j.impl.StaticLoggerBinder") != -1)
       return true;
     return false;
   }
 
   private final static void bind() {
     try {
+      Set staticLoggerBinderPathSet = findPossibleStaticLoggerBinderPathSet();
+      reportMultipleBindingAmbiguity(staticLoggerBinderPathSet);
       // the next line does the binding
-      getSingleton();
-      INITIALIZATION_STATE = SUCCESSFUL_INITILIZATION;
+      StaticLoggerBinder.getSingleton();
+      INITIALIZATION_STATE = SUCCESSFUL_INITIALIZATION;
+      reportActualBinding(staticLoggerBinderPathSet);
       emitSubstituteLoggerWarning();
     } catch (NoClassDefFoundError ncde) {
-      INITIALIZATION_STATE = FAILED_INITILIZATION;
       String msg = ncde.getMessage();
       if (messageContainsOrgSlf4jImplStaticLoggerBinder(msg)) {
-        Util
-            .report("Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".");
+        INITIALIZATION_STATE = NOP_FALLBACK_INITIALIZATION;
+        Util.report("Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".");
+        Util.report("Defaulting to no-operation (NOP) logger implementation");
         Util.report("See " + NO_STATICLOGGERBINDER_URL
                 + " for further details.");
-
+      } else {
+        failedBinding(ncde);
+        throw ncde;
       }
-      throw ncde;
+    } catch (java.lang.NoSuchMethodError nsme) {
+      String msg = nsme.getMessage();
+      if (msg != null && msg.indexOf("org.slf4j.impl.StaticLoggerBinder.getSingleton()") != -1) {
+        INITIALIZATION_STATE = FAILED_INITIALIZATION;
+        Util.report("slf4j-api 1.6.x (or later) is incompatible with this binding.");
+        Util.report("Your binding is version 1.5.5 or earlier.");
+        Util.report("Upgrade your binding to version 1.6.x.");
+      }
+      throw nsme;
     } catch (Exception e) {
-      INITIALIZATION_STATE = FAILED_INITILIZATION;
-      // we should never get here
-      Util.report("Failed to instantiate logger ["
-              + getSingleton().getLoggerFactoryClassStr() + "]", e);
+      failedBinding(e);
+      throw new IllegalStateException("Unexpected initialization failure", e);
     }
+  }
+
+  static void failedBinding(Throwable t) {
+    INITIALIZATION_STATE = FAILED_INITIALIZATION;
+    Util.report("Failed to instantiate SLF4J LoggerFactory", t);
   }
 
   private final static void emitSubstituteLoggerWarning() {
@@ -152,10 +166,8 @@ public final class LoggerFactory {
     if (loggerNameList.size() == 0) {
       return;
     }
-    Util
-        .report("The following loggers will not work because they were created");
-    Util
-        .report("during the default configuration phase of the underlying logging system.");
+    Util.report("The following loggers will not work because they were created");
+    Util.report("during the default configuration phase of the underlying logging system.");
     Util.report("See also " + SUBSTITUTE_LOGGER_URL);
     for (int i = 0; i < loggerNameList.size(); i++) {
       String loggerName = (String) loggerNameList.get(i);
@@ -186,72 +198,71 @@ public final class LoggerFactory {
       // emit compatibility warnings.
     } catch (Throwable e) {
       // we should never reach here
-      Util.report(
-              "Unexpected problem occured during version sanity check", e);
+      Util.report("Unexpected problem occured during version sanity check", e);
     }
   }
 
-  // We need to use the name of the StaticLoggerBinder class, we can't reference
+  // We need to use the name of the StaticLoggerBinder class, but we can't reference
   // the class itself.
   private static String STATIC_LOGGER_BINDER_PATH = "org/slf4j/impl/StaticLoggerBinder.class";
 
-  private static void singleImplementationSanityCheck() {
+  private static Set findPossibleStaticLoggerBinderPathSet() {
+    // use Set instead of list in order to deal with  bug #138
+    // LinkedHashSet appropriate here because it preserves insertion order during iteration
+    Set staticLoggerBinderPathSet = new LinkedHashSet();
     try {
       ClassLoader loggerFactoryClassLoader = LoggerFactory.class
-          .getClassLoader();
+              .getClassLoader();
+      Enumeration paths;
       if (loggerFactoryClassLoader == null) {
-        // see http://bugzilla.slf4j.org/show_bug.cgi?id=146
-        return; // better than a null pointer exception
+        paths = ClassLoader.getSystemResources(STATIC_LOGGER_BINDER_PATH);
+      } else {
+        paths = loggerFactoryClassLoader
+                .getResources(STATIC_LOGGER_BINDER_PATH);
       }
-      Enumeration paths = loggerFactoryClassLoader
-          .getResources(STATIC_LOGGER_BINDER_PATH);
-      // use Set instead of list in order to deal with bug #138
-      // LinkedHashSet appropriate here because it preserves insertion order during iteration
-      Set implementationSet = new LinkedHashSet();
       while (paths.hasMoreElements()) {
         URL path = (URL) paths.nextElement();
-        implementationSet.add(path);
-      }
-      if (implementationSet.size() > 1) {
-        Util.report("Class path contains multiple SLF4J bindings.");
-        Iterator iterator = implementationSet.iterator();
-        while(iterator.hasNext()) {
-          URL path = (URL) iterator.next();
-          Util.report("Found binding in [" + path + "]");
-        }
-        Util.report("See " + MULTIPLE_BINDINGS_URL
-                + " for an explanation.");
+        staticLoggerBinderPathSet.add(path);
       }
     } catch (IOException ioe) {
       Util.report("Error getting resources from path", ioe);
     }
+    return staticLoggerBinderPathSet;
   }
 
-  private final static StaticLoggerBinder getSingleton() {
-    if (GET_SINGLETON_METHOD == GET_SINGLETON_INEXISTENT) {
-      return StaticLoggerBinder.SINGLETON;
-    }
+  private static boolean isAmbiguousStaticLoggerBinderPathSet(Set staticLoggerBinderPathSet) {
+    return staticLoggerBinderPathSet.size() > 1;
+  }
 
-    if (GET_SINGLETON_METHOD == GET_SINGLETON_EXISTS) {
-      return StaticLoggerBinder.getSingleton();
-    }
-
-    try {
-      StaticLoggerBinder singleton = StaticLoggerBinder.getSingleton();
-      GET_SINGLETON_METHOD = GET_SINGLETON_EXISTS;
-      return singleton;
-    } catch (NoSuchMethodError nsme) {
-      GET_SINGLETON_METHOD = GET_SINGLETON_INEXISTENT;
-      return StaticLoggerBinder.SINGLETON;
+  /**
+   * Prints a warning message on the console if multiple bindings were found on the class path.
+   * No reporting is done otherwise.
+   *
+   */
+  private static void reportMultipleBindingAmbiguity(Set staticLoggerBinderPathSet) {
+    if (isAmbiguousStaticLoggerBinderPathSet(staticLoggerBinderPathSet)) {
+      Util.report("Class path contains multiple SLF4J bindings.");
+      Iterator iterator = staticLoggerBinderPathSet.iterator();
+      while (iterator.hasNext()) {
+        URL path = (URL) iterator.next();
+        Util.report("Found binding in [" + path + "]");
+      }
+      Util.report("See " + MULTIPLE_BINDINGS_URL + " for an explanation.");
     }
   }
+
+  private static void reportActualBinding(Set staticLoggerBinderPathSet) {
+    if (isAmbiguousStaticLoggerBinderPathSet(staticLoggerBinderPathSet)) {
+      Util.report("Actual binding is of type ["+StaticLoggerBinder.getSingleton().getLoggerFactoryClassStr()+"]");
+    }
+  }
+
 
   /**
    * Return a logger named according to the name parameter using the statically
    * bound {@link ILoggerFactory} instance.
-   * 
-   * @param name
-   *          The name of the logger.
+   *
+   * @param name The name of the logger.
    * @return logger
    */
   public static Logger getLogger(String name) {
@@ -262,9 +273,8 @@ public final class LoggerFactory {
   /**
    * Return a logger named corresponding to the class passed as parameter, using
    * the statically bound {@link ILoggerFactory} instance.
-   * 
-   * @param clazz
-   *          the returned logger will be named after clazz
+   *
+   * @param clazz the returned logger will be named after clazz
    * @return logger
    */
   public static Logger getLogger(Class clazz) {
@@ -273,27 +283,28 @@ public final class LoggerFactory {
 
   /**
    * Return the {@link ILoggerFactory} instance in use.
-   * 
-   * <p>
+   * <p/>
+   * <p/>
    * ILoggerFactory instance is bound with this class at compile time.
-   * 
+   *
    * @return the ILoggerFactory instance in use
    */
   public static ILoggerFactory getILoggerFactory() {
     if (INITIALIZATION_STATE == UNINITIALIZED) {
-      INITIALIZATION_STATE = ONGOING_INITILIZATION;
+      INITIALIZATION_STATE = ONGOING_INITIALIZATION;
       performInitialization();
-
     }
     switch (INITIALIZATION_STATE) {
-    case SUCCESSFUL_INITILIZATION:
-      return getSingleton().getLoggerFactory();
-    case FAILED_INITILIZATION:
-      throw new IllegalStateException(UNSUCCESSFUL_INIT_MSG);
-    case ONGOING_INITILIZATION:
-      // support re-entrant behavior.
-      // See also http://bugzilla.slf4j.org/show_bug.cgi?id=106
-      return TEMP_FACTORY;
+      case SUCCESSFUL_INITIALIZATION:
+        return StaticLoggerBinder.getSingleton().getLoggerFactory();
+      case NOP_FALLBACK_INITIALIZATION:
+        return NOP_FALLBACK_FACTORY;
+      case FAILED_INITIALIZATION:
+        throw new IllegalStateException(UNSUCCESSFUL_INIT_MSG);
+      case ONGOING_INITIALIZATION:
+        // support re-entrant behavior.
+        // See also http://bugzilla.slf4j.org/show_bug.cgi?id=106
+        return TEMP_FACTORY;
     }
     throw new IllegalStateException("Unreachable code");
   }

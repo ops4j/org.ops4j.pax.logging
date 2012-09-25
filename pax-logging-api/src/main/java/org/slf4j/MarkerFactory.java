@@ -1,7 +1,7 @@
-/* 
+/**
  * Copyright (c) 2004-2011 QOS.ch
  * All rights reserved.
- * 
+ *
  * Permission is hereby granted, free  of charge, to any person obtaining
  * a  copy  of this  software  and  associated  documentation files  (the
  * "Software"), to  deal in  the Software without  restriction, including
@@ -9,10 +9,10 @@
  * distribute,  sublicense, and/or sell  copies of  the Software,  and to
  * permit persons to whom the Software  is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The  above  copyright  notice  and  this permission  notice  shall  be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
  * EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
  * MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
@@ -20,10 +20,11 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
  */
-
 package org.slf4j;
 
+import org.slf4j.helpers.BasicMarkerFactory;
 import org.slf4j.helpers.Util;
 import org.slf4j.impl.StaticMarkerBinder;
 
@@ -49,10 +50,12 @@ public class MarkerFactory {
   static {
     try {
       markerFactory = StaticMarkerBinder.SINGLETON.getMarkerFactory();
+    } catch (NoClassDefFoundError e) {
+      markerFactory = new BasicMarkerFactory();
+      
     } catch (Exception e) {
       // we should never get here
-      Util.report("Could not instantiate instance of class ["
-              + StaticMarkerBinder.SINGLETON.getMarkerFactoryClassStr() + "]", e);
+      Util.report("Unexpected failure while binding MarkerFactory", e);
     }
   }
 
