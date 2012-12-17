@@ -75,10 +75,12 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
             } else if (lastClass != null) {
                 try {
                     ClassLoader cl = lastClass.getClassLoader();
-                    clazz = OsgiUtil.loadClass(cl, elements[elements.length - 1 - i].getClassName());
-                    String classDetails = getClassDetail(clazz);
-                    classMap.put(clazz.getName(), classDetails);
-                    lastClass = clazz;
+                    if (cl != null) {
+                        clazz = OsgiUtil.loadClass(cl, elements[elements.length - 1 - i].getClassName());
+                        String classDetails = getClassDetail(clazz);
+                        classMap.put(clazz.getName(), classDetails);
+                        lastClass = clazz;
+                    }
                 } catch (Exception e) {
                     break;
                 }
