@@ -19,12 +19,12 @@ package org.ops4j.pax.logging.logback.internal;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.service.log.LogService;
 
 /**
@@ -45,7 +45,7 @@ import org.osgi.service.log.LogService;
  * @author Chris Dolan -- adapted from pax-logging-service v1.6.0
  */
 public class FrameworkHandler
-    implements BundleListener, FrameworkListener, ServiceListener
+    implements SynchronousBundleListener, FrameworkListener, ServiceListener
 {
 
     public static final String FRAMEWORK_EVENTS_LOG_LEVEL_PROP_NAME =
