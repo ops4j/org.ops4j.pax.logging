@@ -40,10 +40,12 @@ final class CustomAppender
         return events;
     }
 
-    public void doAppend( PaxLoggingEvent event )
-    {
-        events.add( event );
+  public void doAppend(PaxLoggingEvent event) {
+    if (null != events) {
+      event.getProperties(); // ensure MDC properties are copied
+      events.add(event);
     }
+  }
 
     public String toString()
     {
