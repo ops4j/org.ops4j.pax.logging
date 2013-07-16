@@ -105,6 +105,11 @@ public class OsgiUtil {
             if (b == null || b.getState() == Bundle.INSTALLED || b.getState() == Bundle.UNINSTALLED) {
                 return false;
             }
+            // If the bundle has dynamic imports, do not try to load from it
+            // as it could cause a resolution and lead to deadlocks
+            if (b.getHeaders().get(Constants.DYNAMICIMPORT_PACKAGE) != null) {
+                return false;
+            }
         }
         return true;
     }
