@@ -28,6 +28,8 @@ public class Slf4jLogger
     implements LocationAwareLogger
 {
 
+    public static final String SLF4J_MARKER_MDC_ATTRIBUTE = "slf4j.marker";
+
     public static final String SLF4J_FQCN = Slf4jLogger.class.getName();
 
     private String m_name;
@@ -165,7 +167,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.trace( msg, null );
+            resetMDCMarker();
         }
     }
 
@@ -182,7 +186,9 @@ public class Slf4jLogger
         if( m_delegate.isTraceEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg );
+            setMDCMarker( marker );
             m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -201,7 +207,9 @@ public class Slf4jLogger
         if( m_delegate.isTraceEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            setMDCMarker( marker );
             m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -219,7 +227,9 @@ public class Slf4jLogger
         if( m_delegate.isTraceEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            setMDCMarker( marker );
             m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -235,7 +245,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.trace( msg, t );
+            resetMDCMarker();
         }
     }
 
@@ -357,7 +369,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.debug( msg, null );
+            resetMDCMarker();
         }
     }
 
@@ -374,7 +388,9 @@ public class Slf4jLogger
         if( m_delegate.isDebugEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg );
+            setMDCMarker( marker );
             m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -393,7 +409,9 @@ public class Slf4jLogger
         if( m_delegate.isDebugEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            setMDCMarker( marker );
             m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -411,7 +429,9 @@ public class Slf4jLogger
         if( m_delegate.isDebugEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            setMDCMarker( marker );
             m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -427,7 +447,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.debug( msg, t );
+            resetMDCMarker();
         }
     }
 
@@ -549,7 +571,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.inform( msg, null );
+            resetMDCMarker();
         }
     }
 
@@ -566,7 +590,9 @@ public class Slf4jLogger
         if( m_delegate.isInfoEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg );
+            setMDCMarker( marker );
             m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -585,7 +611,9 @@ public class Slf4jLogger
         if( m_delegate.isInfoEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            setMDCMarker( marker );
             m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -603,7 +631,9 @@ public class Slf4jLogger
         if( m_delegate.isInfoEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            setMDCMarker( marker );
             m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -619,7 +649,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isInfoEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.inform( msg, t );
+            resetMDCMarker();
         }
     }
 
@@ -741,7 +773,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.warn( msg, null );
+            resetMDCMarker();
         }
     }
 
@@ -758,7 +792,9 @@ public class Slf4jLogger
         if( m_delegate.isWarnEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg );
+            setMDCMarker( marker );
             m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -777,7 +813,9 @@ public class Slf4jLogger
         if( m_delegate.isWarnEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            setMDCMarker( marker );
             m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -795,7 +833,9 @@ public class Slf4jLogger
         if( m_delegate.isWarnEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            setMDCMarker( marker );
             m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -811,7 +851,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.warn( msg, t );
+            resetMDCMarker();
         }
     }
 
@@ -933,7 +975,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.error( msg, null );
+            resetMDCMarker();
         }
     }
 
@@ -950,7 +994,9 @@ public class Slf4jLogger
         if( m_delegate.isErrorEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg );
+            setMDCMarker( marker );
             m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -969,7 +1015,9 @@ public class Slf4jLogger
         if( m_delegate.isErrorEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
+            setMDCMarker( marker );
             m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -987,7 +1035,9 @@ public class Slf4jLogger
         if( m_delegate.isErrorEnabled() )
         {
             FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
+            setMDCMarker( marker );
             m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
+            resetMDCMarker();
         }
     }
 
@@ -1004,7 +1054,9 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
+            setMDCMarker( marker );
             m_delegate.error( msg, t );
+            resetMDCMarker();
         }
     }
 
@@ -1022,6 +1074,7 @@ public class Slf4jLogger
      */
     public void log(Marker marker, String fqcn, int level, String message, Object[] argArray, Throwable t)
     {
+       setMDCMarker( marker );
        switch(level)
        {
            case(TRACE_INT):
@@ -1062,12 +1115,30 @@ public class Slf4jLogger
            default:
                break;
        }
+       resetMDCMarker();
     }
-
 
     void setPaxLoggingManager( PaxLoggingManager loggingManager, String name )
     {
         m_delegate = loggingManager.getLogger( name, SLF4J_FQCN );
+    }
+
+    /**
+     * Resets MDC Attribute for SLF4J Marker support. If MDC Attribute would not
+     * be reseted the marker would also be applied to all following log messages
+     * within the same thread context.
+     */
+    private void resetMDCMarker( )
+    {
+        m_delegate.getPaxContext().remove(SLF4J_MARKER_MDC_ATTRIBUTE);
+    }
+
+    private void setMDCMarker( Marker marker )
+    {
+        if ( marker != null )
+        {
+            m_delegate.getPaxContext().put( SLF4J_MARKER_MDC_ATTRIBUTE, marker.getName( ) );
+        }
     }
 
 }
