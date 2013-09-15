@@ -1138,7 +1138,21 @@ public class Slf4jLogger
         if ( marker != null )
         {
             m_delegate.getPaxContext().put( SLF4J_MARKER_MDC_ATTRIBUTE, marker.getName( ) );
+            m_delegate.getPaxContext().put( SLF4J_MARKER_MDC_ATTRIBUTE, getMarkerName(marker) );
         }
+    }
+
+    public static String getMarkerName(Marker marker)
+    {
+        StringBuffer sb = new StringBuffer();
+        sb.append(marker.getName());
+        if (marker.hasReferences()) {
+            // follow only first reference. Multiple references will be ignored.
+            Marker reference = (Marker) marker.iterator().next();
+            sb.append(".");
+            sb.append(getMarkerName(reference));
+        }
+        return sb.toString();
     }
 
 }
