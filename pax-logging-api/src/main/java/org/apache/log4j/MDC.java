@@ -104,6 +104,17 @@ public class MDC {
         }
     }
 
+    /**
+     * Clear map with key\values in current thread's MDC
+     **/
+    public static void clear() {
+        if (setContext()) {
+            m_context.clear();
+        } else {
+            m_defaultContext.clear();
+        }
+    }
+
     /** Pax Logging internal method. Should never be used directly. */
     public static void dispose()
     {
