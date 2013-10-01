@@ -34,11 +34,9 @@ Import-Package: \
                              groovy.lang;resolution:=optional;version="1.7", \
                              javax.jms;resolution:=optional, \
                              javax.management;resolution:=optional, \
-                             org.codehaus.groovy.control;resolution:=optional;version="1.7", \
-                             org.codehaus.groovy.reflection;resolution:=optional;version="1.7", \
-                             org.codehaus.groovy.runtime;resolution:=optional;version="1.7", \
-                             org.codehaus.groovy.runtime.callsite;resolution:=optional;version="1.7", \
-                             org.codehaus.groovy.runtime.typehandling;resolution:=optional;version="1.7", \
+                             org.codehaus.groovy.control.*;resolution:=optional;version="1.7", \
+                             org.codehaus.groovy.reflection.*;resolution:=optional;version="1.7", \
+                             org.codehaus.groovy.runtime.*;resolution:=optional;version="1.7", \
                              sun.reflect;resolution:=optional, \
  *
 
