@@ -146,12 +146,12 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>[1.0.2,2)</version>
+        <version>1.0.13</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>[1.0.2,2)</version>
+        <version>1.0.13</version>
       </dependency>
       <dependency>
         <groupId>avalon-framework</groupId>
@@ -351,6 +351,11 @@
     <developer>
       <name>Chris Dolan</name>
       <email>chrisdolan@apache.org</email>
+    </developer>
+    <developer>
+      <name>Raul Kripalani</name>
+      <email>raulk@apache.org</email>
+      <organization>Evosent Consulting</organization>
     </developer>
   </developers>
 
