@@ -18,7 +18,6 @@
  */
 package org.ops4j.pax.logging.logback.internal;
 
-import ch.qos.logback.classic.Logger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
@@ -27,8 +26,9 @@ import org.osgi.framework.Constants;
 import org.osgi.service.log.LogService;
 import org.slf4j.MDC;
 import org.slf4j.spi.LocationAwareLogger;
+import org.slf4j.spi.MDCAdapter;
 
-import java.util.Map;
+import ch.qos.logback.classic.Logger;
 
 /**
  * A logger implementation specialized for Logback.
@@ -44,6 +44,7 @@ import java.util.Map;
  * </ul>
  *
  * @author Chris Dolan
+ * @author Raul Kripalani
  */
 public class PaxLoggerImpl
     implements PaxLogger
@@ -101,36 +102,31 @@ public class PaxLoggerImpl
         return m_delegate.isErrorEnabled();
     }
 
-    private void setDelegateContext()
+    private void setDelegateContext() 
     {
-        @SuppressWarnings("unchecked")
-		Map<String, Object> context = m_service.getPaxContext().getContext();
-        if( context != null )
-        {
-            for (Map.Entry<String, Object> entry : context.entrySet()) {
-                Object value = entry.getValue();
-                MDC.getMDCAdapter().put(entry.getKey(), value == null ? null : value.toString());
-            }
+        // Logback's MDCConverter pulls in MDC properties through the slf4j's MDC class already. 
+        // Therefore there's no need to bridge two MDC implementations, like in the log4j PaxLoggerImpl.
+        // See PAXLOGGING-165.
+        MDCAdapter adapter = MDC.getMDCAdapter();
+        if (m_bundle != null && adapter != null) {
+            adapter.put("bundle.id", String.valueOf(m_bundle.getBundleId()));
+            adapter.put("bundle.name", m_bundle.getSymbolicName());
+            adapter.put("bundle.version", m_bundle.getHeaders().get(Constants.BUNDLE_VERSION));
         }
-        if (m_bundle != null)
-        {
-            put("bundle.id", m_bundle.getBundleId());
-            put("bundle.name", m_bundle.getSymbolicName());
-            put("bundle.version", m_bundle.getHeaders().get(Constants.BUNDLE_VERSION));
-        }
+
     }
 
-    private void put(String name, Object o)
+    private void clearDelegateContext() 
     {
-        if (o != null)
-        {
-            MDC.getMDCAdapter().put(name, o.toString());
+        MDCAdapter adapter = MDC.getMDCAdapter();
+        if (m_bundle != null && adapter != null) {
+            adapter.remove("bundle.id");
+            adapter.remove("bundle.name");
+            adapter.remove("bundle.version");
         }
-    }
 
-    private void clearDelegateContext()
-    {
-        MDC.getMDCAdapter().clear();
+        // No need to clear the underlying MDC
+        // See PAXLOGGING-165.
     }
 
     public void trace( String message, Throwable t )
