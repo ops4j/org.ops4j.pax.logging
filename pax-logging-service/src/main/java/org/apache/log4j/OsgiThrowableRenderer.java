@@ -140,7 +140,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
             if (classDetails != null) {
                 buf.append(classDetails);
             }
-        } catch(Exception ex) {
+        } catch(Throwable ex) {
         }
         return buf.toString();
     }
