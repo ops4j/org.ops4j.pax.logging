@@ -93,7 +93,7 @@ public class OsgiUtil {
     }
 
     public static Class loadClass(ClassLoader loader, String className) throws ClassNotFoundException {
-        if (osgiVersion >= OSGI_1_5 && !checkValidLoader(loader)) {
+        if (loader == null || osgiVersion >= OSGI_1_5 && !checkValidLoader(loader)) {
             throw new ClassNotFoundException(className);
         }
         return loader.loadClass(className);
