@@ -2,7 +2,10 @@ Bundle-Activator: org.ops4j.pax.logging.logback.internal.Activator
 
 Embed-Dependency: \
  logback-core, \
- logback-classic
+ logback-classic, \
+ logback-json-core, \
+ logback-json-classic, \
+ logback-jackson
 
 Private-Package: \
  org.ops4j.pax.logging.internal, \
@@ -11,6 +14,7 @@ Private-Package: \
 Import-Package: \
  javax.xml.*, \
  (com|sun|javax).*;resolution:=optional, \
+ com.fasterxml.jackson.databind;resolution:=optional, \
  org.knopflerfish.service.log; provider="paxlogging"; version="[1.1.0,2.0.0)", \
  org.ops4j.pax.logging; version="[0.9.5,2.0.0)", \
  org.osgi.framework; version="[1.0.0,2.0.0)", \
