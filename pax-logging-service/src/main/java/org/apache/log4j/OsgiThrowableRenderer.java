@@ -126,21 +126,21 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
      * @param classMap map of class name to location.
      * @return string representation of element.
      */
-    private String formatElement(final StackTraceElement element, final Map classMap) {
+    private String formatElement(final StackTraceElement element, final Map<String, Object> classMap) {
         StringBuffer buf = new StringBuffer("\tat ");
         buf.append(element);
-        try {
-            String className = element.getClassName();
-            Object classDetails = classMap.get(className);
-            if (classDetails == null) {
-                Class cls = findClass(className);
+        String className = element.getClassName();
+        Object classDetails = classMap.get(className);
+        if (classDetails == null) {
+            try {
+                Class<?> cls = findClass(className);
                 classDetails = getClassDetail(cls);
                 classMap.put(className, classDetails);
+            } catch (Throwable th) {
             }
-            if (classDetails != null) {
-                buf.append(classDetails);
-            }
-        } catch(Exception ex) {
+        }
+        if (classDetails != null) {
+            buf.append(classDetails);
         }
         return buf.toString();
     }
@@ -218,7 +218,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
      * @return class, will not be null.
      * @throws ClassNotFoundException thrown if class can not be found.
      */
-    private Class findClass(final String className) throws ClassNotFoundException {
+    private Class<?> findClass(final String className) throws ClassNotFoundException {
         try {
             return OsgiUtil.loadClass(Thread.currentThread().getContextClassLoader(), className);
         } catch (ClassNotFoundException e) {
