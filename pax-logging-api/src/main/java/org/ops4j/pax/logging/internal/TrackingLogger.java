@@ -165,6 +165,10 @@ public class TrackingLogger
     }
     
     public PaxContext getPaxContext() {
-       return m_service.getPaxContext();
+        if (m_service != null) {
+            return m_service.getPaxContext();
+        } else {
+            return m_delegate.getPaxContext();
+        }
     }
 }
