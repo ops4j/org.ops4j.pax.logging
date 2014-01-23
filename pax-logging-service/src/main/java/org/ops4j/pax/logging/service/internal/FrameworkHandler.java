@@ -92,7 +92,9 @@ public class FrameworkHandler
         }
         if (bundle != null)
             message += " - " + bundle.getSymbolicName();
-        m_service.log( bundle, loggingLevel, message, null );
+        if (loggingLevel > 0) {
+            m_service.log( bundle, loggingLevel, message, null );
+        }
     }
 
     public void frameworkEvent( final FrameworkEvent frameworkEvent )
@@ -127,7 +129,9 @@ public class FrameworkHandler
         final Throwable exception = frameworkEvent.getThrowable();
         if (bundle != null)
             message += " - " + bundle.getSymbolicName();
-        m_service.log( bundle, loggingLevel, message, exception );
+        if (loggingLevel > 0) {
+            m_service.log( bundle, loggingLevel, message, exception );
+        }
     }
 
     public void serviceChanged( final ServiceEvent serviceEvent )
@@ -154,7 +158,9 @@ public class FrameworkHandler
         Bundle bundle = serviceRef.getBundle();
         if (bundle != null)
             message += " - " + bundle.getSymbolicName();
-        m_service.log( serviceRef, loggingLevel, message );
+        if (loggingLevel > 0) {
+            m_service.log( serviceRef, loggingLevel, message );
+        }
     }
 
     private static int convertLevel( final String levelName )
@@ -174,6 +180,10 @@ public class FrameworkHandler
         else if( "ERROR".equals( levelName ) )
         {
             return LogService.LOG_ERROR;
+        }
+        else if("DISABLED".equals( levelName ) )
+        {
+            return 0;
         }
         else
         {
