@@ -111,4 +111,14 @@ public class MDC {
         m_paxLogging.dispose();
         m_paxLogging = null;
     }
+
+    /** Clear map with key/value in current thread's MDC */
+    public static void clear() {
+        if (setContext()) {
+            m_context.clear();
+        } else {
+            m_defaultContext.clear();
+        }
+    }
+
 }
