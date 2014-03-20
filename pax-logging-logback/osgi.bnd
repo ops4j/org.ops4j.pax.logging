@@ -42,6 +42,7 @@ Import-Package: \
  org.codehaus.groovy.reflection.*;resolution:=optional;version="1.7", \
  org.codehaus.groovy.runtime.*;resolution:=optional;version="1.7", \
  sun.reflect;resolution:=optional, \
+ org.codehaus.commons.compiler;resolution:=optional, \
  *
 
 Export-Package: \
