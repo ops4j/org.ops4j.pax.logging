@@ -92,8 +92,11 @@ public class Slf4jLoggerFactory
             paxLogger = m_paxLogging.getLogger(name, Slf4jLogger.SLF4J_FQCN);
         }
         Slf4jLogger logger = new Slf4jLogger(name, paxLogger);
-        synchronized (m_loggers) {
-            m_loggers.put(logger, name);
+        if (m_paxLogging == null) {
+            // just add the logger which PaxLoggingManager need to be replaced.
+            synchronized (m_loggers) {
+                m_loggers.put(logger, name);
+            }
         }
         return logger;
     }
