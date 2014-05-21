@@ -17,12 +17,13 @@
 
   <build>
     <plugins>
-      <!-- we need java5 annotations in tests. This does not affect pax loggings < 1.5 compatibility. -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
       <!-- use pax exam maven plugin -->
