@@ -95,7 +95,7 @@ public interface Marker extends Serializable {
    * 
    * @return Iterator over the references of this marker
    */
-  public Iterator iterator();
+  public Iterator<Marker> iterator();
 
   /**
    * Does this marker contain a reference to the 'other' marker? Marker A is defined 
@@ -115,8 +115,7 @@ public interface Marker extends Serializable {
    * 
    * If 'name' is null the returned value is always false.
    * 
-   * @param other
-   *                The marker to test for inclusion.
+   * @param name The marker name to test for inclusion.
    * @return Whether this marker contains the other marker.
    */
   public boolean contains(String name);

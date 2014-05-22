@@ -26,7 +26,7 @@ package org.slf4j;
 
 
 /**
- * Implementaitons of this interface are used to manufacture {@link Marker}
+ * Implementations of this interface are used to manufacture {@link Marker}
  * instances.
  * 
  * <p>See the section <a href="http://slf4j.org/faq.html#3">Implementing 
@@ -53,7 +53,8 @@ public interface IMarkerFactory {
   /**
    * Checks if the marker with the name already exists. If name is null, then false 
    * is returned.
-   * 
+   *  
+   * @param name logger name to check for
    * @return true id the marker exists, false otherwise. 
    */
   boolean exists(String name);
@@ -73,7 +74,8 @@ public interface IMarkerFactory {
   
   /**
    * Create a marker which is detached (even at birth) from this IMarkerFactory.
-   *
+   * 
+   * @param name marker name
    * @return a dangling marker
    * @since 1.5.1
    */
