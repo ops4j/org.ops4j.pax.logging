@@ -89,7 +89,7 @@ public class PaxLoggingServiceImplTest {
         logger.error("e", null);   EasyMock.expectLastCall().once();
         logger.error(eq("e"), isA(Throwable.class));   EasyMock.expectLastCall().once();
 
-        EasyMock.replay(mockBundle, logger);
+        EasyMock.replay(bundleContext, eventPoster, mockBundle, logger);
 
         PaxLoggingServiceImpl service = new PaxLoggingServiceImpl(bundleContext, new LogReaderServiceImpl(0).getAccessDelegate(), eventPoster) {
             public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
