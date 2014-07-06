@@ -17,6 +17,7 @@
  */
 package org.ops4j.pax.logging.logback.internal;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -51,6 +52,7 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Locale;
 
 /**
@@ -248,6 +250,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         }
 
         configurePax(configuration);
+        updateLevels(configuration);
     }
 
     private void configureDefaults()
@@ -341,6 +344,25 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         consoleAppender.start();
 
         return consoleAppender;
+    }
+
+    private void updateLevels(Dictionary config) {
+      for ( Enumeration keys = config.keys(); keys.hasMoreElements(); )
+      {
+          String name = (String) keys.nextElement();
+          if ( name.equals( "log4j.rootLogger" ) )
+          {
+              Level level = Level.toLevel( (String) config.get( name ) );
+              m_logbackContext.getLogger( org.slf4j.Logger.ROOT_LOGGER_NAME ).setLevel( level );
+          }
+
+          if ( name.startsWith( "log4j.logger." ) )
+          {
+              Level level = Level.toLevel( (String) config.get( name ) );
+              String packageName = name.substring( "log4j.logger.".length() );
+              m_logbackContext.getLogger( packageName ).setLevel( level );
+          }
+      }
     }
 
     private void configurePax(Dictionary config) {
