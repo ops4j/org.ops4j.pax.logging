@@ -1,13 +1,7 @@
 Bundle-Activator: org.ops4j.pax.logging.logback.internal.Activator
 
-Embed-Dependency: \
- logback-core, \
- logback-classic, \
- logback-json-core, \
- logback-json-classic, \
- logback-jackson
-
 Private-Package: \
+ ch.qos.logback.*; -split-package:=merge-first, \
  org.ops4j.pax.logging.internal, \
  org.ops4j.pax.logging.logback.appender, \
  org.ops4j.pax.logging.logback.internal
