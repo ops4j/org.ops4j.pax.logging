@@ -9,6 +9,7 @@ Embed-Dependency: \
 
 Private-Package: \
  org.ops4j.pax.logging.internal, \
+ org.ops4j.pax.logging.logback.appender, \
  org.ops4j.pax.logging.logback.internal
 
 Import-Package: \
