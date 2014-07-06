@@ -315,6 +315,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         m_logbackContext.reset();
         // minimize time between these two lines of code
         m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).addAppender(consoleAppender);
+        m_logbackContext.getStatusManager().clear();
 
         m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, m_bundleContext);
         m_logbackContext.getStatusManager().add(new StatusListener() {
