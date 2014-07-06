@@ -42,6 +42,7 @@ import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogService;
+import org.slf4j.impl.StaticLoggerBinder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -92,6 +93,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
     private final EventAdminPoster m_eventAdmin;
     private final BundleContext m_bundleContext;
     private final PaxContext m_paxContext;
+    private final boolean m_useStaticContext;
     private final LoggerContext m_logbackContext;
     private final String m_fqcn;
 
@@ -118,9 +120,16 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         m_eventAdmin = eventAdmin;
 
         m_paxContext = new PaxContext();
-        //m_logbackContext = ContextSelectorStaticBinder.getSingleton().getContextSelector().getLoggerContext();
-        m_logbackContext = new LoggerContext();
-        m_logbackContext.start();
+        m_useStaticContext = Boolean.valueOf(bundleContext.getProperty("org.ops4j.pax.logging.StaticLogbackContext"));
+        if (m_useStaticContext)
+        {
+            m_logbackContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+        }
+        else
+        {
+            m_logbackContext = new LoggerContext();
+            m_logbackContext.start();
+        }
 
         // not strictly necessary because org.apache.felix.cm.impl.ConfigurationManager will configure us, but this
         // is a safe precaution. In a typical run, we will reset the logback configuration four times:
@@ -473,7 +482,10 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
 
     public void stop() {
         m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, null);
-        m_logbackContext.stop();
+        if (!m_useStaticContext)
+        {
+            m_logbackContext.stop();
+        }
     }
 
 }
