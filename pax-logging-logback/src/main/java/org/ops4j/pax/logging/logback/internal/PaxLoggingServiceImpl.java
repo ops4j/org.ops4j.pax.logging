@@ -315,17 +315,19 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         m_logbackContext.reset();
         // minimize time between these two lines of code
         m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).addAppender(consoleAppender);
-        m_logbackContext.getStatusManager().clear();
 
         m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, m_bundleContext);
         m_logbackContext.getStatusManager().add(new StatusListener() {
             public void addStatusEvent(Status status) {
                 if (status.getLevel() == Status.ERROR || status.getLevel() == Status.WARN) {
-                    System.err.println(status);
-                    Throwable t = status.getThrowable();
-                    if (t == null)
-                        t = new Exception();
-                    t.printStackTrace(System.err);
+                    String output = String.valueOf(status);
+                    if (!output.contains("No appenders present")) {
+                        System.err.println(output);
+                        Throwable t = status.getThrowable();
+                        if (t == null)
+                            t = new Exception();
+                        t.printStackTrace(System.err);
+                    }
                 }
             }
         });
