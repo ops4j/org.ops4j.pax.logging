@@ -21,7 +21,9 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import org.ops4j.pax.logging.logback.internal.PaxAppenderProxy;
 import org.ops4j.pax.logging.logback.internal.PaxLoggingEventForLogback;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * <p>
@@ -67,8 +69,16 @@ public class PaxAppenderDelegate extends UnsynchronizedAppenderBase<ILoggingEven
             if (isStarted())
                 return;
             BundleContext bundleContext = (BundleContext) getContext().getObject("org.ops4j.pax.logging.logback.bundlecontext");
-            if (bundleContext == null)
-                throw new IllegalArgumentException("missing BundleContext, expected in org.ops4j.pax.logging.logback.bundlecontext");
+            if (bundleContext == null) {
+                Bundle bundle = FrameworkUtil.getBundle(getClass());
+                if (bundle != null) {
+                    bundleContext = bundle.getBundleContext();
+                }
+                if (bundleContext == null) {
+                    throw new IllegalArgumentException("missing BundleContext, expected in org.ops4j.pax.logging.logback.bundlecontext");
+                }
+            }
+
             super.start();
             proxy = new PaxAppenderProxy(bundleContext, paxname);
         }
