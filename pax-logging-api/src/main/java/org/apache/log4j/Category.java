@@ -365,25 +365,34 @@ public abstract class Category
 //        return aai.getAppender( name );
 //    }
 
-//    /**
-//     * Starting from this category, search the category hierarchy for a
-//     * non-null level and return it. Otherwise, return the level of the
-//     * root category.
-//     *
-//     * <p>The Category class is designed so that this method executes as
-//     * quickly as possible.
-//     */
-//    public Level getEffectiveLevel()
-//    {
-//        for( Category c = this; c != null; c = c.parent )
-//        {
-//            if( c.level != null )
-//            {
-//                return c.level;
-//            }
-//        }
-//        return null; // If reached will cause an NullPointerException.
-//    }
+    /**
+     * Starting from this category, search the category hierarchy for a
+     * non-null level and return it. Otherwise, return the level of the
+     * root category.
+     *
+     * <p>The Category class is designed so that this method executes as
+     * quickly as possible.
+     */
+    public Level getEffectiveLevel()
+    {
+        int level = m_delegate.getLogLevel();
+        if (level == PaxLogger.LEVEL_TRACE) {
+            return Level.TRACE;
+        }
+        if (level == PaxLogger.LEVEL_DEBUG) {
+            return Level.DEBUG;
+        }
+        if (level == PaxLogger.LEVEL_INFO) {
+            return Level.INFO;
+        }
+        if (level == PaxLogger.LEVEL_WARNING) {
+            return Level.WARN;
+        }
+        if (level == PaxLogger.LEVEL_ERROR) {
+            return Level.ERROR;
+        }
+        return null;
+    }
 
 //    /**
 //     * @deprecated Please use the the {@link #getEffectiveLevel} method
