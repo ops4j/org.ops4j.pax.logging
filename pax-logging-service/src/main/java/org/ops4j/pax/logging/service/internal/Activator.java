@@ -78,11 +78,17 @@ public class Activator
     public void start( BundleContext bundleContext )
         throws Exception
     {
+        int ranking = 1;
+        String rankingProperty = bundleContext.getProperty("org.ops4j.pax.logging.ranking");
+        if (rankingProperty != null) {
+            ranking = Integer.parseInt(rankingProperty);
+        }
+
         // register the LogReaderService
         LogReaderServiceImpl logReader = new LogReaderServiceImpl( 100 );
         String readerServiceName = LogReaderService.class.getName();
         Hashtable serviceProperties = new Hashtable();
-        serviceProperties.put( Constants.SERVICE_RANKING, 1 );
+        serviceProperties.put( Constants.SERVICE_RANKING, ranking );
         m_registrationLogReaderService = bundleContext.registerService( readerServiceName, logReader, serviceProperties );
 
         // Tracking for the EventAdmin
@@ -112,7 +118,7 @@ public class Activator
         serviceProperties = new Hashtable();
         serviceProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
         serviceProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
-        serviceProperties.put( Constants.SERVICE_RANKING, 1 );
+        serviceProperties.put( Constants.SERVICE_RANKING, ranking );
         m_RegistrationPaxLogging = bundleContext.registerService( LOGSERVICE_NAMES, m_PaxLogging, serviceProperties );
 
         // Add a global handler for all JDK Logging (java.util.logging).
