@@ -29,6 +29,17 @@
     <tag>HEAD</tag>
   </scm>
 
+  <distributionManagement>
+    <repository>
+      <id>sonatype.releases.deploy</id>
+      <url>https://oss.sonatype.org/content/repositories/ops4j-releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>sonatype.snapshots.deploy</id>
+      <url>https://oss.sonatype.org/content/repositories/ops4j-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <build>
     <plugins>
       <plugin>
