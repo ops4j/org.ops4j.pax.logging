@@ -51,8 +51,8 @@ public class Log4jPaxLoggingService implements PaxLoggingService, ManagedService
 
     public Log4jPaxLoggingService(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-        loggerContext = LogManager.getContext(new BundleDelegatingClassLoader(bundleContext.getBundle()),
-            false, bundleContext);
+        final ClassLoader bundleClassLoader = bundleContext.getBundle().adapt(ClassLoader.class);
+        loggerContext = LogManager.getContext(bundleClassLoader, false, bundleContext);
         paxContext = new PaxContext();
     }
 
