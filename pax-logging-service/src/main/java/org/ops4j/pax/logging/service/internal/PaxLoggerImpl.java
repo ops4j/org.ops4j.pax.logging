@@ -28,6 +28,7 @@ import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.util.OsgiUtil;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.log.LogService;
 
 public class PaxLoggerImpl
@@ -37,6 +38,10 @@ public class PaxLoggerImpl
     private org.apache.log4j.Logger m_delegate;
     private String m_fqcn;
     private Bundle m_bundle;
+    private BundleRevision m_bundleRevision;
+    private Long m_bundleId;
+    private String m_bundleSymbolicName;
+    private String m_bundleVersion;
     private PaxLoggingServiceImpl m_service;
 
     /**
@@ -88,18 +93,24 @@ public class PaxLoggerImpl
         Map context = getPaxContext().getContext();
         if( context != null )
         {
-            for( Iterator keys = context.keySet().iterator(); keys.hasNext(); )
-            {
-                String key = (String) keys.next();
-                Object value = context.get( key );
-                MDC.put( key, value );
+            for (Object o : context.keySet()) {
+                String key = (String) o;
+                Object value = context.get(key);
+                MDC.put(key, value);
             }
         }
         if (m_bundle != null)
         {
-            put("bundle.id", new Long(m_bundle.getBundleId()));
-            put("bundle.name", OsgiUtil.getBundleSymbolicName(m_bundle));
-            put("bundle.version", OsgiUtil.getVersion(m_bundle));
+            BundleRevision rev = (BundleRevision) m_bundle.adapt(BundleRevision.class);
+            if (rev != m_bundleRevision) {
+                m_bundleId = m_bundle.getBundleId();
+                m_bundleSymbolicName = OsgiUtil.getBundleSymbolicName(m_bundle);
+                m_bundleVersion = OsgiUtil.getVersion(m_bundle);
+                m_bundleRevision = rev;
+            }
+            put("bundle.id", m_bundleId);
+            put("bundle.name", m_bundleSymbolicName);
+            put("bundle.version", m_bundleVersion);
         }
         m_service.getConfigLock().readLock().lock();
     }

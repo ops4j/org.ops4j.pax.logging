@@ -21,10 +21,12 @@ import java.util.Hashtable;
 
 import junit.framework.TestCase;
 import org.jmock.Mock;
+import org.jmock.core.constraint.IsEqual;
 import org.jmock.core.stub.ReturnStub;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogService;
@@ -94,11 +96,15 @@ public class FrameworkHandlerTest extends TestCase
 
     private Bundle aBundle()
     {
+        final Mock bundleRevisionMock = new Mock( BundleRevision.class );
+
         final Mock bundleMock = new Mock( Bundle.class );
         bundleMock.stubs().method( "getSymbolicName" ).will( new ReturnStub( "test-bundle" ) );
         bundleMock.stubs().method( "getVersion" ).will( new ReturnStub( Version.emptyVersion ) );
         bundleMock.stubs().method( "getBundleId" ).will( new ReturnStub( Long.valueOf(42) ) );
         bundleMock.stubs().method( "getHeaders" ).will( new ReturnStub( new Hashtable() ) );
+        bundleMock.stubs().method( "adapt" ).with( new IsEqual( BundleRevision.class ) ).will(new ReturnStub(bundleRevisionMock.proxy()));
+
         return (Bundle) bundleMock.proxy();
     }
 }

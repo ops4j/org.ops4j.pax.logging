@@ -109,14 +109,12 @@ public class Category implements AppenderAttachable {
      */
     private static final String FQCN = Category.class.getName();
 
-    private ReadWriteLock lock = new ReentrantReadWriteLock();
-
     protected ResourceBundle resourceBundle;
 
     // Categories need to know what Hierarchy they are in
     protected LoggerRepository repository;
 
-    AppenderAttachableImpl aai;
+    final AppenderAttachableImpl aai = new AppenderAttachableImpl();
 
     /**
      * Additivity is set to true by default, that is children inherit the appenders of their ancestors by default. If this variable is set
@@ -145,16 +143,8 @@ public class Category implements AppenderAttachable {
      * If <code>newAppender</code> is already in the list of appenders, then it won't be added again.
      */
     public void addAppender(Appender newAppender) {
-        lock.writeLock().lock();
-        try {
-            if (aai == null) {
-                aai = new AppenderAttachableImpl();
-            }
-            aai.addAppender(newAppender);
-            repository.fireAddAppenderEvent(this, newAppender);
-        } finally {
-            lock.writeLock().unlock();
-        }
+        aai.addAppender(newAppender);
+        repository.fireAddAppenderEvent(this, newAppender);
     }
 
     /**
@@ -186,17 +176,9 @@ public class Category implements AppenderAttachable {
         int writes = 0;
 
         for (Category c = this; c != null; c = c.parent) {
-            // Protected against simultaneous call to addAppender, removeAppender,...
-            c.lock.readLock().lock();
-            try {
-                if (c.aai != null) {
-                    writes += c.aai.appendLoopOnAppenders(event);
-                }
-                if (!c.additive) {
-                    break;
-                }
-            } finally {
-                c.lock.readLock().unlock();
+            writes += c.aai.appendLoopOnAppenders(event);
+            if (!c.additive) {
+                break;
             }
         }
 
@@ -211,21 +193,7 @@ public class Category implements AppenderAttachable {
      * @since 1.0
      */
     void closeNestedAppenders() {
-        // shouldn't readLock() be enough?
-        lock.writeLock().lock();
-        try {
-            Enumeration enumeration = this.getAllAppenders();
-            if (enumeration != null) {
-                while (enumeration.hasMoreElements()) {
-                    Appender a = (Appender) enumeration.nextElement();
-                    if (a instanceof AppenderAttachable) {
-                        a.close();
-                    }
-                }
-            }
-        } finally {
-            lock.writeLock().unlock();
-        }
+        aai.closeAppenders();
     }
 
     /**
@@ -379,15 +347,7 @@ public class Category implements AppenderAttachable {
      * @return Enumeration An enumeration of the appenders in this category.
      */
     public Enumeration getAllAppenders() {
-        lock.readLock().lock();
-        try {
-            if (aai == null)
-                return NullEnumeration.getInstance();
-            else
-                return aai.getAllAppenders();
-        } finally {
-            lock.readLock().unlock();
-        }
+        return aai.getAllAppenders();
     }
 
     /**
@@ -397,15 +357,7 @@ public class Category implements AppenderAttachable {
      * Return the appender with that name if in the list. Return <code>null</code> otherwise.
      */
     public Appender getAppender(String name) {
-        lock.readLock().lock();
-        try {
-            if (aai == null || name == null)
-                return null;
-
-            return aai.getAppender(name);
-        } finally {
-            lock.readLock().unlock();
-        }
+        return aai.getAppender(name);
     }
 
     /**
@@ -621,7 +573,7 @@ public class Category implements AppenderAttachable {
      * Is the appender passed as parameter attached to this category?
      */
     public boolean isAttached(Appender appender) {
-        if (appender == null || aai == null)
+        if (appender == null)
             return false;
         else {
             return aai.isAttached(appender);
@@ -796,21 +748,9 @@ public class Category implements AppenderAttachable {
      * This is useful when re-reading configuration information.
      */
     public void removeAllAppenders() {
-        lock.writeLock().lock();
-        try {
-            if (aai != null) {
-                Vector appenders = new Vector();
-                for (Enumeration iter = aai.getAllAppenders(); iter != null && iter.hasMoreElements();) {
-                    appenders.add(iter.nextElement());
-                }
-                aai.removeAllAppenders();
-                for (Enumeration iter = appenders.elements(); iter.hasMoreElements();) {
-                    fireRemoveAppenderEvent((Appender) iter.nextElement());
-                }
-                aai = null;
-            }
-        } finally {
-            lock.writeLock().unlock();
+        for (Appender appender : aai.getAppenders()) {
+            aai.removeAppender(appender);
+            fireRemoveAppenderEvent(appender);
         }
     }
 
@@ -820,17 +760,10 @@ public class Category implements AppenderAttachable {
      * @since 0.8.2
      */
     public void removeAppender(Appender appender) {
-        lock.writeLock().lock();
-        try {
-            if (appender == null || aai == null)
-                return;
-            boolean wasAttached = aai.isAttached(appender);
+        boolean wasAttached = aai.isAttached(appender);
+        if (wasAttached) {
             aai.removeAppender(appender);
-            if (wasAttached) {
-                fireRemoveAppenderEvent(appender);
-            }
-        } finally {
-            lock.writeLock().unlock();
+            fireRemoveAppenderEvent(appender);
         }
     }
 
@@ -840,17 +773,10 @@ public class Category implements AppenderAttachable {
      * @since 0.8.2
      */
     public void removeAppender(String name) {
-        lock.writeLock().lock();
-        try {
-            if (name == null || aai == null)
-                return;
-            Appender appender = aai.getAppender(name);
+        Appender appender = aai.getAppender(name);
+        if (appender != null) {
             aai.removeAppender(name);
-            if (appender != null) {
-                fireRemoveAppenderEvent(appender);
-            }
-        } finally {
-            lock.writeLock().unlock();
+            fireRemoveAppenderEvent(appender);
         }
     }
 

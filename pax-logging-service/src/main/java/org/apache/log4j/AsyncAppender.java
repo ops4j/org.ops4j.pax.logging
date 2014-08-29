@@ -112,7 +112,7 @@ public class AsyncAppender extends AppenderSkeleton
     aai = appenders;
 
     dispatcher =
-      new Thread(new Dispatcher(this, buffer, discardMap, appenders));
+      new Thread(new Dispatcher());
 
     // It is the user's responsibility to close appenders before
     // exiting.
@@ -156,9 +156,7 @@ public class AsyncAppender extends AppenderSkeleton
    * @param newAppender appender to add, may not be null.
    */
   public void addAppender(final Appender newAppender) {
-    synchronized (appenders) {
       appenders.addAppender(newAppender);
-    }
   }
 
   /**
@@ -169,10 +167,8 @@ public class AsyncAppender extends AppenderSkeleton
     //   if dispatcher thread has died then
     //      append subsequent events synchronously
     //   See bug 23021
-    if ((dispatcher == null) || !dispatcher.isAlive() || (bufferSize <= 0)) {
-      synchronized (appenders) {
-        appenders.appendLoopOnAppenders(event);
-      }
+    if (!dispatcher.isAlive() || (bufferSize <= 0)) {
+      appenders.appendLoopOnAppenders(event);
 
       return;
     }
@@ -278,19 +274,7 @@ public class AsyncAppender extends AppenderSkeleton
     //
     //    close all attached appenders.
     //
-    synchronized (appenders) {
-      Enumeration iter = appenders.getAllAppenders();
-
-      if (iter != null) {
-        while (iter.hasMoreElements()) {
-          Object next = iter.nextElement();
-
-          if (next instanceof Appender) {
-            ((Appender) next).close();
-          }
-        }
-      }
-    }
+    appenders.closeAppenders();
   }
 
   /**
@@ -298,9 +282,7 @@ public class AsyncAppender extends AppenderSkeleton
    * @return iterator or null if no attached appenders.
    */
   public Enumeration getAllAppenders() {
-    synchronized (appenders) {
       return appenders.getAllAppenders();
-    }
   }
 
   /**
@@ -310,9 +292,7 @@ public class AsyncAppender extends AppenderSkeleton
    * @return matching appender or null.
    */
   public Appender getAppender(final String name) {
-    synchronized (appenders) {
       return appenders.getAppender(name);
-    }
   }
 
   /**
@@ -331,9 +311,7 @@ public class AsyncAppender extends AppenderSkeleton
    * @return true if attached.
    */
   public boolean isAttached(final Appender appender) {
-    synchronized (appenders) {
       return appenders.isAttached(appender);
-    }
   }
 
   /**
@@ -347,9 +325,7 @@ public class AsyncAppender extends AppenderSkeleton
    * Removes and closes all attached appenders.
    */
   public void removeAllAppenders() {
-    synchronized (appenders) {
       appenders.removeAllAppenders();
-    }
   }
 
   /**
@@ -357,9 +333,7 @@ public class AsyncAppender extends AppenderSkeleton
    * @param appender appender to remove.
    */
   public void removeAppender(final Appender appender) {
-    synchronized (appenders) {
       appenders.removeAppender(appender);
-    }
   }
 
   /**
@@ -367,9 +341,7 @@ public class AsyncAppender extends AppenderSkeleton
    * @param name name.
    */
   public void removeAppender(final String name) {
-    synchronized (appenders) {
       appenders.removeAppender(name);
-    }
   }
 
   /**
@@ -509,44 +481,7 @@ public class AsyncAppender extends AppenderSkeleton
   /**
    * Event dispatcher.
    */
-  private static class Dispatcher implements Runnable {
-    /**
-     * Parent AsyncAppender.
-     */
-    private final AsyncAppender parent;
-
-    /**
-     * Event buffer.
-     */
-    private final List buffer;
-
-    /**
-     * Map of DiscardSummary keyed by logger name.
-     */
-    private final Map discardMap;
-
-    /**
-     * Wrapped appenders.
-     */
-    private final AppenderAttachableImpl appenders;
-
-    /**
-     * Create new instance of dispatcher.
-     *
-     * @param parent     parent AsyncAppender, may not be null.
-     * @param buffer     event buffer, may not be null.
-     * @param discardMap discard map, may not be null.
-     * @param appenders  appenders, may not be null.
-     */
-    public Dispatcher(
-      final AsyncAppender parent, final List buffer, final Map discardMap,
-      final AppenderAttachableImpl appenders) {
-
-      this.parent = parent;
-      this.buffer = buffer;
-      this.appenders = appenders;
-      this.discardMap = discardMap;
-    }
+  private class Dispatcher implements Runnable {
 
     /**
      * {@inheritDoc}
@@ -570,12 +505,12 @@ public class AsyncAppender extends AppenderSkeleton
           //
           synchronized (buffer) {
             int bufferSize = buffer.size();
-            isActive = !parent.closed;
+            isActive = !closed;
 
             while ((bufferSize == 0) && isActive) {
               buffer.wait();
               bufferSize = buffer.size();
-              isActive = !parent.closed;
+              isActive = !closed;
             }
 
             if (bufferSize > 0) {
@@ -609,10 +544,8 @@ public class AsyncAppender extends AppenderSkeleton
           //   process events after lock on buffer is released.
           //
           if (events != null) {
-            for (int i = 0; i < events.length; i++) {
-              synchronized (appenders) {
-                appenders.appendLoopOnAppenders(events[i]);
-              }
+            for (LoggingEvent event : events) {
+              appenders.appendLoopOnAppenders(event);
             }
           }
         }
