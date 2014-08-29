@@ -23,6 +23,7 @@
     <module>logger</module>
     <module>fragment</module>
     <module>dynamic</module>
+    <module>perfs</module>
   </modules>
 
   <profiles>

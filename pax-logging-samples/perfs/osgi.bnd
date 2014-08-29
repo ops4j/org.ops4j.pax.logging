@@ -1,0 +1,24 @@
+Bundle-SymbolicName:\
+  ${bundle.symbolicName}
+
+Bundle-Version:\
+  ${pom.version}
+  
+Bundle-Activator:\
+  ${bundle.namespace}.Activator
+
+Import-Package:\
+  com.sun.net.ssl.*;resolution:=optional, \
+  !javax.*, \
+  *
+
+DynamicImport-Package:\
+  javax.*
+
+Export-Package:
+
+Private-Package:\
+  ${bundle.namespace}
+
+Embed-Dependency:\
+  org.mortbay.jetty;inline=true
