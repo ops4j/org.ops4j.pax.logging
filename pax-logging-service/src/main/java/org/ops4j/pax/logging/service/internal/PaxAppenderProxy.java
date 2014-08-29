@@ -59,8 +59,8 @@ public class PaxAppenderProxy extends ServiceTracker implements PaxAppender
             appenders = getServices();
         }
         if (appenders != null) {
-            for (int i = 0; i < appenders.length; i++) {
-                ((PaxAppender) appenders[i]).doAppend( event );
+            for (Object appender : appenders) {
+                ((PaxAppender) appender).doAppend(event);
             }
         }
     }

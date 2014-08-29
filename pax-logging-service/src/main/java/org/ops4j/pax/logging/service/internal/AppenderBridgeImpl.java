@@ -19,6 +19,8 @@ package org.ops4j.pax.logging.service.internal;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.helpers.LogLog;
+import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 
@@ -31,6 +33,32 @@ public class AppenderBridgeImpl extends AppenderSkeleton
     public AppenderBridgeImpl( PaxAppenderProxy delegate )
     {
         m_delegate = delegate;
+    }
+
+    // Unsynchronized version
+    public void doAppend(LoggingEvent event)
+    {
+        if(closed) {
+            LogLog.error("Attempted to append to closed appender named [" + name + "].");
+            return;
+        }
+
+        if(!isAsSevereAsThreshold(event.getLevel())) {
+            return;
+        }
+
+        Filter f = this.headFilter;
+
+        FILTER_LOOP:
+        while(f != null) {
+            switch(f.decide(event)) {
+            case Filter.DENY: return;
+            case Filter.ACCEPT: break FILTER_LOOP;
+            case Filter.NEUTRAL: f = f.getNext();
+            }
+        }
+
+        this.append(event);
     }
 
     protected void append( LoggingEvent event )
