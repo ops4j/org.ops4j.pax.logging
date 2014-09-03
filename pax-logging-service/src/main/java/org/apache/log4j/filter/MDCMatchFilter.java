@@ -139,8 +139,8 @@ public class MDCMatchFilter extends MatchFilterBase {
   protected boolean match(LoggingEvent event) {
     // get the mdc value for the key from the event
     // use the toString() value of the value object
-    //Object mdcObject = event.getMDC(keyToMatch); //removed in Log4j-1.3
-    Object mdcObject = MDC.get(keyToMatch);
+    Object mdcObject = event.getMDC(keyToMatch); //removed in Log4j-1.3
+//    Object mdcObject = MDC.get(keyToMatch);
     String mdcValue;
 
     if (mdcObject != null) {
