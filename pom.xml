@@ -10,7 +10,7 @@
 
   <groupId>org.ops4j.pax</groupId>
   <artifactId>logging</artifactId>
-  <version>1.7.4-SNAPSHOT</version>
+  <version>1.7.4</version>
   <packaging>pom</packaging>
 
   <name>OPS4J Pax Logging (Build POM)</name>
@@ -26,7 +26,7 @@
     <connection>scm:git:git://github.com/ops4j/org.ops4j.pax.logging.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/ops4j/org.ops4j.pax.logging.git</developerConnection>
     <url>http://github.com/ops4j/org.ops4j.pax.logging/tree/master</url>
-    <tag>HEAD</tag>
+    <tag>logging-1.7.4</tag>
   </scm>
 
   <build>
