@@ -324,9 +324,9 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
                     if (!output.contains("No appenders present")) {
                         System.err.println(output);
                         Throwable t = status.getThrowable();
-                        if (t == null)
-                            t = new Exception();
-                        t.printStackTrace(System.err);
+                        if (t != null) {
+                            t.printStackTrace(System.err);
+                        }
                     }
                 }
             }
