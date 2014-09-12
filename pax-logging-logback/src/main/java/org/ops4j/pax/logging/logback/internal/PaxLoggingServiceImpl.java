@@ -47,9 +47,7 @@ import org.slf4j.impl.StaticLoggerBinder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Dictionary;
@@ -241,13 +239,8 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
             File f = new File(configfile.toString());
             if (f.exists()) {
                 try {
-                    InputStream is = new FileInputStream(f);
-                    try {
-                        configureLogback(is);
-                    } finally {
-                        is.close();
-                    }
-                } catch (IOException e) {
+                    configureLogback(f);
+                } catch (RuntimeException e) {
                     m_logbackContext.getStatusManager().add(new WarnStatus("Error loading Logback configuration from '" + f + "'", m_logbackContext, e));
                 }
             } else {
@@ -280,7 +273,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         m_logLevel = convertLevel( levelName );
     }
 
-    private void configureLogback(@Nullable InputStream configFile) {
+    private void configureLogback(@Nullable File configFile) {
         ConsoleAppender<ILoggingEvent> consoleAppender = configureLogbackDefaults();
 
         if (configFile != null) {
