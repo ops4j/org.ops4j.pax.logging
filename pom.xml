@@ -380,6 +380,7 @@
     <module>pax-logging-logback</module>
     <module>pax-logging-it</module>
     <module>pax-logging-samples</module>
+    <module>pax-logging-log4j2</module>
   </modules>
 
 </project>
