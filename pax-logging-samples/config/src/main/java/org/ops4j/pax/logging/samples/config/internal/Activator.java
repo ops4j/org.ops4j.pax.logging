@@ -18,6 +18,7 @@
 package org.ops4j.pax.logging.samples.config.internal;
 
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.Properties;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -72,11 +73,11 @@ public final class Activator
         final ConfigurationAdmin configAdmin = getConfigurationAdmin( bundleContext );
         final Configuration configuration = configAdmin.getConfiguration( "org.ops4j.pax.logging", null );
 
-        final Properties log4jProps = new Properties();
-        log4jProps.setProperty( "log4j.rootLogger", "DEBUG, CONSOLE" );
-        log4jProps.setProperty( "log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender" );
-        log4jProps.setProperty( "log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout" );
-        log4jProps.setProperty( "log4j.appender.CONSOLE.layout.ConversionPattern", pattern );
+        final Hashtable<String, Object> log4jProps = new Hashtable<String, Object>();
+        log4jProps.put( "log4j.rootLogger", "DEBUG, CONSOLE" );
+        log4jProps.put( "log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender" );
+        log4jProps.put( "log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout" );
+        log4jProps.put( "log4j.appender.CONSOLE.layout.ConversionPattern", pattern );
 
         configuration.update( log4jProps );
     }

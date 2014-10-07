@@ -16,6 +16,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.same;
 
 /**
@@ -43,7 +44,7 @@ public class PaxAppenderDelegateTest {
             }
         }).once();
         EasyMock.expect(bundlecontext.getProperty(Constants.FRAMEWORK_VERSION)).andReturn("0").times(0,1); // it seems that different OSGi versions call this differently
-        bundlecontext.addServiceListener(EasyMock.<ServiceListener>anyObject(), EasyMock.<String>isNull());
+        bundlecontext.addServiceListener(EasyMock.<ServiceListener>anyObject(), eq(filterStr));
         EasyMock.expectLastCall().once();
         EasyMock.expect(bundlecontext.getServiceReferences((String) null, filterStr)).andReturn(new ServiceReference[]{sr}).once();
         EasyMock.expect(bundlecontext.getService(same(sr))).andReturn(appender).once();
