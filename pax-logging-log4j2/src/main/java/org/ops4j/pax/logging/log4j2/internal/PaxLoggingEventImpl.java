@@ -29,7 +29,11 @@ import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 
 public class PaxLoggingEventImpl implements PaxLoggingEvent {
 
-    private static final PaxLocationInfo UNKNOWN_LOCATION = new UnknownLocation();
+    static {
+        // Force the two classes to be loaded in case the bundle is refreshed
+        new PaxLocationInfoImpl(null);
+        new PaxLevelImpl(Level.DEBUG);
+    }
 
     private final LogEvent event;
 
@@ -39,8 +43,7 @@ public class PaxLoggingEventImpl implements PaxLoggingEvent {
 
     @Override
     public PaxLocationInfo getLocationInformation() {
-        StackTraceElement source = event.getSource();
-        return source != null ? new PaxLocationInfoImpl(source) : UNKNOWN_LOCATION;
+        return new PaxLocationInfoImpl(event.getSource());
     }
 
     @Override
@@ -94,28 +97,6 @@ public class PaxLoggingEventImpl implements PaxLoggingEvent {
         return event.getContextMap();
     }
 
-    static class UnknownLocation implements PaxLocationInfo {
-        @Override
-        public String getFileName() {
-            return "?";
-        }
-
-        @Override
-        public String getClassName() {
-            return "?";
-        }
-
-        @Override
-        public String getLineNumber() {
-            return "?";
-        }
-
-        @Override
-        public String getMethodName() {
-            return "?";
-        }
-    }
-
     static class PaxLocationInfoImpl implements PaxLocationInfo {
 
         private final StackTraceElement source;
@@ -126,22 +107,25 @@ public class PaxLoggingEventImpl implements PaxLoggingEvent {
 
         @Override
         public String getFileName() {
-            return source.getFileName();
+            String s = source != null ? source.getFileName() : null;
+            return s != null ? s : "?";
         }
 
         @Override
         public String getClassName() {
-            return source.getClassName();
+            String s = source != null ? source.getClassName() : null;
+            return s != null ? s : "?";
         }
 
         @Override
         public String getLineNumber() {
-            return Integer.toString(source.getLineNumber());
+            return source != null ? Integer.toString(source.getLineNumber()) : "?";
         }
 
         @Override
         public String getMethodName() {
-            return source.getMethodName();
+            String s = source != null ? source.getMethodName() : null;
+            return s != null ? s : "?";
         }
     }
 

@@ -78,8 +78,6 @@ public class Activator
     public void start( BundleContext bundleContext )
         throws Exception
     {
-        Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-
         int ranking = 1;
         String rankingProperty = bundleContext.getProperty("org.ops4j.pax.logging.ranking");
         if (rankingProperty != null) {

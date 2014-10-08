@@ -71,6 +71,7 @@ public class PaxLoggingServiceImpl
     private boolean m_async;
     private LoggerContext m_log4jContext;
     private int m_logLevel = LOG_DEBUG;
+    private boolean closed;
 
     public PaxLoggingServiceImpl( BundleContext bundleContext, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin )
     {
@@ -88,17 +89,26 @@ public class PaxLoggingServiceImpl
             throw new IllegalArgumentException("eventAdmin cannot be null");
         m_eventAdmin = eventAdmin;
 
-        m_paxContext = new PaxContext();
-
-        configureDefaults();
+        ClassLoader old = Thread.currentThread().getContextClassLoader();
+        try
+        {
+            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+            m_paxContext = new PaxContext();
+            configureDefaults();
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader( old );
+        }
     }
 
     /**
      * Shut down the Pax Logging service.  This will reset the logging configuration entirely, so it should only be
      * used just before disposing of the service instance.
      */
-    protected void shutdown() {
+    protected synchronized void shutdown() {
         m_log4jContext.stop();
+        closed = true;
     }
 
     public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
@@ -112,15 +122,32 @@ public class PaxLoggingServiceImpl
         return m_loggers.get( name );
     }
 
-    public void updated( Dictionary configuration )
-        throws ConfigurationException
+    public synchronized void updated( Dictionary configuration ) throws ConfigurationException
     {
+        if( closed )
+        {
+            return;
+        }
         if( configuration == null )
         {
             configureDefaults();
             return;
         }
 
+        ClassLoader old = Thread.currentThread().getContextClassLoader();
+        try
+        {
+            Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
+            doUpdate( configuration );
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader( old );
+        }
+    }
+
+    protected void doUpdate( Dictionary configuration ) throws ConfigurationException
+    {
         boolean async = false;
         Object asyncObj = configuration.get(LOG4J2_ASYNC_KEY);
         if (asyncObj != null) {

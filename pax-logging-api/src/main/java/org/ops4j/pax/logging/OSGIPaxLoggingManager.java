@@ -73,8 +73,10 @@ public class OSGIPaxLoggingManager extends ServiceTracker
     public void removedService(ServiceReference reference, Object service)
     {
         m_service = null;
-        m_context.ungetService(m_logServiceRef);
-        m_logServiceRef = null;
+        if (m_logServiceRef == null) {
+            m_context.ungetService(m_logServiceRef);
+            m_logServiceRef = null;
+        }
 
         synchronized (m_loggers) {
             Collection values = m_loggers.values();
@@ -116,7 +118,9 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         if (m_logServiceRef != null)
         {
             m_context.ungetService(m_logServiceRef);
+            m_logServiceRef = null;
         }
+        m_context = null;
     }
 
     public Bundle getBundle()
