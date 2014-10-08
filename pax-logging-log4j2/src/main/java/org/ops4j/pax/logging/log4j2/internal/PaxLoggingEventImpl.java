@@ -184,5 +184,10 @@ public class PaxLoggingEventImpl implements PaxLoggingEvent {
             }
             return SYSLOG_DEBUG;
         }
+
+        @Override
+        public String toString() {
+            return level.toString();
+        }
     }
 }
