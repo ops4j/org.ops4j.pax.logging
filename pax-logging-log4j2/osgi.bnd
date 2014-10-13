@@ -3,6 +3,7 @@ Bundle-Activator: org.ops4j.pax.logging.log4j2.internal.Activator
 Private-Package: \
  org.apache.logging.log4j.*; -split-package:=merge-first, \
  META-INF.*; -split-package:=merge-first, \
+ org.ops4j.pax.logging.internal.eventadmin, \
  org.ops4j.pax.logging.log4j2.internal, \
  org.ops4j.pax.logging.log4j2.appender, \
  org.ops4j.pax.logging.util

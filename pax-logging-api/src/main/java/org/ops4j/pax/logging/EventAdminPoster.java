@@ -25,7 +25,7 @@ public interface EventAdminPoster
 {
 
     public void postEvent( Bundle bundle, int level, LogEntry entry, String message,
-                           Throwable exception, ServiceReference sr, Map context );
+                           Throwable exception, ServiceReference sr, Map<String, ?> context );
 
     public void destroy();
 

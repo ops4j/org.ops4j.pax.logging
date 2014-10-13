@@ -20,7 +20,7 @@ package org.ops4j.pax.logging.logback.internal;
 
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.internal.EventAdminTracker;
+import org.ops4j.pax.logging.internal.eventadmin.EventAdminTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

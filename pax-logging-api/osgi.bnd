@@ -7,7 +7,8 @@ Private-Package: \
  org.apache.log4j.helpers, \
  org.ops4j.pax.logging.slf4j, \
  org.slf4j.impl, \
- org.ops4j.pax.logging.internal
+ org.ops4j.pax.logging.internal, \
+ org.ops4j.pax.logging.internal.eventadmin
 
 Export-Package: \
  org.apache.avalon.framework.logger;-split-package:=merge-first; version=4.3; provider=paxlogging, \

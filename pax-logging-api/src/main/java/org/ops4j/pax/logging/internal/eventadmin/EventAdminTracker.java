@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.internal.eventadmin;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -38,11 +38,11 @@ import org.ops4j.pax.logging.EventAdminPoster;
  * If the Event Admin service is not available, this tracker will queue the Events until
  * the service becomes available.
  */
-public class EventAdminTracker extends ServiceTracker
+public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
     implements EventAdminPoster
 {
 
-    private final LinkedList m_queue;
+    private final LinkedList<Event> m_queue;
     private BundleContext m_context;
     private EventAdmin m_service;
 
@@ -50,15 +50,15 @@ public class EventAdminTracker extends ServiceTracker
 
     public EventAdminTracker( BundleContext context )
     {
-        super( context, EventAdmin.class.getName(), null );
+        super( context, EventAdmin.class, null );
         m_context = context;
-        m_queue = new LinkedList();
+        m_queue = new LinkedList<Event>();
         m_maxSize = 50;
         open();
     }
 
     public void postEvent( Bundle bundle, int level, LogEntry entry, String message,
-                           Throwable exception, ServiceReference sr, Map context )
+                           Throwable exception, ServiceReference sr, Map<String, ?> context )
     {
         Event event = createEvent( bundle, level, entry, message, exception, sr, context );
         synchronized( m_queue )
@@ -74,14 +74,14 @@ public class EventAdminTracker extends ServiceTracker
         close();
     }
 
-    public Object addingService( ServiceReference serviceReference )
+    public EventAdmin addingService( ServiceReference<EventAdmin> serviceReference )
     {
-        m_service = (EventAdmin) m_context.getService( serviceReference );
+        m_service = m_context.getService( serviceReference );
         deliver();
         return m_service;
     }
 
-    public void removedService( ServiceReference serviceReference, Object object )
+    public void removedService( ServiceReference<EventAdmin> serviceReference, EventAdmin object )
     {
         m_service = null;
     }
@@ -105,12 +105,22 @@ public class EventAdminTracker extends ServiceTracker
                 // Make sure queue is still not empty (due to race conditions)
                 if( m_queue.size() > 0 )
                 {
-                    event = (Event) m_queue.remove( 0 );
+                    event = m_queue.remove( 0 );
                 }
             }
             if( event != null )
             {
-                forDelivery.postEvent( event );
+                try
+                {
+                    forDelivery.postEvent(event);
+                }
+                catch( IllegalStateException e )
+                {
+                    synchronized( m_queue )
+                    {
+                        m_queue.add( event );
+                    }
+                }
             }
         }
     }
@@ -148,7 +158,7 @@ public class EventAdminTracker extends ServiceTracker
     }
 
     static Event createEvent( Bundle bundle, int level, LogEntry entry, String message,
-                              Throwable exception, ServiceReference sr, Map context )
+                              Throwable exception, ServiceReference sr, Map<String, ?> context )
     {
         String type;
         switch( level )
@@ -169,11 +179,11 @@ public class EventAdminTracker extends ServiceTracker
                 type = "LOG_OTHER";
         }
         String topic = "org/osgi/service/log/LogEntry/" + type;
-        Dictionary props = new Hashtable();
+        Dictionary<String, Object> props = new Hashtable<String, Object>();
         if( bundle != null )
         {
             props.put( "bundle", bundle );
-            Long bundleId = new Long( bundle.getBundleId() );
+            Long bundleId = bundle.getBundleId();
             props.put( "bundle.id", bundleId );
             String symbolicName = bundle.getSymbolicName();
             if( symbolicName != null )
@@ -181,13 +191,13 @@ public class EventAdminTracker extends ServiceTracker
                 props.put( "bundle.symbolicname", symbolicName );
             }
         }
-        props.put( "log.level", new Integer( level ) );
+        props.put( "log.level", level);
         props.put( "log.entry", entry );
         if( null != message )
         {
             props.put( "message", message );
         }
-        props.put( "timestamp", new Long( System.currentTimeMillis() ) );
+        props.put( "timestamp", System.currentTimeMillis());
         if( exception != null )
         {
             props.put( "exception", exception );
@@ -213,10 +223,10 @@ public class EventAdminTracker extends ServiceTracker
         }
         if( context != null )
         {
-            for( Iterator keys = context.keySet().iterator(); keys.hasNext(); )
+            for (Object o : context.keySet())
             {
-                String key = (String) keys.next();
-                props.put( key, context.get( key ) );
+                String key = (String) o;
+                props.put(key, context.get(key));
             }
         }
         return new Event( topic, props );
