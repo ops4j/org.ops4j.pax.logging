@@ -155,7 +155,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
                 buf.append(":");
                 buf.append(bundle.getSymbolicName());
                 buf.append(":");
-                buf.append(bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION));
+                buf.append(bundle.getVersion().toString());
                 buf.append(']');
                 return buf.toString();
             }

@@ -111,7 +111,7 @@ public class PaxLoggerImpl
         if (m_bundle != null && adapter != null) {
             adapter.put("bundle.id", String.valueOf(m_bundle.getBundleId()));
             adapter.put("bundle.name", m_bundle.getSymbolicName());
-            adapter.put("bundle.version", (String) m_bundle.getHeaders().get(Constants.BUNDLE_VERSION));
+            adapter.put("bundle.version", m_bundle.getVersion().toString());
         }
 
     }

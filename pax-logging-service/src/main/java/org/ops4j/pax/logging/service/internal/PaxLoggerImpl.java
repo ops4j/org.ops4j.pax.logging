@@ -17,7 +17,6 @@
  */
 package org.ops4j.pax.logging.service.internal;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Level;
@@ -26,7 +25,6 @@ import org.apache.log4j.MDC;
 import org.apache.log4j.Priority;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.util.OsgiUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.log.LogService;
@@ -104,8 +102,8 @@ public class PaxLoggerImpl
             BundleRevision rev = (BundleRevision) m_bundle.adapt(BundleRevision.class);
             if (rev != m_bundleRevision) {
                 m_bundleId = m_bundle.getBundleId();
-                m_bundleSymbolicName = OsgiUtil.getBundleSymbolicName(m_bundle);
-                m_bundleVersion = OsgiUtil.getVersion(m_bundle);
+                m_bundleSymbolicName = m_bundle.getSymbolicName();
+                m_bundleVersion = m_bundle.getVersion().toString();
                 m_bundleRevision = rev;
             }
             put("bundle.id", m_bundleId);

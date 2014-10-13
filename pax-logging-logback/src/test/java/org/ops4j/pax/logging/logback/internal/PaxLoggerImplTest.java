@@ -20,6 +20,8 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
+
 import org.slf4j.MDC;
 
 /**
@@ -111,13 +113,10 @@ public class PaxLoggerImplTest {
     }
 
     private Bundle makeBundle() {
-        Headers headers = new Headers(1);
-        headers.put(Constants.BUNDLE_VERSION, "1.2.3.4");
-
         Bundle bundle = EasyMock.createMock(Bundle.class);
         EasyMock.expect(bundle.getBundleId()).andReturn(1L).anyTimes();
         EasyMock.expect(bundle.getSymbolicName()).andReturn("bundle1").anyTimes();
-        EasyMock.expect(bundle.getHeaders()).andReturn(headers).anyTimes();
+        EasyMock.expect(bundle.getVersion()).andReturn(new Version("1.2.3.4")).anyTimes();
         return bundle;
     }
 
