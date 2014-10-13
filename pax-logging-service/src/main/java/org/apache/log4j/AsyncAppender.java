@@ -513,6 +513,10 @@ public class AsyncAppender extends AppenderSkeleton
               isActive = !closed;
             }
 
+            if (closed && !blocking) {
+              break;
+            }
+
             if (bufferSize > 0) {
               events = new LoggingEvent[bufferSize + discardMap.size()];
               buffer.toArray(events);
