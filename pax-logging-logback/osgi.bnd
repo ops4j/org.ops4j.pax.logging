@@ -7,6 +7,9 @@ Private-Package: \
  org.ops4j.pax.logging.logback.appender, \
  org.ops4j.pax.logging.logback.internal
 
+Export-Package: \
+ !*
+
 Import-Package: \
  javax.xml.*, \
  (com|sun|javax).*;resolution:=optional, \
@@ -41,5 +44,3 @@ Import-Package: \
  sun.reflect;resolution:=optional, \
  org.codehaus.commons.compiler;resolution:=optional, \
  *
-
-

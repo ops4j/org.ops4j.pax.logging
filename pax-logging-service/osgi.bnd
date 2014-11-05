@@ -7,6 +7,9 @@ Private-Package: \
  org.ops4j.pax.logging.service.internal, \
  org.ops4j.pax.logging.util
 
+Export-Package: \
+ !*
+
 Import-Package: \
  javax.xml.*, \
  (com|sun|javax).*;resolution:=optional, \
@@ -19,5 +22,3 @@ Import-Package: \
  org.osgi.service.log; version="[1.3.0,2.0.0)", \
  org.osgi.util.tracker; version="[1.3.0,2.0.0)", \
  *
-
-
