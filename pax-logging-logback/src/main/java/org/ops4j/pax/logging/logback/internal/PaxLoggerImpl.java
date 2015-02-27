@@ -129,94 +129,112 @@ public class PaxLoggerImpl
         // See PAXLOGGING-165.
     }
 
-    public void trace( String message, Throwable t )
-    {
-        setDelegateContext();
-        m_delegate.log(null, m_fqcn, LocationAwareLogger.TRACE_INT, message, null, t);
-        clearDelegateContext();
-        m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+    public void trace(String message, Throwable t) {
+        if (isTraceEnabled()) {
+            setDelegateContext();
+            m_delegate.log(null, m_fqcn, LocationAwareLogger.TRACE_INT, message, null, t);
+            clearDelegateContext();
+            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+        }
     }
 
-    public void debug( String message, Throwable t )
-    {
-        setDelegateContext();
-        m_delegate.log(null, m_fqcn, LocationAwareLogger.DEBUG_INT, message, null, t);
-        clearDelegateContext();
-        m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+    public void debug( String message, Throwable t ) {
+        if (isDebugEnabled()) {
+            setDelegateContext();
+            m_delegate.log(null, m_fqcn, LocationAwareLogger.DEBUG_INT, message, null, t);
+            clearDelegateContext();
+            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+        }
     }
 
-    public void inform( String message, Throwable t )
-    {
-        setDelegateContext();
-        m_delegate.log(null, m_fqcn, LocationAwareLogger.INFO_INT, message, null, t);
-        clearDelegateContext();
-        m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_INFO, message, t);
+    public void inform( String message, Throwable t ) {
+        if (isInfoEnabled()) {
+            setDelegateContext();
+            m_delegate.log(null, m_fqcn, LocationAwareLogger.INFO_INT, message, null, t);
+            clearDelegateContext();
+            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_INFO, message, t);
+        }
     }
 
-    public void warn( String message, Throwable t )
-    {
-        setDelegateContext();
-        m_delegate.log(null, m_fqcn, LocationAwareLogger.WARN_INT, message, null, t);
-        clearDelegateContext();
-        m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_WARNING, message, t);
+    public void warn( String message, Throwable t ) {
+        if (isWarnEnabled()) {
+            setDelegateContext();
+            m_delegate.log(null, m_fqcn, LocationAwareLogger.WARN_INT, message, null, t);
+            clearDelegateContext();
+            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_WARNING, message, t);
+        }
     }
 
-    public void error( String message, Throwable t )
-    {
-        setDelegateContext();
-        m_delegate.log(null, m_fqcn, LocationAwareLogger.ERROR_INT, message, null, t);
-        clearDelegateContext();
-        m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+    public void error( String message, Throwable t ) {
+        if (isErrorEnabled()) {
+            setDelegateContext();
+            m_delegate.log(null, m_fqcn, LocationAwareLogger.ERROR_INT, message, null, t);
+            clearDelegateContext();
+            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+        }
     }
 
-    public void fatal( String message, Throwable t )
-    {
-        setDelegateContext();
-        m_delegate.log(null, m_fqcn, LocationAwareLogger.ERROR_INT, message, null, t);
-        clearDelegateContext();
-        m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+    public void fatal( String message, Throwable t ) {
+        if (isFatalEnabled()) {
+            setDelegateContext();
+            m_delegate.log(null, m_fqcn, LocationAwareLogger.ERROR_INT, message, null, t);
+            clearDelegateContext();
+            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+        }
     }
 
     public void trace(String message, Throwable t, String fqcn) {
-        setDelegateContext();
-        m_delegate.log(null, fqcn, LocationAwareLogger.TRACE_INT, message, null, t);
-        clearDelegateContext();
-        m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+        if (isTraceEnabled()) {
+            setDelegateContext();
+            m_delegate.log(null, fqcn, LocationAwareLogger.TRACE_INT, message, null, t);
+            clearDelegateContext();
+            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+        }
     }
 
     public void debug(String message, Throwable t, String fqcn) {
-        setDelegateContext();
-        m_delegate.log( null, fqcn, LocationAwareLogger.DEBUG_INT, message, null, t );
-        clearDelegateContext();
-        m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+        if (isDebugEnabled()) {
+            setDelegateContext();
+            m_delegate.log( null, fqcn, LocationAwareLogger.DEBUG_INT, message, null, t );
+            clearDelegateContext();
+            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+        }
     }
 
     public void inform(String message, Throwable t, String fqcn) {
-        setDelegateContext();
-        m_delegate.log(null, fqcn, LocationAwareLogger.INFO_INT, message, null, t);
-        clearDelegateContext();
-        m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
+        if (isInfoEnabled()) {
+            setDelegateContext();
+            m_delegate.log(null, fqcn, LocationAwareLogger.INFO_INT, message, null, t);
+            clearDelegateContext();
+            m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
+        }
     }
 
     public void warn(String message, Throwable t, String fqcn) {
-        setDelegateContext();
-        m_delegate.log( null, fqcn, LocationAwareLogger.WARN_INT, message, null, t );
-        clearDelegateContext();
-        m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
+        if (isWarnEnabled()) {
+            setDelegateContext();
+            m_delegate.log( null, fqcn, LocationAwareLogger.WARN_INT, message, null, t );
+            clearDelegateContext();
+            m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
+        }
     }
 
     public void error(String message, Throwable t, String fqcn) {
-        setDelegateContext();
-        m_delegate.log( null, fqcn, LocationAwareLogger.ERROR_INT, message, null, t );
-        clearDelegateContext();
-        m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+        if (isErrorEnabled()) {
+            setDelegateContext();
+            m_delegate.log( null, fqcn, LocationAwareLogger.ERROR_INT, message, null, t );
+            clearDelegateContext();
+            m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+        }
     }
 
     public void fatal(String message, Throwable t, String fqcn) {
-        setDelegateContext();
-        m_delegate.log( null, fqcn, LocationAwareLogger.ERROR_INT, message, null, t );
-        clearDelegateContext();
-        m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+        if (isFatalEnabled()) {
+            setDelegateContext();
+            m_delegate.log( null, fqcn, LocationAwareLogger.ERROR_INT, message, null, t );
+            clearDelegateContext();
+            m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+        }
     }
 
     public int getLogLevel()
