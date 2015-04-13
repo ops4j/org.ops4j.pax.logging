@@ -314,7 +314,8 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
             public void addStatusEvent(Status status) {
                 if (status.getLevel() == Status.ERROR || status.getLevel() == Status.WARN) {
                     String output = String.valueOf(status);
-                    if (!output.contains("No appenders present")) {
+                    // ignore rare appender warnings when someone attempts to log while config is being reloaded
+                    if (!output.contains("No appenders present") && !output.contains("non started appender")) {
                         System.err.println(output);
                         Throwable t = status.getThrowable();
                         if (t != null) {
