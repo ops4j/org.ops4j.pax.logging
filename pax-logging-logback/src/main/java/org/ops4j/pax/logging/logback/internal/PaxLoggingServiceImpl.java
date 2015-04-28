@@ -47,7 +47,6 @@ import org.slf4j.impl.StaticLoggerBinder;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Dictionary;
@@ -92,6 +91,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
     private final BundleContext m_bundleContext;
     private final PaxContext m_paxContext;
     private final boolean m_useStaticContext;
+    private final String m_staticConfigFile;
     private final LoggerContext m_logbackContext;
     private final String m_fqcn;
 
@@ -128,6 +128,8 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
             m_logbackContext = new LoggerContext();
             m_logbackContext.start();
         }
+
+        m_staticConfigFile = bundleContext.getProperty("org.ops4j.pax.logging.StaticLogbackFile");
 
         // not strictly necessary because org.apache.felix.cm.impl.ConfigurationManager will configure us, but this
         // is a safe precaution. In a typical run, we will reset the logback configuration four times:
@@ -230,22 +232,32 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
 
         if( configuration == null )
         {
-            configureDefaults();
+            if (m_staticConfigFile != null) {
+                // maintain the existing configuration
+            } else {
+                configureDefaults();
+            }
             return;
         }
 
         Object configfile = configuration.get(LOGBACK_CONFIG_FILE_KEY);
         if (configfile != null) {
-            File f = new File(configfile.toString());
-            if (f.exists()) {
-                try {
-                    configureLogback(f);
-                } catch (RuntimeException e) {
-                    m_logbackContext.getStatusManager().add(new WarnStatus("Error loading Logback configuration from '" + f + "'", m_logbackContext, e));
-                }
+            if (configfile.equals(m_staticConfigFile)) {
+                // maintain the existing configuration
             } else {
-                m_logbackContext.getStatusManager().add(new WarnStatus("Configuration said to load '" + f + "' but that file does not exist", m_logbackContext));
-                configureLogback(null);
+                File f = new File(configfile.toString());
+                if (f.exists()) {
+                    try {
+                        configureLogback(f);
+                    } catch (RuntimeException e) {
+                        m_logbackContext.getStatusManager().add(new WarnStatus(
+                            "Error loading Logback configuration from '" + f + "'", m_logbackContext, e));
+                    }
+                } else {
+                    m_logbackContext.getStatusManager().add(new WarnStatus(
+                        "Configuration said to load '" + f + "' but that file does not exist", m_logbackContext));
+                    configureLogback(null);
+                }
             }
         } else {
             configureLogback(null);
@@ -257,8 +269,18 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
 
     private void configureDefaults()
     {
-        ConsoleAppender<ILoggingEvent> consoleAppender = configureLogbackDefaults();
-        consoleAppender.addInfo("default: setting up console logging at WARN level");
+        if (m_staticConfigFile != null) {
+            File f = new File(m_staticConfigFile);
+            try {
+                configureLogback(f);
+            } catch (RuntimeException e) {
+                m_logbackContext.getStatusManager().add(new WarnStatus(
+                    "Error loading Logback configuration from '" + f + "'", m_logbackContext, e));
+            }
+        } else {
+            ConsoleAppender<ILoggingEvent> consoleAppender = configureLogbackDefaults();
+            consoleAppender.addInfo("default: setting up console logging at WARN level");
+        }
 
         String levelName;
         levelName = m_bundleContext.getProperty( DEFAULT_SERVICE_LOG_LEVEL );
