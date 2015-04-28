@@ -241,23 +241,21 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         }
 
         Object configfile = configuration.get(LOGBACK_CONFIG_FILE_KEY);
-        if (configfile != null) {
-            if (configfile.equals(m_staticConfigFile)) {
-                // maintain the existing configuration
-            } else {
-                File f = new File(configfile.toString());
-                if (f.exists()) {
-                    try {
-                        configureLogback(f);
-                    } catch (RuntimeException e) {
-                        m_logbackContext.getStatusManager().add(new WarnStatus(
-                            "Error loading Logback configuration from '" + f + "'", m_logbackContext, e));
-                    }
-                } else {
+        if (m_staticConfigFile != null && (configfile == null || m_staticConfigFile.equals(configfile))) {
+            // maintain the existing configuration
+        } else if (configfile != null) {
+            File f = new File(configfile.toString());
+            if (f.exists()) {
+                try {
+                    configureLogback(f);
+                } catch (RuntimeException e) {
                     m_logbackContext.getStatusManager().add(new WarnStatus(
-                        "Configuration said to load '" + f + "' but that file does not exist", m_logbackContext));
-                    configureLogback(null);
+                        "Error loading Logback configuration from '" + f + "'", m_logbackContext, e));
                 }
+            } else {
+                m_logbackContext.getStatusManager().add(new WarnStatus(
+                    "Configuration said to load '" + f + "' but that file does not exist", m_logbackContext));
+                configureLogback(null);
             }
         } else {
             configureLogback(null);
