@@ -311,11 +311,15 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
 
             JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext(m_logbackContext);
+            ClassLoader tccl = Thread.currentThread().getContextClassLoader();
             try {
+                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                 configurator.doConfigure(configFile);
                 m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).detachAppender(consoleAppender);
             } catch (JoranException e) {
                 throw new RuntimeException(e);
+            } finally {
+                Thread.currentThread().setContextClassLoader(tccl);
             }
         }
     }
