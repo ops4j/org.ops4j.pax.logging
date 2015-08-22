@@ -17,8 +17,7 @@
  */
 package org.ops4j.pax.logging.log4j2.internal;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.File;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Map;
@@ -172,13 +171,9 @@ public class PaxLoggingServiceImpl
 
         Configuration config = new DefaultConfiguration();
         Object configfile = configuration.get(LOG4J2_CONFIG_FILE_KEY);
-        if (configfile != null) {
-            try {
-                URI uri = new URI(configfile.toString());
-                config = ConfigurationFactory.getInstance().getConfiguration("pax-logging", uri);
-            } catch (URISyntaxException e) {
-                StatusLogger.getLogger().warn("Invalid configuration location: '" + configfile + "'", e);
-            }
+		if (configfile != null) {
+			config = ConfigurationFactory.getInstance().getConfiguration(
+					"pax-logging", new File(configfile.toString()).toURI());
         }
         m_log4jContext.start(config);
 
