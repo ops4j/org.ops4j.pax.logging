@@ -300,7 +300,26 @@ public class PaxLoggerImpl
 
     public int getLogLevel()
     {
-        return m_delegate.getLevel().toInt();
+
+        Level level = m_delegate.getEffectiveLevel();
+
+        if ( level == null )
+            return LEVEL_ERROR;
+
+        if ( Level.TRACE.isGreaterOrEqual( level ) )
+            return LEVEL_TRACE;
+
+        if ( Level.DEBUG.isGreaterOrEqual( level ) )
+            return LEVEL_DEBUG;
+
+        if ( Level.INFO.isGreaterOrEqual( level ) )
+            return LEVEL_INFO;
+
+        if ( Level.WARN.isGreaterOrEqual( level ) )
+            return LEVEL_WARNING;
+
+        return LEVEL_ERROR;
+
     }
 
     public String getName()

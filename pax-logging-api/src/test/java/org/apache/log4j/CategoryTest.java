@@ -154,6 +154,27 @@ public class CategoryTest extends TestCase
         testLog( Priority.DEBUG, "debug" );
     }
 
+    public void testGetEffectiveLevel()
+    {
+        final Mock mockDelegate = new Mock( PaxLogger.class );
+        mockDelegate.expects( new InvokeOnceMatcher() ).method( "getLogLevel" ).withAnyArguments().will( new ReturnStub( new Integer( -1 ) ) );
+        mockDelegate.expects( new InvokeOnceMatcher() ).method( "getLogLevel" ).withAnyArguments().will( new ReturnStub( new Integer( PaxLogger.LEVEL_ERROR ) ) );
+        mockDelegate.expects( new InvokeOnceMatcher() ).method( "getLogLevel" ).withAnyArguments().will( new ReturnStub( new Integer( PaxLogger.LEVEL_WARNING ) ) );
+        mockDelegate.expects( new InvokeOnceMatcher() ).method( "getLogLevel" ).withAnyArguments().will( new ReturnStub( new Integer( PaxLogger.LEVEL_INFO ) ) );
+        mockDelegate.expects( new InvokeOnceMatcher() ).method( "getLogLevel" ).withAnyArguments().will( new ReturnStub( new Integer( PaxLogger.LEVEL_DEBUG ) ) );
+        mockDelegate.expects( new InvokeOnceMatcher() ).method( "getLogLevel" ).withAnyArguments().will( new ReturnStub( new Integer( PaxLogger.LEVEL_TRACE ) ) );
+
+        final Category category = new SimpleCategory( (PaxLogger) mockDelegate.proxy() );
+        assertEquals( Level.TRACE , category.getEffectiveLevel() );
+        assertEquals( Level.DEBUG , category.getEffectiveLevel() );
+        assertEquals( Level.INFO , category.getEffectiveLevel() );
+        assertEquals( Level.WARN , category.getEffectiveLevel() );
+        assertEquals( Level.ERROR , category.getEffectiveLevel() );
+        assertEquals( null , category.getEffectiveLevel() );
+
+        mockDelegate.verify();
+    }
+
 	// Helpers
 
 	private void testIsEnabledFor( final Priority priority, final String method )
