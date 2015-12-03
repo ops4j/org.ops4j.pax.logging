@@ -17,12 +17,8 @@
  */
 package org.ops4j.pax.logging.log4j2.appender;
 
-import java.io.Serializable;
-
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.ErrorHandler;
-import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
@@ -42,87 +38,40 @@ import org.osgi.framework.FrameworkUtil;
  * </p>
  */
 @Plugin(name = "PaxOsgi", category = "Core", elementType = "appender", printObject = true)
-public class PaxOsgiAppender implements Appender {
+public class PaxOsgiAppender extends AbstractAppender {
 
-    private final String name;
     private final String filter;
-    private final Object lifeCycleLock = new Object();
     private PaxAppenderProxy proxy;
-    private volatile boolean started;
 
     public PaxOsgiAppender(String name, String filter) {
-        this.name = name;
+        super(name, null, null);
         this.filter = (filter == null || filter.isEmpty()) ? "*" : filter;
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public Layout<? extends Serializable> getLayout() {
-        return null;
-    }
-
-    @Override
-    public boolean ignoreExceptions() {
-        return true;
-    }
-
-    @Override
-    public ErrorHandler getHandler() {
-        return null;
-    }
-
-    @Override
-    public void setHandler(ErrorHandler handler) {
-
-    }
-
-    @Override
-    public boolean isStarted() {
-        return started;
-    }
-
-    @Override
-    public boolean isStopped() {
-        return !started;
-    }
-
-    @Override
     public void start() {
-        synchronized (lifeCycleLock) {
-            if (isStarted())
-                return;
-            // TODO: use correct bundle context
-            BundleContext bundleContext = null;
-            if (bundleContext == null) {
-                Bundle bundle = FrameworkUtil.getBundle(getClass());
-                if (bundle != null) {
-                    bundleContext = bundle.getBundleContext();
-                }
-                if (bundleContext == null) {
-                    throw new IllegalArgumentException("missing BundleContext, expected in org.ops4j.pax.logging.log4j2.bundlecontext");
-                }
+        // TODO: use correct bundle context
+        BundleContext bundleContext = null;
+        if (bundleContext == null) {
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            if (bundle != null) {
+                bundleContext = bundle.getBundleContext();
             }
-
-            started = true;
-            proxy = new PaxAppenderProxy(bundleContext, filter);
-            proxy.open();
+            if (bundleContext == null) {
+                throw new IllegalArgumentException("missing BundleContext, expected in org.ops4j.pax.logging.log4j2.bundlecontext");
+            }
         }
+        proxy = new PaxAppenderProxy(bundleContext, filter);
+        proxy.open();
+        super.start();
     }
 
     @Override
     public void stop() {
-        synchronized (lifeCycleLock) {
-            if (!isStarted())
-                return;
-            if (proxy != null) {
-                proxy.close();
-                proxy = null;
-            }
-            started = false;
+        super.stop();
+        if (proxy != null) {
+            proxy.close();
+            proxy = null;
         }
     }
 
