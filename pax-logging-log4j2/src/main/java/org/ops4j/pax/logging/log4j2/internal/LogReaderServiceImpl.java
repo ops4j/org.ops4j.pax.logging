@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.apache.logging.log4j.status.StatusLogger;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogReaderService;
@@ -96,7 +97,7 @@ public class LogReaderServiceImpl
         catch( Throwable e )
         {
             //TODO: Log that we are removing the LogListener, since it is throwing exception. For now System.err
-            System.err.println( "'" + listener + "' is removed as a LogListener, since it threw an exception." );
+            StatusLogger.getLogger().error("'{}' is removed as a LogListener since it threw an exception.", listener, e);
             removeLogListener( listener );
         }
     }
