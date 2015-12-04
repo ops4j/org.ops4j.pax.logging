@@ -233,7 +233,9 @@ public class PaxLoggingServiceImpl
 
     private void configureDefaults()
     {
-        m_log4jContext = new LoggerContext("pax-logging");
+        if (m_log4jContext == null) {
+            m_log4jContext = new LoggerContext("pax-logging");
+        }
         m_log4jContext.start(new DefaultConfiguration());
 
         String levelName;
