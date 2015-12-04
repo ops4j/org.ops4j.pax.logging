@@ -58,6 +58,7 @@ public class PaxLoggingServiceImpl
     public static final String LOG4J2_CONFIG_FILE_KEY = "org.ops4j.pax.logging.log4j2.config.file";
     public static final String LOG4J2_ASYNC_KEY = "org.ops4j.pax.logging.log4j2.async";
 
+    private static final String LOGGER_CONTEXT_NAME = "pax-logging";
 
     private final LogReaderServiceImpl m_logReader;
     private final EventAdminPoster m_eventAdmin;
@@ -163,7 +164,7 @@ public class PaxLoggingServiceImpl
         if (async != m_async) {
 
             m_log4jContext.stop();
-            m_log4jContext = new AsyncLoggerContext("pax-logging");
+            m_log4jContext = new AsyncLoggerContext(LOGGER_CONTEXT_NAME);
 
         }
 
@@ -173,7 +174,7 @@ public class PaxLoggingServiceImpl
         Object configfile = configuration.get(LOG4J2_CONFIG_FILE_KEY);
 		if (configfile != null) {
 			config = ConfigurationFactory.getInstance().getConfiguration(
-					"pax-logging", new File(configfile.toString()).toURI());
+          LOGGER_CONTEXT_NAME, new File(configfile.toString()).toURI());
         }
         m_log4jContext.start(config);
 
@@ -233,7 +234,7 @@ public class PaxLoggingServiceImpl
 
     private void configureDefaults()
     {
-        m_log4jContext = new LoggerContext("pax-logging");
+        m_log4jContext = new LoggerContext(LOGGER_CONTEXT_NAME);
         m_log4jContext.start(new DefaultConfiguration());
 
         String levelName;
