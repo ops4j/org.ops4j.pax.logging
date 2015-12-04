@@ -17,21 +17,18 @@
 
 package org.apache.log4j;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.WeakHashMap;
+
 import org.apache.log4j.internal.MessageFormatter;
 import org.apache.log4j.spi.LoggerFactory;
-import org.ops4j.pax.logging.internal.DefaultServiceLog;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.internal.FallbackLogFactory;
 import org.osgi.framework.BundleContext;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.WeakHashMap;
 
 /**
  * This is the central class in the log4j package. Most logging
@@ -62,24 +59,20 @@ public class Logger extends Category
     private static final String LOG4J_FQCN = Logger.class.getName();
 
     private static PaxLoggingManager m_paxLogging;
-    private static Map m_loggers;
+    private static Map<String, Logger> m_loggers;
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap() );
+        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, Logger>() );
     }
 
     public static void setBundleContext( BundleContext ctx )
     {
         m_paxLogging = new OSGIPaxLoggingManager( ctx );
         // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-        Set entrySet = m_loggers.entrySet();
-        Iterator iterator = entrySet.iterator();
-        while( iterator.hasNext() )
-        {
-            Map.Entry entry = (Entry) iterator.next();
-            Logger logger = (Logger) entry.getKey();
-            String name = (String) entry.getValue();
+        for (Entry<String, Logger> entry : m_loggers.entrySet()) {
+            String name = entry.getKey();
+            Logger logger = entry.getValue();
             logger.setPaxLoggingManager( m_paxLogging, name );
         }
         m_paxLogging.open();
@@ -137,7 +130,7 @@ public class Logger extends Category
             paxLogger = m_paxLogging.getLogger( name, LOG4J_FQCN );
         }
         Logger logger = new Logger( paxLogger );
-        m_loggers.put( logger, name );
+        m_loggers.put( name, logger );
         return logger;
     }
 

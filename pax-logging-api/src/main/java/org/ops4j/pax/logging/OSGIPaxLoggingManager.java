@@ -17,9 +17,7 @@
  */
 package org.ops4j.pax.logging;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.ops4j.pax.logging.internal.BundleHelper;
@@ -37,14 +35,14 @@ public class OSGIPaxLoggingManager extends ServiceTracker
 
     private BundleContext m_context;
 
-    private Map m_loggers;
+    private Map<String, TrackingLogger> m_loggers;
 
     private ServiceReference m_logServiceRef;
 
     public OSGIPaxLoggingManager(BundleContext context)
     {
         super(context, PaxLoggingService.class.getName(), null);
-        m_loggers = new HashMap();
+        m_loggers = new HashMap<String, TrackingLogger>();
         m_context = context;
         // retrieve the service if any exist at this point.
         ServiceReference ref = context.getServiceReference(PaxLoggingService.class.getName());
@@ -59,11 +57,7 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         m_logServiceRef = reference;
         m_service = (PaxLoggingService) m_context.getService(reference);
         synchronized (m_loggers) {
-            Collection values = m_loggers.values();
-            Iterator iterator = values.iterator();
-            while (iterator.hasNext())
-            {
-                TrackingLogger logger = (TrackingLogger) iterator.next();
+            for (TrackingLogger logger : m_loggers.values()) {
                 logger.added(m_service);
             }
         }
@@ -79,11 +73,7 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         }
 
         synchronized (m_loggers) {
-            Collection values = m_loggers.values();
-            Iterator iterator = values.iterator();
-            while (iterator.hasNext())
-            {
-                TrackingLogger logger = (TrackingLogger) iterator.next();
+            for (TrackingLogger logger : m_loggers.values()) {
                 logger.removed();
             }
         }
@@ -98,7 +88,7 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         Bundle bundle = BundleHelper.getCallerBundle(m_context.getBundle());
         String key = fqcn + "#" + category + "#" + (bundle != null ? Long.toString(bundle.getBundleId()) : "0");
         synchronized (m_loggers) {
-            TrackingLogger logger = (TrackingLogger) m_loggers.get(key);
+            TrackingLogger logger = m_loggers.get(key);
             if (logger == null)
             {
                 logger = new TrackingLogger(m_service, category, bundle, fqcn);

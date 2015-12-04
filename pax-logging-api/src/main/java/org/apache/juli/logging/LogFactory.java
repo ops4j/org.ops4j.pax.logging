@@ -34,19 +34,17 @@
 package org.apache.juli.logging;
 
 
-import java.util.Properties;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.Collections;
-import org.osgi.framework.BundleContext;
-import org.ops4j.pax.logging.OSGIPaxLoggingManager;
-import org.ops4j.pax.logging.PaxLoggingManager;
-import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.internal.DefaultServiceLog;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
+import java.util.Map;
+import java.util.Properties;
+import java.util.WeakHashMap;
+
 import org.apache.juli.logging.internal.JuliLogger;
+import org.ops4j.pax.logging.OSGIPaxLoggingManager;
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.internal.FallbackLogFactory;
+import org.osgi.framework.BundleContext;
 
 /**
  * Modified LogFactory: removed all discovery, hardcode a specific implementation
@@ -153,11 +151,11 @@ public class LogFactory {
 
     private static LogFactory singleton;
     private static PaxLoggingManager m_paxLogging;
-    private static Map m_loggers;
+    private static Map<String, JuliLogger> m_loggers;
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap() );
+        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, JuliLogger>() );
         singleton = new LogFactory();
     }
     /**
@@ -201,7 +199,7 @@ public class LogFactory {
             logger = m_paxLogging.getLogger( name, JuliLogger.JULI_FQCN );
         }
         JuliLogger juliLogger = new JuliLogger( logger );
-        m_loggers.put( juliLogger, name );
+        m_loggers.put( name, juliLogger );
         return juliLogger;
     }
 
@@ -380,13 +378,9 @@ public class LogFactory {
     public static void setBundleContext( BundleContext bundleContext )
     {
         m_paxLogging = new OSGIPaxLoggingManager( bundleContext );
-        Set entrySet = m_loggers.entrySet();
-        Iterator iterator = entrySet.iterator();
-        while ( iterator.hasNext() )
-        {
-            Map.Entry entry = (Map.Entry) iterator.next();
-            JuliLogger logger = (JuliLogger) entry.getKey();
-            String name = (String) entry.getValue();
+        for (Map.Entry<String, JuliLogger> entry : m_loggers.entrySet()) {
+            String name = entry.getKey();
+            JuliLogger logger = entry.getValue();
             logger.setPaxLoggingManager( m_paxLogging, name );
         }
         m_paxLogging.open();

@@ -17,12 +17,11 @@
  */
 package org.ops4j.pax.logging.avalon;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.Collections;
+
 import org.apache.avalon.framework.logger.Logger;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
@@ -33,23 +32,19 @@ public class AvalonLogFactory
 {
 
     private static PaxLoggingManager m_paxLogging;
-    private static Map m_loggers;
+    private static Map<String, AvalonLogger> m_loggers;
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap() );
+        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, AvalonLogger>() );
     }
 
     public static void setBundleContext( BundleContext context )
     {
         m_paxLogging = new OSGIPaxLoggingManager( context );
-        Set entrySet = m_loggers.entrySet();
-        Iterator iterator = entrySet.iterator();
-        while( iterator.hasNext() )
-        {
-            Map.Entry entry = (Entry) iterator.next();
-            AvalonLogger logger = (AvalonLogger) entry.getKey();
-            String name = (String) entry.getValue();
+        for (Entry<String, AvalonLogger> entry : m_loggers.entrySet()) {
+            String name = entry.getKey();
+            AvalonLogger logger = entry.getValue();
             logger.setPaxLoggingManager( m_paxLogging, name );
         }
         m_paxLogging.open();
@@ -80,7 +75,7 @@ public class AvalonLogFactory
         }
         PaxLogger logger = m_paxLogging.getLogger( newName, AvalonLogger.AVALON_FQCN );
         AvalonLogger avalonLogger = new AvalonLogger( logger );
-        m_loggers.put( avalonLogger, newName );
+        m_loggers.put( newName, avalonLogger );
         return avalonLogger;
     }
 

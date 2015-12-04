@@ -18,13 +18,12 @@
 package org.ops4j.pax.logging.internal;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.osgi.framework.Bundle;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.osgi.framework.Bundle;
 
 /**
  * Experimental fallback strategy for non-availability.
@@ -62,22 +61,19 @@ public class BufferingLog implements PaxLogger
         }
     }
 
-    private final List m_queue;
+    private final List<LogPackage> m_queue;
     private final String m_fqcn;
     private PaxContext m_context = new PaxContext();
 
     public BufferingLog( Bundle bundle, String categoryName )
     {
         m_fqcn = getClass().getName();
-        m_queue = new ArrayList();
+        m_queue = new ArrayList<LogPackage>();
     }
 
     void flush( PaxLogger destination )
     {
-        Iterator iterator = m_queue.iterator();
-        while( iterator.hasNext() )
-        {
-            LogPackage pack = (LogPackage) iterator.next();
+        for (LogPackage pack : m_queue) {
             String fqcn = pack.getFqcn();
             Throwable throwable = pack.getException();
             String message = pack.getMessage();
@@ -233,9 +229,9 @@ public class BufferingLog implements PaxLogger
         private final LogType m_type;
         private final String m_message;
         private final Throwable m_exception;
-        private final Map m_context;
+        private final Map<String, Object> m_context;
 
-        public LogPackage( String fqcn, LogType type, String message, Throwable exception, Map context )
+        public LogPackage( String fqcn, LogType type, String message, Throwable exception, Map<String, Object> context )
         {
             m_fqcn = fqcn;
             m_type = type;
@@ -265,7 +261,7 @@ public class BufferingLog implements PaxLogger
             return m_type;
         }
 
-        public Map getContext()
+        public Map<String, Object> getContext()
         {
             return m_context;
         }
