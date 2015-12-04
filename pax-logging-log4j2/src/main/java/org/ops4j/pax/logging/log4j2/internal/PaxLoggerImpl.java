@@ -92,13 +92,11 @@ public class PaxLoggerImpl
 
     private void setDelegateContext()
     {
-        Map context = getPaxContext().getContext();
+        Map<String, Object> context = getPaxContext().getContext();
         if( context != null )
         {
-            for (Object o : context.keySet()) {
-                String key = (String) o;
-                Object value = context.get(key);
-                put(key, value);
+            for (Map.Entry<String, Object> entry : context.entrySet()) {
+                put(entry.getKey(), entry.getValue());
             }
         }
         if (m_bundle != null)
