@@ -18,10 +18,11 @@ package org.ops4j.pax.logging.log4j2.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogListener;
@@ -34,59 +35,24 @@ public class LogReaderServiceImpl
     implements LogReaderService
 {
 
-    private List m_listeners;
-    private final LinkedList m_entries;
+    private final List<LogListener> m_listeners = new CopyOnWriteArrayList<LogListener>();
+    private final Deque<LogEntry> m_entries;
     private int m_maxEntries;
 
     public LogReaderServiceImpl(int maxEntries)
     {
         m_maxEntries = maxEntries;
-        m_entries = new LinkedList();
+        m_entries = new LinkedList<LogEntry>();
     }
 
     public void addLogListener( LogListener logListener )
     {
-        synchronized( this )
-        {
-            // Do not update the list directly to avoid
-            // the cost of a synchronized block when iterating
-            // listeners in fireEvent()
-            ArrayList clone;
-            if( m_listeners == null )
-            {
-                clone = new ArrayList();
-            }
-            else
-            {
-                clone = new ArrayList( m_listeners );
-            }
-            clone.add( logListener );
-            m_listeners = clone;
-        }
+        m_listeners.add(logListener);
     }
 
     public void removeLogListener( LogListener logListener )
     {
-        synchronized( this )
-        {
-            // Do not update the list directly to avoid
-            // the cost of a synchronized block when iterating
-            // listeners in fireEvent()
-            if( m_listeners == null )
-            {
-                return;
-            }
-            ArrayList clone = new ArrayList( m_listeners );
-            clone.remove( logListener );
-            if( clone.size() == 0 )
-            {
-                m_listeners = null;
-            }
-            else
-            {
-                m_listeners = clone;
-            }
-        }
+        m_listeners.remove(logListener);
     }
 
     public Enumeration getLog()
@@ -95,7 +61,7 @@ public class LogReaderServiceImpl
         // a new event is logged while the enumeration is iterated.
         synchronized (m_entries)
         {
-            return Collections.enumeration( new ArrayList( m_entries ) );
+            return Collections.enumeration( new ArrayList<LogEntry>( m_entries ) );
         }
     }
 
@@ -115,16 +81,9 @@ public class LogReaderServiceImpl
             m_entries.addFirst( entry );
             cleanUp();
         }
-        final List listeners = m_listeners;
-        if( listeners == null )
-        {
-            return;
-        }
-        Iterator iterator = listeners.iterator();
-        while( iterator.hasNext() )
-        {
-            LogListener listener = (LogListener) iterator.next();
-            fire( listener, entry );
+        final List<LogListener> listeners = m_listeners;
+        for (LogListener listener : listeners) {
+            fire(listener, entry);
         }
     }
 
