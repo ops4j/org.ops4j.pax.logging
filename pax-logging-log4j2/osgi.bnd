@@ -2,7 +2,7 @@ Bundle-Activator: org.ops4j.pax.logging.log4j2.internal.Activator
 
 Private-Package: \
  org.apache.logging.log4j.*; -split-package:=merge-first, \
- META-INF.*; -split-package:=merge-first, \
+ META-INF;META-INF.maven.*; -split-package:=merge-first, \
  org.ops4j.pax.logging.internal.eventadmin, \
  org.ops4j.pax.logging.log4j2.internal, \
  org.ops4j.pax.logging.log4j2.appender, \
@@ -22,6 +22,7 @@ Import-Package: \
  org.osgi.service.event; version="[1.0.0,2.0.0)"; resolution:=optional, \
  org.osgi.service.log; version="[1.3.0,2.0.0)", \
  org.osgi.util.tracker; version="[1.3.0,2.0.0)", \
+ org.apache.commons.*;resolution:=optional, \
+ org.apache.kafka.*;resolution:=optional, \
+ org.zeromq.*;resolution:=optional, \
  *
-
-

@@ -17,10 +17,14 @@
  */
 package org.ops4j.pax.logging.log4j2.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -30,10 +34,13 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.async.AsyncLoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.plugins.util.PluginManager;
+import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory;
 import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.PropertiesUtil;
 import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxContext;
@@ -72,6 +79,11 @@ public class PaxLoggingServiceImpl
     private LoggerContext m_log4jContext;
     private int m_logLevel = LOG_DEBUG;
     private boolean closed;
+
+    static {
+        PluginManager.addPackage("org.apache.logging.log4j.core");
+        PluginManager.addPackage(PaxOsgiAppender.class.getPackage().getName());
+    }
 
     public PaxLoggingServiceImpl( BundleContext bundleContext, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin )
     {
@@ -168,13 +180,26 @@ public class PaxLoggingServiceImpl
 
         }
 
-        PluginManager.addPackage(PaxOsgiAppender.class.getPackage().getName());
-
-        Configuration config = new DefaultConfiguration();
+        Configuration config;
         Object configfile = configuration.get(LOG4J2_CONFIG_FILE_KEY);
 		if (configfile != null) {
 			config = ConfigurationFactory.getInstance().getConfiguration(
-          LOGGER_CONTEXT_NAME, new File(configfile.toString()).toURI());
+                      LOGGER_CONTEXT_NAME, new File(configfile.toString()).toURI());
+        } else {
+            try {
+                Properties props = new Properties();
+                for (Enumeration<String> keys = configuration.keys(); keys.hasMoreElements();) {
+                    String key = keys.nextElement();
+                    props.setProperty(key, configuration.get(key).toString());
+                }
+                props = PropertiesUtil.extractSubset(props, "log4j2");
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                props.store(baos, null);
+                ConfigurationSource src = new ConfigurationSource(new ByteArrayInputStream(baos.toByteArray()));
+                config = new PropertiesConfigurationFactory().getConfiguration(src);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         m_log4jContext.start(config);
 
