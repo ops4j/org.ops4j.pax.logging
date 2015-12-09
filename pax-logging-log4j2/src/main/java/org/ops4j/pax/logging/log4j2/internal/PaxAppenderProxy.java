@@ -26,7 +26,7 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class PaxAppenderProxy extends ServiceTracker implements PaxAppender
+public class PaxAppenderProxy extends ServiceTracker<Object, Object> implements PaxAppender
 {
 
     private volatile int count = -1;

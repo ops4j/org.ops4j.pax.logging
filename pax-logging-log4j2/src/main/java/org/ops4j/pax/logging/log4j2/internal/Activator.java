@@ -89,7 +89,7 @@ public class Activator
         // register the LogReaderService
         LogReaderServiceImpl logReader = new LogReaderServiceImpl( 100 );
         String readerServiceName = LogReaderService.class.getName();
-        Hashtable serviceProperties = new Hashtable();
+        Hashtable<String, Object> serviceProperties = new Hashtable<String, Object>();
         serviceProperties.put( Constants.SERVICE_RANKING, ranking );
         m_registrationLogReaderService = bundleContext.registerService( readerServiceName, logReader, serviceProperties );
 
@@ -117,7 +117,7 @@ public class Activator
 
         // register the Pax Logging service
         m_PaxLogging = new PaxLoggingServiceImpl( bundleContext, logReader, m_eventAdmin );
-        serviceProperties = new Hashtable();
+        serviceProperties = new Hashtable<String, Object>();
         serviceProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
         serviceProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
         serviceProperties.put( Constants.SERVICE_RANKING, ranking );
@@ -133,8 +133,8 @@ public class Activator
             // clear out old handlers
             Logger rootLogger = manager.getLogger( "" );
             Handler[] handlers = rootLogger.getHandlers();
-            for (int i = 0; i < handlers.length;i++) {
-            	rootLogger.removeHandler(handlers[i]);
+            for (Handler handler : handlers) {
+                rootLogger.removeHandler(handler);
             }
 
             rootLogger.setFilter(null);

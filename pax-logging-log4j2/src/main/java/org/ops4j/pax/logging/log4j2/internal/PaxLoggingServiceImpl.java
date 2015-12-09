@@ -122,7 +122,7 @@ public class PaxLoggingServiceImpl
         return m_loggers.get( name );
     }
 
-    public synchronized void updated( Dictionary configuration ) throws ConfigurationException
+    public synchronized void updated( Dictionary<String,?> configuration ) throws ConfigurationException
     {
         if( closed )
         {
@@ -146,7 +146,7 @@ public class PaxLoggingServiceImpl
         }
     }
 
-    protected void doUpdate( Dictionary configuration ) throws ConfigurationException
+    protected void doUpdate( Dictionary<String,?> configuration ) throws ConfigurationException
     {
         boolean async = false;
         Object asyncObj = configuration.get(LOG4J2_ASYNC_KEY);
@@ -369,7 +369,7 @@ public class PaxLoggingServiceImpl
                 return PaxLoggingServiceImpl.this.getLogger( myBundle, category, fqcn );
             }
 
-            public void updated( Dictionary configuration )
+            public void updated( Dictionary<String, ?> configuration )
                 throws ConfigurationException
             {
                 PaxLoggingServiceImpl.this.updated( configuration );
