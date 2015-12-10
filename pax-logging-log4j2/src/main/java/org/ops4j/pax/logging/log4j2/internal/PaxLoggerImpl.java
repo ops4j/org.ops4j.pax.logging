@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
@@ -132,7 +133,8 @@ public class PaxLoggerImpl
         if( isTraceEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(m_fqcn, Level.TRACE, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(m_fqcn, Level.TRACE, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
         }
@@ -143,7 +145,8 @@ public class PaxLoggerImpl
         if( isDebugEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(m_fqcn, Level.DEBUG, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(m_fqcn, Level.DEBUG, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
         }
@@ -154,7 +157,8 @@ public class PaxLoggerImpl
         if( isInfoEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(m_fqcn, Level.INFO, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(m_fqcn, Level.INFO, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
         }
@@ -165,7 +169,8 @@ public class PaxLoggerImpl
         if( isWarnEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(m_fqcn, Level.WARN, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(m_fqcn, Level.WARN, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
         }
@@ -176,7 +181,8 @@ public class PaxLoggerImpl
         if( isErrorEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(m_fqcn, Level.ERROR, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(m_fqcn, Level.ERROR, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
         }
@@ -187,7 +193,8 @@ public class PaxLoggerImpl
         if( isFatalEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(m_fqcn, Level.FATAL, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(m_fqcn, Level.FATAL, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
         }
@@ -198,7 +205,8 @@ public class PaxLoggerImpl
         if( isTraceEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(fqcn, Level.TRACE, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(fqcn, Level.TRACE, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
         }
@@ -209,7 +217,8 @@ public class PaxLoggerImpl
         if( isDebugEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(fqcn, Level.DEBUG, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(fqcn, Level.DEBUG, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
         }
@@ -220,7 +229,8 @@ public class PaxLoggerImpl
         if( isInfoEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(fqcn, Level.INFO, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(fqcn, Level.INFO, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
         }
@@ -231,7 +241,8 @@ public class PaxLoggerImpl
         if( isWarnEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(fqcn, Level.WARN, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(fqcn, Level.WARN, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
         }
@@ -242,7 +253,8 @@ public class PaxLoggerImpl
         if( isErrorEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(fqcn, Level.ERROR, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(fqcn, Level.ERROR, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
         }
@@ -253,7 +265,8 @@ public class PaxLoggerImpl
         if( isFatalEnabled() )
         {
             setDelegateContext();
-            m_delegate.logIfEnabled(fqcn, Level.FATAL, null, message, t);
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(fqcn, Level.FATAL, null, msg, t);
             clearDelegateContext();
             m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
         }
