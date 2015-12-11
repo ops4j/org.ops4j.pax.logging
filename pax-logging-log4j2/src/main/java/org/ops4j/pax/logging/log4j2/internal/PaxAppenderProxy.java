@@ -58,10 +58,10 @@ public class PaxAppenderProxy extends ServiceTracker<Object, Object> implements 
             count = getTrackingCount();
             appenders = getServices();
         }
-        if (appenders != null) {
+        if (appenders != null && appenders.length > 0) {
+            // Bug in Karaf, as it expects the source to be available
+            event.getLocationInformation();
             for (Object appender : appenders) {
-                // Bug in Karaf, as it expects the source to be available
-                event.getLocationInformation();
                 ((PaxAppender) appender).doAppend(event);
             }
         }

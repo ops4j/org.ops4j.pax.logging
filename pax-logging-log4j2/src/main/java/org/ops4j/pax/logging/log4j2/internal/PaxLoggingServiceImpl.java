@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.async.AsyncLoggerConfig;
 import org.apache.logging.log4j.core.async.AsyncLoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
@@ -161,30 +162,16 @@ public class PaxLoggingServiceImpl
     protected void doUpdate( Dictionary<String,?> configuration ) throws ConfigurationException
     {
         boolean async = false;
-        Object asyncObj = configuration.get(LOG4J2_ASYNC_KEY);
-        if (asyncObj != null) {
-            async = Boolean.parseBoolean(asyncObj.toString());
-        }
-        if (async) {
-            try {
-                getClass().getClassLoader().loadClass("com.lmax.disruptor.EventFactory");
-            } catch (Exception e) {
-                StatusLogger.getLogger().warn("Asynchronous loggers defined, but the disruptor library is not available.  Reverting to synchronous loggers.", e);
-                async = false;
-            }
-        }
-        if (async != m_async) {
-
-            m_log4jContext.stop();
-            m_log4jContext = new AsyncLoggerContext(LOGGER_CONTEXT_NAME);
-
-        }
 
         Configuration config;
         Object configfile = configuration.get(LOG4J2_CONFIG_FILE_KEY);
 		if (configfile != null) {
 			config = ConfigurationFactory.getInstance().getConfiguration(
                       LOGGER_CONTEXT_NAME, new File(configfile.toString()).toURI());
+            Object asyncObj = configuration.get(LOG4J2_ASYNC_KEY);
+            if (asyncObj != null) {
+                async = Boolean.parseBoolean(asyncObj.toString());
+            }
         } else {
             try {
                 Properties props = new Properties();
@@ -197,10 +184,26 @@ public class PaxLoggingServiceImpl
                 props.store(baos, null);
                 ConfigurationSource src = new ConfigurationSource(new ByteArrayInputStream(baos.toByteArray()));
                 config = new PropertiesConfigurationFactory().getConfiguration(src);
+                async = config.getRootLogger() instanceof AsyncLoggerConfig;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+
+        if (async) {
+            try {
+                getClass().getClassLoader().loadClass("com.lmax.disruptor.EventFactory");
+            } catch (Exception e) {
+                StatusLogger.getLogger().warn("Asynchronous loggers defined, but the disruptor library is not available.  Reverting to synchronous loggers.", e);
+                async = false;
+            }
+        }
+        if (async != m_async) {
+            m_log4jContext.stop();
+            m_log4jContext = new AsyncLoggerContext(LOGGER_CONTEXT_NAME);
+
+        }
+
         m_log4jContext.start(config);
 
         if (async != m_async) {
@@ -213,15 +216,17 @@ public class PaxLoggingServiceImpl
         }
 
         configurePax(configuration);
-        updateLevels(configuration);
+        if (configfile != null) {
+            updateLevels(configuration);
+        }
         setLevelToJavaLogging( configuration );
     }
 
-    private void updateLevels(Dictionary config) {
+    private void updateLevels(Dictionary<String, ?> config) {
         Configuration configuration = m_log4jContext.getConfiguration();
-        for ( Enumeration keys = config.keys(); keys.hasMoreElements(); )
+        for ( Enumeration<String> keys = config.keys(); keys.hasMoreElements(); )
         {
-            String name = (String) keys.nextElement();
+            String name = keys.nextElement();
             String loggerName;
             if ( name.equals( "log4j.rootLogger" ) )
             {
@@ -242,7 +247,7 @@ public class PaxLoggingServiceImpl
         m_log4jContext.updateLoggers();
     }
 
-    private void configurePax(Dictionary config) {
+    private void configurePax(Dictionary<String, ?> config) {
         Object size = config.get(MAX_ENTRIES);
         if ( null != size )
         {
@@ -452,7 +457,7 @@ public class PaxLoggingServiceImpl
 	 *
 	 * @param configuration	Properties coming from the configuration.
 	 */
-    private static void setLevelToJavaLogging( final Dictionary configuration )
+    private static void setLevelToJavaLogging( final Dictionary<String, ?> configuration )
     {
         for( Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements();) {
             String name = (String) enum_.nextElement();

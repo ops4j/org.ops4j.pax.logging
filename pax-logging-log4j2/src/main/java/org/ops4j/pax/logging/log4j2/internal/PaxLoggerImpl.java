@@ -274,7 +274,18 @@ public class PaxLoggerImpl
 
     public int getLogLevel()
     {
-        return m_delegate.getLevel().intLevel();
+        switch (m_delegate.getLevel().getStandardLevel()) {
+            case TRACE:
+                return LEVEL_TRACE;
+            case DEBUG:
+                return LEVEL_DEBUG;
+            case INFO:
+                return LEVEL_INFO;
+            case WARN:
+                return LEVEL_WARNING;
+            default:
+                return LEVEL_ERROR;
+        }
     }
 
     public String getName()
