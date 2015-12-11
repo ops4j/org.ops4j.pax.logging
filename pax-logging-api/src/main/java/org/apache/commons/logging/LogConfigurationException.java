@@ -1,10 +1,10 @@
 /*
- * Copyright 2001-2004 The Apache Software Foundation.
- * Copyright 2005 Niclas Hedhman
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,32 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* NOTE!!!!  This is NOT the original Jakarta Commons Logging, but an adaption
-   of its interface so that this Log4J OSGi bundle can export the JCL interface
-   but redirect permananently to the Log4J implementation
-*/
-
 
 package org.apache.commons.logging;
 
-
 /**
-* <p>An exception that is thrown only if a suitable <code>LogFactory</code>
-* or <code>Log</code> instance cannot be created by the corresponding
-* factory methods.</p>
-*
-* @author Craig R. McClanahan
-* @version $Revision: 1.6 $ $Date: 2004/02/28 21:46:45 $
-*/
-public class LogConfigurationException extends RuntimeException
-{
-    private static final long serialVersionUID = 1L;
+ * An exception that is thrown only if a suitable <code>LogFactory</code>
+ * or <code>Log</code> instance cannot be created by the corresponding
+ * factory methods.
+ *
+ * @version $Id: LogConfigurationException.java 1432663 2013-01-13 17:24:18Z tn $
+ */
+public class LogConfigurationException extends RuntimeException {
+
+    /** Serializable version identifier. */
+    private static final long serialVersionUID = 8486587136871052495L;
 
     /**
      * Construct a new exception with <code>null</code> as its detail message.
      */
-    public LogConfigurationException()
-    {
+    public LogConfigurationException() {
         super();
     }
 
@@ -48,8 +41,7 @@ public class LogConfigurationException extends RuntimeException
      *
      * @param message The detail message
      */
-    public LogConfigurationException(String message)
-    {
+    public LogConfigurationException(String message) {
         super(message);
     }
 
@@ -59,9 +51,8 @@ public class LogConfigurationException extends RuntimeException
      *
      * @param cause The underlying cause
      */
-    public LogConfigurationException(Throwable cause)
-    {
-        this((cause == null) ? null : cause.toString(), cause);
+    public LogConfigurationException(Throwable cause) {
+        this(cause == null ? null : cause.toString(), cause);
     }
 
     /**
@@ -70,8 +61,7 @@ public class LogConfigurationException extends RuntimeException
      * @param message The detail message
      * @param cause The underlying cause
      */
-    public LogConfigurationException(String message, Throwable cause)
-    {
+    public LogConfigurationException(String message, Throwable cause) {
         super(message + " (Caused by " + cause + ")");
         this.cause = cause; // Two-argument version requires JDK 1.4 or later
     }
@@ -79,14 +69,12 @@ public class LogConfigurationException extends RuntimeException
     /**
      * The underlying cause of this exception.
      */
-     protected Throwable cause = null;
+    protected Throwable cause = null;
 
     /**
      * Return the underlying cause of this exception (if any).
      */
-    public Throwable getCause()
-    {
-        return (this.cause);
+    public Throwable getCause() {
+        return this.cause;
     }
 }
-
