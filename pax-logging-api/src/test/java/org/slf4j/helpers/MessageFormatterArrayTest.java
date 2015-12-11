@@ -17,27 +17,29 @@
  */
 package org.slf4j.helpers;
 
-import junit.framework.TestCase;
+import java.lang.reflect.Field;
+
 import org.ops4j.pax.logging.PaxContext;
-import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
 import org.osgi.framework.Bundle;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-import java.lang.reflect.Field;
+import org.slf4j.LoggerFactory;
+
+import junit.framework.TestCase;
 
 public class MessageFormatterArrayTest extends TestCase
 {
     private String output;
 
-    public void testTrace()
-    {
-        Logger logger = LoggerFactory.getLogger( MessageFormatterArrayTest.class );
-        logger.trace("My message with 3 parameters : {}, {}, {}", new Object[]{"1","2","3"});
-        assertEquals( "trace:My message with 3 parameters : 1, 2, 3", output );
-    }
+//    public void testTrace()
+//    {
+//        Logger logger = LoggerFactory.getLogger( MessageFormatterArrayTest.class );
+//        logger.trace("My message with 3 parameters : {}, {}, {}", new Object[]{"1","2","3"});
+//        assertEquals( "trace:My message with 3 parameters : 1, 2, 3", output );
+//    }
 
     public void testDebug()
     {
