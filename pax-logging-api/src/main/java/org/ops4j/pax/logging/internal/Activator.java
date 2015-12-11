@@ -19,8 +19,6 @@ package org.ops4j.pax.logging.internal;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
-import org.ops4j.pax.logging.slf4j.Slf4jMDCAdapter;
 
 public class Activator
     implements BundleActivator
@@ -32,7 +30,7 @@ public class Activator
         org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory.setBundleContext( bundleContext );
         String name = getClass().getName();
         org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger( name );
-        Slf4jMDCAdapter.setBundleContext(bundleContext);
+        org.ops4j.pax.logging.slf4j.Slf4jMDCAdapter.setBundleContext(bundleContext);
         slf4jLogger.info( "Enabling SLF4J API support." );
         org.apache.commons.logging.LogFactory.setBundleContext( bundleContext );
         org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog( name );
@@ -48,6 +46,10 @@ public class Activator
         org.apache.juli.logging.LogFactory.setBundleContext( bundleContext );
         org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog( name );
         juliLogger.info( "Enabling JULI Logger API support." );
+
+        org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.setBundleContext( bundleContext );
+        org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger( getClass() );
+        log4j2Logger.info( "Enabling Log4J v2 API support." );
     }
 
     public void stop( BundleContext bundleContext )
@@ -70,12 +72,17 @@ public class Activator
         org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog( name );
         juliLogger.info( "Disabling JULI Logger API support." );
 
+        org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger( getClass() );
+        log4j2Logger.info( "Disabling Log4J v2 API support." );
+
         org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory.dispose();
-        Slf4jMDCAdapter.dispose();
+        org.ops4j.pax.logging.slf4j.Slf4jMDCAdapter.dispose();
         org.apache.commons.logging.LogFactory.dispose();
         org.apache.log4j.Logger.dispose();
         org.apache.log4j.MDC.dispose();
         org.ops4j.pax.logging.avalon.AvalonLogFactory.dispose();
         org.apache.juli.logging.LogFactory.dispose();
+        org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.dispose();
+        org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextMap.dispose();
     }
 }
