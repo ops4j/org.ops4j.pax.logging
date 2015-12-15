@@ -389,6 +389,11 @@
       <email>raulk@apache.org</email>
       <organization>Evosent Consulting</organization>
     </developer>
+    <developer>
+      <name>Matt Sicker</name>
+      <email>mattsicker@apache.org</email>
+      <id>jvz</id>
+    </developer>
   </developers>
 
   <modules>
