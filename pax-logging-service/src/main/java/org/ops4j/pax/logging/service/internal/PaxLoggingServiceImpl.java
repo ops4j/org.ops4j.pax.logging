@@ -291,11 +291,11 @@ public class PaxLoggingServiceImpl
 
         PaxLoggingConfigurator configurator = new PaxLoggingConfigurator( m_bundleContext );
         Properties defaultProperties = new Properties();
-        // Extract System Properties prefixed with "pax.log4j", and drop the "pax." and include these
-        extractSystemProperties( defaultProperties );
         defaultProperties.put( "log4j.rootLogger", convertLevel( m_logLevel ) + ", A1" );
         defaultProperties.put( "log4j.appender.A1", "org.apache.log4j.ConsoleAppender" );
         defaultProperties.put( "log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout" );
+        // Extract System Properties prefixed with "pax.log4j", and drop the "pax." and include these
+        extractSystemProperties( defaultProperties );
         configurator.doConfigure( defaultProperties, LogManager.getLoggerRepository() );
         final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger( "" );
         rootLogger.setLevel( Level.FINE );
