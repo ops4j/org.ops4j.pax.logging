@@ -264,7 +264,10 @@ public class PaxLoggingServiceImpl
 
     private void configureDefaults()
     {
-        m_log4jContext = new LoggerContext(LOGGER_CONTEXT_NAME);
+        if (m_log4jContext == null)
+        {
+            m_log4jContext = new LoggerContext(LOGGER_CONTEXT_NAME);
+        }
         m_log4jContext.start(new DefaultConfiguration());
 
         String levelName;
