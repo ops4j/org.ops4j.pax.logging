@@ -18,6 +18,9 @@
 
 package org.ops4j.pax.logging.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
 import org.osgi.framework.Bundle;
 import org.ops4j.pax.logging.PaxLogger;
 
@@ -28,13 +31,33 @@ public class FallbackLogFactory
 {
     public static PaxLogger createFallbackLog( Bundle bundle, String categoryName )
     {
-        if( Boolean.getBoolean( "org.ops4j.pax.logging.useBufferingLogFallback" ) )
+        if( isBuffering() )
         {
             return new BufferingLog( bundle, categoryName );
         }
         else
         {
             return new DefaultServiceLog( bundle, categoryName );
+        }
+    }
+
+    private static boolean isBuffering()
+    {
+        if (System.getSecurityManager() != null)
+        {
+            return AccessController.doPrivileged(
+                    new PrivilegedAction<Boolean>()
+                    {
+                        public Boolean run()
+                        {
+                            return Boolean.getBoolean( "org.ops4j.pax.logging.useBufferingLogFallback" );
+                        }
+                    }
+            );
+        }
+        else
+        {
+            return Boolean.getBoolean( "org.ops4j.pax.logging.useBufferingLogFallback" );
         }
     }
 }
