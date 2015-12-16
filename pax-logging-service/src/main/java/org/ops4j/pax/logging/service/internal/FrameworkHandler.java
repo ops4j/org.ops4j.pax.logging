@@ -101,13 +101,16 @@ public class FrameworkHandler
     {
         final int type = frameworkEvent.getType();
         String message;
+        int level = loggingLevel;
         switch( type )
         {
             case FrameworkEvent.ERROR:
                 message = "FrameworkEvent ERROR";
+                level = LogService.LOG_ERROR;
                 break;
             case FrameworkEvent.INFO:
                 message = "FrameworkEvent INFO";
+                level = LogService.LOG_INFO;
                 break;
             case FrameworkEvent.PACKAGES_REFRESHED:
                 message = "FrameworkEvent PACKAGES REFRESHED";
@@ -120,6 +123,7 @@ public class FrameworkHandler
                 break;
             case FrameworkEvent.WARNING:
                 message = "FrameworkEvent WARNING";
+                level = LogService.LOG_WARNING;
                 break;
             default:
                 message = "FrameworkEvent [unknown:" + type + "]";
@@ -130,7 +134,7 @@ public class FrameworkHandler
         if (bundle != null)
             message += " - " + bundle.getSymbolicName();
         if (loggingLevel > 0) {
-            m_service.log( bundle, loggingLevel, message, exception );
+            m_service.log( bundle, level, message, exception );
         }
     }
 
