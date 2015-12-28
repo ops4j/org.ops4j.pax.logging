@@ -382,17 +382,22 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
           String name = (String) keys.nextElement();
           if ( name.equals( "log4j.rootLogger" ) )
           {
-              Level level = Level.toLevel( (String) config.get( name ) );
+              Level level = extractLevel((String) config.get( name ));
               m_logbackContext.getLogger( org.slf4j.Logger.ROOT_LOGGER_NAME ).setLevel( level );
           }
 
           if ( name.startsWith( "log4j.logger." ) )
           {
-              Level level = Level.toLevel( (String) config.get( name ) );
+              Level level = extractLevel( (String) config.get( name ) );
               String packageName = name.substring( "log4j.logger.".length() );
               m_logbackContext.getLogger( packageName ).setLevel( level );
           }
       }
+    }
+
+    private Level extractLevel(String log4jLevelConfig) {
+        String[] config = log4jLevelConfig.split(",");
+        return Level.toLevel( config[0] );
     }
 
     private void configurePax(Dictionary config) {
