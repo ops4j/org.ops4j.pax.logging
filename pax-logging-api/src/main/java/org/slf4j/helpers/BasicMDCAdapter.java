@@ -32,40 +32,38 @@ import java.util.Map;
 /**
  * Basic MDC implementation, which can be used with logging systems that lack
  * out-of-the-box MDC support.
- * 
+ *
  * This code was initially inspired by  logback's LogbackMDCAdapter. However,
  * LogbackMDCAdapter has evolved and is now considerably more sophisticated.
  *
  * @author Ceki Gulcu
  * @author Maarten Bosteels
+ * @author Lukasz Cwik
  * 
  * @since 1.5.0
  */
 public class BasicMDCAdapter implements MDCAdapter {
 
-    private InheritableThreadLocal<Map<String, String>> inheritableThreadLocal = new InheritableThreadLocal<Map<String, String>>();
-
-    static boolean isJDK14() {
-        try {
-            String javaVersion = System.getProperty("java.version");
-            return javaVersion.startsWith("1.4");
-        } catch (SecurityException se) {
-            // punt and assume JDK 1.5 or later
-            return false;
+    private InheritableThreadLocal<Map<String, String>> inheritableThreadLocal =
+            new InheritableThreadLocal<Map<String, String>>() {
+        @Override
+        protected Map<String,String> childValue(Map<String,String> parentValue) {
+            if (parentValue == null) {
+                return null;
+            }
+            return new HashMap<String, String>(parentValue);
         }
-    }
-
-    static boolean IS_JDK14 = isJDK14();
+    };
 
     /**
      * Put a context value (the <code>val</code> parameter) as identified with
      * the <code>key</code> parameter into the current thread's context map.
      * Note that contrary to log4j, the <code>val</code> parameter can be null.
-     * 
+     *
      * <p>
      * If the current thread does not have a context map it is created as a side
      * effect of this call.
-     * 
+     *
      * @throws IllegalArgumentException
      *                 in case the "key" parameter is null
      */
@@ -73,9 +71,9 @@ public class BasicMDCAdapter implements MDCAdapter {
         if (key == null) {
             throw new IllegalArgumentException("key cannot be null");
         }
-        Map<String, String> map = (Map<String, String>) inheritableThreadLocal.get();
+        Map<String, String> map = inheritableThreadLocal.get();
         if (map == null) {
-            map = Collections.<String, String> synchronizedMap(new HashMap<String, String>());
+            map = new HashMap<String, String>();
             inheritableThreadLocal.set(map);
         }
         map.put(key, val);
@@ -85,9 +83,9 @@ public class BasicMDCAdapter implements MDCAdapter {
      * Get the context identified by the <code>key</code> parameter.
      */
     public String get(String key) {
-        Map<String, String> Map = (Map<String, String>) inheritableThreadLocal.get();
-        if ((Map != null) && (key != null)) {
-            return (String) Map.get(key);
+        Map<String, String> map = inheritableThreadLocal.get();
+        if ((map != null) && (key != null)) {
+            return map.get(key);
         } else {
             return null;
         }
@@ -97,7 +95,7 @@ public class BasicMDCAdapter implements MDCAdapter {
      * Remove the the context identified by the <code>key</code> parameter.
      */
     public void remove(String key) {
-        Map<String, String> map = (Map<String, String>) inheritableThreadLocal.get();
+        Map<String, String> map = inheritableThreadLocal.get();
         if (map != null) {
             map.remove(key);
         }
@@ -107,27 +105,21 @@ public class BasicMDCAdapter implements MDCAdapter {
      * Clear all entries in the MDC.
      */
     public void clear() {
-        Map<String, String> map = (Map<String, String>) inheritableThreadLocal.get();
+        Map<String, String> map = inheritableThreadLocal.get();
         if (map != null) {
             map.clear();
-            // the InheritableThreadLocal.remove method was introduced in JDK 1.5
-            // Thus, invoking clear() on previous JDK 1.4 will fail
-            if (isJDK14()) {
-                inheritableThreadLocal.set(null);
-            } else {
-                inheritableThreadLocal.remove();
-            }
+            inheritableThreadLocal.remove();
         }
     }
 
     /**
      * Returns the keys in the MDC as a {@link Set} of {@link String}s The
      * returned value can be null.
-     * 
+     *
      * @return the keys in the MDC
      */
     public Set<String> getKeys() {
-        Map<String, String> map = (Map<String, String>) inheritableThreadLocal.get();
+        Map<String, String> map = inheritableThreadLocal.get();
         if (map != null) {
             return map.keySet();
         } else {
@@ -136,26 +128,20 @@ public class BasicMDCAdapter implements MDCAdapter {
     }
 
     /**
-     * Return a copy of the current thread's context map. 
+     * Return a copy of the current thread's context map.
      * Returned value may be null.
-     * 
+     *
      */
     public Map<String, String> getCopyOfContextMap() {
-        Map<String, String> oldMap = (Map<String, String>) inheritableThreadLocal.get();
+        Map<String, String> oldMap = inheritableThreadLocal.get();
         if (oldMap != null) {
-            Map<String, String> newMap = Collections.<String, String> synchronizedMap(new HashMap<String, String>());
-            synchronized (oldMap) {
-                newMap.putAll(oldMap);
-            }
-            return newMap;
+            return new HashMap<String, String>(oldMap);
         } else {
             return null;
         }
     }
 
     public void setContextMap(Map<String, String> contextMap) {
-        Map<String, String> map = Collections.<String, String> synchronizedMap(new HashMap<String, String>(contextMap));
-        inheritableThreadLocal.set(map);
+        inheritableThreadLocal.set(new HashMap<String, String>(contextMap));
     }
-
 }
