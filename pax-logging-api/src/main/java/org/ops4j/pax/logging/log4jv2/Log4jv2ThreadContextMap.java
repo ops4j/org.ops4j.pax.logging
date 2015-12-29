@@ -117,6 +117,10 @@ public class Log4jv2ThreadContextMap implements ThreadContextMap {
                                 return new SimpleEntry<String, String>(
                                         entry.getKey(), entry.getValue() != null ? entry.getValue().toString() : null);
                             }
+                            @Override
+                            public void remove() {
+                                // nothing to do
+                            }
                         };
                     }
                     @Override
