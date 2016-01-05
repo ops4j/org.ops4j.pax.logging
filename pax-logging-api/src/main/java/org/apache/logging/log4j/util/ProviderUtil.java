@@ -44,7 +44,7 @@ public final class ProviderUtil {
     /**
      * Loaded providers.
      */
-    protected static final Collection<Provider> PROVIDERS = new HashSet<>();
+    protected static final Collection<Provider> PROVIDERS = new HashSet<Provider>();
 
     /**
      * Guards the ProviderUtil singleton instance from lazy initialization. This is primarily used for OSGi support.

@@ -60,7 +60,7 @@ public class SimpleLoggerContext implements LoggerContext {
 
     private final PrintStream stream;
 
-    private final ConcurrentMap<String, ExtendedLogger> loggers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, ExtendedLogger> loggers = new ConcurrentHashMap<String, ExtendedLogger>();
 
     public SimpleLoggerContext() {
         props = new PropertiesUtil("log4j2.simplelog.properties");
