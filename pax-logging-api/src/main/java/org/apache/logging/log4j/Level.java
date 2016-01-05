@@ -89,7 +89,7 @@ public final class Level implements Comparable<Level>, Serializable {
      */
     public static final String CATEGORY = "Level";
 
-    private static final ConcurrentMap<String, Level> LEVELS = new ConcurrentHashMap<>(); // SUPPRESS CHECKSTYLE
+    private static final ConcurrentMap<String, Level> LEVELS = new ConcurrentHashMap<String, Level>(); // SUPPRESS CHECKSTYLE
 
     private static final long serialVersionUID = 1581082L;
 

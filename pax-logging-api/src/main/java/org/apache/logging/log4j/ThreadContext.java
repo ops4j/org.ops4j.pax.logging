@@ -50,7 +50,7 @@ public final class ThreadContext {
 
         private static final long serialVersionUID = 1L;
 
-        private static final Iterator<String> EMPTY_ITERATOR = new EmptyIterator<>();
+        private static final Iterator<String> EMPTY_ITERATOR = new EmptyIterator<String>();
 
         @Override
         public String pop() {
