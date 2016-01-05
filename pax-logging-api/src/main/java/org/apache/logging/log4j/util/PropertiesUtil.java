@@ -252,7 +252,7 @@ public final class PropertiesUtil {
 
         String prefixToMatch = prefix.charAt(prefix.length() - 1) != '.' ? prefix + '.' : prefix;
 
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
 
         for (String key : properties.stringPropertyNames()) {
             if (key.startsWith(prefixToMatch)) {
