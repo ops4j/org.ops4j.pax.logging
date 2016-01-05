@@ -32,7 +32,7 @@ public class DefaultThreadContextStack implements ThreadContextStack {
 
     private static final long serialVersionUID = 5050501L;
 
-    private static final ThreadLocal<MutableThreadContextStack> STACK = new ThreadLocal<>();
+    private static final ThreadLocal<MutableThreadContextStack> STACK = new ThreadLocal<MutableThreadContextStack>();
 
     private final boolean useStack;
 
