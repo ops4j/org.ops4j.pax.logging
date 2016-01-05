@@ -24,6 +24,7 @@ import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 
 /**
  * <em>Consider this class private.</em> Utility class for ClassLoaders.
@@ -184,7 +185,7 @@ public final class LoaderUtil {
      */
     public static Collection<URL> findResources(final String resource) {
         final Collection<UrlResource> urlResources = findUrlResources(resource);
-        final Collection<URL> resources = new LinkedHashSet<URL>(urlResources.size());
+        final Collection<URL> resources = new LinkedHashSet<>(urlResources.size());
         for (final UrlResource urlResource : urlResources) {
             resources.add(urlResource.getUrl());
         }
@@ -194,7 +195,7 @@ public final class LoaderUtil {
     static Collection<UrlResource> findUrlResources(final String resource) {
         final ClassLoader[] candidates = {getThreadContextClassLoader(), LoaderUtil.class.getClassLoader(),
                 GET_CLASS_LOADER_DISABLED ? null : ClassLoader.getSystemClassLoader()};
-        final Collection<UrlResource> resources = new LinkedHashSet<UrlResource>();
+        final Collection<UrlResource> resources = new LinkedHashSet<>();
         for (final ClassLoader cl : candidates) {
             if (cl != null) {
                 try {
@@ -253,7 +254,7 @@ public final class LoaderUtil {
 
         @Override
         public int hashCode() {
-            return (classLoader != null ? classLoader.hashCode() : 0) + (url != null ? url.hashCode() : 0);
+            return Objects.hashCode(classLoader) + Objects.hashCode(url);
         }
     }
 }

@@ -19,6 +19,7 @@ package org.apache.logging.log4j;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -88,7 +89,7 @@ public final class Level implements Comparable<Level>, Serializable {
      */
     public static final String CATEGORY = "Level";
 
-    private static final ConcurrentMap<String, Level> LEVELS = new ConcurrentHashMap<String, Level>(); // SUPPRESS CHECKSTYLE
+    private static final ConcurrentMap<String, Level> LEVELS = new ConcurrentHashMap<>(); // SUPPRESS CHECKSTYLE
 
     private static final long serialVersionUID = 1581082L;
 
@@ -293,9 +294,7 @@ public final class Level implements Comparable<Level>, Serializable {
      * @throws java.lang.IllegalArgumentException if the Level name is not registered.
      */
     public static Level valueOf(final String name) {
-        if (name == null) {
-            throw new NullPointerException("No level name given.");
-        }
+        Objects.requireNonNull(name, "No level name given.");
         final String levelName = name.toUpperCase(Locale.ENGLISH);
         final Level level = LEVELS.get(levelName);
         if (level != null) {
