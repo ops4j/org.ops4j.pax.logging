@@ -30,6 +30,10 @@ public class MDC {
     private static PaxContext m_context;
     private static PaxContext m_defaultContext = new PaxContext();
     private static PaxLoggingManager m_paxLogging;
+    
+    private MDC() 
+    {
+    }
 
     public static void setBundleContext(BundleContext ctx) {
         m_paxLogging = new OSGIPaxLoggingManager(ctx);

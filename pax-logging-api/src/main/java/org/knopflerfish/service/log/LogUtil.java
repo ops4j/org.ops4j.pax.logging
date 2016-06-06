@@ -43,6 +43,11 @@ import org.osgi.service.log.LogService;
  */
 
 public class LogUtil {
+    
+    private LogUtil()
+    {
+    }
+    
     /**
      * * Converts from a numeric log severity level to a string. * *
      * 

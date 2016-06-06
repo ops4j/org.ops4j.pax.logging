@@ -29,6 +29,11 @@ import org.ops4j.pax.logging.PaxLogger;
  */
 public class FallbackLogFactory
 {
+    
+    private FallbackLogFactory() 
+    {
+    }
+    
     public static PaxLogger createFallbackLog( Bundle bundle, String categoryName )
     {
         if( isBuffering() )

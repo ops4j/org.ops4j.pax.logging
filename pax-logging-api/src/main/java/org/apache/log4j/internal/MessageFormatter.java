@@ -28,6 +28,10 @@ public class MessageFormatter
 
     static final char DELIM_START = '{';
     static final char DELIM_STOP = '}';
+    
+    private MessageFormatter() 
+    {
+    }
 
     /**
      * Performs single argument substitution for the 'messagePattern' passed as

@@ -37,6 +37,10 @@ public class OsgiUtil {
     
     private static final int osgiVersion;
     
+    private OsgiUtil()
+    {
+    }
+    
     static {
         //
         // The org.osgi.framework package has had no code change from 1.1 to 1.2

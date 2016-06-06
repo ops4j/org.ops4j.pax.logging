@@ -33,6 +33,10 @@ public class DBHelper {
   public final static short PROPERTIES_EXIST = 0x01;
   public final static short EXCEPTION_EXISTS = 0x02;
   
+  private DBHelper()
+  {
+  }
+  
   public  static short computeReferenceMask(LoggingEvent event) {
     short mask = 0;
     Set propertiesKeys = event.getPropertyKeySet();
