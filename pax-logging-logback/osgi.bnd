@@ -10,6 +10,9 @@ Private-Package: \
 Export-Package: \
  !*
 
+# The org.slf4j.event package is only used publicly in Logback's Logger#log(org.slf4j.event.LoggingEvent slf4jEvent)
+# method, which not accessible through the Pax Logging API, so there's no need to do anything special. We simply mark
+# the import as optional.
 Import-Package: \
  javax.xml.*, \
  (com|sun|javax).*;resolution:=optional, \
@@ -25,6 +28,7 @@ Import-Package: \
  org.slf4j;version="[1.6,2)", \
  org.slf4j.spi;version="[1.6,2)", \
  org.slf4j.helpers;version="[1.6,2)", \
+ org.slf4j.event;resolution:=optional, \
  javax.mail;resolution:=optional, \
  javax.mail.internet;resolution:=optional, \
  javax.naming;resolution:=optional, \
@@ -41,6 +45,7 @@ Import-Package: \
  org.codehaus.groovy.control.*;resolution:=optional;version="1.7", \
  org.codehaus.groovy.reflection.*;resolution:=optional;version="1.7", \
  org.codehaus.groovy.runtime.*;resolution:=optional;version="1.7", \
+ org.codehaus.groovy.transform.*;resolution:=optional;version="1.7", \
  sun.reflect;resolution:=optional, \
  org.codehaus.commons.compiler;resolution:=optional, \
  *
