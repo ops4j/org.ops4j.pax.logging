@@ -398,7 +398,7 @@ public class LogFilePatternReceiver extends Receiver {
    * @return message
    */
   private String buildMessage(String firstMessageLine, int exceptionLine) {
-    if (additionalLines.size() == 0) {
+    if (additionalLines.isEmpty()) {
       return firstMessageLine;
     }
     StringBuffer message = new StringBuffer();
@@ -445,7 +445,7 @@ public class LogFilePatternReceiver extends Receiver {
    */
   private LoggingEvent buildEvent() {
     if (currentMap.size() == 0) {
-      if (additionalLines.size() > 0) {
+      if (!additionalLines.isEmpty()) {
         for (Iterator iter = additionalLines.iterator();iter.hasNext();) {
           getLogger().info("found non-matching line: " + iter.next());
         }
@@ -458,7 +458,7 @@ public class LogFilePatternReceiver extends Receiver {
     String[] exception = buildException(exceptionLine);
 
     //messages are listed before exceptions in additionallines
-    if (additionalLines.size() > 0 && exception.length > 0) {
+    if (!additionalLines.isEmpty() && exception.length > 0) {
       currentMap.put(MESSAGE, buildMessage((String) currentMap.get(MESSAGE),
           exceptionLine));
     }

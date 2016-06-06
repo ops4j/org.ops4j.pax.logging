@@ -295,7 +295,7 @@ public class DBAppender extends AppenderSkeleton implements UnrecognizedElementH
 
           Set propertiesKeys = event.getPropertyKeySet();
           
-          if (propertiesKeys.size() > 0) {
+          if (!propertiesKeys.isEmpty()) {
               PreparedStatement insertPropertiesStatement =
                   connection.prepareStatement(insertPropertiesSQL);
               

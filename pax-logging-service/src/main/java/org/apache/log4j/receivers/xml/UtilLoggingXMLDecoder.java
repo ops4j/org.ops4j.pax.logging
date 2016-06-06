@@ -285,7 +285,7 @@ public class UtilLoggingXMLDecoder implements Decoder {
 
     Vector events = decodeEvents(document);
 
-    if (events.size() > 0) {
+    if (!events.isEmpty()) {
       return (LoggingEvent) events.firstElement();
     }
 
@@ -385,7 +385,7 @@ public class UtilLoggingXMLDecoder implements Decoder {
               }
             }
           }
-          if (exceptionList.size() > 0) {
+          if (!exceptionList.isEmpty()) {
               exception =
                 (String[]) exceptionList.toArray(new String[exceptionList.size()]);
           }

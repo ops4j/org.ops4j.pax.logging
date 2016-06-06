@@ -288,7 +288,7 @@ public class XMLDecoder implements Decoder {
 
     Vector events = decodeEvents(document);
 
-    if (events.size() > 0) {
+    if (!events.isEmpty()) {
       return (LoggingEvent) events.firstElement();
     }
 

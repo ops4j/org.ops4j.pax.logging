@@ -203,11 +203,11 @@ public class UDPReceiver extends Receiver implements PortBased, Pauseable {
       while (!UDPReceiver.this.closed) {
         synchronized (list) {
           try {
-            while (!UDPReceiver.this.closed && list.size() == 0) {
+            while (!UDPReceiver.this.closed && list.isEmpty()) {
               list.wait(300);
             }
 
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
               list2.addAll(list);
               list.clear();
             }
@@ -215,7 +215,7 @@ public class UDPReceiver extends Receiver implements PortBased, Pauseable {
           }
         }
 
-        if (list2.size() > 0) {
+        if (!list2.isEmpty()) {
           Iterator iter = list2.iterator();
 
           while (iter.hasNext()) {

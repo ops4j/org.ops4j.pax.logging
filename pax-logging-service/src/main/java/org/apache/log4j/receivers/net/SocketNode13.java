@@ -226,7 +226,7 @@ public class SocketNode13 extends ComponentBase implements Runnable, Pauseable {
     }
 
     // send event to listener, if configured
-    if (listenerList.size() > 0 && !isClosed()) {
+    if (!listenerList.isEmpty() && !isClosed()) {
       fireSocketClosedEvent(listenerException);
     }
   }

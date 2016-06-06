@@ -93,7 +93,7 @@ public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
         {
             return;
         }
-        while( m_queue.size() > 0 ) // Peter Doornbosch: Still not ok: this must be volatile or sync'd too!
+        while( !m_queue.isEmpty() ) // Peter Doornbosch: Still not ok: this must be volatile or sync'd too!
                                     // Niclas: volatile is meaningless semantics on a final reference.
                                     //         I can't see while synchronized would be needed, since sync have
                                     //         just happened, and if size is slightly incorrectly computed, nothing
@@ -103,7 +103,7 @@ public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
             synchronized( m_queue )
             {
                 // Make sure queue is still not empty (due to race conditions)
-                if( m_queue.size() > 0 )
+                if( !m_queue.isEmpty() )
                 {
                     event = m_queue.remove( 0 );
                 }

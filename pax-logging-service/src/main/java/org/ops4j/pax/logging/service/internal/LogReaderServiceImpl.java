@@ -77,7 +77,7 @@ public class LogReaderServiceImpl
             }
             ArrayList clone = new ArrayList( m_listeners );
             clone.remove( logListener );
-            if( clone.size() == 0 )
+            if( clone.isEmpty() )
             {
                 m_listeners = null;
             }

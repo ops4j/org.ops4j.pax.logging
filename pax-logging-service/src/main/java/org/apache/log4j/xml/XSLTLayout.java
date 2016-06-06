@@ -343,7 +343,7 @@ public final class XSLTLayout extends Layout
                 //
                 Set mdcKeySet = MDCKeySetExtractor.INSTANCE.getPropertyKeySet(event);
 
-                if ((mdcKeySet != null) && (mdcKeySet.size() > 0)) {
+                if ((mdcKeySet != null) && !mdcKeySet.isEmpty()) {
                     attrs.clear();
                     transformer.startElement(LOG4J_NS,
                             "properties", "properties", attrs);
