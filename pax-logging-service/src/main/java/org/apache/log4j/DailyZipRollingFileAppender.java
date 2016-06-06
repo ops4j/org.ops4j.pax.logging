@@ -401,16 +401,14 @@ public class DailyZipRollingFileAppender extends FileAppender {
 
 			if (perentDirectory == null) {
 				File file = new File(fileName);
-				if (file != null) {
-					perentDirectory = file.getParent();
-					if (file.exists()) {
-						if (file.getParent() == null) {
-							String absolutePath = file.getAbsolutePath();
-							perentDirectory = absolutePath.substring(0,
-									absolutePath.lastIndexOf(fileName));
-						}
-					}
-				}
+				perentDirectory = file.getParent();
+                if (file.exists()) {
+                    if (file.getParent() == null) {
+                        String absolutePath = file.getAbsolutePath();
+                        perentDirectory = absolutePath.substring(0,
+                                absolutePath.lastIndexOf(fileName));
+                    }
+                }
 			}
 		} else {
 			LogLog.error("Either File or DatePattern options are not set for appender ["

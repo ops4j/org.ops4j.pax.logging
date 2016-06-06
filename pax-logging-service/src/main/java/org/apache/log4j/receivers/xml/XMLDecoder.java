@@ -215,9 +215,7 @@ public class XMLDecoder implements Decoder {
     } finally {
       partialEvent = null;
       try {
-        if (reader != null) {
           reader.close();
-        }
       } catch (Exception e) {
         e.printStackTrace();
       }
