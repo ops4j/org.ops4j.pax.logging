@@ -321,7 +321,7 @@ public final class Level implements Comparable<Level>, Serializable {
     }
 
     // for deserialization
-    protected Object readResolve() {
+    private Object readResolve() {
         return Level.valueOf(this.name);
     }
 }

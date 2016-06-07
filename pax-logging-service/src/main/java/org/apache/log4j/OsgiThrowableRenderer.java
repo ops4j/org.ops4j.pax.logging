@@ -56,7 +56,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
         return DefaultThrowableRenderer.render(throwable);
     }
 
-    protected void doRender(final Throwable throwable, StackTraceElement[]  causedTrace, List lines) {
+    private void doRender(final Throwable throwable, StackTraceElement[]  causedTrace, List lines) {
         StackTraceElement[] elements = throwable.getStackTrace();
         Map classMap = new HashMap();
         Class[] classCtx;
