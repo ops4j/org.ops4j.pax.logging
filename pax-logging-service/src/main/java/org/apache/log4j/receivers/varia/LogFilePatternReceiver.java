@@ -488,10 +488,8 @@ public class LogFilePatternReceiver extends Receiver {
             if (eventMatcher.matches()) {
                 //build an event from the previous match (held in current map)
                 LoggingEvent event = buildEvent();
-                if (event != null) {
-                    if (passesExpression(event)) {
-                        doPost(event);
-                    }
+                if (event != null && passesExpression(event)) {
+                    doPost(event);
                 }
                 currentMap.putAll(processEvent(eventMatcher.toMatchResult()));
             } else if (exceptionMatcher.matches()) {
@@ -508,10 +506,8 @@ public class LogFilePatternReceiver extends Receiver {
                     //build an event from the previous match (held in current map)
                     if (currentMap.size() > 0) {
                         LoggingEvent event = buildEvent();
-                        if (event != null) {
-                            if (passesExpression(event)) {
-                              doPost(event);
-                            }
+                        if (event != null && passesExpression(event)) {
+                            doPost(event);
                         }
                     }
                     if (lastTime != null) {
@@ -526,10 +522,8 @@ public class LogFilePatternReceiver extends Receiver {
 
         //process last event if one exists
         LoggingEvent event = buildEvent();
-        if (event != null) {
-            if (passesExpression(event)) {
-                doPost(event);
-            }
+        if (event != null && passesExpression(event)) {
+            doPost(event);
         }
     }
 
@@ -544,10 +538,8 @@ public class LogFilePatternReceiver extends Receiver {
    * @return true if expression isn't set, or the result of the evaluation otherwise
    */
   private boolean passesExpression(LoggingEvent event) {
-    if (event != null) {
-      if (expressionRule != null) {
+    if (event != null && expressionRule != null) {
         return (expressionRule.evaluate(event, null));
-      }
     }
     return true;
   }
@@ -894,12 +886,10 @@ public class LogFilePatternReceiver extends Receiver {
             levelImpl = Level.toLevel(level.trim());
             if (!level.equals(levelImpl.toString())) {
                 //check custom level map
-                if (levelImpl == null) {
-                    levelImpl = Level.DEBUG;
-                    getLogger().debug("found unexpected level: " + level + ", logger: " + logger.getName() + ", msg: " + message);
-                    //make sure the text that couldn't match a level is added to the message
-                    message = level + " " + message;
-                }
+                levelImpl = Level.DEBUG;
+                getLogger().debug("found unexpected level: " + level + ", logger: " + logger.getName() + ", msg: " + message);
+                //make sure the text that couldn't match a level is added to the message
+                message = level + " " + message;
             }
         }
     }
