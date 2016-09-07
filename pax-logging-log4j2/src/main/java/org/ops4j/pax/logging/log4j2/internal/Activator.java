@@ -17,26 +17,32 @@
  */
 package org.ops4j.pax.logging.log4j2.internal;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.internal.eventadmin.EventAdminTracker;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 /**
  * Starts the Log4j log services.
@@ -49,6 +55,8 @@ public class Activator
      * The Managed Service PID for the log4j configuration
      */
     public static final String CONFIGURATION_PID = "org.ops4j.pax.logging";
+    public static final String PAX_LOGGING_PROPERTY_FILE_KEY = "org.ops4j.pax.logging.property.file";
+    public static final String PAX_LOGGING_PROPERTY_FILE = "pax-logging.properties";
 
     private static final String[] LOGSERVICE_NAMES = {
         LogService.class.getName(),
@@ -117,6 +125,30 @@ public class Activator
 
         // register the Pax Logging service
         m_PaxLogging = new PaxLoggingServiceImpl( bundleContext, logReader, m_eventAdmin );
+
+        final Path configFilePath = Paths.get(System.getProperty(PAX_LOGGING_PROPERTY_FILE_KEY,
+                PAX_LOGGING_PROPERTY_FILE));
+        if (configFilePath.toFile().exists()) {
+            try (InputStream inputStream = new FileInputStream(configFilePath.toFile())) {
+                Properties properties = new Properties();
+                properties.load(inputStream);
+                final Hashtable<String, String> configurations = new Hashtable<>();
+                for (Map.Entry<Object, Object> entry: properties.entrySet()) {
+                    configurations.put((String) entry.getKey(), (String) entry.getValue());
+                }
+
+                ServiceReference configurationAdminSR = bundleContext.getServiceReference(ConfigurationAdmin.class);
+                if (configurationAdminSR != null) {
+                    ConfigurationAdmin configurationAdmin =
+                            (ConfigurationAdmin) bundleContext.getService(configurationAdminSR);
+                    Configuration configuration = configurationAdmin.getConfiguration(CONFIGURATION_PID, null);
+                    configuration.update(configurations);
+                }
+
+                m_PaxLogging.updated(configurations);
+            }
+        }
+
         serviceProperties = new Hashtable<String, Object>();
         serviceProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
         serviceProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
