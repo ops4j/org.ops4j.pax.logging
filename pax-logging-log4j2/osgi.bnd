@@ -24,5 +24,6 @@ Import-Package: \
  org.osgi.util.tracker; version="[1.3.0,2.0.0)", \
  org.apache.commons.*;resolution:=optional, \
  org.apache.kafka.*;resolution:=optional, \
+ org.codehaus.stax2.*;resolution:=optional, \
  org.zeromq.*;resolution:=optional, \
  *
