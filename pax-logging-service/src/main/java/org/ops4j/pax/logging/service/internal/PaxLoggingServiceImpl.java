@@ -308,9 +308,9 @@ public class PaxLoggingServiceImpl
         {
             Map.Entry entry = (Map.Entry) list.next();
             String key = (String) entry.getKey();
-            String value = (String) entry.getValue();
             if( key.startsWith( "pax.log4j" ) )
             {
+                String value = entry.getValue().toString();
                 key = key.substring( 4 );
                 output.put( key, value );
             }
