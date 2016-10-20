@@ -25,6 +25,7 @@ import java.util.logging.SimpleFormatter;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.log.LogService;
 
 public class JdkHandler extends Handler
 {
@@ -94,24 +95,17 @@ public class JdkHandler extends Handler
             message = record.getMessage();
         }
         Throwable throwable = record.getThrown();
-
-        org.apache.log4j.Level log4jlevel;
         int levelInt = level.intValue();
         if (levelInt <= Level.FINEST.intValue())
-            log4jlevel = org.apache.log4j.Level.TRACE;
+            logger.trace(message, throwable);
         else if (levelInt <= Level.FINE.intValue())
-            log4jlevel = org.apache.log4j.Level.DEBUG;
+            logger.debug(message, throwable);
         else if (levelInt <= Level.INFO.intValue())
-            log4jlevel = org.apache.log4j.Level.INFO;
+            logger.inform(message, throwable);
         else if (levelInt <= Level.WARNING.intValue())
-            log4jlevel = org.apache.log4j.Level.WARN;
-        else if (levelInt <= Level.SEVERE.intValue())
-            log4jlevel = org.apache.log4j.Level.ERROR;
+            logger.warn(message, throwable);
         else
-            log4jlevel = org.apache.log4j.Level.OFF;
-
-        //bug fixed here
-        logger.log( log4jlevel, message, throwable );
+            logger.error(message, throwable);
     }
     
     private Bundle getCallerBundle() {

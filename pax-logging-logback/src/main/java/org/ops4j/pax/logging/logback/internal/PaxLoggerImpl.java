@@ -22,13 +22,15 @@ import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 import org.osgi.service.log.LogService;
 import org.slf4j.MDC;
 import org.slf4j.spi.LocationAwareLogger;
 import org.slf4j.spi.MDCAdapter;
 
 import ch.qos.logback.classic.Logger;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * A logger implementation specialized for Logback.
@@ -129,111 +131,124 @@ public class PaxLoggerImpl
         // See PAXLOGGING-165.
     }
 
-    public void trace(String message, Throwable t) {
-        if (isTraceEnabled()) {
-            setDelegateContext();
-            m_delegate.log(null, m_fqcn, LocationAwareLogger.TRACE_INT, message, null, t);
-            clearDelegateContext();
-            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+    private void doLog( final int level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
+        if (System.getSecurityManager() != null) {
+            AccessController.doPrivileged(
+                    new PrivilegedAction<Void>() {
+                        public Void run() {
+                            doLog0( level, svcLevel, fqcn, message, t );
+                            return null;
+                        }
+                    }
+            );
+        } else {
+            doLog0( level, svcLevel, fqcn, message, t );
         }
     }
 
-    public void debug( String message, Throwable t ) {
-        if (isDebugEnabled()) {
-            setDelegateContext();
-            m_delegate.log(null, m_fqcn, LocationAwareLogger.DEBUG_INT, message, null, t);
+    private void doLog0( final int level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
+        setDelegateContext();
+        try {
+            m_delegate.log(null, fqcn, level, message, null, t);
+        } finally {
             clearDelegateContext();
-            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+        }
+        m_eventHandler.handleEvents(m_bundle, null, svcLevel, message, t);
+    }
+
+    public void trace( String message, Throwable t )
+    {
+        if( isTraceEnabled() )
+        {
+            doLog( LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, m_fqcn, message, t );
         }
     }
 
-    public void inform( String message, Throwable t ) {
-        if (isInfoEnabled()) {
-            setDelegateContext();
-            m_delegate.log(null, m_fqcn, LocationAwareLogger.INFO_INT, message, null, t);
-            clearDelegateContext();
-            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_INFO, message, t);
+    public void debug( String message, Throwable t )
+    {
+        if( isDebugEnabled() )
+        {
+            doLog( LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, m_fqcn, message, t );
         }
     }
 
-    public void warn( String message, Throwable t ) {
-        if (isWarnEnabled()) {
-            setDelegateContext();
-            m_delegate.log(null, m_fqcn, LocationAwareLogger.WARN_INT, message, null, t);
-            clearDelegateContext();
-            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_WARNING, message, t);
+    public void inform( String message, Throwable t )
+    {
+        if( isInfoEnabled() )
+        {
+            doLog( LocationAwareLogger.INFO_INT, LogService.LOG_INFO, m_fqcn, message, t );
         }
     }
 
-    public void error( String message, Throwable t ) {
-        if (isErrorEnabled()) {
-            setDelegateContext();
-            m_delegate.log(null, m_fqcn, LocationAwareLogger.ERROR_INT, message, null, t);
-            clearDelegateContext();
-            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+    public void warn( String message, Throwable t )
+    {
+        if( isWarnEnabled() )
+        {
+            doLog( LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, m_fqcn, message, t );
         }
     }
 
-    public void fatal( String message, Throwable t ) {
-        if (isFatalEnabled()) {
-            setDelegateContext();
-            m_delegate.log(null, m_fqcn, LocationAwareLogger.ERROR_INT, message, null, t);
-            clearDelegateContext();
-            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+    public void error( String message, Throwable t )
+    {
+        if( isErrorEnabled() )
+        {
+            doLog( LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t );
         }
     }
 
-    public void trace(String message, Throwable t, String fqcn) {
-        if (isTraceEnabled()) {
-            setDelegateContext();
-            m_delegate.log(null, fqcn, LocationAwareLogger.TRACE_INT, message, null, t);
-            clearDelegateContext();
-            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+    public void fatal( String message, Throwable t )
+    {
+        if( isFatalEnabled() )
+        {
+            doLog( LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t );
         }
     }
 
-    public void debug(String message, Throwable t, String fqcn) {
-        if (isDebugEnabled()) {
-            setDelegateContext();
-            m_delegate.log( null, fqcn, LocationAwareLogger.DEBUG_INT, message, null, t );
-            clearDelegateContext();
-            m_eventHandler.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+    public void trace( String message, Throwable t, String fqcn )
+    {
+        if( isTraceEnabled() )
+        {
+            doLog( LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, fqcn, message, t );
         }
     }
 
-    public void inform(String message, Throwable t, String fqcn) {
-        if (isInfoEnabled()) {
-            setDelegateContext();
-            m_delegate.log(null, fqcn, LocationAwareLogger.INFO_INT, message, null, t);
-            clearDelegateContext();
-            m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
+    public void debug( String message, Throwable t, String fqcn )
+    {
+        if( isDebugEnabled() )
+        {
+            doLog( LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, fqcn, message, t );
         }
     }
 
-    public void warn(String message, Throwable t, String fqcn) {
-        if (isWarnEnabled()) {
-            setDelegateContext();
-            m_delegate.log( null, fqcn, LocationAwareLogger.WARN_INT, message, null, t );
-            clearDelegateContext();
-            m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
+    public void inform( String message, Throwable t, String fqcn )
+    {
+        if( isInfoEnabled() )
+        {
+            doLog( LocationAwareLogger.INFO_INT, LogService.LOG_INFO, fqcn, message, t );
         }
     }
 
-    public void error(String message, Throwable t, String fqcn) {
-        if (isErrorEnabled()) {
-            setDelegateContext();
-            m_delegate.log( null, fqcn, LocationAwareLogger.ERROR_INT, message, null, t );
-            clearDelegateContext();
-            m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+    public void warn( String message, Throwable t, String fqcn )
+    {
+        if( isWarnEnabled() )
+        {
+            doLog( LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, fqcn, message, t );
         }
     }
 
-    public void fatal(String message, Throwable t, String fqcn) {
-        if (isFatalEnabled()) {
-            setDelegateContext();
-            m_delegate.log( null, fqcn, LocationAwareLogger.ERROR_INT, message, null, t );
-            clearDelegateContext();
-            m_eventHandler.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+    public void error( String message, Throwable t, String fqcn )
+    {
+        if( isErrorEnabled() )
+        {
+            doLog( LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t );
+        }
+    }
+
+    public void fatal( String message, Throwable t, String fqcn )
+    {
+        if( isFatalEnabled() )
+        {
+            doLog( LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t );
         }
     }
 

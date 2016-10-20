@@ -17,6 +17,8 @@
  */
 package org.ops4j.pax.logging.log4j2.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 
 import org.apache.logging.log4j.Level;
@@ -128,15 +130,34 @@ public class PaxLoggerImpl
         ThreadContext.clearMap();
     }
 
-    public void trace( String message, Throwable t )
+    private void doLog(final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
+        if (System.getSecurityManager() != null) {
+            AccessController.doPrivileged(
+                    new PrivilegedAction<Void>() {
+                        public Void run() {
+                            doLog0( level, svcLevel, fqcn, message, t );
+                            return null;
+                        }
+                    }
+            );
+        } else {
+            doLog0( level, svcLevel, fqcn, message, t );
+        }
+    }
+
+    private void doLog0( Level level, int svcLevel, final String fqcn, String message, Throwable t ) {
+        setDelegateContext();
+        Message msg = m_delegate.getMessageFactory().newMessage(message);
+        m_delegate.logMessage(fqcn, level, null, msg, t);
+        clearDelegateContext();
+        m_service.handleEvents( m_bundle, null, svcLevel, message, t );
+    }
+
+    public void trace(final String message, final Throwable t )
     {
         if( isTraceEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(m_fqcn, Level.TRACE, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
+            doLog( Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, t );
         }
     }
 
@@ -144,11 +165,7 @@ public class PaxLoggerImpl
     {
         if( isDebugEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(m_fqcn, Level.DEBUG, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
+            doLog( Level.DEBUG, LogService.LOG_DEBUG, m_fqcn, message, t );
         }
     }
 
@@ -156,11 +173,7 @@ public class PaxLoggerImpl
     {
         if( isInfoEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(m_fqcn, Level.INFO, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
+            doLog( Level.INFO, LogService.LOG_INFO, m_fqcn, message, t );
         }
     }
 
@@ -168,11 +181,7 @@ public class PaxLoggerImpl
     {
         if( isWarnEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(m_fqcn, Level.WARN, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
+            doLog( Level.WARN, LogService.LOG_WARNING, m_fqcn, message, t );
         }
     }
 
@@ -180,11 +189,7 @@ public class PaxLoggerImpl
     {
         if( isErrorEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(m_fqcn, Level.ERROR, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+            doLog( Level.ERROR, LogService.LOG_ERROR, m_fqcn, message, t );
         }
     }
 
@@ -192,11 +197,7 @@ public class PaxLoggerImpl
     {
         if( isFatalEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(m_fqcn, Level.FATAL, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+            doLog( Level.FATAL, LogService.LOG_ERROR, m_fqcn, message, t );
         }
     }
 
@@ -204,11 +205,7 @@ public class PaxLoggerImpl
     {
         if( isTraceEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(fqcn, Level.TRACE, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
+            doLog( Level.TRACE, LogService.LOG_DEBUG, fqcn, message, t );
         }
     }
 
@@ -216,11 +213,7 @@ public class PaxLoggerImpl
     {
         if( isDebugEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(fqcn, Level.DEBUG, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_DEBUG, message, t );
+            doLog( Level.DEBUG, LogService.LOG_DEBUG, fqcn, message, t );
         }
     }
 
@@ -228,11 +221,7 @@ public class PaxLoggerImpl
     {
         if( isInfoEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(fqcn, Level.INFO, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_INFO, message, t );
+            doLog( Level.INFO, LogService.LOG_INFO, fqcn, message, t );
         }
     }
 
@@ -240,11 +229,7 @@ public class PaxLoggerImpl
     {
         if( isWarnEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(fqcn, Level.WARN, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_WARNING, message, t );
+            doLog( Level.WARN, LogService.LOG_WARNING, fqcn, message, t );
         }
     }
 
@@ -252,11 +237,7 @@ public class PaxLoggerImpl
     {
         if( isErrorEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(fqcn, Level.ERROR, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+            doLog( Level.ERROR, LogService.LOG_ERROR, fqcn, message, t );
         }
     }
 
@@ -264,11 +245,7 @@ public class PaxLoggerImpl
     {
         if( isFatalEnabled() )
         {
-            setDelegateContext();
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(fqcn, Level.FATAL, null, msg, t);
-            clearDelegateContext();
-            m_service.handleEvents( m_bundle, null, LogService.LOG_ERROR, message, t );
+            doLog( Level.FATAL, LogService.LOG_ERROR, fqcn, message, t );
         }
     }
 

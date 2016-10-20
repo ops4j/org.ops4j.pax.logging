@@ -17,12 +17,13 @@
  */
 package org.ops4j.pax.logging.service.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
-import org.apache.log4j.Priority;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.osgi.framework.Bundle;
@@ -99,7 +100,7 @@ public class PaxLoggerImpl
         }
         if (m_bundle != null)
         {
-            BundleRevision rev = (BundleRevision) m_bundle.adapt(BundleRevision.class);
+            BundleRevision rev = m_bundle.adapt(BundleRevision.class);
             if (rev != m_bundleRevision) {
                 m_bundleId = m_bundle.getBundleId();
                 m_bundleSymbolicName = m_bundle.getSymbolicName();
@@ -130,17 +131,36 @@ public class PaxLoggerImpl
         }
     }
 
+    private void doLog( final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
+        if (System.getSecurityManager() != null) {
+            AccessController.doPrivileged(
+                    new PrivilegedAction<Void>() {
+                        public Void run() {
+                            doLog0( level, svcLevel, fqcn, message, t );
+                            return null;
+                        }
+                    }
+            );
+        } else {
+            doLog0( level, svcLevel, fqcn, message, t );
+        }
+    }
+
+    private void doLog0( final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
+        setDelegateContext();
+        try {
+            m_delegate.log(fqcn, level, message, t);
+        } finally {
+            clearDelegateContext();
+        }
+        m_service.handleEvents(m_bundle, null, svcLevel, message, t);
+    }
+
     public void trace( String message, Throwable t )
     {
         if( isTraceEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(m_fqcn, Level.TRACE, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+            doLog( Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, t );
         }
     }
 
@@ -148,13 +168,7 @@ public class PaxLoggerImpl
     {
         if( isDebugEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(m_fqcn, Level.DEBUG, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+            doLog( Level.DEBUG, LogService.LOG_DEBUG, m_fqcn, message, t );
         }
     }
 
@@ -162,13 +176,7 @@ public class PaxLoggerImpl
     {
         if( isInfoEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(m_fqcn, Level.INFO, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_INFO, message, t);
+            doLog( Level.INFO, LogService.LOG_INFO, m_fqcn, message, t );
         }
     }
 
@@ -176,13 +184,7 @@ public class PaxLoggerImpl
     {
         if( isWarnEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(m_fqcn, Level.WARN, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_WARNING, message, t);
+            doLog( Level.WARN, LogService.LOG_WARNING, m_fqcn, message, t );
         }
     }
 
@@ -190,13 +192,7 @@ public class PaxLoggerImpl
     {
         if( isErrorEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(m_fqcn, Level.ERROR, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+            doLog( Level.ERROR, LogService.LOG_ERROR, m_fqcn, message, t );
         }
     }
 
@@ -204,13 +200,7 @@ public class PaxLoggerImpl
     {
         if( isFatalEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(m_fqcn, Level.FATAL, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+            doLog( Level.FATAL, LogService.LOG_ERROR, m_fqcn, message, t );
         }
     }
 
@@ -218,13 +208,7 @@ public class PaxLoggerImpl
     {
         if( isTraceEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(fqcn, Level.TRACE, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+            doLog( Level.TRACE, LogService.LOG_DEBUG, fqcn, message, t );
         }
     }
 
@@ -232,13 +216,7 @@ public class PaxLoggerImpl
     {
         if( isDebugEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(fqcn, Level.DEBUG, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_DEBUG, message, t);
+            doLog( Level.DEBUG, LogService.LOG_DEBUG, fqcn, message, t );
         }
     }
 
@@ -246,13 +224,7 @@ public class PaxLoggerImpl
     {
         if( isInfoEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(fqcn, Level.INFO, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_INFO, message, t);
+            doLog( Level.INFO, LogService.LOG_INFO, fqcn, message, t );
         }
     }
 
@@ -260,13 +232,7 @@ public class PaxLoggerImpl
     {
         if( isWarnEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(fqcn, Level.WARN, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_WARNING, message, t);
+            doLog( Level.WARN, LogService.LOG_WARNING, fqcn, message, t );
         }
     }
 
@@ -274,13 +240,7 @@ public class PaxLoggerImpl
     {
         if( isErrorEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(fqcn, Level.ERROR, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+            doLog( Level.ERROR, LogService.LOG_ERROR, fqcn, message, t );
         }
     }
 
@@ -288,13 +248,7 @@ public class PaxLoggerImpl
     {
         if( isFatalEnabled() )
         {
-            setDelegateContext();
-            try {
-                m_delegate.log(fqcn, Level.FATAL, message, t);
-            } finally {
-                clearDelegateContext();
-            }
-            m_service.handleEvents(m_bundle, null, LogService.LOG_ERROR, message, t);
+            doLog( Level.FATAL, LogService.LOG_ERROR, fqcn, message, t );
         }
     }
 
@@ -325,17 +279,6 @@ public class PaxLoggerImpl
     public String getName()
     {
         return m_delegate.getName();
-    }
-
-    //Fixed bug instead of the fully qualified class name of the logger was given the name of the caller
-    public void log( Priority level, Object message, Throwable t )
-    {
-        setDelegateContext();
-        try {
-            m_delegate.log(m_fqcn, level, message, t);
-        } finally {
-            clearDelegateContext();
-        }
     }
 
     public PaxContext getPaxContext()
