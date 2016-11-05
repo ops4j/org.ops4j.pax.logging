@@ -19,20 +19,23 @@ package org.apache.logging.log4j.simple;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.spi.AbstractLogger;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.apache.logging.log4j.spi.LoggerContext;
+import org.apache.logging.log4j.spi.LoggerRegistry;
 import org.apache.logging.log4j.util.PropertiesUtil;
 
 /**
  *
  */
 public class SimpleLoggerContext implements LoggerContext {
+
+    private static final String SYSTEM_OUT = "system.out";
+
+    private static final String SYSTEM_ERR = "system.err";
 
     /** The default format to use when formatting dates */
     protected static final String DEFAULT_DATE_TIME_FORMAT = "yyyy/MM/dd HH:mm:ss:SSS zzz";
@@ -44,8 +47,9 @@ public class SimpleLoggerContext implements LoggerContext {
 
     /** Include the instance name in the log message? */
     private final boolean showLogName;
+
     /**
-     * Include the short name ( last component ) of the logger in the log message. Defaults to true - otherwise we'll be
+     * Include the short name (last component) of the logger in the log message. Defaults to true - otherwise we'll be
      * lost in a flood of messages without knowing who sends them.
      */
     private final boolean showShortName;
@@ -60,7 +64,7 @@ public class SimpleLoggerContext implements LoggerContext {
 
     private final PrintStream stream;
 
-    private final ConcurrentMap<String, ExtendedLogger> loggers = new ConcurrentHashMap<>();
+    private final LoggerRegistry<ExtendedLogger> loggerRegistry = new LoggerRegistry<>();
 
     public SimpleLoggerContext() {
         props = new PropertiesUtil("log4j2.simplelog.properties");
@@ -75,11 +79,11 @@ public class SimpleLoggerContext implements LoggerContext {
         dateTimeFormat = showDateTime ? props.getStringProperty(SimpleLoggerContext.SYSTEM_PREFIX + "dateTimeFormat",
                 DEFAULT_DATE_TIME_FORMAT) : null;
 
-        final String fileName = props.getStringProperty(SYSTEM_PREFIX + "logFile", "system.err");
+        final String fileName = props.getStringProperty(SYSTEM_PREFIX + "logFile", SYSTEM_ERR);
         PrintStream ps;
-        if ("system.err".equalsIgnoreCase(fileName)) {
+        if (SYSTEM_ERR.equalsIgnoreCase(fileName)) {
             ps = System.err;
-        } else if ("system.out".equalsIgnoreCase(fileName)) {
+        } else if (SYSTEM_OUT.equalsIgnoreCase(fileName)) {
             ps = System.out;
         } else {
             try {
@@ -99,14 +103,16 @@ public class SimpleLoggerContext implements LoggerContext {
 
     @Override
     public ExtendedLogger getLogger(final String name, final MessageFactory messageFactory) {
-        final ExtendedLogger extendedLogger = loggers.get(name);
+        // Note: This is the only method where we add entries to the 'loggerRegistry' ivar.
+        final ExtendedLogger extendedLogger = loggerRegistry.getLogger(name, messageFactory);
         if (extendedLogger != null) {
             AbstractLogger.checkMessageFactory(extendedLogger, messageFactory);
             return extendedLogger;
         }
-        loggers.putIfAbsent(name, new SimpleLogger(name, defaultLevel, showLogName, showShortName, showDateTime,
-                showContextMap, dateTimeFormat, messageFactory, props, stream));
-        return loggers.get(name);
+        final SimpleLogger simpleLogger = new SimpleLogger(name, defaultLevel, showLogName, showShortName, showDateTime,
+                showContextMap, dateTimeFormat, messageFactory, props, stream);
+        loggerRegistry.putIfAbsent(name, messageFactory, simpleLogger);
+        return loggerRegistry.getLogger(name, messageFactory);
     }
 
     @Override
@@ -115,7 +121,18 @@ public class SimpleLoggerContext implements LoggerContext {
     }
 
     @Override
+    public boolean hasLogger(final String name, final MessageFactory messageFactory) {
+        return false;
+    }
+
+    @Override
+    public boolean hasLogger(final String name, final Class<? extends MessageFactory> messageFactoryClass) {
+        return false;
+    }
+
+    @Override
     public Object getExternalContext() {
         return null;
     }
+
 }
