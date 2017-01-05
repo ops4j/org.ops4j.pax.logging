@@ -133,7 +133,11 @@ public class Activator implements BundleActivator {
         if( !Boolean.valueOf(bundleContext.getProperty("org.ops4j.pax.logging.skipJUL")) )
         {
             LogManager manager = LogManager.getLogManager();
-            manager.reset();
+
+            if( !Boolean.valueOf(bundleContext.getProperty("org.ops4j.pax.logging.skipJULReset")) )
+            {
+                manager.reset();
+            }
 
             // clear out old handlers
             Logger rootLogger = manager.getLogger( "" );
