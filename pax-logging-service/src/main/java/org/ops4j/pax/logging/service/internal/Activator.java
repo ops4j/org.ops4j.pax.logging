@@ -126,8 +126,12 @@ public class Activator
         if( !Boolean.parseBoolean(skipJULProperty))
         {
             LogManager manager = LogManager.getLogManager();
-            manager.reset();
-            
+
+            if( !Boolean.valueOf(bundleContext.getProperty("org.ops4j.pax.logging.skipJULReset")) )
+            {
+                manager.reset();
+            }
+
             // clear out old handlers
             Logger rootLogger = manager.getLogger( "" );
             Handler[] handlers = rootLogger.getHandlers();
