@@ -58,20 +58,23 @@
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-container-default</artifactId>
+      <artifactId>pax-exam-container-native</artifactId>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
-      <artifactId>pax-exam-junit</artifactId>
+      <artifactId>pax-exam-junit4</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.ops4j.pax.runner</groupId>
-      <artifactId>pax-runner-no-jcl</artifactId>
+      <groupId>org.ops4j.pax.exam</groupId>
+      <artifactId>pax-exam-link-mvn</artifactId>
     </dependency>
-
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-atinject_1.0_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.framework</artifactId>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

@@ -21,8 +21,13 @@ package org.ops4j.pax.logging.it.appender;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+
+import javax.inject.Inject;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.runner.RunWith;
@@ -32,12 +37,11 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ManagedService;
-import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.ops4j.pax.exam.junit.Configuration;
+import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.Option;
-import org.ops4j.pax.exam.Inject;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.CoreOptions;
 import static org.ops4j.pax.exam.CoreOptions.*;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.compendiumProfile;
 
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.PaxAppender;
@@ -50,7 +54,7 @@ import org.ops4j.pax.logging.spi.PaxLoggingEvent;
  * @author Alin Dreghiciu
  * @author Toni Menzel
  */
-@RunWith( JUnit4TestRunner.class )
+@RunWith( PaxExam.class )
 public class CustomAppenderTest 
    
 {
@@ -67,9 +71,9 @@ public class CustomAppenderTest
     public Option[] configure()
     {
         return options(
+            CoreOptions.junitBundles(),
             mavenBundle().artifactId( "pax-logging-api" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
-            mavenBundle().artifactId( "pax-logging-service" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
-            compendiumProfile()
+            mavenBundle().artifactId( "pax-logging-service" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject()
         );
     }
 
@@ -123,15 +127,15 @@ public class CustomAppenderTest
 
         // Update configuration
         ManagedService service = (ManagedService) bundleContext.getService( reference );
-        service.updated( properties );
+        service.updated((Dictionary)properties );
 
         bundleContext.ungetService( reference );
     }
 
     private CustomAppender createAndRegisterCustomAppenderService( BundleContext bundleContext )
     {
-        Properties serviceProperties = new Properties();
-        serviceProperties.setProperty( PaxLoggingService.APPENDER_NAME_PROPERTY, "custom" );
+        Dictionary<String,String> serviceProperties = new Hashtable<String, String>();
+        serviceProperties.put( PaxLoggingService.APPENDER_NAME_PROPERTY, "custom" );
         CustomAppender customAppender = new CustomAppender();
         bundleContext.registerService( SERVICE_NAME, customAppender, serviceProperties );
 

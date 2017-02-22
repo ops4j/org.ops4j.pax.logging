@@ -215,7 +215,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.10</version>
+        <version>4.12</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -226,23 +226,38 @@
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-junit4</artifactId>
+        <version>4.9.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam</artifactId>
-        <version>1.2.4</version>
+        <version>4.9.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-container-native</artifactId>
+        <version>4.9.0</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
         <artifactId>pax-exam-container-default</artifactId>
-        <version>1.2.4</version>
+        <version>4.9.0</version>
       </dependency>
       <dependency>
         <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam-junit</artifactId>
-        <version>1.2.4</version>
+        <artifactId>pax-exam-link-mvn</artifactId>
+        <version>4.9.0</version>
       </dependency>
       <dependency>
-        <groupId>org.ops4j.pax.runner</groupId>
-        <artifactId>pax-runner-no-jcl</artifactId>
-        <version>1.8.6</version>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-atinject_1.0_spec</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.framework</artifactId>
+        <version>5.4.0</version>
       </dependency>
 
       <!-- sample dependencies -->
