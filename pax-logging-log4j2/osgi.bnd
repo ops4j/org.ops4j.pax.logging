@@ -27,3 +27,9 @@ Import-Package: \
  org.codehaus.stax2.*;resolution:=optional, \
  org.zeromq.*;resolution:=optional, \
  *
+
+Provide-Capability: \
+ osgi.service;effective:=active;objectClass=org.osgi.service.log.LogService,\
+ osgi.service;effective:=active;objectClass=org.knopflerfish.service.log.LogService,\
+ osgi.service;effective:=active;objectClass=org.ops4j.pax.logging.PaxLoggingService,\
+ osgi.service;effective:=active;objectClass=org.osgi.service.cm.ManagedService
