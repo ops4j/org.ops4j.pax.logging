@@ -33,8 +33,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
@@ -172,42 +175,59 @@ public class DailyZipRollingFileAppender extends FileAppender {
 
 	class CleanUpThread implements Runnable {
 
-		private List<ModifiedTimeSortableFile> getAllFiles(
-				String perentDirectory) {
-			List<ModifiedTimeSortableFile> files = null;
+		private Map<String, List<ModifiedTimeSortableFile>> getAllFiles(String perentDirectory) {
+			Map<String, List<ModifiedTimeSortableFile>> groupedFiles = null;
 			try {
-				files = new ArrayList<ModifiedTimeSortableFile>();
-				
+				// Files grouped by bundle, if using Sift appender.
+				// Otherwise, a single group containing the karaf.log (and backups).
+				groupedFiles = new HashMap<String, List<ModifiedTimeSortableFile>>();
+				List<ModifiedTimeSortableFile> files = null;
 				File dir = new File(perentDirectory);
 				String[] names = dir.list();
+				String uniquePartOfName;
 
 				for (int i = 0; i < names.length; i++) {
-					files.add(new ModifiedTimeSortableFile(dir
-							+ System.getProperty("file.separator") + names[i]));
+					int truncateToLength = names[i].length() - datePattern.length();
+					if (names[i].endsWith(typeOfCompression)) {
+						truncateToLength = truncateToLength - (typeOfCompression.length() + 1);
+					}
+					uniquePartOfName = names[i].substring(0, truncateToLength);
+					if (groupedFiles.containsKey(uniquePartOfName)) {
+						files = groupedFiles.get(uniquePartOfName);
+					} else {
+						files = new ArrayList<ModifiedTimeSortableFile>();
+					}
+					files.add(new ModifiedTimeSortableFile(dir + System.getProperty("file.separator") + names[i]));
+					groupedFiles.put(uniquePartOfName, files);
 				}
 			} catch (Exception e) {
-				LogLog.error(
-						"Error during retrieving all files of parent folder. ",
-						e);
+				LogLog.error("LogLog Error during retrieving all files of parent folder. ", e);
 			}
-			return files;
+			return groupedFiles;
 		}
 
-		
 		public void run() {
-			List<ModifiedTimeSortableFile> files = getAllFiles(perentDirectory);
-			if (files.size() >= maxBackupIndex) {
-				Collections.sort(files);
+			Map<String, List<ModifiedTimeSortableFile>> groupedFiles = getAllFiles(perentDirectory);
+			Iterator iterator = groupedFiles.entrySet().iterator();
+			List<ModifiedTimeSortableFile> files = null;
+			// For each group of files, delete the backups that exceed the maxBackupIndex.
+			// Note: there will only be single group if Sift appender is not used.
+			while(iterator.hasNext()) {
+				Map.Entry<String, List<ModifiedTimeSortableFile>> pair = (Map.Entry) iterator.next();
+				files = pair.getValue();
+				if (files.size() > (maxBackupIndex + 1)) {
+					Collections.sort(files);
 
-				int index = 0;
-				int diff = files.size() - (maxBackupIndex - 1);
+					int index = 0;
+					int diff = files.size() - (maxBackupIndex + 1);
 
-				for (ModifiedTimeSortableFile file : files) {
-					if (index >= diff)
-						break;
+					for (ModifiedTimeSortableFile file : files) {
+						if (index >= diff)
+							break;
 
-					file.delete();
-					index++;
+						file.delete();
+						index++;
+					}
 				}
 			}
 		}
