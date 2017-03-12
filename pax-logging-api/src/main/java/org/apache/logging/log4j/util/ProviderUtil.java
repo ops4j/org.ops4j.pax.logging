@@ -39,19 +39,19 @@ public final class ProviderUtil {
     /**
      * Resource name for a Log4j 2 provider properties file.
      */
-    protected static final String PROVIDER_RESOURCE = "META-INF/log4j-provider.properties";
+    private static final String PROVIDER_RESOURCE = "META-INF/log4j-provider.properties";
 
     /**
      * Loaded providers.
      */
-    protected static final Collection<Provider> PROVIDERS = new HashSet<>();
+    private static final Collection<Provider> PROVIDERS = new HashSet<>();
 
     /**
      * Guards the ProviderUtil singleton instance from lazy initialization. This is primarily used for OSGi support.
      *
      * @since 2.1
      */
-    protected static final Lock STARTUP_LOCK = new ReentrantLock();
+    private static final Lock STARTUP_LOCK = new ReentrantLock();
 
     private static final String API_VERSION = "Log4jAPIVersion";
     private static final String[] COMPATIBLE_API_VERSIONS = {"2.0.0", "2.1.0"};
@@ -74,7 +74,7 @@ public final class ProviderUtil {
      * @param url the URL to the provider properties file
      * @param cl the ClassLoader to load the provider classes with
      */
-    protected static void loadProvider(final URL url, final ClassLoader cl) {
+    private static void loadProvider(final URL url, final ClassLoader cl) {
         try {
             final Properties props = PropertiesUtil.loadClose(url.openStream(), url);
             if (validVersion(props.getProperty(API_VERSION))) {
@@ -89,7 +89,7 @@ public final class ProviderUtil {
      * @deprecated Use {@link #loadProvider(java.net.URL, ClassLoader)} instead. Will be removed in 3.0.
      */
     @Deprecated
-    protected static void loadProviders(final Enumeration<URL> urls, final ClassLoader cl) {
+    private static void loadProviders(final Enumeration<URL> urls, final ClassLoader cl) {
         if (urls != null) {
             while (urls.hasMoreElements()) {
                 loadProvider(urls.nextElement(), cl);
@@ -112,7 +112,7 @@ public final class ProviderUtil {
      *
      * @since 2.1
      */
-    protected static void lazyInit() {
+    private static void lazyInit() {
         // noinspection DoubleCheckedLocking
         if (instance == null) {
             try {

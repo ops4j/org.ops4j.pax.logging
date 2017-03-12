@@ -303,7 +303,7 @@ public final class ReflectionUtil {
             return super.getClassContext();
         }
 
-        protected Class<?> getCallerClass(final String fqcn, final String pkg) {
+        private Class<?> getCallerClass(final String fqcn, final String pkg) {
             boolean next = false;
             for (final Class<?> clazz : getClassContext()) {
                 if (fqcn.equals(clazz.getName())) {
@@ -318,7 +318,7 @@ public final class ReflectionUtil {
             return null;
         }
 
-        protected Class<?> getCallerClass(final Class<?> anchor) {
+        private Class<?> getCallerClass(final Class<?> anchor) {
             boolean next = false;
             for (final Class<?> clazz : getClassContext()) {
                 if (anchor.equals(clazz)) {
