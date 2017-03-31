@@ -22,8 +22,10 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.spi.ThrowableRenderer;
 import org.ops4j.pax.logging.util.OsgiUtil;
@@ -43,7 +45,8 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
     public String[] doRender(final Throwable throwable) {
         try {
             List<String> lines = new ArrayList<>();
-            doRender(throwable, null, lines);
+            Set<Throwable> dejavu = new HashSet<>();
+            doRender(throwable, null, "", "", dejavu, lines);
            return lines.toArray(new String[lines.size()]);
         } catch(Exception ex) {
             // Ignore
@@ -69,66 +72,82 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
         classContextMethod = method;
     }
 
-    private void doRender(final Throwable throwable, StackTraceElement[]  causedTrace, List<String> lines) {
-        StackTraceElement[] elements = throwable.getStackTrace();
-        Map<String, Object> classMap = new HashMap<>();
-        Class[] classCtx;
-        try {
-            classCtx = (Class[]) classContextMethod.invoke(throwable);
-        } catch (Throwable e) {
-            classCtx = sm.getClassContext();
-        }
-        Class lastClass = null;
-        for (int i = 0; i < elements.length && i < classCtx.length; i++) {
-            Class clazz = classCtx[classCtx.length - 1 - i];
-            if (elements[elements.length - 1 - i].getClassName().equals(clazz.getName())) {
-                String classDetails = getClassDetail(clazz);
-                classMap.put(clazz.getName(), classDetails);
-                lastClass = clazz;
-            } else if (lastClass != null) {
-                try {
-                    ClassLoader cl = lastClass.getClassLoader();
-                    if (cl != null) {
-                        clazz = OsgiUtil.loadClass(cl, elements[elements.length - 1 - i].getClassName());
-                        String classDetails = getClassDetail(clazz);
-                        classMap.put(clazz.getName(), classDetails);
-                        lastClass = clazz;
+    private void doRender(Throwable throwable,
+                          StackTraceElement[] enclosingTrace,
+                          String caption,
+                          String prefix,
+                          Set<Throwable> dejaVu,
+                          List<String> lines) {
+        if (dejaVu.contains(throwable)) {
+            lines.add("\t[CIRCULAR REFERENCE:" + this + "]");
+        } else {
+            dejaVu.add(throwable);
+            // Compute number of frames in common between this and enclosing trace
+            StackTraceElement[] trace = throwable.getStackTrace();
+            int framesInCommon = 0;
+            int m = trace.length - 1;
+            if (enclosingTrace != null) {
+                int n = enclosingTrace.length - 1;
+                while (m >= 0 && n >= 0 && trace[m].equals(enclosingTrace[n])) {
+                    m--;
+                    n--;
+                }
+                framesInCommon = trace.length - 1 - m;
+            }
+            // Compute class context
+            Map<String, String> classMap = new HashMap<>();
+            Class[] classCtx;
+            try {
+                classCtx = (Class[]) classContextMethod.invoke(throwable);
+            } catch (Throwable e) {
+                classCtx = sm.getClassContext();
+            }
+            Class lastClass = null;
+            for (int i = 0; i < trace.length && i < classCtx.length; i++) {
+                Class clazz = classCtx[classCtx.length - 1 - i];
+                if (trace[trace.length - 1 - i].getClassName().equals(clazz.getName())) {
+                    String classDetails = getClassDetail(clazz);
+                    classMap.put(clazz.getName(), classDetails);
+                    lastClass = clazz;
+                } else if (lastClass != null) {
+                    try {
+                        ClassLoader cl = lastClass.getClassLoader();
+                        if (cl != null) {
+                            clazz = OsgiUtil.loadClass(cl, trace[trace.length - 1 - i].getClassName());
+                            String classDetails = getClassDetail(clazz);
+                            classMap.put(clazz.getName(), classDetails);
+                            lastClass = clazz;
+                        }
+                    } catch (Exception e) {
+                        break;
                     }
-                } catch (Exception e) {
+                } else {
                     break;
                 }
-            } else {
-                break;
             }
-        }
-        if (causedTrace != null) {
-            int m = elements.length-1, n = causedTrace.length-1;
-            while (m >= 0 && n >=0 && elements[m].equals(causedTrace[n])) {
-                m--; n--;
-            }
-            int framesInCommon = elements.length - 1 - m;
-            lines.add("Caused by: " + throwable.toString());
-            for (int i=0; i <= m; i++) {
-                lines.add(formatElement(elements[i], classMap));
+            // Print our stack trace
+            lines.add(prefix + caption + throwable);
+            for (int i = 0; i <= m; i++) {
+                lines.add(prefix + formatElement(trace[i], classMap));
             }
             if (framesInCommon != 0) {
-                lines.add("\t... " + framesInCommon + " more");
+                lines.add(prefix + "\t... " + framesInCommon + " more");
             }
-        } else {
-            lines.add(throwable.toString());
-            for (StackTraceElement element : elements) {
-                lines.add(formatElement(element, classMap));
+            // Print suppressed exceptions, if any
+            for (Throwable se : throwable.getSuppressed()) {
+                doRender(se, trace, "Suppressed: ", prefix + "\t", dejaVu, lines);
             }
-        }
-        try {
-            Throwable[] causes = (Throwable[]) throwable.getClass().getMethod("getCauses").invoke(throwable);
-            for (Throwable cause : causes) {
-                doRender(cause, elements, lines);
-            }
-        } catch (Exception e) {
-            Throwable cause = throwable.getCause();
-            if (cause != null) {
-                doRender(cause, elements, lines);
+            // Print cause, if any
+            try {
+                Throwable[] causes = (Throwable[]) throwable.getClass().getMethod("getCauses").invoke(throwable);
+                for (Throwable cause : causes) {
+                    doRender(cause, trace, "Caused by: ", prefix, dejaVu, lines);
+                }
+            } catch (Throwable t) {
+                Throwable cause = throwable.getCause();
+                if (cause != null) {
+                    doRender(cause, trace, "Caused by: ", prefix, dejaVu, lines);
+                }
             }
         }
     }
@@ -139,11 +158,11 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
      * @param classMap map of class name to location.
      * @return string representation of element.
      */
-    private String formatElement(final StackTraceElement element, final Map<String, Object> classMap) {
+    private String formatElement(final StackTraceElement element, final Map<String, String> classMap) {
         StringBuilder buf = new StringBuilder("\tat ");
         buf.append(element);
         String className = element.getClassName();
-        Object classDetails = classMap.get(className);
+        String classDetails = classMap.get(className);
         if (classDetails == null) {
             try {
                 Class<?> cls = findClass(className);
