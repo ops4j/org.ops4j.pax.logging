@@ -33,6 +33,10 @@ public class AvalonLogFactory
 
     private static PaxLoggingManager m_paxLogging;
     private static Map<String, AvalonLogger> m_loggers;
+    
+    private AvalonLogFactory() 
+    {
+    }
 
     static
     {
