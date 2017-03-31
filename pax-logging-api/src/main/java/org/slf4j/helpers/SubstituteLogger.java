@@ -24,26 +24,41 @@
  */
 package org.slf4j.helpers;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Queue;
+
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.event.EventRecodingLogger;
+import org.slf4j.event.LoggingEvent;
+import org.slf4j.event.SubstituteLoggingEvent;
 
 /**
  * A logger implementation which logs via a delegate logger. By default, the delegate is a
- * {@link NOPLogger}. However, a different delegate can be set at anytime.
+ * {@link NOPLogger}. However, a different delegate can be set at any time.
  * <p/>
  * See also the <a href="http://www.slf4j.org/codes.html#substituteLogger">relevant
  * error code</a> documentation.
  *
  * @author Chetan Mehrotra
+ * @author Ceki Gulcu
  */
 public class SubstituteLogger implements Logger {
 
     private final String name;
-
     private volatile Logger _delegate;
+    private Boolean delegateEventAware;
+    private Method logMethodCache;
+    private EventRecodingLogger eventRecodingLogger;
+    private Queue<SubstituteLoggingEvent> eventQueue;
 
-    public SubstituteLogger(String name) {
+    private final boolean createdPostInitialization;
+    
+    public SubstituteLogger(String name, Queue<SubstituteLoggingEvent> eventQueue, boolean createdPostInitialization) {
         this.name = name;
+        this.eventQueue = eventQueue;
+        this.createdPostInitialization = createdPostInitialization;
     }
 
     public String getName() {
@@ -315,7 +330,21 @@ public class SubstituteLogger implements Logger {
      * instance.
      */
     Logger delegate() {
-        return _delegate != null ? _delegate : NOPLogger.NOP_LOGGER;
+        if(_delegate != null) {
+            return _delegate;
+        }
+        if(createdPostInitialization) {
+            return NOPLogger.NOP_LOGGER;
+        } else {
+            return getEventRecordingLogger();
+        }
+    }
+
+    private Logger getEventRecordingLogger() {
+        if (eventRecodingLogger == null) {
+            eventRecodingLogger = new EventRecodingLogger(this, eventQueue);
+        }
+        return eventRecodingLogger;
     }
 
     /**
@@ -324,5 +353,38 @@ public class SubstituteLogger implements Logger {
      */
     public void setDelegate(Logger delegate) {
         this._delegate = delegate;
+    }
+
+    public boolean isDelegateEventAware() {
+        if (delegateEventAware != null)
+            return delegateEventAware;
+
+        try {
+            logMethodCache = _delegate.getClass().getMethod("log", LoggingEvent.class);
+            delegateEventAware = Boolean.TRUE;
+        } catch (NoSuchMethodException e) {
+            delegateEventAware = Boolean.FALSE;
+        }
+        return delegateEventAware;
+    }
+
+    public void log(LoggingEvent event) {
+        if (isDelegateEventAware()) {
+            try {
+                logMethodCache.invoke(_delegate, event);
+            } catch (IllegalAccessException e) {
+            } catch (IllegalArgumentException e) {
+            } catch (InvocationTargetException e) {
+            }
+        }
+    }
+
+
+    public boolean isDelegateNull() {
+        return _delegate == null;
+    }
+
+    public boolean isDelegateNOP() {
+        return _delegate instanceof NOPLogger;
     }
 }

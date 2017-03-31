@@ -42,7 +42,7 @@ import org.slf4j.spi.MDCAdapter;
  * i.e. this class, will delegate to the underlying system's MDC. Note that at
  * this time, only two logging systems, namely log4j and logback, offer MDC
  * functionality. For java.util.logging which does not support MDC,
- * {@link BasicMDCAdapter} will be used. For other systems, i.e slf4j-simple
+ * {@link BasicMDCAdapter} will be used. For other systems, i.e. slf4j-simple
  * and slf4j-nop, {@link NOPMDCAdapter} will be used.
  *
  * <p>
@@ -85,9 +85,27 @@ public class MDC {
     private MDC() {
     }
 
+    /**
+     * As of SLF4J version 1.7.14, StaticMDCBinder classes shipping in various bindings
+     * come with a getSingleton() method. Previously only a public field called SINGLETON 
+     * was available.
+     * 
+     * @return MDCAdapter
+     * @throws NoClassDefFoundError in case no binding is available
+     * @since 1.7.14
+     */
+    private static MDCAdapter bwCompatibleGetMDCAdapterFromBinder() throws NoClassDefFoundError {
+        try {
+            return StaticMDCBinder.getSingleton().getMDCA();
+        } catch (NoSuchMethodError nsme) {
+            // binding is probably a version of SLF4J older than 1.7.14
+            return StaticMDCBinder.SINGLETON.getMDCA();
+        }
+    }
+
     static {
         try {
-            mdcAdapter = StaticMDCBinder.SINGLETON.getMDCA();
+            mdcAdapter = bwCompatibleGetMDCAdapterFromBinder();
         } catch (NoClassDefFoundError ncde) {
             mdcAdapter = new NOPMDCAdapter();
             String msg = ncde.getMessage();

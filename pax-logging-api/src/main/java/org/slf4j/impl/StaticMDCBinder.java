@@ -51,9 +51,13 @@ public class StaticMDCBinder {
 
   private static final String mdcAdapterClassStr = Slf4jMDCAdapter.class.getName();
 
-  private static final MDCAdapter mdcAdapter = new Slf4jMDCAdapter();  
+  private static final MDCAdapter mdcAdapter = new Slf4jMDCAdapter();
 
   private StaticMDCBinder() {
+  }
+
+  public static StaticMDCBinder getSingleton() {
+    return SINGLETON;
   }
 
   public MDCAdapter getMDCA() {
