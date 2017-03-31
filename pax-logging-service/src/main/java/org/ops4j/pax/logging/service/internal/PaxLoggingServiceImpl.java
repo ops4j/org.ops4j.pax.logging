@@ -399,6 +399,10 @@ public class PaxLoggingServiceImpl
         {
             return LOG_WARNING;
         }
+        else if ( "OFF".equals( levelName ) || "NONE".equals( levelName ) )
+        {
+            return 0;
+        }
         else
         {
             return LOG_DEBUG;
