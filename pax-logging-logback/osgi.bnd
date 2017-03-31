@@ -14,9 +14,7 @@ Export-Package: \
 # method, which not accessible through the Pax Logging API, so there's no need to do anything special. We simply mark
 # the import as optional.
 Import-Package: \
- javax.xml.*, \
- (com|sun|javax).*;resolution:=optional, \
- com.fasterxml.jackson.databind;resolution:=optional, \
+ com.fasterxml.jackson.*;resolution:=optional; version="[2.1,3)", \
  org.knopflerfish.service.log; provider="paxlogging"; version="[1.1.0,2.0.0)", \
  org.ops4j.pax.logging; version="[0.9.5,2.0.0)", \
  org.ops4j.pax.logging.spi; version="[0.9.5,2.0.0)", \
@@ -48,6 +46,8 @@ Import-Package: \
  org.codehaus.groovy.transform.*;resolution:=optional;version="1.7", \
  sun.reflect;resolution:=optional, \
  org.codehaus.commons.compiler;resolution:=optional, \
+ javax.xml.*, \
+ (com|sun|javax).*;resolution:=optional, \
  *
 
 Provide-Capability: \
