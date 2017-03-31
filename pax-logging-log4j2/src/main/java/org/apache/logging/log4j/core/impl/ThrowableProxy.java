@@ -17,6 +17,7 @@
 package org.apache.logging.log4j.core.impl;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
@@ -135,8 +136,7 @@ public class ThrowableProxy implements Serializable {
         final Map<String, CacheEntry> map = new HashMap<String, CacheEntry>();
         Stack<Class<?>> stack;
         try {
-            Class<?>[] classCtx;
-            classCtx = (Class[]) Exception.class.getMethod("getClassContext", null).invoke(throwable, null);
+            Class<?>[] classCtx = (Class<?>[]) classContextMethod.invoke(throwable);
             stack = new Stack<Class<?>>();
             stack.addAll(Arrays.asList(classCtx));
         } catch (Exception e) {
@@ -148,6 +148,25 @@ public class ThrowableProxy implements Serializable {
         this.causeProxy = throwableCause == null ? null : new ThrowableProxy(throwable, stack, map, throwableCause, visited, causeVisited);
         this.suppressedProxies = this.toSuppressedProxies(throwable, visited);
     }
+
+    private static final Method classContextMethod;
+    static {
+        Method method;
+        try {
+            // Karaf 4.1
+            method = Exception.class.getDeclaredMethod("classContext");
+            method.setAccessible(true);
+        } catch (NoSuchMethodException e1) {
+            try {
+                // Karaf < 4.1
+                method = Exception.class.getMethod("getClassContext");
+            } catch (NoSuchMethodException e2) {
+                method = null;
+            }
+        }
+        classContextMethod = method;
+    }
+
 
     /**
      * Constructs the wrapper for a Throwable that is referenced as the cause by another Throwable.

@@ -17,6 +17,7 @@
 package org.apache.log4j;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
@@ -36,33 +37,45 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
 
     private SecurityManagerEx sm = new SecurityManagerEx();
 
-
-    /**
-     * Construct new instance.
-     */
-    public OsgiThrowableRenderer() {
-    }
-
     /**
      * {@inheritDoc}
      */
     public String[] doRender(final Throwable throwable) {
         try {
-            List lines = new ArrayList();
+            List<String> lines = new ArrayList<>();
             doRender(throwable, null, lines);
-           return (String[]) lines.toArray(new String[lines.size()]);
+           return lines.toArray(new String[lines.size()]);
         } catch(Exception ex) {
+            // Ignore
         }
         return DefaultThrowableRenderer.render(throwable);
     }
 
-    protected void doRender(final Throwable throwable, StackTraceElement[]  causedTrace, List lines) {
+    private static final Method classContextMethod;
+    static {
+        Method method;
+        try {
+            // Karaf 4.1
+            method = Exception.class.getDeclaredMethod("classContext");
+            method.setAccessible(true);
+        } catch (NoSuchMethodException e1) {
+            try {
+                // Karaf < 4.1
+                method = Exception.class.getMethod("getClassContext");
+            } catch (NoSuchMethodException e2) {
+                method = null;
+            }
+        }
+        classContextMethod = method;
+    }
+
+    private void doRender(final Throwable throwable, StackTraceElement[]  causedTrace, List<String> lines) {
         StackTraceElement[] elements = throwable.getStackTrace();
-        Map classMap = new HashMap();
+        Map<String, Object> classMap = new HashMap<>();
         Class[] classCtx;
         try {
-            classCtx = (Class[]) Exception.class.getMethod("getClassContext", null).invoke(throwable, null);
-        } catch (Exception e) {
+            classCtx = (Class[]) classContextMethod.invoke(throwable);
+        } catch (Throwable e) {
             classCtx = sm.getClassContext();
         }
         Class lastClass = null;
@@ -103,14 +116,14 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
             }
         } else {
             lines.add(throwable.toString());
-            for (int i = 0; i < elements.length; i++) {
-                lines.add(formatElement(elements[i], classMap));
+            for (StackTraceElement element : elements) {
+                lines.add(formatElement(element, classMap));
             }
         }
         try {
-            Throwable[] causes = (Throwable[]) throwable.getClass().getMethod("getCauses", null).invoke(throwable, null);
-            for (int i = 0; i < causes.length; i++) {
-                doRender(causes[i], elements, lines);
+            Throwable[] causes = (Throwable[]) throwable.getClass().getMethod("getCauses").invoke(throwable);
+            for (Throwable cause : causes) {
+                doRender(cause, elements, lines);
             }
         } catch (Exception e) {
             Throwable cause = throwable.getCause();
@@ -127,7 +140,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
      * @return string representation of element.
      */
     private String formatElement(final StackTraceElement element, final Map<String, Object> classMap) {
-        StringBuffer buf = new StringBuffer("\tat ");
+        StringBuilder buf = new StringBuilder("\tat ");
         buf.append(element);
         String className = element.getClassName();
         Object classDetails = classMap.get(className);
@@ -137,6 +150,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
                 classDetails = getClassDetail(cls);
                 classMap.put(className, classDetails);
             } catch (Throwable th) {
+                // Ignore
             }
         }
         if (classDetails != null) {
@@ -149,7 +163,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
         try {
             Bundle bundle = OsgiUtil.getBundleOrNull(cls);
             if (bundle != null) {
-                StringBuffer buf = new StringBuffer();
+                StringBuilder buf = new StringBuilder();
                 buf.append('[');
                 buf.append(bundle.getBundleId());
                 buf.append(":");
@@ -160,9 +174,10 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
                 return buf.toString();
             }
         } catch (Exception e) {
+            // Ignore
         }
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append('[');
         try {
             CodeSource source = cls.getProtectionDomain().getCodeSource();
@@ -199,6 +214,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
                 }
             }
         } catch(SecurityException ex) {
+            // Ignore
         }
         buf.append(':');
         Package pkg = cls.getPackage();
@@ -230,7 +246,7 @@ public final class OsgiThrowableRenderer implements ThrowableRenderer {
         }
     }
 
-    static class SecurityManagerEx extends SecurityManager
+    private static class SecurityManagerEx extends SecurityManager
     {
         public Class[] getClassContext()
         {
