@@ -336,22 +336,29 @@ public class PaxLoggingServiceImpl
         }
 
         PaxLogger logger = getLogger( bundle, category, fqcn );
-        switch( level )
+        if( level < LOG_ERROR )
         {
-        case LOG_ERROR:
-            logger.error( message, exception );
-            break;
-        case LOG_WARNING:
-            logger.warn( message, exception );
-            break;
-        case LOG_INFO:
-            logger.inform( message, exception );
-            break;
-        case LOG_DEBUG:
-            logger.debug( message, exception );
-            break;
-        default:
-            logger.warn( "Undefined Level: " + level + " : " + message, exception );
+            logger.fatal( message, exception );
+        }
+        else
+        {
+            switch (level)
+            {
+            case LOG_ERROR:
+                logger.error( message, exception );
+                break;
+            case LOG_WARNING:
+                logger.warn( message, exception );
+                break;
+            case LOG_INFO:
+                logger.inform( message, exception );
+                break;
+            case LOG_DEBUG:
+                logger.debug( message, exception );
+                break;
+            default:
+                logger.trace( message, exception );
+            }
         }
     }
 

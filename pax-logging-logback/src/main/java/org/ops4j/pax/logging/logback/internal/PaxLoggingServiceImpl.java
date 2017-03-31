@@ -202,10 +202,17 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
                 category = "[bundle@" + bundle.getBundleId() + ']';
             }
         }
-        try{
+        try
+        {
             PaxLogger logger = getLogger( bundle, category, fqcn );
-            switch( level )
+            if( level < LOG_ERROR )
             {
+                logger.fatal( message, exception );
+            }
+            else
+            {
+                switch (level)
+                {
                 case LOG_ERROR:
                     logger.error( message, exception );
                     break;
@@ -219,7 +226,8 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
                     logger.debug( message, exception );
                     break;
                 default:
-                    logger.warn( "Undefined Level: " + level + " : " + message, exception );
+                    logger.trace( message, exception );
+                }
             }
         } catch (RuntimeException e) {
             m_logbackContext.getStatusManager().add(new WarnStatus("Runtime logging failure", m_logbackContext, e));
