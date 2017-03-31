@@ -26,6 +26,8 @@ Import-Package: \
  org.apache.kafka.*;resolution:=optional, \
  org.codehaus.stax2.*;resolution:=optional, \
  org.zeromq.*;resolution:=optional, \
+ org.fusesource.jansi.*;resolution:=optional, \
+ org.jctools.queues.*;resolution:=optional, \
  *
 
 Provide-Capability: \

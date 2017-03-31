@@ -74,6 +74,16 @@ public class Log4jv2LoggerContext implements LoggerContext {
     }
 
     @Override
+    public boolean hasLogger(String name, MessageFactory messageFactory) {
+        return hasLogger(name);
+    }
+
+    @Override
+    public boolean hasLogger(String name, Class<? extends MessageFactory> messageFactoryClass) {
+        return hasLogger(name);
+    }
+
+    @Override
     public Object getExternalContext() {
         return null;
     }

@@ -74,6 +74,61 @@ public class Log4jv2Logger extends AbstractLogger {
     }
 
     @Override
+    public boolean isEnabled(Level level, Marker marker, CharSequence message, Throwable t) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
+    public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9) {
+        return getLevel().intLevel() >= level.intLevel();
+    }
+
+    @Override
     public void logMessage(String fqcn, Level level, Marker marker, Message message, Throwable t) {
         // TODO: support marker
         if (level.intLevel() >= Level.TRACE.intLevel()) {

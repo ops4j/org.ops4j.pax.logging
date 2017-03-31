@@ -18,12 +18,15 @@
 package org.apache.logging.log4j.util;
 
 /**
+ * <em>Consider this class private.</em>
  * Classes implementing this interface know how to supply a value.
  *
  * <p>This is a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html">functional
  * interface</a> intended to support lambda expressions in log4j 2.
  *
  * <p>Implementors are free to cache values or return a new or distinct value each time the supplier is invoked.
+ *
+ * <p><strong>DEPRECATED:</strong> this class will be removed in 3.0 to be replaced with the Java 8 interface.</p>
  *
  * @param <T> the type of values returned by this supplier
  *

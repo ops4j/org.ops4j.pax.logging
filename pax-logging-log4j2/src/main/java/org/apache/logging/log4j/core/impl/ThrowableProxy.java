@@ -29,8 +29,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.apache.logging.log4j.core.pattern.PlainTextRenderer;
+import org.apache.logging.log4j.core.pattern.TextRenderer;
 import org.apache.logging.log4j.core.util.Loader;
 import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.LoaderUtil;
 import org.apache.logging.log4j.util.ReflectionUtil;
 import org.apache.logging.log4j.util.Strings;
 import org.osgi.framework.Bundle;
@@ -54,6 +57,7 @@ import org.osgi.framework.FrameworkUtil;
  */
 public class ThrowableProxy implements Serializable {
 
+    private static final String TAB = "\t";
     private static final String CAUSED_BY_LABEL = "Caused by: ";
     private static final String SUPPRESSED_LABEL = "Suppressed: ";
     private static final String WRAPPED_BY_LABEL = "Wrapped by: ";
@@ -77,6 +81,8 @@ public class ThrowableProxy implements Serializable {
     private static final ThrowableProxy[] EMPTY_THROWABLE_PROXY_ARRAY = new ThrowableProxy[0];
 
     private static final char EOL = '\n';
+
+    private static final String EOL_STR = String.valueOf(EOL);
 
     private static final long serialVersionUID = -2752771578252251910L;
 
@@ -113,8 +119,7 @@ public class ThrowableProxy implements Serializable {
     /**
      * Constructs the wrapper for the Throwable that includes packaging data.
      *
-     * @param throwable
-     *        The Throwable to wrap, must not be null.
+     * @param throwable The Throwable to wrap, must not be null.
      */
     public ThrowableProxy(final Throwable throwable) {
         this(throwable, null);
@@ -123,10 +128,8 @@ public class ThrowableProxy implements Serializable {
     /**
      * Constructs the wrapper for the Throwable that includes packaging data.
      *
-     * @param throwable
-     *        The Throwable to wrap, must not be null.
-     * @param visited
-     *        The set of visited suppressed exceptions.
+     * @param throwable The Throwable to wrap, must not be null.
+     * @param visited   The set of visited suppressed exceptions.
      */
     private ThrowableProxy(final Throwable throwable, final Set<Throwable> visited) {
         this.throwable = throwable;
@@ -144,8 +147,9 @@ public class ThrowableProxy implements Serializable {
         }
         this.extendedStackTrace = this.toExtendedStackTrace(stack, map, null, throwable.getStackTrace());
         final Throwable throwableCause = throwable.getCause();
-        final Set<Throwable> causeVisited = new HashSet<Throwable>(1);
-        this.causeProxy = throwableCause == null ? null : new ThrowableProxy(throwable, stack, map, throwableCause, visited, causeVisited);
+        final Set<Throwable> causeVisited = new HashSet<>(1);
+        this.causeProxy = throwableCause == null ? null : new ThrowableProxy(throwable, stack, map, throwableCause,
+                visited, causeVisited);
         this.suppressedProxies = this.toSuppressedProxies(throwable, visited);
     }
 
@@ -171,19 +175,16 @@ public class ThrowableProxy implements Serializable {
     /**
      * Constructs the wrapper for a Throwable that is referenced as the cause by another Throwable.
      *
-     * @param parent
-     *        The Throwable referencing this Throwable.
-     * @param stack
-     *        The Class stack.
-     * @param map
-     *        The cache containing the packaging data.
-     * @param cause
-     *        The Throwable to wrap.
+     * @param parent            The Throwable referencing this Throwable.
+     * @param stack             The Class stack.
+     * @param map               The cache containing the packaging data.
+     * @param cause             The Throwable to wrap.
      * @param suppressedVisited TODO
-     * @param causeVisited TODO
+     * @param causeVisited      TODO
      */
     private ThrowableProxy(final Throwable parent, final Stack<Class<?>> stack, final Map<String, CacheEntry> map,
-                           final Throwable cause, final Set<Throwable> suppressedVisited, final Set<Throwable> causeVisited) {
+                           final Throwable cause, final Set<Throwable> suppressedVisited,
+                           final Set<Throwable> causeVisited) {
         causeVisited.add(cause);
         this.throwable = cause;
         this.name = cause.getClass().getName();
@@ -234,110 +235,142 @@ public class ThrowableProxy implements Serializable {
         return true;
     }
 
-    private void formatCause(final StringBuilder sb, final String prefix, final ThrowableProxy cause, final List<String> ignorePackages) {
-        formatThrowableProxy(sb, prefix, CAUSED_BY_LABEL, cause, ignorePackages);
+    private void formatCause(final StringBuilder sb, final String prefix, final ThrowableProxy cause,
+                             final List<String> ignorePackages, final TextRenderer textRenderer) {
+        formatThrowableProxy(sb, prefix, CAUSED_BY_LABEL, cause, ignorePackages, textRenderer);
     }
 
     private void formatThrowableProxy(final StringBuilder sb, final String prefix, final String causeLabel,
-                                      final ThrowableProxy throwableProxy, final List<String> ignorePackages) {
+                                      final ThrowableProxy throwableProxy, final List<String> ignorePackages,
+                                      final TextRenderer textRenderer) {
         if (throwableProxy == null) {
             return;
         }
-        sb.append(prefix).append(causeLabel).append(throwableProxy).append(EOL);
+        textRenderer.render(prefix, sb, "Prefix");
+        textRenderer.render(causeLabel, sb, "CauseLabel");
+        throwableProxy.renderOn(sb, textRenderer);
+        textRenderer.render(EOL_STR, sb, "Text");
         this.formatElements(sb, prefix, throwableProxy.commonElementCount,
-                throwableProxy.getStackTrace(), throwableProxy.extendedStackTrace, ignorePackages);
-        this.formatSuppressed(sb, prefix + "\t", throwableProxy.suppressedProxies, ignorePackages);
-        this.formatCause(sb, prefix, throwableProxy.causeProxy, ignorePackages);
+                throwableProxy.getStackTrace(), throwableProxy.extendedStackTrace, ignorePackages, textRenderer);
+        this.formatSuppressed(sb, prefix + TAB, throwableProxy.suppressedProxies, ignorePackages, textRenderer);
+        this.formatCause(sb, prefix, throwableProxy.causeProxy, ignorePackages, textRenderer);
+    }
+
+    void renderOn(final StringBuilder output, final TextRenderer textRenderer) {
+        final String msg = this.message;
+        textRenderer.render(this.name, output, "Name");
+        if (msg != null) {
+            textRenderer.render(": ", output, "NameMessageSeparator");
+            textRenderer.render(msg, output, "Message");
+        }
     }
 
     private void formatSuppressed(final StringBuilder sb, final String prefix, final ThrowableProxy[] suppressedProxies,
-                                  final List<String> ignorePackages) {
+                                  final List<String> ignorePackages, final TextRenderer textRenderer) {
         if (suppressedProxies == null) {
             return;
         }
         for (final ThrowableProxy suppressedProxy : suppressedProxies) {
-            final ThrowableProxy cause = suppressedProxy;
-            formatThrowableProxy(sb, prefix, SUPPRESSED_LABEL, cause, ignorePackages);
+            formatThrowableProxy(sb, prefix, SUPPRESSED_LABEL, suppressedProxy, ignorePackages, textRenderer);
         }
     }
 
     private void formatElements(final StringBuilder sb, final String prefix, final int commonCount,
                                 final StackTraceElement[] causedTrace, final ExtendedStackTraceElement[] extStackTrace,
-                                final List<String> ignorePackages) {
+                                final List<String> ignorePackages, final TextRenderer textRenderer) {
         if (ignorePackages == null || ignorePackages.isEmpty()) {
             for (final ExtendedStackTraceElement element : extStackTrace) {
-                this.formatEntry(element, sb, prefix);
+                this.formatEntry(element, sb, prefix, textRenderer);
             }
         } else {
             int count = 0;
             for (int i = 0; i < extStackTrace.length; ++i) {
                 if (!this.ignoreElement(causedTrace[i], ignorePackages)) {
                     if (count > 0) {
-                        appendSuppressedCount(sb, prefix, count);
+                        appendSuppressedCount(sb, prefix, count, textRenderer);
                         count = 0;
                     }
-                    this.formatEntry(extStackTrace[i], sb, prefix);
+                    this.formatEntry(extStackTrace[i], sb, prefix, textRenderer);
                 } else {
                     ++count;
                 }
             }
             if (count > 0) {
-                appendSuppressedCount(sb, prefix, count);
+                appendSuppressedCount(sb, prefix, count, textRenderer);
             }
         }
         if (commonCount != 0) {
-            sb.append(prefix).append("\t... ").append(commonCount).append(" more").append(EOL);
+            textRenderer.render(prefix, sb, "Prefix");
+            textRenderer.render("\t... ", sb, "More");
+            textRenderer.render(Integer.toString(commonCount), sb, "More");
+            textRenderer.render(" more", sb, "More");
+            textRenderer.render(EOL_STR, sb, "Text");
         }
     }
 
-    private void appendSuppressedCount(final StringBuilder sb, final String prefix, final int count) {
-        sb.append(prefix);
+    private void appendSuppressedCount(final StringBuilder sb, final String prefix, final int count,
+                                       final TextRenderer textRenderer) {
+        textRenderer.render(prefix, sb, "Prefix");
         if (count == 1) {
-            sb.append("\t....").append(EOL);
+            textRenderer.render("\t... ", sb, "Suppressed");
         } else {
-            sb.append("\t... suppressed ").append(count).append(" lines").append(EOL);
+            textRenderer.render("\t... suppressed ", sb, "Suppressed");
+            textRenderer.render(Integer.toString(count), sb, "Suppressed");
+            textRenderer.render(" lines", sb, "Suppressed");
         }
+        textRenderer.render(EOL_STR, sb, "Text");
     }
 
-    private void formatEntry(final ExtendedStackTraceElement extStackTraceElement, final StringBuilder sb, final String prefix) {
-        sb.append(prefix);
-        sb.append("\tat ");
-        sb.append(extStackTraceElement);
-        sb.append(EOL);
+    private void formatEntry(final ExtendedStackTraceElement extStackTraceElement, final StringBuilder sb,
+                             final String prefix, final TextRenderer textRenderer) {
+        textRenderer.render(prefix, sb, "Prefix");
+        textRenderer.render("\tat ", sb, "At");
+        extStackTraceElement.renderOn(sb, textRenderer);
+        textRenderer.render(EOL_STR, sb, "Text");
     }
 
     /**
      * Formats the specified Throwable.
      *
-     * @param sb
-     *        StringBuilder to contain the formatted Throwable.
-     * @param cause
-     *        The Throwable to format.
+     * @param sb    StringBuilder to contain the formatted Throwable.
+     * @param cause The Throwable to format.
      */
     public void formatWrapper(final StringBuilder sb, final ThrowableProxy cause) {
-        this.formatWrapper(sb, cause, null);
+        this.formatWrapper(sb, cause, null, PlainTextRenderer.getInstance());
     }
 
     /**
      * Formats the specified Throwable.
      *
-     * @param sb
-     *        StringBuilder to contain the formatted Throwable.
-     * @param cause
-     *        The Throwable to format.
-     * @param packages
-     *        The List of packages to be suppressed from the trace.
+     * @param sb             StringBuilder to contain the formatted Throwable.
+     * @param cause          The Throwable to format.
+     * @param ignorePackages The List of packages to be suppressed from the trace.
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    public void formatWrapper(final StringBuilder sb, final ThrowableProxy cause, final List<String> packages) {
+    public void formatWrapper(final StringBuilder sb, final ThrowableProxy cause, final List<String> ignorePackages) {
+        this.formatWrapper(sb, cause, ignorePackages, PlainTextRenderer.getInstance());
+    }
+
+    /**
+     * Formats the specified Throwable.
+     *
+     * @param sb             StringBuilder to contain the formatted Throwable.
+     * @param cause          The Throwable to format.
+     * @param ignorePackages The List of packages to be suppressed from the trace.
+     * @param textRenderer   The text render
+     */
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+    public void formatWrapper(final StringBuilder sb, final ThrowableProxy cause, final List<String> ignorePackages,
+                              final TextRenderer textRenderer) {
         final Throwable caused = cause.getCauseProxy() != null ? cause.getCauseProxy().getThrowable() : null;
         if (caused != null) {
-            this.formatWrapper(sb, cause.causeProxy);
+            this.formatWrapper(sb, cause.causeProxy, ignorePackages, textRenderer);
             sb.append(WRAPPED_BY_LABEL);
         }
-        sb.append(cause).append(EOL);
-        this.formatElements(sb, "", cause.commonElementCount,
-                cause.getThrowable().getStackTrace(), cause.extendedStackTrace, packages);
+        cause.renderOn(sb, textRenderer);
+        textRenderer.render(EOL_STR, sb, "Text");
+        this.formatElements(sb, Strings.EMPTY, cause.commonElementCount,
+                cause.getThrowable().getStackTrace(), cause.extendedStackTrace, ignorePackages, textRenderer);
     }
 
     public ThrowableProxy getCauseProxy() {
@@ -345,35 +378,46 @@ public class ThrowableProxy implements Serializable {
     }
 
     /**
-     * Format the Throwable that is the cause of this Throwable.
+     * Formats the Throwable that is the cause of this Throwable.
      *
      * @return The formatted Throwable that caused this Throwable.
      */
     public String getCauseStackTraceAsString() {
-        return this.getCauseStackTraceAsString(null);
+        return this.getCauseStackTraceAsString(null, PlainTextRenderer.getInstance());
     }
 
     /**
-     * Format the Throwable that is the cause of this Throwable.
+     * Formats the Throwable that is the cause of this Throwable.
      *
-     * @param packages
-     *        The List of packages to be suppressed from the trace.
+     * @param packages The List of packages to be suppressed from the trace.
      * @return The formatted Throwable that caused this Throwable.
      */
     public String getCauseStackTraceAsString(final List<String> packages) {
+        return getCauseStackTraceAsString(packages, PlainTextRenderer.getInstance());
+    }
+
+    /**
+     * Formats the Throwable that is the cause of this Throwable.
+     *
+     * @param ignorePackages The List of packages to be suppressed from the trace.
+     * @param textRenderer   the text renderer
+     * @return The formatted Throwable that caused this Throwable.
+     */
+    public String getCauseStackTraceAsString(final List<String> ignorePackages, final TextRenderer textRenderer) {
         final StringBuilder sb = new StringBuilder();
         if (this.causeProxy != null) {
-            this.formatWrapper(sb, this.causeProxy);
+            this.formatWrapper(sb, this.causeProxy, ignorePackages, textRenderer);
             sb.append(WRAPPED_BY_LABEL);
         }
-        sb.append(this.toString());
-        sb.append(EOL);
-        this.formatElements(sb, "", 0, this.throwable.getStackTrace(), this.extendedStackTrace, packages);
+        this.renderOn(sb, textRenderer);
+        textRenderer.render(EOL_STR, sb, "Text");
+        this.formatElements(sb, Strings.EMPTY, 0, this.throwable.getStackTrace(), this.extendedStackTrace,
+                ignorePackages, textRenderer);
         return sb.toString();
     }
 
     /**
-     * Return the number of elements that are being omitted because they are common with the parent Throwable's stack
+     * Returns the number of elements that are being omitted because they are common with the parent Throwable's stack
      * trace.
      *
      * @return The number of elements omitted from the stack trace.
@@ -397,27 +441,36 @@ public class ThrowableProxy implements Serializable {
      * @return The formatted stack trace including packaging information.
      */
     public String getExtendedStackTraceAsString() {
-        return this.getExtendedStackTraceAsString(null);
+        return this.getExtendedStackTraceAsString(null, PlainTextRenderer.getInstance());
     }
 
     /**
      * Format the stack trace including packaging information.
      *
-     * @param ignorePackages
-     *        List of packages to be ignored in the trace.
+     * @param ignorePackages List of packages to be ignored in the trace.
      * @return The formatted stack trace including packaging information.
      */
     public String getExtendedStackTraceAsString(final List<String> ignorePackages) {
-        final StringBuilder sb = new StringBuilder(this.name);
-        final String msg = this.message;
-        if (msg != null) {
-            sb.append(": ").append(msg);
-        }
-        sb.append(EOL);
+        return getExtendedStackTraceAsString(ignorePackages, PlainTextRenderer.getInstance());
+    }
+
+    /**
+     * Format the stack trace including packaging information.
+     *
+     * @param ignorePackages List of packages to be ignored in the trace.
+     * @param textRenderer   The message renderer
+     * @return The formatted stack trace including packaging information.
+     */
+    public String getExtendedStackTraceAsString(final List<String> ignorePackages, final TextRenderer textRenderer) {
+        final StringBuilder sb = new StringBuilder(1024);
+        textRenderer.render(name, sb, "Name");
+        textRenderer.render(": ", sb, "NameMessageSeparator");
+        textRenderer.render(this.message, sb, "Message");
+        textRenderer.render(EOL_STR, sb, "Text");
         final StackTraceElement[] causedTrace = this.throwable != null ? this.throwable.getStackTrace() : null;
-        this.formatElements(sb, "", 0, causedTrace, this.extendedStackTrace, ignorePackages);
-        this.formatSuppressed(sb, "\t", this.suppressedProxies, ignorePackages);
-        this.formatCause(sb, "", this.causeProxy, ignorePackages);
+        this.formatElements(sb, Strings.EMPTY, 0, causedTrace, this.extendedStackTrace, ignorePackages, textRenderer);
+        this.formatSuppressed(sb, TAB, this.suppressedProxies, ignorePackages, textRenderer);
+        this.formatCause(sb, Strings.EMPTY, this.causeProxy, ignorePackages, textRenderer);
         return sb.toString();
     }
 
@@ -490,10 +543,12 @@ public class ThrowableProxy implements Serializable {
     }
 
     private boolean ignoreElement(final StackTraceElement element, final List<String> ignorePackages) {
-        final String className = element.getClassName();
-        for (final String pkg : ignorePackages) {
-            if (className.startsWith(pkg)) {
-                return true;
+        if (ignorePackages != null) {
+            final String className = element.getClassName();
+            for (final String pkg : ignorePackages) {
+                if (className.startsWith(pkg)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -502,10 +557,8 @@ public class ThrowableProxy implements Serializable {
     /**
      * Loads classes not located via Reflection.getCallerClass.
      *
-     * @param lastLoader
-     *        The ClassLoader that loaded the Class that called this Class.
-     * @param className
-     *        The name of the Class.
+     * @param lastLoader The ClassLoader that loaded the Class that called this Class.
+     * @param className  The name of the Class.
      * @return The Class object for the Class or null if it could not be located.
      */
     private Class<?> loadClass(final ClassLoader lastLoader, final String className) {
@@ -513,7 +566,7 @@ public class ThrowableProxy implements Serializable {
         Class<?> clazz;
         if (lastLoader != null) {
             try {
-                clazz = Loader.initializeClass(className, lastLoader);
+                clazz = lastLoader.loadClass(className);
                 if (clazz != null) {
                     return clazz;
                 }
@@ -522,21 +575,19 @@ public class ThrowableProxy implements Serializable {
             }
         }
         try {
-            clazz = Loader.loadClass(className);
-        } catch (final ClassNotFoundException ignored) {
-            return initializeClass(className);
-        } catch (final NoClassDefFoundError ignored) {
-            return initializeClass(className);
+            clazz = LoaderUtil.loadClass(className);
+        } catch (final ClassNotFoundException | NoClassDefFoundError e) {
+            return loadClass(className);
+        } catch (final SecurityException e) {
+            return null;
         }
         return clazz;
     }
 
-    private Class<?> initializeClass(final String className) {
+    private Class<?> loadClass(final String className) {
         try {
-            return Loader.initializeClass(className, this.getClass().getClassLoader());
-        } catch (final ClassNotFoundException ignore) {
-            return null;
-        } catch (final NoClassDefFoundError ignore) {
+            return Loader.loadClass(className,this.getClass().getClassLoader());
+        } catch (final ClassNotFoundException | NoClassDefFoundError | SecurityException e) {
             return null;
         }
     }
@@ -544,13 +595,9 @@ public class ThrowableProxy implements Serializable {
     /**
      * Construct the CacheEntry from the Class's information.
      *
-     * @param stackTraceElement
-     *        The stack trace element
-     * @param callerClass
-     *        The Class.
-     * @param exact
-     *        True if the class was obtained via Reflection.getCallerClass.
-     *
+     * @param stackTraceElement The stack trace element
+     * @param callerClass       The Class.
+     * @param exact             True if the class was obtained via Reflection.getCallerClass.
      * @return The CacheEntry.
      */
     private CacheEntry toCacheEntry(final StackTraceElement stackTraceElement, final Class<?> callerClass,
@@ -576,18 +623,15 @@ public class ThrowableProxy implements Serializable {
     /**
      * Resolve all the stack entries in this stack trace that are not common with the parent.
      *
-     * @param stack
-     *        The callers Class stack.
-     * @param map
-     *        The cache of CacheEntry objects.
-     * @param rootTrace
-     *        The first stack trace resolve or null.
-     * @param stackTrace
-     *        The stack trace being resolved.
+     * @param stack      The callers Class stack.
+     * @param map        The cache of CacheEntry objects.
+     * @param rootTrace  The first stack trace resolve or null.
+     * @param stackTrace The stack trace being resolved.
      * @return The StackTracePackageElement array.
      */
     ExtendedStackTraceElement[] toExtendedStackTrace(final Stack<Class<?>> stack, final Map<String, CacheEntry> map,
-                                                     final StackTraceElement[] rootTrace, final StackTraceElement[] stackTrace) {
+                                                     final StackTraceElement[] rootTrace,
+                                                     final StackTraceElement[] stackTrace) {
         int stackLength;
         if (rootTrace != null) {
             int rootIndex = rootTrace.length - 1;
@@ -653,9 +697,9 @@ public class ThrowableProxy implements Serializable {
             if (suppressed == null) {
                 return EMPTY_THROWABLE_PROXY_ARRAY;
             }
-            final List<ThrowableProxy> proxies = new ArrayList<ThrowableProxy>(suppressed.length);
+            final List<ThrowableProxy> proxies = new ArrayList<>(suppressed.length);
             if (suppressedVisited == null) {
-                suppressedVisited = new HashSet<Throwable>(proxies.size());
+                suppressedVisited = new HashSet<>(proxies.size());
             }
             for (int i = 0; i < suppressed.length; i++) {
                 final Throwable candidate = suppressed[i];

@@ -54,6 +54,11 @@
                 <ignore>org/apache/commons/*</ignore>
                 <ignore>org/apache/kafka/*</ignore>
                 <ignore>org/zeromq/*</ignore>
+                <ignore>org/fusesource/jansi/*</ignore>
+                <ignore>com/beust/jcommander/*</ignore>
+                <ignore>com/conversantmedia/util/concurrent/*</ignore>
+                <ignore>org/jctools/queues/*</ignore>
+                <ignore>java/lang/invoke/*</ignore>
               </ignores>
             </configuration>
           </execution>
