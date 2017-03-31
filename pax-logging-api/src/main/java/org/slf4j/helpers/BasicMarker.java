@@ -78,7 +78,7 @@ public class BasicMarker implements Marker {
     }
 
     public synchronized boolean hasReferences() {
-        return ((referenceList != null) && (referenceList.size() > 0));
+        return ((referenceList != null) && !referenceList.isEmpty());
     }
 
     public boolean hasChildren() {

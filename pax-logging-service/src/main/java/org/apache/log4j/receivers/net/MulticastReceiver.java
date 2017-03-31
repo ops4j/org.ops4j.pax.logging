@@ -194,11 +194,11 @@ public class MulticastReceiver extends Receiver implements PortBased,
       while (isAlive()) {
         synchronized (list) {
           try {
-            while (list.size() == 0) {
+            while (list.isEmpty()) {
               list.wait();
             }
 
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
               list2.addAll(list);
               list.clear();
             }
@@ -206,7 +206,7 @@ public class MulticastReceiver extends Receiver implements PortBased,
           }
         }
 
-        if (list2.size() > 0) {
+        if (!list2.isEmpty()) {
           Iterator iter = list2.iterator();
 
           while (iter.hasNext()) {

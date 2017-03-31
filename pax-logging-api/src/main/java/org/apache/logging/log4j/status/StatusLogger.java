@@ -224,7 +224,7 @@ public final class StatusLogger extends AbstractLogger {
         } finally {
             msgLock.unlock();
         }
-        if (listeners.size() > 0) {
+        if (!listeners.isEmpty()) {
             for (final StatusListener listener : listeners) {
                 if (data.getLevel().isMoreSpecificThan(listener.getStatusLevel())) {
                     listener.log(data);
@@ -281,7 +281,7 @@ public final class StatusLogger extends AbstractLogger {
 
     @Override
     public boolean isEnabled(final Level level, final Marker marker) {
-        if (listeners.size() > 0) {
+        if (!listeners.isEmpty()) {
             return listenersLevel >= level.intLevel();
         }
         return logger.isEnabled(level, marker);

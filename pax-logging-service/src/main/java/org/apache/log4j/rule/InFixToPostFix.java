@@ -168,7 +168,7 @@ public class InFixToPostFix {
         postfix.append(space);
       } else if (")".equals(token)) {
         //exit recursion level
-        while (stack.size() > 0) {
+        while (!stack.isEmpty()) {
           postfix.append(stack.pop().toString());
           postfix.append(space);
         }
@@ -184,7 +184,7 @@ public class InFixToPostFix {
         // push token onto the stack
         //otherwise, pop top element off stack and add to postfix string
         //in a loop until lower precedence or empty..then push token
-        if (stack.size() > 0) {
+        if (!stack.isEmpty()) {
 
           String peek = stack.peek().toString();
 
@@ -195,7 +195,7 @@ public class InFixToPostFix {
 
             do {
               if (
-                (stack.size() > 0)
+                (!stack.isEmpty())
                   && !precedes(stack.peek().toString(), token)) {
                 postfix.append(stack.pop().toString());
                 postfix.append(space);
@@ -212,7 +212,7 @@ public class InFixToPostFix {
       }
     }
 
-    while (stack.size() > 0) {
+    while (!stack.isEmpty()) {
       postfix.append(stack.pop().toString());
       postfix.append(space);
     }
@@ -369,7 +369,7 @@ public class InFixToPostFix {
     }
 
     public boolean hasMoreTokens() {
-      return linkedList.size() > 0;
+      return !linkedList.isEmpty();
     }
 
     public String nextToken() {

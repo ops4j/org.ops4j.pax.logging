@@ -76,7 +76,7 @@ public class ExistsRule extends AbstractRule {
      * @return instance of ExistsRule.
      */
   public static Rule getRule(final Stack stack) {
-    if (stack.size() < 1) {
+    if (stack.isEmpty()) {
       throw new IllegalArgumentException(
         "Invalid EXISTS rule - expected one parameter but received "
         + stack.size());

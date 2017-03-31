@@ -36,7 +36,7 @@ public class DBHelper {
   public  static short computeReferenceMask(LoggingEvent event) {
     short mask = 0;
     Set propertiesKeys = event.getPropertyKeySet();
-    if(propertiesKeys.size() > 0) {
+    if(!propertiesKeys.isEmpty()) {
       mask = PROPERTIES_EXIST;
     }
     String[] strRep = event.getThrowableStrRep();
