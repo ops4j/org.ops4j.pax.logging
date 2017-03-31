@@ -197,7 +197,7 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger
         {
             level = FATAL;
         }
-        else if( "NONE".equals( levelName ) )
+        else if( "NONE".equals( levelName ) || "OFF".equals( levelName ) )
         {
             level = NONE;
         }
