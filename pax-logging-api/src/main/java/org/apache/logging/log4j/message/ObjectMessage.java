@@ -21,10 +21,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import org.apache.logging.log4j.util.StringBuilderFormattable;
+import org.apache.logging.log4j.util.StringBuilders;
+
 /**
  * Handles messages that contain an Object.
  */
-public class ObjectMessage implements Message {
+public class ObjectMessage implements Message, StringBuilderFormattable {
 
     private static final long serialVersionUID = -5903272448334166185L;
 
@@ -33,7 +36,7 @@ public class ObjectMessage implements Message {
 
     /**
      * Creates the ObjectMessage.
-     * 
+     *
      * @param obj The Object to format.
      */
     public ObjectMessage(final Object obj) {
@@ -42,7 +45,7 @@ public class ObjectMessage implements Message {
 
     /**
      * Returns the formatted object message.
-     * 
+     *
      * @return the formatted object message.
      */
     @Override
@@ -54,9 +57,14 @@ public class ObjectMessage implements Message {
         return objectString;
     }
 
+    @Override
+    public void formatTo(final StringBuilder buffer) {
+        StringBuilders.appendValue(buffer, obj);
+    }
+
     /**
      * Returns the object formatted using its toString method.
-     * 
+     *
      * @return the String representation of the object.
      */
     @Override
@@ -65,8 +73,18 @@ public class ObjectMessage implements Message {
     }
 
     /**
+     * Returns the object parameter.
+     *
+     * @return The object.
+     * @since 2.7
+     */
+    public Object getParameter() {
+        return obj;
+    }
+
+    /**
      * Returns the object as if it were a parameter.
-     * 
+     *
      * @return The object.
      */
     @Override
@@ -98,7 +116,7 @@ public class ObjectMessage implements Message {
 
     @Override
     public String toString() {
-        return "ObjectMessage[obj=" + getFormattedMessage() + ']';
+        return getFormattedMessage();
     }
 
     private void writeObject(final ObjectOutputStream out) throws IOException {

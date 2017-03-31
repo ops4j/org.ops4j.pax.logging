@@ -72,9 +72,29 @@ public class Log4jv2LoggerContext implements LoggerContext {
     public boolean hasLogger(final String name) {
         return loggers.containsKey(name);
     }
+    
+    @Override
+    public boolean hasLogger ( String name, MessageFactory messageFactory ) {
+        Log4jv2Logger logger = loggers.get(name);
+        if ( logger == null ) {
+            return false;
+        }
+        return logger.getMessageFactory().equals(messageFactory);
+    }
+
+    @Override
+    public boolean hasLogger ( String name, Class<? extends MessageFactory> messageFactoryClass ) {
+        Log4jv2Logger logger = loggers.get(name);
+        if ( logger == null ) {
+            return false;
+        }
+        return messageFactoryClass.isAssignableFrom(logger.getMessageFactory().getClass());
+    }
 
     @Override
     public Object getExternalContext() {
         return null;
     }
+
+   
 }
