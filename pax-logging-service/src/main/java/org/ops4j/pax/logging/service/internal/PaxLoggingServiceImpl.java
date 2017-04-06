@@ -424,10 +424,12 @@ public class PaxLoggingServiceImpl
             return "DEBUG";
         case LOG_INFO:
             return "INFO";
-        case LOG_ERROR:
-            return "ERROR";
         case LOG_WARNING:
             return "WARN";
+        case LOG_ERROR:
+            return "ERROR";
+        case 0:
+            return "OFF";
         default:
             return "DEBUG";
         }
