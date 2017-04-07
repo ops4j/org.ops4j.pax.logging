@@ -74,7 +74,7 @@ public class PaxLoggingEventImpl implements PaxLoggingEvent {
     @Override
     public String[] getThrowableStrRep() {
         ThrowableProxy t = event.getThrownProxy();
-        return t != null ? t.getExtendedStackTraceAsString().split("\n") : null;
+        return t != null ? t.getExtendedStackTraceAsString("").split("\n") : null;
     }
 
     @Override
