@@ -43,6 +43,8 @@ import java.util.Properties;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Starts the Log4j log services.
@@ -57,6 +59,7 @@ public class Activator
     public static final String CONFIGURATION_PID = "org.ops4j.pax.logging";
     public static final String PAX_LOGGING_PROPERTY_FILE_KEY = "org.ops4j.pax.logging.property.file";
     public static final String PAX_LOGGING_PROPERTY_FILE = "pax-logging.properties";
+    private static final Pattern varPattern = Pattern.compile("\\$\\{([^}]*)}");
 
     private static final String[] LOGSERVICE_NAMES = {
         LogService.class.getName(),
@@ -134,7 +137,9 @@ public class Activator
                 properties.load(inputStream);
                 final Hashtable<String, String> configurations = new Hashtable<>();
                 for (Map.Entry<Object, Object> entry: properties.entrySet()) {
-                    configurations.put((String) entry.getKey(), (String) entry.getValue());
+                    String propValue = (String) entry.getValue();
+                    propValue = substituteVariables(propValue);
+                    configurations.put((String) entry.getKey(), propValue);
                 }
 
                 ServiceReference configurationAdminSR = bundleContext.getServiceReference(ConfigurationAdmin.class);
@@ -220,4 +225,36 @@ public class Activator
         m_registrationLogReaderService.unregister();
         m_registrationLogReaderService = null;
     }
+
+    /**
+     * Replace system/environment property holders in the property values.
+     * e.g. Replace ${custom.home} with value of the custom.home system property.
+     *
+     * @param value string value to substitute
+     * @return String substituted string
+     */
+    private static String substituteVariables(String value) {
+        Matcher matcher = varPattern.matcher(value);
+        boolean found = matcher.find();
+        if (!found) {
+            return value;
+        }
+        StringBuffer sb = new StringBuffer();
+        do {
+            String sysPropKey = matcher.group(1);
+            String sysPropValue = null;
+            if (System.getProperty(sysPropKey) != null) {
+                sysPropValue = System.getProperty(sysPropKey);
+            } else if (System.getenv(sysPropKey) != null) {
+                sysPropValue = System.getenv(sysPropKey);
+            }
+            if (sysPropValue == null || sysPropValue.length() == 0) {
+                continue;
+            }
+            matcher.appendReplacement(sb, sysPropValue);
+        } while (matcher.find());
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
 }
