@@ -17,6 +17,7 @@
  */
 package org.ops4j.pax.logging.log4j2.internal;
 
+import org.apache.logging.log4j.core.lookup.StrSubstitutor;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.internal.eventadmin.EventAdminTracker;
@@ -133,8 +134,11 @@ public class Activator
                 Properties properties = new Properties();
                 properties.load(inputStream);
                 final Hashtable<String, String> configurations = new Hashtable<>();
+                StrSubstitutor strSubstitutor = new StrSubstitutor(System.getProperties());
                 for (Map.Entry<Object, Object> entry: properties.entrySet()) {
-                    configurations.put((String) entry.getKey(), (String) entry.getValue());
+                    String propValue = (String) entry.getValue();
+                    propValue = strSubstitutor.replace(propValue);
+                    configurations.put((String) entry.getKey(), propValue);
                 }
 
                 ServiceReference configurationAdminSR = bundleContext.getServiceReference(ConfigurationAdmin.class);
