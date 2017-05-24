@@ -52,14 +52,12 @@ public class PaxOsgiAppender extends AbstractAppender {
     public void start() {
         // TODO: use correct bundle context
         BundleContext bundleContext = null;
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        if (bundle != null) {
+            bundleContext = bundle.getBundleContext();
+        }
         if (bundleContext == null) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            if (bundle != null) {
-                bundleContext = bundle.getBundleContext();
-            }
-            if (bundleContext == null) {
-                throw new IllegalArgumentException("missing BundleContext, expected in org.ops4j.pax.logging.log4j2.bundlecontext");
-            }
+            throw new IllegalArgumentException("missing BundleContext, expected in org.ops4j.pax.logging.log4j2.bundlecontext");
         }
         proxy = new PaxAppenderProxy(bundleContext, filter);
         proxy.open();
