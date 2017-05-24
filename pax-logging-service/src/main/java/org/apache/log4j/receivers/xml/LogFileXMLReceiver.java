@@ -145,10 +145,8 @@ public class LogFileXMLReceiver extends Receiver {
     }
 
     private boolean passesExpression(LoggingEvent event) {
-        if (event != null) {
-            if (expressionRule != null) {
-                return (expressionRule.evaluate(event, null));
-            }
+        if (event != null && expressionRule != null) {
+            return (expressionRule.evaluate(event, null));
         }
         return true;
     }

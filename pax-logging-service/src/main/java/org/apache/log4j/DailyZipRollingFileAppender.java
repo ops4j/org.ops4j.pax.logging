@@ -423,12 +423,10 @@ public class DailyZipRollingFileAppender extends FileAppender {
 				File file = new File(fileName);
 				if (file != null) {
 					perentDirectory = file.getParent();
-					if (file.exists()) {
-						if (file.getParent() == null) {
-							String absolutePath = file.getAbsolutePath();
-							perentDirectory = absolutePath.substring(0,
-									absolutePath.lastIndexOf(fileName));
-						}
+					if (file.exists() && file.getParent() == null) {
+					    String absolutePath = file.getAbsolutePath();
+                        perentDirectory = absolutePath.substring(0,
+                                absolutePath.lastIndexOf(fileName));
 					}
 				}
 			}
