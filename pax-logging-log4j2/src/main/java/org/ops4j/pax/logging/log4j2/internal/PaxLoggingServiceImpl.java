@@ -68,6 +68,10 @@ public class PaxLoggingServiceImpl
 
     private static final String LOGGER_CONTEXT_NAME = "pax-logging";
 
+    // see org.apache.logging.log4j.core.config.properties.PropertiesConfigurationBuilder.createLogger()
+    private static final String LOG4J2_ROOT_LOGGER_LEVEL_PROPERTY = "log4j2.rootLogger.level";
+    private static final String LOG4J2_LOGGER_PROPERTY_PREFIX = "log4j2.logger.";
+
     private final LogReaderServiceImpl m_logReader;
     private final EventAdminPoster m_eventAdmin;
     private final BundleContext m_bundleContext;
@@ -185,8 +189,8 @@ public class PaxLoggingServiceImpl
 
         Configuration config;
         Object configfile = configuration.get(LOG4J2_CONFIG_FILE_KEY);
-		if (configfile != null) {
-			config = ConfigurationFactory.getInstance().getConfiguration(m_log4jContext,
+     if (configfile != null) {
+            config = ConfigurationFactory.getInstance().getConfiguration(m_log4jContext,
                       LOGGER_CONTEXT_NAME, new File(configfile.toString()).toURI());
         } else {
             try {
@@ -230,21 +234,26 @@ public class PaxLoggingServiceImpl
         {
             String name = keys.nextElement();
             String loggerName;
-            if ( name.equals( "log4j.rootLogger" ) )
+            Level level = null;
+            if ( name.equals( LOG4J2_ROOT_LOGGER_LEVEL_PROPERTY ) )
             {
                 loggerName = LogManager.ROOT_LOGGER_NAME;
+                level = Level.toLevel( (String) config.get( LOG4J2_ROOT_LOGGER_LEVEL_PROPERTY ) );
             }
-            else if ( name.startsWith( "log4j.logger." ) )
+            else if ( name.startsWith( LOG4J2_LOGGER_PROPERTY_PREFIX )
+                    && name.endsWith ( ".name" ))
             {
-                loggerName = name.substring( "log4j.logger.".length() );
+                loggerName = (String) config.get( name );
+                level = Level.toLevel( (String) config.get( name.replaceFirst("\\.name$", ".level") ) );
             }
             else
             {
                 continue;
             }
-            Level level = Level.toLevel( (String) config.get( name ) );
-            LoggerConfig loggerConfig = configuration.getLoggerConfig( loggerName );
-            loggerConfig.setLevel(level);
+            if ( level != null ) {
+                LoggerConfig loggerConfig = configuration.getLoggerConfig( loggerName );
+                loggerConfig.setLevel(level);
+            }
         }
         m_log4jContext.updateLoggers();
     }
@@ -465,14 +474,14 @@ public class PaxLoggingServiceImpl
     }
 
     /**
-	 * Configure Java Util Logging according to the provided configuration.
-	 * Convert the log4j configuration to JUL config.
-	 *
-	 * It's necessary to do that, because with pax logging, JUL loggers are not replaced.
-	 * So we need to configure JUL loggers in order that log messages goes correctly to log Handlers.
-	 *
-	 * @param configuration	Properties coming from the configuration.
-	 */
+     * Configure Java Util Logging according to the provided configuration.
+     * Convert the log4j configuration to JUL config.
+     *
+     * It's necessary to do that, because with pax logging, JUL loggers are not replaced.
+     * So we need to configure JUL loggers in order that log messages goes correctly to log Handlers.
+     *
+     * @param configuration Properties coming from the configuration.
+     */
     private static void setLevelToJavaLogging( final Dictionary<String, ?> configuration )
     {
         for( Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements();) {
@@ -480,44 +489,45 @@ public class PaxLoggingServiceImpl
             java.util.logging.Logger.getLogger(name).setLevel( null );
         }
 
-        for( Enumeration keys = configuration.keys(); keys.hasMoreElements(); )
+        for( Enumeration<String> keys = configuration.keys(); keys.hasMoreElements(); )
         {
-            String name = (String) keys.nextElement();
-			String value = (String) configuration.get( name );
-			if (name.equals( "log4j.rootLogger" ))
-			{
+            String name = keys.nextElement();
+            if (name.equals( LOG4J2_ROOT_LOGGER_LEVEL_PROPERTY ))
+            {
+                String value = (String) configuration.get( LOG4J2_ROOT_LOGGER_LEVEL_PROPERTY );
                 setJULLevel( java.util.logging.Logger.getLogger(""), value );
                 // "global" comes from java.util.logging.Logger.GLOBAL_LOGGER_NAME, but that constant wasn't added until Java 1.6
                 setJULLevel( java.util.logging.Logger.getLogger("global"), value );
-			}
+            }
 
-            if (name.startsWith("log4j.logger."))
+            if (name.startsWith( LOG4J2_LOGGER_PROPERTY_PREFIX )
+                    && name.endsWith ( ".name" ))
             {
-                String packageName = name.substring( "log4j.logger.".length() );
+                String value = (String) configuration.get( name.replaceFirst("\\.name$", ".level") );
+                String packageName = (String) configuration.get( name );
                 java.util.logging.Logger logger = java.util.logging.Logger.getLogger(packageName);
                 setJULLevel(logger, value);
             }
         }
-	}
+    }
 
-	/**
-	 * Set the log level to the specified JUL logger.
-	 *
-	 * @param logger			The logger to configure
-	 * @param log4jLevelConfig	The value contained in the property file. (For example: "ERROR, file")
-	 */
-	private static void setJULLevel( java.util.logging.Logger logger, String log4jLevelConfig )
-	{
-		String crumb[] = log4jLevelConfig.split( "," );
-		if (crumb.length > 0)
-		{
-            java.util.logging.Level level = log4jLevelToJULLevel( crumb[0].trim() );
-			logger.setLevel( level );
-		}
-	}
+    /**
+     * Set the log level to the specified JUL logger.
+     *
+     * @param logger The logger to configure
+     * @param log4jLevelConfig The value contained in the property file. (For example: "ERROR, file")
+     */
+    private static void setJULLevel( java.util.logging.Logger logger, String log4jLevelConfig )
+    {
+        java.util.logging.Level level = log4jLevelToJULLevel( log4jLevelConfig );
+        logger.setLevel( level );
+    }
 
     private static java.util.logging.Level log4jLevelToJULLevel( final String levelProperty )
     {
+        if( levelProperty == null ) {
+            return java.util.logging.Level.INFO;
+        }
         if( levelProperty.contains("OFF") )
         {
             return java.util.logging.Level.OFF;
