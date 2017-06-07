@@ -78,19 +78,71 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.apache.logging.log4j</groupId>
-                  <artifactId>log4j-api</artifactId>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.apache.logging.log4j</groupId>
                   <artifactId>log4j-core</artifactId>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>
                 ${project.build.directory}/classes
               </outputDirectory>
-              <excludes>
-                META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat
-              </excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-sources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.logging.log4j</groupId>
+                  <artifactId>log4j-core</artifactId>
+                  <classifier>sources</classifier>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>
+                ${project.build.directory}/sources
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-sources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <echo message="Copying sources to include in sources jar" />
+                <mkdir dir="${project.build.directory}/sources" />
+                <copy todir="${project.build.directory}/sources">
+                  <fileset dir="${project.basedir}/src/main/java"/>
+                </copy>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.1</version>
+        <executions>
+          <execution>
+            <id>enhanced-source-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <classifier>sources</classifier>
+              <classesDirectory>${project.build.directory}/sources</classesDirectory>
             </configuration>
           </execution>
         </executions>
