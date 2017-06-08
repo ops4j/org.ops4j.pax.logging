@@ -16,6 +16,7 @@
  */
 package org.apache.logging.log4j.core.impl;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import org.apache.logging.log4j.Level;
@@ -39,7 +40,7 @@ public class ReusableLogEventFactory implements LogEventFactory {
     private static final ThreadNameCachingStrategy THREAD_NAME_CACHING_STRATEGY = ThreadNameCachingStrategy.create();
     private static final Clock CLOCK = ClockFactory.getClock();
 
-    private static ThreadLocal<MutableLogEvent> mutableLogEventThreadLocal = new ThreadLocal<>();
+    private static ThreadLocal<WeakReference<MutableLogEvent>> mutableLogEventThreadLocal = new ThreadLocal<>();
     private final ContextDataInjector injector = ContextDataInjectorFactory.createInjector();
 
     /**
@@ -58,7 +59,8 @@ public class ReusableLogEventFactory implements LogEventFactory {
     public LogEvent createEvent(final String loggerName, final Marker marker,
                                 final String fqcn, final Level level, final Message message,
                                 final List<Property> properties, final Throwable t) {
-        MutableLogEvent result = mutableLogEventThreadLocal.get();
+        WeakReference<MutableLogEvent> refResult = mutableLogEventThreadLocal.get();
+        MutableLogEvent result = refResult == null ? null : refResult.get();
         if (result == null || result.reserved) {
             final boolean initThreadLocal = result == null;
             result = new MutableLogEvent();
@@ -68,7 +70,8 @@ public class ReusableLogEventFactory implements LogEventFactory {
             result.setThreadName(Thread.currentThread().getName()); // Thread.getName() allocates Objects on each call
             result.setThreadPriority(Thread.currentThread().getPriority());
             if (initThreadLocal) {
-                mutableLogEventThreadLocal.set(result);
+                refResult = new WeakReference<>(result);
+                mutableLogEventThreadLocal.set(refResult);
             }
         }
         result.reserved = true;
