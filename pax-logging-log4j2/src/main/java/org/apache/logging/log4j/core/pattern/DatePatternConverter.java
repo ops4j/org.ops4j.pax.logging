@@ -16,6 +16,7 @@
  */
 package org.apache.logging.log4j.core.pattern;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
@@ -157,7 +158,7 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
     private static final String UNIX_MILLIS_FORMAT = "UNIX_MILLIS";
 
     private final String[] options;
-    private final ThreadLocal<Formatter> threadLocalFormatter = new ThreadLocal<>();
+    private final ThreadLocal<WeakReference<Formatter>> threadLocalFormatter = new ThreadLocal<>();
     private final AtomicReference<CachedTime> cachedTime;
     private final Formatter formatter;
 
@@ -261,10 +262,12 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
     }
 
     private Formatter getThreadLocalFormatter() {
-        Formatter result = threadLocalFormatter.get();
+        WeakReference<Formatter> refResult = threadLocalFormatter.get();
+        Formatter result = refResult == null ? null : refResult.get();
         if (result == null) {
             result = createFormatter(options);
-            threadLocalFormatter.set(result);
+            refResult = new WeakReference<>(result);
+            threadLocalFormatter.set(refResult);
         }
         return result;
     }
