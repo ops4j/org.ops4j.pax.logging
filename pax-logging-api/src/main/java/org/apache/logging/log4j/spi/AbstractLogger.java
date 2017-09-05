@@ -19,6 +19,7 @@ package org.apache.logging.log4j.spi;
 import java.io.Serializable;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LoggingException;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
@@ -37,6 +38,7 @@ import org.apache.logging.log4j.util.Constants;
 import org.apache.logging.log4j.util.LambdaUtil;
 import org.apache.logging.log4j.util.LoaderUtil;
 import org.apache.logging.log4j.util.MessageSupplier;
+import org.apache.logging.log4j.util.PerformanceSensitive;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.apache.logging.log4j.util.Strings;
 import org.apache.logging.log4j.util.Supplier;
@@ -45,6 +47,10 @@ import org.apache.logging.log4j.util.Supplier;
  * Base implementation of a Logger. It is highly recommended that any Logger implementation extend this class.
  */
 public abstract class AbstractLogger implements ExtendedLogger, Serializable {
+    // Implementation note: many methods in this class are tuned for performance. MODIFY WITH CARE!
+    // Specifically, try to keep the hot methods to 35 bytecodes or less:
+    // this is within the MaxInlineSize threshold and makes these methods candidates for
+    // immediate inlining instead of waiting until they are designated "hot enough".
 
     /**
      * Marker for flow tracing.
@@ -2085,14 +2091,51 @@ public abstract class AbstractLogger implements ExtendedLogger, Serializable {
         }
     }
 
+    @PerformanceSensitive
+    // NOTE: This is a hot method. Current implementation compiles to 30 bytes of byte code.
+    // This is within the 35 byte MaxInlineSize threshold. Modify with care!
     private void logMessageSafely(final String fqcn, final Level level, final Marker marker, final Message msg,
             final Throwable throwable) {
         try {
-            logMessage(fqcn, level, marker, msg, throwable);
+            tryLogMessage(fqcn, level, marker, msg, throwable);
         } finally {
             // LOG4J2-1583 prevent scrambled logs when logging calls are nested (logging in toString())
             ReusableMessageFactory.release(msg);
         }
+    }
+
+    @PerformanceSensitive
+    // NOTE: This is a hot method. Current implementation compiles to 26 bytes of byte code.
+    // This is within the 35 byte MaxInlineSize threshold (on which JMV and version?). Modify with care!
+    private void tryLogMessage(final String fqcn,
+                               final Level level,
+                               final Marker marker,
+                               final Message msg,
+                               final Throwable throwable) {
+        try {
+            logMessage(fqcn, level, marker, msg, throwable);
+        } catch (final Exception e) {
+            // LOG4J2-1990 Log4j2 suppresses all exceptions that occur once application called the logger
+            handleLogMessageException(e, fqcn, msg);
+        }
+    }
+
+    // LOG4J2-1990 Log4j2 suppresses all exceptions that occur once application called the logger
+    // TODO Configuration setting to propagate exceptions back to the caller *if requested*
+    private void handleLogMessageException(final Exception exception, final String fqcn, final Message msg) {
+        if (exception instanceof LoggingException) {
+            throw (LoggingException) exception;
+        }
+        final String format = msg.getFormat();
+        final StringBuilder sb = new StringBuilder(format.length() + 100);
+        sb.append(fqcn);
+        sb.append(" caught ");
+        sb.append(exception.getClass().getName());
+        sb.append(" logging ");
+        sb.append(msg.getClass().getSimpleName());
+        sb.append(": ");
+        sb.append(format);
+        StatusLogger.getLogger().warn(sb.toString(), exception);
     }
 
     @Override

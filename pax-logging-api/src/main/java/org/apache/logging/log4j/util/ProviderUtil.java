@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -62,9 +63,15 @@ public final class ProviderUtil {
     private static volatile ProviderUtil instance;
 
     private ProviderUtil() {
+        loadProviders(findClassLoader());
         for (final LoaderUtil.UrlResource resource : LoaderUtil.findUrlResources(PROVIDER_RESOURCE)) {
             loadProvider(resource.getUrl(), resource.getClassLoader());
         }
+    }
+
+    protected static void addProvider(final Provider provider) {
+        PROVIDERS.add(provider);
+        LOGGER.debug("Loaded Provider {}", provider);
     }
 
     /**
@@ -84,6 +91,15 @@ public final class ProviderUtil {
             }
         } catch (final IOException e) {
             LOGGER.error("Unable to open {}", url, e);
+        }
+    }
+
+    protected static void loadProviders(final ClassLoader cl) {
+        final ServiceLoader<Provider> serviceLoader = ServiceLoader.load(Provider.class, cl);
+        for (final Provider provider : serviceLoader) {
+            if (validVersion(provider.getVersions())) {
+                PROVIDERS.add(provider);
+            }
         }
     }
 

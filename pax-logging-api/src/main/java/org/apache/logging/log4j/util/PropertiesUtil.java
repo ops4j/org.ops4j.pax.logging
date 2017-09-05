@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,15 @@ public final class PropertiesUtil {
     }
 
     /**
+     * Returns {@code true} if the specified property is defined, regardless of its value (it may not have a value).
+     * @param name the name of the property to verify
+     * @return {@code true} if the specified property is defined, regardless of its value
+     */
+    public boolean hasProperty(final String name) {
+        return System.getProperties().containsKey(name) || props.containsKey(name);
+    }
+
+    /**
      * Gets the named property as a boolean value. If the property matches the string {@code "true"} (case-insensitive),
      * then it is returned as the boolean value {@code true}. Any other non-{@code null} text in the property is
      * considered {@code false}.
@@ -121,7 +131,22 @@ public final class PropertiesUtil {
      */
     public boolean getBooleanProperty(final String name, final boolean defaultValue) {
         final String prop = getStringProperty(name);
-        return (prop == null) ? defaultValue : "true".equalsIgnoreCase(prop);
+        return prop == null ? defaultValue : "true".equalsIgnoreCase(prop);
+    }
+
+    /**
+     * Gets the named property as a boolean value.
+     *
+     * @param name the name of the property to look up
+     * @param defaultValueIfAbsent the default value to use if the property is undefined
+     * @param defaultValueIfPresent the default value to use if the property is defined but not assigned
+     * @return the boolean value of the property or {@code defaultValue} if undefined.
+     */
+    public boolean getBooleanProperty(final String name, final boolean defaultValueIfAbsent,
+            final boolean defaultValueIfPresent) {
+        final String prop = getStringProperty(name);
+        return prop == null ? defaultValueIfAbsent
+                : prop.isEmpty() ? defaultValueIfPresent : "true".equalsIgnoreCase(prop);
     }
 
     /**
@@ -143,7 +168,12 @@ public final class PropertiesUtil {
      */
     public Charset getCharsetProperty(final String name, final Charset defaultValue) {
         final String prop = getStringProperty(name);
-        return prop == null ? defaultValue : Charset.forName(prop);
+        try {
+            return prop == null ? defaultValue : Charset.forName(prop);
+        } catch (UnsupportedCharsetException e) {
+            LowLevelLogUtil.logException("Unable to get Charset '" + name + "', using default " + defaultValue, e);
+            return defaultValue;
+        }
     }
 
     /**

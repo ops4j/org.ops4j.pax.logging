@@ -17,20 +17,10 @@
 package org.apache.logging.log4j.message;
 
 /**
- * Interface used to print basic or extended thread information.
+ * A Message that is a collection of Messages.
+ * @param <T> The Message type.
  */
-public interface ThreadInformation {
-    /**
-     * Format the thread information into the provided StringBuilder.
-     * @param sb The StringBuilder.
-     */
-    void printThreadInfo(StringBuilder sb);
+public interface MessageCollectionMessage<T> extends Message, Iterable<T> {
 
-    /**
-     * Format the stack trace into the provided StringBuilder.
-     * @param sb The StringBuilder.
-     * @param trace The stack trace element array to format.
-     */
-    void printStack(StringBuilder sb, StackTraceElement[] trace);
 
 }

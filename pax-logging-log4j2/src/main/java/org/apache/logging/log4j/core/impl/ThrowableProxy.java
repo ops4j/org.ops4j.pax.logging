@@ -34,7 +34,7 @@ import org.apache.logging.log4j.core.pattern.TextRenderer;
 import org.apache.logging.log4j.core.util.Loader;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.LoaderUtil;
-import org.apache.logging.log4j.util.ReflectionUtil;
+import org.apache.logging.log4j.util.StackLocatorUtil;
 import org.apache.logging.log4j.util.Strings;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -142,7 +142,7 @@ public class ThrowableProxy implements Serializable {
             stack = new Stack<Class<?>>();
             stack.addAll(Arrays.asList(classCtx));
         } catch (Exception e) {
-            stack = ReflectionUtil.getCurrentStackTrace();
+            stack = StackLocatorUtil.getCurrentStackTrace();
         }
         final Map<String, CacheEntry> map = new HashMap<>();
         this.extendedStackTrace = this.toExtendedStackTrace(stack, map, null, throwable.getStackTrace());

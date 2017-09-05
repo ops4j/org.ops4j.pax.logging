@@ -14,23 +14,29 @@
  * See the license for the specific language governing permissions and
  * limitations under the license.
  */
-package org.apache.logging.log4j.message;
+package org.apache.logging.log4j.util;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
 
 /**
- * Interface used to print basic or extended thread information.
+ * @Since 2.9
  */
-public interface ThreadInformation {
-    /**
-     * Format the thread information into the provided StringBuilder.
-     * @param sb The StringBuilder.
-     */
-    void printThreadInfo(StringBuilder sb);
+public class ProcessIdUtil {
 
-    /**
-     * Format the stack trace into the provided StringBuilder.
-     * @param sb The StringBuilder.
-     * @param trace The stack trace element array to format.
-     */
-    void printStack(StringBuilder sb, StackTraceElement[] trace);
+    public static final String DEFAULT_PROCESSID = "-";
 
+    public static String getProcessId() {
+        try {
+            return ManagementFactory.getRuntimeMXBean().getName().split("@")[0]; // likely works on most platforms
+        } catch (final Exception ex) {
+            try {
+                return new File("/proc/self").getCanonicalFile().getName(); // try a Linux-specific way
+            } catch (final IOException ignoredUseDefault) {
+                // Ignore exception.
+            }
+        }
+        return DEFAULT_PROCESSID;
+    }
 }
