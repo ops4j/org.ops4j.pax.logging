@@ -24,10 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.spi.ThreadContextMap;
-import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.osgi.framework.BundleContext;
 
 /**
  * The actual ThreadContext Map. A new ThreadContext Map is created each time it is updated and the Map stored is always
@@ -42,11 +40,8 @@ public class Log4jv2ThreadContextMap implements ThreadContextMap {
 
     private static PaxLoggingManager m_paxLogging;
 
-    public static void setBundleContext( BundleContext ctx )
-    {
-        m_paxLogging = new OSGIPaxLoggingManager( ctx );
-        // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-        m_paxLogging.open();
+    public static void setPaxLoggingManager(PaxLoggingManager plm) {
+    		m_paxLogging = plm;
     }
 
     public static void dispose()

@@ -93,15 +93,8 @@ public class PaxLoggerImpl
         return m_delegate.isFatalEnabled();
     }
 
-    private void setDelegateContext()
+    private void setBundleInfos()
     {
-        Map<String, Object> context = getPaxContext().getContext();
-        if( context != null )
-        {
-            for (Map.Entry<String, Object> entry : context.entrySet()) {
-                put(entry.getKey(), entry.getValue());
-            }
-        }
         if (m_bundle != null)
         {
             BundleRevision rev = m_bundle.adapt(BundleRevision.class);
@@ -125,11 +118,6 @@ public class PaxLoggerImpl
         }
     }
 
-    private void clearDelegateContext()
-    {
-        ThreadContext.clearMap();
-    }
-
     private void doLog(final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
         if (System.getSecurityManager() != null) {
             AccessController.doPrivileged(
@@ -146,10 +134,9 @@ public class PaxLoggerImpl
     }
 
     private void doLog0( Level level, int svcLevel, final String fqcn, String message, Throwable t ) {
-        setDelegateContext();
+        setBundleInfos();
         Message msg = m_delegate.getMessageFactory().newMessage(message);
         m_delegate.logMessage(fqcn, level, null, msg, t);
-        clearDelegateContext();
         m_service.handleEvents( m_bundle, null, svcLevel, message, t );
     }
 

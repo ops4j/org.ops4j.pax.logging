@@ -43,10 +43,11 @@ public class Log4jv2LoggerContext implements LoggerContext {
             logger.setPaxLoggingManager(paxLogging);
         }
         paxLogging.open();
+        
+        Log4jv2ThreadContextMap.setPaxLoggingManager(paxLogging);
     }
 
     public static void dispose() {
-
     }
 
     public Log4jv2LoggerContext() {
