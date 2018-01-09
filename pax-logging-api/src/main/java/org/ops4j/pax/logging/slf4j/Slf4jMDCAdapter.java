@@ -46,7 +46,7 @@ public class Slf4jMDCAdapter
       * or m_defaultContext if the logging manager is not set, or does not have its context available yet.
       */
     private static PaxContext getContext(){
-        if( m_context==null && m_paxLogging!=null ){
+        if( m_paxLogging!=null ){
             m_context=(m_paxLogging.getPaxLoggingService()!=null)?m_paxLogging.getPaxLoggingService().getPaxContext():null;
         }
         return m_context!=null?m_context:m_defaultContext;
