@@ -131,12 +131,13 @@ public class PaxLoggingServiceImpl
     public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
     {
         String name = category == null ? LogManager.ROOT_LOGGER_NAME : category;
-        PaxLoggerImpl logger = m_loggers.get( name );
+        String key = fqcn + "#" + name + "#" + (bundle != null ? Long.toString(bundle.getBundleId()) : "0");
+        PaxLoggerImpl logger = m_loggers.get( key );
         if (logger == null) {
             logger = new PaxLoggerImpl( bundle, m_log4jContext.getLogger(name), fqcn, this );
-            m_loggers.putIfAbsent( name, logger );
+            m_loggers.putIfAbsent( key, logger );
         }
-        return m_loggers.get( name );
+        return m_loggers.get( key );
     }
 
     public synchronized void updated( Dictionary<String,?> configuration ) throws ConfigurationException
