@@ -32,7 +32,10 @@ import java.util.Map;
  * <p/>
  * <p><b><em>The MDC is managed on a per thread basis</em></b>. A
  * child thread automatically inherits a <em>copy</em> of the mapped
- * diagnostic context of its parent.
+ * diagnostic context of its parent. That behavior can be switched 
+ * off by setting the system property 
+ * <em>org.ops4j.pax.logging.threadContextMapInheritable<em> to 
+ * <em>false</em> (default is <em>true</em>).
  * <p/>
  * <p>The MDC class requires JDK 1.2 or above. Under JDK 1.1 the MDC
  * will always return empty values but otherwise will not affect or
@@ -43,13 +46,21 @@ import java.util.Map;
  */
 public class PaxContext
 {
-
+    public static final String INHERIT_THREAD_CONTEXT_MAP_KEY = "org.ops4j.pax.logging.threadContextMapInheritable";
     static final int HT_SIZE = 7;
 
-    final ThreadLocalMap tlm = new ThreadLocalMap();
+    final ThreadLocal<Hashtable<String, Object>> tlm;
 
     public PaxContext()
     {
+        if (Boolean.valueOf(System.getProperty(INHERIT_THREAD_CONTEXT_MAP_KEY, "true")))
+        {
+            tlm = new ThreadLocalMap();
+        }
+        else
+        {
+            tlm = new ThreadLocal<>();
+        }
     }
 
 
