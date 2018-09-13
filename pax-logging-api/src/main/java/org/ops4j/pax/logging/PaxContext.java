@@ -28,7 +28,9 @@ import java.util.Map;
  *
  * <p><b><em>The MDC is managed on a per thread basis</em></b>. A child thread automatically
  * inherits a <em>copy</em> of the mapped diagnostic context of its parent (with normal
- * {@link InheritableThreadLocal} child inherits the same references).</p>
+ * {@link InheritableThreadLocal} child inherits the same references). That behavior can be switched 
+ * off by setting the system property <em>org.ops4j.pax.logging.threadContextMapInheritable<em> to 
+ * <em>false</em> (default is <em>true</em>).</p>
  *
  * <p>The MDC class requires JDK 1.2 or above. Under JDK 1.1 the MDC will always return empty
  * values but otherwise will not affect or harm your application.</p>
@@ -36,11 +38,24 @@ import java.util.Map;
  * @author Ceki G&uuml;lc&uuml;
  * @since 1.2
  */
-public class PaxContext {
-
+public class PaxContext
+{
+    public static final String INHERIT_THREAD_CONTEXT_MAP_KEY = "org.ops4j.pax.logging.threadContextMapInheritable";
     static final int HT_SIZE = 7;
 
-    final ThreadLocalMap tlm = new ThreadLocalMap();
+    final ThreadLocal<Map<String, Object>> tlm;
+    
+    public PaxContext()
+    {
+        if (Boolean.valueOf(System.getProperty(INHERIT_THREAD_CONTEXT_MAP_KEY, "true")))
+        {
+            tlm = new ThreadLocalMap();
+        }
+        else
+        {
+            tlm = new ThreadLocal<>();
+        }
+    }
 
     /**
      * Sets all values from passed map in this thread-bound MDC context.
@@ -76,7 +91,7 @@ public class PaxContext {
      * @return
      */
     public Object get(String key) {
-        Map ht = tlm.get();
+        Map<String, Object> ht = tlm.get();
         if (ht != null && key != null) {
             return ht.get(key);
         } else {
@@ -89,7 +104,7 @@ public class PaxContext {
      * @param key
      */
     public void remove(String key) {
-        Map ht = tlm.get();
+        Map<String, Object> ht = tlm.get();
         if (ht != null) {
             ht.remove(key);
         }
