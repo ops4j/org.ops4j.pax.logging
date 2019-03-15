@@ -190,8 +190,14 @@ public class PaxLoggingServiceImpl
         Configuration config;
         Object configfile = configuration.get(LOG4J2_CONFIG_FILE_KEY);
      if (configfile != null) {
+
+            // Set log4j.configurationFile here instead of passing the file location as the final parameter of
+            // getConfiguration. This allows users to make use of log4j2's composite behaviour. This is due to it
+            // only being handled/configured if the configuration file is set via property. See code at:
+            // https://github.com/apache/logging-log4j2/blob/097426a2154a6079cddd897502b6fb3ce5d50338/log4j-core/src/main/java/org/apache/logging/log4j/core/config/ConfigurationFactory.java#L402
+            System.setProperty("log4j.configurationFile", configfile.toString());
             config = ConfigurationFactory.getInstance().getConfiguration(m_log4jContext,
-                      LOGGER_CONTEXT_NAME, new File(configfile.toString()).toURI());
+                      LOGGER_CONTEXT_NAME, null);
         } else {
             try {
                 Properties props = new Properties();
