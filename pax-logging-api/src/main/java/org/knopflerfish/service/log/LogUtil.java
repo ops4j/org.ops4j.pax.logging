@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, KNOPFLERFISH project
+ * Copyright (c) 2003-2010, KNOPFLERFISH project
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,86 +37,92 @@ package org.knopflerfish.service.log;
 import org.osgi.service.log.LogService;
 
 /**
- * * Utility class for the LogService interface. * It exports methods that
- * translates between the numeric values of * the severity level constants and
- * human readable strings.
+ * Utility class for the LogService interface.
+ *
+ * It exports methods that translates between the numeric values of
+ * the severity level constants and human readable strings.
  */
-
 public class LogUtil {
-    /**
-     * * Converts from a numeric log severity level to a string. * *
-     * 
-     * @param level
-     *            is the log severity level.
-     * @return TODO
-     */
-    static public String fromLevel(int level) {
-        return fromLevel(level, 0);
+
+  /**
+   * Converts from a numeric log severity level to a string.
+   *
+   * @param level
+   *            is the log severity level.
+   * @return string representation of a numeric log level.
+   */
+  static public String fromLevel(int level) {
+    return fromLevel(level, 0);
+  }
+
+  /**
+   * Converts from a numeric log severity level to a left justified
+   * string of at least the given length.
+   *
+   * @param level
+   *            is the log severity level.
+   * @param length
+   *            the minimum length of the resulting string.
+   * @return left justified string representation of a numeric log level.
+   */
+  static public String fromLevel(int level, int length) {
+    final StringBuffer sb = new StringBuffer(length > 7 ? length : 7);
+    switch (level) {
+    case LogService.LOG_INFO:
+      sb.append("info");
+      break;
+    case LogService.LOG_DEBUG:
+      sb.append("debug");
+      break;
+    case LogService.LOG_WARNING:
+      sb.append("Warning");
+      break;
+    case LogService.LOG_ERROR:
+      sb.append("ERROR");
+      break;
+    case 0:
+      sb.append("DEFAULT");
+      break;
+    default:
+      sb.append("[");
+      sb.append(level);
+      sb.append("]");
+    }
+    for (int i = sb.length(); i < length; i++) {
+      sb.append(" ");
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Converts a string representing a log severity level to an int.
+   *
+   * @param level
+   *            The string to convert.
+   * @param def
+   *            Default value to use if the string is not recognized
+   *            as a log level.
+   * @return the log level, or the default value if the string can not
+   *         be recognized.
+   */
+  static public int toLevel(String level, int def) {
+    if (level==null) {
+      return def;
     }
 
-    /**
-     * * Converts from a numeric log severity level to a left justified * string
-     * of at least the given length. * *
-     * 
-     * @param level
-     *            is the log severity level. *
-     * @param length
-     *            the minimum length of the resulting string.
-     * @return TODO
-     */
-    static public String fromLevel(int level, int length) {
-        StringBuffer sb = new StringBuffer(length > 7 ? length : 7);
-        switch (level) {
-        case LogService.LOG_INFO:
-            sb.append("info");
-            break;
-        case LogService.LOG_DEBUG:
-            sb.append("debug");
-            break;
-        case LogService.LOG_WARNING:
-            sb.append("Warning");
-            break;
-        case LogService.LOG_ERROR:
-            sb.append("ERROR");
-            break;
-        case 0:
-            sb.append("DEFAULT");
-            break;
-        default:
-            sb.append("[");
-            sb.append(level);
-            sb.append("]");
-        }
-        for (int i = sb.length(); i < length; i++) {
-            sb.append(" ");
-        }
-        return sb.toString();
+    level = level.trim();
+    if (level.equalsIgnoreCase("INFO")) {
+      return LogService.LOG_INFO;
+    } else if (level.equalsIgnoreCase("DEBUG")) {
+      return LogService.LOG_DEBUG;
+    } else if (level.equalsIgnoreCase("WARNING")) {
+      return LogService.LOG_WARNING;
+    } else if (level.equalsIgnoreCase("ERROR")) {
+      return LogService.LOG_ERROR;
+    } else if (level.equalsIgnoreCase("DEFAULT")) {
+      return 0;
     }
-
-    /**
-     * * Converts a string representing a log severity level to an int. * *
-     * 
-     * @param level
-     *            The string to convert. *
-     * @param def
-     *            Default value to use if the string is not * recognized as a
-     *            log level. *
-     * @return the log level, or the default value if the string can * not be
-     *         recognized.
-     */
-    static public int toLevel(String level, int def) {
-        if (level.equalsIgnoreCase("INFO")) {
-            return LogService.LOG_INFO;
-        } else if (level.equalsIgnoreCase("DEBUG")) {
-            return LogService.LOG_DEBUG;
-        } else if (level.equalsIgnoreCase("WARNING")) {
-            return LogService.LOG_WARNING;
-        } else if (level.equalsIgnoreCase("ERROR")) {
-            return LogService.LOG_ERROR;
-        } else if (level.equalsIgnoreCase("DEFAULT")) {
-            return 0;
-        }
-        return def;
-    }
+    return def;
+  }
 
 }
