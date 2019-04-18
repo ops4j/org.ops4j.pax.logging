@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.ops4j.pax</groupId>
+        <artifactId>logging</artifactId>
+        <version>1.11.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.ops4j.pax.logging</groupId>
+    <artifactId>pax-logging-api-test</artifactId>
+    <packaging>jar</packaging>
+
+    <name>OPS4J Pax Logging - API tests</name>
+
+    <description>Showcase of different Logging API usage</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <configuration>
+                    <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                    <postBuildHookScript>verify</postBuildHookScript>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>install</goal>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>invoker-tests-development</id>
+            <modules>
+                <module>src/it/slf4j-without-binder</module>
+                <module>src/it/slf4j-with-simple-binder</module>
+                <module>src/it/slf4j-with-nop-binder</module>
+                <module>src/it/slf4j-with-jcl-binder</module>
+
+                <module>src/it/pax-logging-api-slf4j</module>
+            </modules>
+        </profile>
+    </profiles>
+
+    <!--
+org.slf4j jul-to-slf4j ‎ 1.7.26 19-Feb-2019
+
+org.slf4j osgi-over-slf4j ‎ 1.7.26 19-Feb-2019
+org.slf4j log4j-over-slf4j ‎ 1.7.26 19-Feb-2019
+org.slf4j jcl-over-slf4j ‎ 1.7.26 19-Feb-2019
+
+org.slf4j slf4j-ext ‎ 1.7.26 19-Feb-2019
+org.slf4j slf4j-jdk14 ‎ 1.7.26 19-Feb-2019
+org.slf4j slf4j-log4j12 ‎ 1.7.26 19-Feb-2019
+	    -->
+
+</project>

@@ -24,15 +24,12 @@
  */
 package org.slf4j.impl;
 
+import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
 import org.slf4j.ILoggerFactory;
 
 /**
  * The binding of {@link org.slf4j.LoggerFactory} class with an actual instance of
  * {@link ILoggerFactory} is performed using information returned by this class.
- *
- * This class is meant to provide a dummy StaticLoggerBinder to the slf4j-api module.
- * Real implementations are found in  each SLF4J binding project, e.g. slf4j-nop,
- * slf4j-log4j12 etc.
  *
  * @author Ceki G&uuml;lc&uuml;
  */
@@ -43,12 +40,20 @@ public class StaticLoggerBinder {
      */
     private static final StaticLoggerBinder SINGLETON = new StaticLoggerBinder();
 
+    private static final String loggerFactoryClassStr = Slf4jLoggerFactory.class.getName();
+
+    /**
+     * The ILoggerFactory instance returned by the {@link #getLoggerFactory} method
+     * should always be the same object
+     */
+    private final ILoggerFactory loggerFactory;
+
     /**
      * Return the singleton of this class.
      *
      * @return the StaticLoggerBinder singleton
      */
-    public static final StaticLoggerBinder getSingleton() {
+    public static StaticLoggerBinder getSingleton() {
         return SINGLETON;
     }
 
@@ -60,14 +65,14 @@ public class StaticLoggerBinder {
     public static String REQUESTED_API_VERSION = "1.6.99"; // !final
 
     private StaticLoggerBinder() {
-        throw new UnsupportedOperationException("This code should have never made it into slf4j-api.jar");
+        loggerFactory = new Slf4jLoggerFactory();
     }
 
     public ILoggerFactory getLoggerFactory() {
-        throw new UnsupportedOperationException("This code should never make it into slf4j-api.jar");
+        return loggerFactory;
     }
 
     public String getLoggerFactoryClassStr() {
-        throw new UnsupportedOperationException("This code should never make it into slf4j-api.jar");
+        return loggerFactoryClassStr;
     }
 }

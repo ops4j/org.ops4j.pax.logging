@@ -29,20 +29,20 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
-public class Slf4jLoggerFactory
-        implements ILoggerFactory
-{
+/**
+ * <p>pax-logging specific {@link ILoggerFactory} returned from {@link org.slf4j.impl.StaticLoggerBinder}</p>
+ * <p></p>
+ */
+public class Slf4jLoggerFactory implements ILoggerFactory {
 
     private static PaxLoggingManager m_paxLogging;
     private static Map<String, Slf4jLogger> m_loggers;
 
-    static
-    {
+    static {
         m_loggers = new WeakHashMap<String, Slf4jLogger>();
     }
 
-    public static void setBundleContext(BundleContext context)
-    {
+    public static void setBundleContext(BundleContext context) {
         synchronized (m_loggers) {
             m_paxLogging = new OSGIPaxLoggingManager(context);
             // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
@@ -58,31 +58,26 @@ public class Slf4jLoggerFactory
     /**
      * Releases any held resources and makes the class ready for garbage collection.
      */
-    public static void release()
-    {
+    public static void release() {
     }
 
     /**
      * Return an appropriate {@link org.slf4j.Logger} instance as specified by the <code>name</code> parameter.
-     * 
+     *
      * <p>
      * Null-valued name arguments are considered invalid.
-     * 
+     *
      * <p>
      * Certain extremely simple logging systems, e.g. NOP, may always return the same logger instance regardless of the
      * requested name.
-     * 
+     *
      * @param name the name of the Logger to return
      */
-    public Logger getLogger(String name)
-    {
+    public Logger getLogger(String name) {
         PaxLogger paxLogger;
-        if (m_paxLogging == null)
-        {
+        if (m_paxLogging == null) {
             paxLogger = FallbackLogFactory.createFallbackLog(null, name);
-        }
-        else
-        {
+        } else {
             paxLogger = m_paxLogging.getLogger(name, Slf4jLogger.SLF4J_FQCN);
         }
         Slf4jLogger logger = new Slf4jLogger(name, paxLogger);
@@ -96,8 +91,7 @@ public class Slf4jLoggerFactory
     }
 
     /** Pax Logging internal method. Should never be used directly. */
-    public static void dispose()
-    {
+    public static void dispose() {
         m_paxLogging.close();
         m_paxLogging.dispose();
         m_paxLogging = null;
