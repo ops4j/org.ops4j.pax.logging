@@ -37,7 +37,7 @@ public class MessageFormatterArrayTest {
     private String output;
 
     @Before
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         output = "habba";
         PaxLoggingManager manager = new TestLoggingManager();
         Field member = Slf4jLoggerFactory.class.getDeclaredField("m_paxLogging");

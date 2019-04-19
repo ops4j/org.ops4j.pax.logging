@@ -17,8 +17,11 @@
  */
 package org.ops4j.pax.logging;
 
-public interface PaxLogger
-{
+/**
+ * Main pax-logging interface for loggers to interact with any logging system.
+ */
+public interface PaxLogger {
+
     int LEVEL_TRACE = 0;
     int LEVEL_DEBUG = 1;
     int LEVEL_INFO = 2;
@@ -27,8 +30,8 @@ public interface PaxLogger
 
     boolean isTraceEnabled();
     boolean isDebugEnabled();
-    boolean isWarnEnabled();
     boolean isInfoEnabled();
+    boolean isWarnEnabled();
     boolean isErrorEnabled();
     boolean isFatalEnabled();
 
@@ -46,10 +49,22 @@ public interface PaxLogger
     void error( String message, Throwable t, String fqcn);
     void fatal( String message, Throwable t, String fqcn);
 
+    /**
+     * Returns log level associated with this logger.
+     * @return
+     */
     int getLogLevel();
 
+    /**
+     * Returns the name of the logger - usually in dot-separated format.
+     * @return
+     */
     String getName();
-    
-    PaxContext getPaxContext();
-}
 
+    /**
+     * {@link PaxContext} of this logger that gives access to thread-bound MDC context.
+     * @return
+     */
+    PaxContext getPaxContext();
+
+}

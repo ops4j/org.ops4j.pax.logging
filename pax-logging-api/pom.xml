@@ -61,13 +61,14 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>avalon-framework</groupId>
+                                    <groupId>org.apache.avalon.framework</groupId>
                                     <artifactId>avalon-framework-api</artifactId>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>
                                 ${project.build.directory}/classes
                             </outputDirectory>
+                            <includes>org/apache/avalon/framework/logger/**</includes>
                         </configuration>
                     </execution>
                 </executions>
@@ -95,9 +96,34 @@
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
-            <groupId>avalon-framework</groupId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-juli</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.avalon.framework</groupId>
             <artifactId>avalon-framework-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.knopflerfish.kf6</groupId>
+            <artifactId>log-API</artifactId>
             <scope>provided</scope>
         </dependency>
 

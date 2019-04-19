@@ -17,16 +17,32 @@
 package org.ops4j.pax.logging;
 
 import java.util.Map;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
 
-public interface EventAdminPoster
-{
+/**
+ * Interface to implement by logging framework specific provider, to pass logging events to Event Admin.
+ */
+public interface EventAdminPoster {
 
-    public void postEvent( Bundle bundle, int level, LogEntry entry, String message,
-                           Throwable exception, ServiceReference sr, Map<String, ?> context );
+    /**
+     * Sends an event to EventAdmin (if available)
+     * @param bundle
+     * @param level
+     * @param entry
+     * @param message
+     * @param exception
+     * @param sr
+     * @param context
+     */
+    void postEvent(Bundle bundle, int level, LogEntry entry, String message,
+                          Throwable exception, ServiceReference<?> sr, Map<String, ?> context);
 
-    public void destroy();
+    /**
+     * Stops the poster.
+     */
+    void destroy();
 
 }

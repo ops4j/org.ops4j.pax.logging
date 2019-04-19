@@ -14,37 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*  Copyright 2007 Niclas Hedhman.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
- * implied.
- *
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package org.apache.juli.logging;
 
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
-import java.util.WeakHashMap;
 
-import org.apache.juli.logging.internal.JuliLogger;
-import org.ops4j.pax.logging.OSGIPaxLoggingManager;
+import org.ops4j.pax.logging.juli.JuliLogger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.internal.Activator;
 import org.ops4j.pax.logging.internal.FallbackLogFactory;
-import org.osgi.framework.BundleContext;
 
 /**
  * Modified LogFactory: removed all discovery, hardcode a specific implementation
@@ -83,34 +63,44 @@ import org.osgi.framework.BundleContext;
  * based on the SAXParserFactory and DocumentBuilderFactory implementations
  * (corresponding to the JAXP pluggability APIs) found in Apache Xerces.</p>
  *
+ * <p>pax-logging-api used source from org.apache.tomcat:juli:6.0.53 but ensures that it's API
+ * compatible with 9.0.x</p>
  *
+ * @author Niclas Hedhman (responsible for the OSGi adaptation.)
  * @author Craig R. McClanahan
  * @author Costin Manolache
  * @author Richard A. Sitze
- * @author Niclas Hedhman
- * @version $Revision: 467222 $ $Date: 2006-10-24 11:17:11 +0800 (Tue, 24 Oct 2006) $
+ * @author Grzegorz Grzybek (adjustments and code cleanup)
  */
-public class LogFactory {
+public /* abstract */ class LogFactory {
+
+    private static PaxLoggingManager m_paxLogging;
+
+    public static void setPaxLoggingManager(PaxLoggingManager manager) {
+        m_paxLogging = manager;
+    }
+
+    // ----------------------------------------------------- Manifest Constants
 
     /**
      * The name of the property used to identify the LogFactory implementation
      * class name.
      */
     public static final String FACTORY_PROPERTY =
-        "org.apache.commons.logging.LogFactory";
+            "org.apache.commons.logging.LogFactory";
 
     /**
      * The fully qualified class name of the fallback <code>LogFactory</code>
      * implementation class to use, if no other can be found.
      */
     public static final String FACTORY_DEFAULT =
-        "org.apache.commons.logging.impl.LogFactoryImpl";
+            "org.apache.commons.logging.impl.LogFactoryImpl";
 
     /**
      * The name of the properties file to search for.
      */
     public static final String FACTORY_PROPERTIES =
-        "commons-logging.properties";
+            "commons-logging.properties";
 
     /**
      * <p>Setting this system property value allows the <code>Hashtable</code> used to store
@@ -147,17 +137,13 @@ public class LogFactory {
      * </p>
      */
     public static final String HASHTABLE_IMPLEMENTATION_PROPERTY =
-        "org.apache.commons.logging.LogFactory.HashtableImpl";
+            "org.apache.commons.logging.LogFactory.HashtableImpl";
 
-    private static LogFactory singleton;
-    private static PaxLoggingManager m_paxLogging;
-    private static Map<String, JuliLogger> m_loggers;
+    private static LogFactory singleton=new LogFactory();
 
-    static
-    {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, JuliLogger>() );
-        singleton = new LogFactory();
-    }
+    // ----------------------------------------------------------- Constructors
+
+
     /**
      * Protected constructor that is not available for public use.
      */
@@ -167,6 +153,7 @@ public class LogFactory {
     // hook for syserr logger - class level
     void setLogConfig( Properties p ) {
     }
+    // --------------------------------------------------------- Public Methods
 
     // only those 2 methods need to change to use a different direct logger.
 
@@ -188,18 +175,19 @@ public class LogFactory {
      *  instance cannot be returned
      */
     public Log getInstance(String name)
-        throws LogConfigurationException {
+            throws LogConfigurationException {
         PaxLogger logger;
-        if( m_paxLogging == null )
-        {
-            logger = FallbackLogFactory.createFallbackLog( null, name );
+        if (m_paxLogging == null) {
+            logger = FallbackLogFactory.createFallbackLog(null, name);
+        } else {
+            logger = m_paxLogging.getLogger(name, JuliLogger.JULI_FQCN);
         }
-        else
-        {
-            logger = m_paxLogging.getLogger( name, JuliLogger.JULI_FQCN );
+        JuliLogger juliLogger = new JuliLogger(name, logger);
+        if (m_paxLogging == null) {
+            synchronized (Activator.m_loggers) {
+                Activator.m_loggers.put(name, juliLogger);
+            }
         }
-        JuliLogger juliLogger = new JuliLogger( logger );
-        m_loggers.put( name, juliLogger );
         return juliLogger;
     }
 
@@ -266,10 +254,21 @@ public class LogFactory {
      * @exception LogConfigurationException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
-    public Log getInstance(Class clazz)
-        throws LogConfigurationException {
-        return getInstance( clazz.getName() );
+    public Log getInstance(Class<?> clazz)
+            throws LogConfigurationException {
+        return getInstance( clazz.getName());
     }
+
+
+
+
+
+    // ------------------------------------------------------- Static Variables
+
+
+
+    // --------------------------------------------------------- Static Methods
+
 
     /**
      * <p>Construct (if necessary) and return a <code>LogFactory</code>
@@ -310,11 +309,12 @@ public class LogFactory {
      * @exception LogConfigurationException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
-    public static Log getLog(Class clazz)
-        throws LogConfigurationException {
+    public static Log getLog(Class<?> clazz)
+            throws LogConfigurationException {
         return (getFactory().getInstance(clazz));
 
     }
+
 
     /**
      * Convenience method to return a named logger, without the application
@@ -328,10 +328,11 @@ public class LogFactory {
      *  instance cannot be returned
      */
     public static Log getLog(String name)
-        throws LogConfigurationException {
-        return getFactory().getInstance(name);
+            throws LogConfigurationException {
+        return (getFactory().getInstance(name));
 
     }
+
 
     /**
      * Release any internal references to previously created {@link LogFactory}
@@ -341,7 +342,8 @@ public class LogFactory {
      *
      * @param classLoader ClassLoader for which to release the LogFactory
      */
-    public static void release(ClassLoader classLoader) {
+    public static void release(
+            @SuppressWarnings("unused") ClassLoader classLoader) {
     }
 
 
@@ -375,22 +377,4 @@ public class LogFactory {
         }
     }
 
-    public static void setBundleContext( BundleContext bundleContext )
-    {
-        m_paxLogging = new OSGIPaxLoggingManager( bundleContext );
-        for (Map.Entry<String, JuliLogger> entry : m_loggers.entrySet()) {
-            String name = entry.getKey();
-            JuliLogger logger = entry.getValue();
-            logger.setPaxLoggingManager( m_paxLogging, name );
-        }
-        m_paxLogging.open();
-    }
-
-    /** Pax Logging internal method. Should never be used directly. */
-    public static void dispose()
-    {
-        m_paxLogging.close();
-        m_paxLogging.dispose();
-        m_paxLogging = null;
-    }
 }

@@ -17,73 +17,49 @@
  */
 package org.ops4j.pax.logging.avalon;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.WeakHashMap;
-
 import org.apache.avalon.framework.logger.Logger;
-import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.osgi.framework.BundleContext;
+import org.ops4j.pax.logging.internal.Activator;
+import org.ops4j.pax.logging.internal.FallbackLogFactory;
 
-public class AvalonLogFactory
-{
+/**
+ * Unlike with modern (sic!) Logging frameworks like SLF4J and Commons Logging, there's no Avalon-specific
+ * factory for its loggers. To make it consistent with other supported facades, this implementation is
+ * a factory for loggers.
+ */
+public class AvalonLogFactory {
 
     private static PaxLoggingManager m_paxLogging;
-    private static Map<String, AvalonLogger> m_loggers;
 
-    static
-    {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, AvalonLogger>() );
-    }
-
-    public static void setBundleContext( BundleContext context )
-    {
-        m_paxLogging = new OSGIPaxLoggingManager( context );
-        for (Entry<String, AvalonLogger> entry : m_loggers.entrySet()) {
-            String name = entry.getKey();
-            AvalonLogger logger = entry.getValue();
-            logger.setPaxLoggingManager( m_paxLogging, name );
-        }
-        m_paxLogging.open();
+    public static void setPaxLoggingManager(PaxLoggingManager manager) {
+        m_paxLogging = manager;
     }
 
     /**
-     * Lifecycle method to release any resources held.
+     * Main static factory method to return instance of {@link Logger}.
+     * @param name
+     * @return
      */
-    public static void release()
-    {
+    public static Logger getLogger(String name) {
+        return getLogger(null, name);
     }
 
-    public static Logger getLogger( String name )
-    {
-        return getLogger( null, name );
-    }
-
-    public static Logger getLogger( AvalonLogger parent, String name )
-    {
-        String newName;
-        if( parent == null )
-        {
-            newName = name;
+    public static Logger getLogger(AvalonLogger parent, String name) {
+        String newName = parent == null ? name : parent.getName() + "." + name;
+        PaxLogger logger;
+        if (m_paxLogging == null) {
+            logger = FallbackLogFactory.createFallbackLog(null, name);
+        } else {
+            logger = m_paxLogging.getLogger(newName, AvalonLogger.AVALON_FQCN);
         }
-        else
-        {
-            newName = parent.getName() + "." + name;
+        AvalonLogger avalonLogger = new AvalonLogger(newName, logger);
+        if (m_paxLogging == null) {
+            synchronized (Activator.m_loggers) {
+                Activator.m_loggers.put(name, avalonLogger);
+            }
         }
-        PaxLogger logger = m_paxLogging.getLogger( newName, AvalonLogger.AVALON_FQCN );
-        AvalonLogger avalonLogger = new AvalonLogger( logger );
-        m_loggers.put( newName, avalonLogger );
         return avalonLogger;
     }
 
-    /** Pax Logging internal method. Should never be used directly. */
-    public static void dispose()
-    {
-        m_paxLogging.close();
-        m_paxLogging.dispose();
-        m_paxLogging = null;
-    }
 }

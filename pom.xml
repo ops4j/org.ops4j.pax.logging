@@ -1,470 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.ops4j</groupId>
-    <artifactId>master</artifactId>
-    <version>3.3.0</version>
-  </parent>
+    <parent>
+        <groupId>org.ops4j</groupId>
+        <artifactId>master</artifactId>
+        <version>4.3.0</version>
+    </parent>
 
-  <groupId>org.ops4j.pax</groupId>
-  <artifactId>logging</artifactId>
-  <version>1.11.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <groupId>org.ops4j.pax</groupId>
+    <artifactId>logging</artifactId>
+    <version>1.11.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <name>OPS4J Pax Logging (Build POM)</name>
+    <name>OPS4J Pax Logging (Build POM)</name>
 
-  <url>http://www.ops4j.org/projects/pax/logging</url>
+    <url>https://ops4j1.jira.com/wiki/spaces/paxlogging/overview</url>
 
-  <issueManagement>
-    <system>jira</system>
-    <url>http://issues.ops4j.org/jira/browse/PAXLOGGING</url>
-  </issueManagement>
+    <issueManagement>
+        <system>jira</system>
+        <url>https://ops4j1.jira.com/projects/PAXLOGGING/summary/statistics</url>
+    </issueManagement>
 
-  <scm>
-    <connection>scm:git:git://github.com/ops4j/org.ops4j.pax.logging.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/ops4j/org.ops4j.pax.logging.git</developerConnection>
-    <url>http://github.com/ops4j/org.ops4j.pax.logging/tree/master</url>
-    <tag>HEAD</tag>
-  </scm>
+    <scm>
+        <connection>scm:git:git@github.com:ops4j/org.ops4j.pax.web.git</connection>
+        <developerConnection>scm:git:git@github.com:ops4j/org.ops4j.pax.logging.git</developerConnection>
+        <url>https://github.com/ops4j/org.ops4j.pax.logging/tree/master</url>
+        <tag>HEAD</tag>
+    </scm>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.2.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>check-jdk</id>
-            <phase>test</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <signature>
-                <groupId>org.codehaus.mojo.signature</groupId>
-                <artifactId>java17</artifactId>
-                <version>1.0</version>
-              </signature>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>maven-bundle-plugin</artifactId>
-          <version>2.3.6</version>
-          <extensions>true</extensions>
-          <configuration>
-            <instructions>
-              <Bundle-DocURL>${project.url}</Bundle-DocURL>
-              <_include>-osgi.bnd</_include>
-            </instructions>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.ops4j</groupId>
-          <artifactId>maven-pax-plugin</artifactId>
-          <version>1.5</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>1.4</version>
-        </plugin>
-        
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        <plugin>
-        	<groupId>org.eclipse.m2e</groupId>
-        	<artifactId>lifecycle-mapping</artifactId>
-        	<version>1.0.0</version>
-        	<configuration>
-        		<lifecycleMappingMetadata>
-        			<pluginExecutions>
-        				<pluginExecution>
-        					<pluginExecutionFilter>
-        						<groupId>org.apache.maven.plugins</groupId>
-        						<artifactId>maven-dependency-plugin</artifactId>
-        						<versionRange>[0,)</versionRange>
-        						<goals>
-        							<goal>unpack</goal>
-        						</goals>
-        					</pluginExecutionFilter>
-        					<action>
-        						<ignore />
-        					</action>
-        				</pluginExecution>
-        				<pluginExecution>
-        					<pluginExecutionFilter>
-        						<groupId>org.ops4j.pax.exam</groupId>
-        						<artifactId>maven-paxexam-plugin</artifactId>
-        						<versionRange>[0,)</versionRange>
-        						<goals>
-        							<goal>generate-depends-file</goal>
-        						</goals>
-        					</pluginExecutionFilter>
-        					<action>
-        						<ignore />
-        					</action>
-        				</pluginExecution>
-        			</pluginExecutions>
-        		</lifecycleMappingMetadata>
-        	</configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.2</version>
-          <!-- Works only with Java8
-          <configuration>
-            <additionalparam>-Xdoclint:none</additionalparam>
-          </configuration>
-          -->
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>1.16</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+    <developers>
+        <developer>
+            <name>Alin Dreghiciu</name>
+            <id>adreghiciu@gmail.com</id>
+            <email>adreghiciu@gmail.com</email>
+        </developer>
+        <developer>
+            <name>Anders Janmyr</name>
+            <id>anders.janmyr@jayway.se</id>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>Andreas Ronge</name>
+            <id>andreas.ronge@jayway.se</id>
+            <email>andreas.ronge@jayway.se</email>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>Hirarm Chirino</name>
+            <id>chirino</id>
+        </developer>
+        <developer>
+            <name>Damian Golda</name>
+            <id>damian.golda@gmail.com</id>
+            <email>damian.golda@gmail.com</email>
+        </developer>
+        <developer>
+            <name>Per Böckman</name>
+            <id>dev2null</id>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>David Ribeiro Alves</name>
+            <id>dr-alves@criticalsoftware.com</id>
+            <email>dr-alves@criticalsoftware.com</email>
+        </developer>
+        <developer>
+            <name>Edward Yakop</name>
+            <id>edward.yakop@gmail.com</id>
+            <organization>Jayway Malaysia Sdn Bhd</organization>
+            <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+            <timezone>+8</timezone>
+        </developer>
+        <developer>
+            <name>Guillaume Nodet</name>
+            <id>gnodet</id>
+            <organization>FuseSource</organization>
+            <organizationUrl>http://fusesource.com</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>Makas Lau</name>
+            <id>makas@ops4j.org</id>
+            <organization>Jayway Malaysia Sdn Bhd</organization>
+            <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+            <timezone>+8</timezone>
+        </developer>
+        <developer>
+            <name>Stuart McCulloch</name>
+            <id>mcculls</id>
+            <organization>Jayway Malaysia Sdn Bhd</organization>
+            <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+            <timezone>+8</timezone>
+        </developer>
+        <developer>
+            <name>Niclas Hedhman</name>
+            <id>niclas@hedhman.org</id>
+            <organization>Jayway Malaysia Sdn Bhd</organization>
+            <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+            <timezone>+8</timezone>
+            <email>niclas@hedhman.org</email>
+        </developer>
+        <developer>
+            <name>David Leangen</name>
+            <id>ops4j@leangen.net</id>
+            <email>ops4j@leangen.net</email>
+        </developer>
+        <developer>
+            <name>Peter Neubauer</name>
+            <id>peter@neubauer.se</id>
+            <organization>Jayway Malaysia Sdn Bhd</organization>
+            <organizationUrl>http://malaysia.jayway.net</organizationUrl>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>Pierre Parrend</name>
+            <id>pparrend</id>
+        </developer>
+        <developer>
+            <name>Raman Gupta</name>
+            <id>rocketraman@fastmail.fm</id>
+            <email>rocketraman@fastmail.fm</email>
+        </developer>
+        <developer>
+            <name>Toni Menzel</name>
+            <id>tonit</id>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>Wouter de Vaal</name>
+            <id>wouterv</id>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <name>Matthew Roy</name>
+            <id>mooseroy</id>
+            <timezone>-5</timezone>
+            <email>mooseroy@gmail.com</email>
+        </developer>
+        <developer>
+            <id>heiko.seeberger</id>
+            <name>Heiko Seeberger</name>
+            <email>heiko [dot] seeberger [at] googlemail [dot] com</email>
+            <timezone>+1</timezone>
+            <roles>
+                <role>OSGi expert and Scala enthusiast</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>David Jencks</name>
+            <id>djencks</id>
+            <email>david_jencks@yahoo.com</email>
+        </developer>
+        <developer>
+            <name>Jean-Baptiste Onofré</name>
+            <id>jbonofre</id>
+        </developer>
+        <developer>
+            <name>Chris Dolan</name>
+            <email>chrisdolan@apache.org</email>
+        </developer>
+        <developer>
+            <name>Raul Kripalani</name>
+            <email>raulk@apache.org</email>
+            <organization>Evosent Consulting</organization>
+        </developer>
+        <developer>
+            <name>Matt Sicker</name>
+            <email>mattsicker@apache.org</email>
+            <id>jvz</id>
+        </developer>
+        <developer>
+            <id>ggrzybek</id>
+            <name>Grzegorz Grzybek</name>
+            <email>gr.grzybek@gmail.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>UTC+1</timezone>
+        </developer>
+    </developers>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- OSGi Alliance -->
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.core</artifactId>
-        <version>4.3.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.compendium</artifactId>
-        <version>4.3.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>jmock</groupId>
-        <artifactId>jmock</artifactId>
-        <version>1.0.1</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>1.2.16</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.sun.jmx</groupId>
-            <artifactId>jmxri</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.sun.jdmk</groupId>
-            <artifactId>jmxtools</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>2.9.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-api</artifactId>
-        <version>2.9.1</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>1.2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>avalon-framework</groupId>
-        <artifactId>avalon-framework-api</artifactId>
-        <version>4.3</version>
-        <exclusions>
-          <exclusion>
-            <groupId>avalon-logkit</groupId>
-            <artifactId>avalon-logkit</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-      <!-- internal dependencies-->
-      <dependency>
-        <groupId>org.ops4j.pax.logging</groupId>
-        <artifactId>pax-logging-service</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.logging</groupId>
-        <artifactId>pax-logging-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
+        <!-- versions of Maven dependencies (sorted and groupped)  -->
 
-      <!-- Test dependencies-->
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.12</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymock</artifactId>
-        <version>3.1</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam-junit4</artifactId>
-        <version>4.9.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam</artifactId>
-        <version>4.9.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam-container-native</artifactId>
-        <version>4.9.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam-container-default</artifactId>
-        <version>4.9.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam-link-mvn</artifactId>
-        <version>4.9.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.geronimo.specs</groupId>
-        <artifactId>geronimo-atinject_1.0_spec</artifactId>
-        <version>1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>org.apache.felix.framework</artifactId>
-        <version>5.4.0</version>
-      </dependency>
+        <version.org.apache.avalon.framework>4.3.1</version.org.apache.avalon.framework>
+        <version.org.apache.tomcat.juli>9.0.19</version.org.apache.tomcat.juli>
+        <version.biz.aQute.bnd>4.2.0</version.biz.aQute.bnd>
+        <version.ch.qos.logback>1.2.3</version.ch.qos.logback>
+        <version.commons-logging>1.2</version.commons-logging>
+        <version.junit>4.12</version.junit>
+        <version.log4j>1.2.17</version.log4j>
+        <version.org.apache.felix.framework>5.6.12</version.org.apache.felix.framework>
+        <version.org.apache.logging.log4j>2.11.2</version.org.apache.logging.log4j>
+        <version.org.apache.servicemix.bundles.javax-inject>1_2</version.org.apache.servicemix.bundles.javax-inject>
+        <version.org.jboss.logging>3.4.0.Final</version.org.jboss.logging>
+        <version.org.knopflerfish.kf6>5.0.0</version.org.knopflerfish.kf6>
+        <version.org.mockito>2.27.0</version.org.mockito>
+        <version.org.ops4j.pax.exam>4.13.1</version.org.ops4j.pax.exam>
+        <version.org.ops4j.pax.url>2.6.1</version.org.ops4j.pax.url>
+        <version.org.osgi>6.0.0</version.org.osgi>
+        <version.org.slf4j>1.7.26</version.org.slf4j>
 
-      <!-- sample dependencies -->
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <version>6.1.26</version>
-      </dependency>
+        <!-- versions of Maven plugins -->
 
-    </dependencies>
-  </dependencyManagement>
+        <!-- Maven plugins from org.apache.maven.plugins (and their dependencies) -->
+        <plugin.maven-assembly-plugin>3.1.1</plugin.maven-assembly-plugin>
+        <plugin.maven-checkstyle-plugin>3.0.0</plugin.maven-checkstyle-plugin>
+        <plugin.dependency.com.puppycrawl.tools.checkstyle>8.19</plugin.dependency.com.puppycrawl.tools.checkstyle>
+        <plugin.maven-clean-plugin>3.1.0</plugin.maven-clean-plugin>
+        <plugin.maven-compiler-plugin>3.8.0</plugin.maven-compiler-plugin>
+        <plugin.maven-dependency-plugin>3.1.1</plugin.maven-dependency-plugin>
+        <plugin.maven-deploy-plugin>2.8.2</plugin.maven-deploy-plugin>
+        <plugin.maven-enforcer-plugin>3.0.0-M1</plugin.maven-enforcer-plugin>
+        <plugin.dependency.org.commonjava.maven.enforcer>1.3</plugin.dependency.org.commonjava.maven.enforcer>
+        <plugin.maven-failsafe-plugin>2.22.1</plugin.maven-failsafe-plugin>
+        <plugin.maven-gpg-plugin>1.6</plugin.maven-gpg-plugin>
+        <plugin.maven-install-plugin>2.5.2</plugin.maven-install-plugin>
+        <plugin.maven-invoker-plugin>3.2.0</plugin.maven-invoker-plugin>
+        <plugin.maven-jar-plugin>3.1.1</plugin.maven-jar-plugin>
+        <plugin.maven-javadoc-plugin>3.1.0</plugin.maven-javadoc-plugin>
+        <plugin.maven-release-plugin>2.5.3</plugin.maven-release-plugin>
+        <plugin.maven-remote-resources-plugin>1.6.0</plugin.maven-remote-resources-plugin>
+        <plugin.maven-resources-plugin>3.1.0</plugin.maven-resources-plugin>
+        <plugin.dependency.maven-filtering>3.1.1</plugin.dependency.maven-filtering>
+        <plugin.maven-shade-plugin>3.2.1</plugin.maven-shade-plugin>
+        <plugin.maven-site-plugin>3.7.1</plugin.maven-site-plugin>
+        <plugin.maven-source-plugin>3.0.1</plugin.maven-source-plugin>
+        <plugin.maven-surefire-plugin>2.22.1</plugin.maven-surefire-plugin>
 
-  <developers>
-    <developer>
-      <name>Alin Dreghiciu</name>
-      <id>adreghiciu@gmail.com</id>
-      <email>adreghiciu@gmail.com</email>
-    </developer>
-    <developer>
-      <name>Anders Janmyr</name>
-      <id>anders.janmyr@jayway.se</id>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
-      <name>Andreas Ronge</name>
-      <id>andreas.ronge@jayway.se</id>
-      <email>andreas.ronge@jayway.se</email>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
-      <name>Hirarm Chirino</name>
-      <id>chirino</id>
-    </developer>
-    <developer>
-      <name>Damian Golda</name>
-      <id>damian.golda@gmail.com</id>
-      <email>damian.golda@gmail.com</email>
-    </developer>
-    <developer>
-      <name>Per Böckman</name>
-      <id>dev2null</id>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
-      <name>David Ribeiro Alves</name>
-      <id>dr-alves@criticalsoftware.com</id>
-      <email>dr-alves@criticalsoftware.com</email>
-    </developer>
-    <developer>
-      <name>Edward Yakop</name>
-      <id>edward.yakop@gmail.com</id>
-      <organization>Jayway Malaysia Sdn Bhd</organization>
-      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
-      <timezone>+8</timezone>
-    </developer>
-    <developer>
-      <name>Guillaume Nodet</name>
-      <id>gnodet</id>
-        <organization>FuseSource</organization>
-        <organizationUrl>http://fusesource.com</organizationUrl>
-        <timezone>+1</timezone>
-    </developer>
-    <developer>
-      <name>Makas Lau</name>
-      <id>makas@ops4j.org</id>
-      <organization>Jayway Malaysia Sdn Bhd</organization>
-      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
-      <timezone>+8</timezone>
-    </developer>
-    <developer>
-      <name>Stuart McCulloch</name>
-      <id>mcculls</id>
-      <organization>Jayway Malaysia Sdn Bhd</organization>
-      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
-      <timezone>+8</timezone>
-    </developer>
-    <developer>
-      <name>Niclas Hedhman</name>
-      <id>niclas@hedhman.org</id>
-      <organization>Jayway Malaysia Sdn Bhd</organization>
-      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
-      <timezone>+8</timezone>
-      <email>niclas@hedhman.org</email>
-    </developer>
-    <developer>
-      <name>David Leangen</name>
-      <id>ops4j@leangen.net</id>
-      <email>ops4j@leangen.net</email>
-    </developer>
-    <developer>
-      <name>Peter Neubauer</name>
-      <id>peter@neubauer.se</id>
-      <organization>Jayway Malaysia Sdn Bhd</organization>
-      <organizationUrl>http://malaysia.jayway.net</organizationUrl>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
-      <name>Pierre Parrend</name>
-      <id>pparrend</id>
-    </developer>
-    <developer>
-      <name>Raman Gupta</name>
-      <id>rocketraman@fastmail.fm</id>
-      <email>rocketraman@fastmail.fm</email>
-    </developer>
-    <developer>
-      <name>Toni Menzel</name>
-      <id>tonit</id>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
-      <name>Wouter de Vaal</name>
-      <id>wouterv</id>
-      <timezone>+1</timezone>
-    </developer>
-    <developer>
-      <name>Matthew Roy</name>
-      <id>mooseroy</id>
-      <timezone>-5</timezone>
-      <email>mooseroy@gmail.com</email>
-    </developer>
-    <developer>
-      <id>heiko.seeberger</id>
-      <name>Heiko Seeberger</name>
-      <email>heiko [dot] seeberger [at] googlemail [dot] com</email>
-      <timezone>+1</timezone>
-      <roles>
-        <role>OSGi expert and Scala enthusiast</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>David Jencks</name>
-      <id>djencks</id>
-      <email>david_jencks@yahoo.com</email>
-    </developer>
-    <developer>
-      <name>Jean-Baptiste Onofré</name>
-      <id>jbonofre</id>
-    </developer>
-    <developer>
-      <name>Chris Dolan</name>
-      <email>chrisdolan@apache.org</email>
-    </developer>
-    <developer>
-      <name>Raul Kripalani</name>
-      <email>raulk@apache.org</email>
-      <organization>Evosent Consulting</organization>
-    </developer>
-    <developer>
-      <name>Matt Sicker</name>
-      <email>mattsicker@apache.org</email>
-      <id>jvz</id>
-    </developer>
-  </developers>
+        <!-- Other Maven plugins (and their dependencies) -->
+<!--        <plugin.apache.apache-rat-plugin>0.13</plugin.apache.apache-rat-plugin>-->
+        <plugin.felix.maven-bundle-plugin>4.2.0</plugin.felix.maven-bundle-plugin>
+<!--        <plugin.mojo.build-helper-maven-plugin>3.0.0</plugin.mojo.build-helper-maven-plugin>-->
+        <plugin.mycila.license-maven-plugin>3.0</plugin.mycila.license-maven-plugin>
+<!--        <plugin.servicemix.depends-maven-plugin>1.4.0</plugin.servicemix.depends-maven-plugin>-->
+<!--        <plugin.sonatype.nexus-staging-maven-plugin>1.6.8</plugin.sonatype.nexus-staging-maven-plugin>-->
+    </properties>
 
-  <modules>
-    <module>pax-logging-api</module>
-    <module>pax-logging-service</module>
-    <module>pax-logging-log4j2</module>
-    <module>pax-logging-logback</module>
-    <module>pax-logging-it</module>
-    <module>pax-logging-samples</module>
-  </modules>
+    <build>
+        <pluginManagement>
+            <plugins>
 
-  <profiles>
-    <profile>
-      <id>doclint-java8</id>
-      <activation>
-        <jdk>[1.8,)</jdk>
-      </activation>
-      <build>
+                <!-- Core plugins -->
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${plugin.maven-clean-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${plugin.maven-compiler-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${plugin.maven-deploy-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${plugin.maven-failsafe-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${plugin.maven-install-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${plugin.maven-resources-plugin}</version>
+                    <dependencies>
+                        <dependency>
+                            <!-- Fix org.ops4j:master:4.3.0 -->
+                            <groupId>org.apache.maven.shared</groupId>
+                            <artifactId>maven-filtering</artifactId>
+                            <version>${plugin.dependency.maven-filtering}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${plugin.maven-site-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${plugin.maven-surefire-plugin}</version>
+                </plugin>
+
+                <!-- Packaging types/tools -->
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${plugin.maven-jar-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${plugin.maven-shade-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${plugin.maven-source-plugin}</version>
+                </plugin>
+
+                <!-- Reporting plugins -->
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${plugin.maven-checkstyle-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${plugin.maven-javadoc-plugin}</version>
+                </plugin>
+
+                <!-- Tools -->
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${plugin.maven-assembly-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${plugin.maven-dependency-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${plugin.maven-enforcer-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>${plugin.maven-gpg-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-invoker-plugin</artifactId>
+                    <version>${plugin.maven-invoker-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>${plugin.maven-release-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-remote-resources-plugin</artifactId>
+                    <version>${plugin.maven-remote-resources-plugin}</version>
+                </plugin>
+
+                <!-- Felix plugins -->
+
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${plugin.felix.maven-bundle-plugin}</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <obrRepository>NONE</obrRepository>
+                        <instructions>
+                            <Bundle-DocURL>${project.url}</Bundle-DocURL>
+                            <_include>-osgi.bnd</_include>
+                        </instructions>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>biz.aQute.bnd</groupId>
+                            <artifactId>biz.aQute.bndlib</artifactId>
+                            <version>${version.biz.aQute.bnd}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <!-- Other -->
+
+                <plugin>
+                    <groupId>org.ops4j.pax.exam</groupId>
+                    <artifactId>exam-maven-plugin</artifactId>
+                    <version>${version.org.ops4j.pax.exam}</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-            <configuration>
-              <additionalparam>-Xdoclint:none</additionalparam>
-            </configuration>
-          </plugin>
+
+            <!-- Core plugins -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <escapeString>\</escapeString>
+                </configuration>
+            </plugin>
+
+            <!-- Tools -->
+
+            <!-- Require maven 3.3 or above, Java 1.8 or above. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.commonjava.maven.enforcer</groupId>
+                        <artifactId>enforce-managed-deps-rule</artifactId>
+                        <version>${plugin.dependency.org.commonjava.maven.enforcer}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <banDuplicatePomDependencyVersions />
+                                <requirePluginVersions>
+                                    <banSnapshots>false</banSnapshots>
+                                </requirePluginVersions>
+                                <requireMavenVersion>
+                                    <version>[3.3.9,4)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[1.7,)</version>
+                                </requireJavaVersion>
+                                <requireManagedDeps implementation="org.commonjava.maven.enforcer.rule.EnforceManagedDepsRule">
+                                    <checkProfiles>true</checkProfiles>
+                                    <failOnViolation>true</failOnViolation>
+                                </requireManagedDeps>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
-      </build>
-    </profile>
-  </profiles>
+    </build>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- pax-logging own artifacts -->
+
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- OPS4J dependencies -->
+
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam</artifactId>
+                <version>${version.org.ops4j.pax.exam}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-junit4</artifactId>
+                <version>${version.org.ops4j.pax.exam}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-container-native</artifactId>
+                <version>${version.org.ops4j.pax.exam}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-container-default</artifactId>
+                <version>${version.org.ops4j.pax.exam}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-link-mvn</artifactId>
+                <version>${version.org.ops4j.pax.exam}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-extender-service</artifactId>
+                <version>${version.org.ops4j.pax.exam}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ops4j.pax.url</groupId>
+                <artifactId>pax-url-aether</artifactId>
+                <version>${version.org.ops4j.pax.url}</version>
+            </dependency>
+
+            <!-- OSGi -->
+
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi.core</artifactId>
+                <version>${version.org.osgi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>osgi.cmpn</artifactId>
+                <version>${version.org.osgi}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>biz.aQute.bndlib</artifactId>
+                <version>${version.biz.aQute.bnd}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${version.org.apache.felix.framework}</version>
+            </dependency>
+
+            <!-- Logging -->
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${version.org.slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${version.org.slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-nop</artifactId>
+                <version>${version.org.slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jcl</artifactId>
+                <version>${version.org.slf4j}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${version.commons-logging}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-juli</artifactId>
+                <version>${version.org.apache.tomcat.juli}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.avalon.framework</groupId>
+                <artifactId>avalon-framework-api</artifactId>
+                <version>${version.org.apache.avalon.framework}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>avalon-logkit</groupId>
+                        <artifactId>avalon-logkit</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.logging</groupId>
+                <artifactId>jboss-logging</artifactId>
+                <version>${version.org.jboss.logging}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.knopflerfish.kf6</groupId>
+                <artifactId>log-API</artifactId>
+                <version>${version.org.knopflerfish.kf6}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${version.log4j}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.sun.jmx</groupId>
+                        <artifactId>jmxri</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.jdmk</groupId>
+                        <artifactId>jmxtools</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${version.org.apache.logging.log4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${version.org.apache.logging.log4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${version.org.apache.logging.log4j}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${version.ch.qos.logback}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${version.ch.qos.logback}</version>
+            </dependency>
+
+            <!-- ServiceMIX -->
+
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
+                <version>${version.org.apache.servicemix.bundles.javax-inject}</version>
+            </dependency>
+
+            <!-- Testing -->
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${version.org.mockito}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>knopflerfish</id>
+            <url>http://resources.knopflerfish.org/repo/maven2/release</url>
+        </repository>
+    </repositories>
+
+    <modules>
+        <module>pax-logging-report</module>
+        <module>pax-logging-api</module>
+        <module>pax-logging-api-test</module>
+        <module>pax-logging-service</module>
+        <module>pax-logging-log4j2</module>
+        <module>pax-logging-logback</module>
+        <module>pax-logging-it</module>
+<!--        <module>pax-logging-samples</module>-->
+    </modules>
+
+    <profiles>
+
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                    <goal>test-jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                    <goal>test-javadoc</goal>
+                                </goals>
+                                <configuration>
+                                    <doclint>none</doclint>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- License generation: `mvn -Plicense process-sources` -->
+        <profile>
+            <id>license</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.mycila</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <configuration>
+                            <aggregate>true</aggregate>
+                            <useDefaultExcludes>true</useDefaultExcludes>
+                            <header>license-header.txt</header>
+                            <includes>
+                                <include>src/main/java/**/*.java</include>
+                                <include>src/test/java/**/*.java</include>
+                                <include>pom.xml</include>
+                                <include>**/*.xml</include>
+                                <include>**/*.cfg</include>
+                                <include>**/*.properties</include>
+                            </includes>
+                            <excludes />
+                            <mapping />
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>license-format</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>format</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>license-check</id>
+                                <!-- This is the phase this plugin runs by default. Just an explicit information -->
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
 
 </project>

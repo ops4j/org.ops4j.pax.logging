@@ -20,127 +20,115 @@ package org.ops4j.pax.logging.avalon;
 import org.apache.avalon.framework.logger.Logger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 
-public class AvalonLogger
-    implements Logger
-{
+/**
+ * <p>pax-logging specific {@link Logger} that delegates to {@link PaxLogger} that is obtained from
+ * framework specific {@link org.ops4j.pax.logging.PaxLoggingService} and eventually delegates to logging
+ * implementation.</p>
+ */
+public class AvalonLogger implements Logger, PaxLoggingManagerAwareLogger {
 
-    static final String AVALON_FQCN = AvalonLogger.class.getName();
-    
+    public static final String AVALON_FQCN = AvalonLogger.class.getName();
+
+    private String m_name;
     private PaxLogger m_delegate;
 
-    public AvalonLogger( PaxLogger logger )
-    {
-        m_delegate = logger;
+    public AvalonLogger(String name, PaxLogger delegate) {
+        m_name = name;
+        m_delegate = delegate;
     }
 
-    public void debug( String string )
-    {
-      if (m_delegate.isDebugEnabled()) {
-        m_delegate.debug( string, null );
-      }
+    @Override
+    public void setPaxLoggingManager(PaxLoggingManager paxLoggingManager) {
+        m_delegate = paxLoggingManager.getLogger(m_name, AVALON_FQCN);
     }
 
-    public void debug( String string, Throwable throwable )
-    {
-      if (m_delegate.isDebugEnabled()) {
-        m_delegate.debug( string, throwable );
-      }
-    }
+    // implementation of org.apache.avalon.framework.logger.Logger follows.
+    // no need to call isXXXEnable, as the delegated logger (PaxLogger) does it anyway
 
-    public boolean isDebugEnabled()
-    {
+    @Override
+    public boolean isDebugEnabled() {
         return m_delegate.isDebugEnabled();
     }
 
-    public void info( String string )
-    {
-      if (m_delegate.isInfoEnabled()) {
-        m_delegate.inform( string, null );
-      }
-    }
-
-    public void info( String string, Throwable throwable )
-    {
-      if (m_delegate.isInfoEnabled()) {
-        m_delegate.inform( string, throwable );
-      }
-    }
-
-    public boolean isInfoEnabled()
-    {
-        return m_delegate.isInfoEnabled();
-    }
-
-    public void warn( String string )
-    {
-      if (m_delegate.isWarnEnabled()) {
-        m_delegate.warn( string, null );
-      }
-    }
-
-    public void warn( String string, Throwable throwable )
-    {
-      if (m_delegate.isWarnEnabled()) {
-        m_delegate.warn( string, throwable );
-      }
-    }
-
-    public boolean isWarnEnabled()
-    {
-        return m_delegate.isWarnEnabled();
-    }
-
-    public void error( String string )
-    {
-      if (m_delegate.isErrorEnabled()) {
-        m_delegate.error( string, null );
-      }
-    }
-
-    public void error( String string, Throwable throwable )
-    {
-      if (m_delegate.isErrorEnabled()) {
-        m_delegate.error( string, throwable );
-      }
-    }
-
-    public boolean isErrorEnabled()
-    {
+    @Override
+    public boolean isErrorEnabled() {
         return m_delegate.isErrorEnabled();
     }
 
-    public void fatalError( String string )
-    {
-      if (m_delegate.isFatalEnabled()) {
-        m_delegate.fatal( string, null );
-      }
-    }
-
-    public void fatalError( String string, Throwable throwable )
-    {
-      if (m_delegate.isFatalEnabled()) {
-        m_delegate.fatal( string, throwable );
-      }
-    }
-
-    public boolean isFatalErrorEnabled()
-    {
+    @Override
+    public boolean isFatalErrorEnabled() {
         return m_delegate.isFatalEnabled();
     }
 
-    public Logger getChildLogger( String name )
-    {
-        return AvalonLogFactory.getLogger( this, name );
+    @Override
+    public boolean isInfoEnabled() {
+        return m_delegate.isInfoEnabled();
     }
 
-    public String getName()
-    {
+    @Override
+    public boolean isWarnEnabled() {
+        return m_delegate.isWarnEnabled();
+    }
+
+    @Override
+    public void debug(String string) {
+        m_delegate.debug(string, null);
+    }
+
+    @Override
+    public void debug(String string, Throwable throwable) {
+        m_delegate.debug(string, throwable);
+    }
+
+    @Override
+    public void info(String string) {
+        m_delegate.inform(string, null);
+    }
+
+    @Override
+    public void info(String string, Throwable throwable) {
+        m_delegate.inform(string, throwable);
+    }
+
+    @Override
+    public void warn(String string) {
+        m_delegate.warn(string, null);
+    }
+
+    @Override
+    public void warn(String string, Throwable throwable) {
+        m_delegate.warn(string, throwable);
+    }
+
+    @Override
+    public void error(String string) {
+        m_delegate.error(string, null);
+    }
+
+    @Override
+    public void error(String string, Throwable throwable) {
+        m_delegate.error(string, throwable);
+    }
+
+    @Override
+    public void fatalError(String string) {
+        m_delegate.fatal(string, null);
+    }
+
+    @Override
+    public void fatalError(String string, Throwable throwable) {
+        m_delegate.fatal(string, throwable);
+    }
+
+    @Override
+    public Logger getChildLogger(String name) {
+        return AvalonLogFactory.getLogger(this, name);
+    }
+
+    public String getName() {
         return m_delegate.getName();
     }
 
-    void setPaxLoggingManager( PaxLoggingManager paxLoggingManager, String name )
-    {
-        m_delegate = paxLoggingManager.getLogger( name, AVALON_FQCN );
-    }
 }

@@ -20,8 +20,13 @@ package org.ops4j.pax.logging;
 import org.knopflerfish.service.log.LogService;
 import org.osgi.framework.Bundle;
 
-public interface PaxLoggingService extends LogService
-{
+/**
+ * <p>This interface extends Knopflerfish' LogService which extends original {@link org.osgi.service.log.LogService}.
+ * It should be implemented by specific logging provider (Log4j, Logback, ...).</p>
+ * <p>It's role is to provide methods to obtain {@link PaxLogger} and {@link PaxContext} that are specific to
+ * one of pax-logging-* implementations.</p>
+ */
+public interface PaxLoggingService extends LogService {
 
     String APPENDER_NAME_PROPERTY = "org.ops4j.pax.logging.appender.name";
 
@@ -31,10 +36,27 @@ public interface PaxLoggingService extends LogService
 
     String ERRORHANDLER_NAME_PROPERTY = "org.ops4j.pax.logging.errorhandler.name";
 
-    PaxLogger getLogger( Bundle bundle, String category, String fqcn );
+    /**
+     * Obtains {@link PaxLogger} instance - implementation-specific logger hidden under {@link PaxLogger} interface.
+     * This method is not used directly, but rather through {@link org.ops4j.pax.logging.PaxLoggingManager}
+     * @param bundle
+     * @param category
+     * @param fqcn
+     * @return
+     */
+    PaxLogger getLogger(Bundle bundle, String category, String fqcn);
 
+    /**
+     * Returns log level associated with entire logging service. Usually individual loggers may have different
+     * levels specified.
+     * @return
+     */
     int getLogLevel();
-    
+
+    /**
+     * Returns {@link PaxContext} of this logger that gives access to thread-bound MDC context.
+     * @return
+     */
     PaxContext getPaxContext();
-    
+
 }

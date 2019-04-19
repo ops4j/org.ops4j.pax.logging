@@ -17,6 +17,7 @@
  */
 package org.ops4j.pax.logging.slf4j;
 
+import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 import org.slf4j.spi.LocationAwareLogger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.FormattingTuple;
@@ -24,28 +25,37 @@ import org.slf4j.helpers.MessageFormatter;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 
-public class Slf4jLogger
-    implements LocationAwareLogger
-{
+/**
+ * <p>pax-logging specific {@link org.slf4j.Logger} that delegates to {@link PaxLogger} that is obtained from
+ * framework specific {@link org.ops4j.pax.logging.PaxLoggingService} and eventually delegates to logging
+ * implementation.</p>
+ */
+public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareLogger {
 
     public static final String SLF4J_MARKER_MDC_ATTRIBUTE = "slf4j.marker";
-
     public static final String SLF4J_FQCN = Slf4jLogger.class.getName();
 
     private String m_name;
     private PaxLogger m_delegate;
 
-    public Slf4jLogger( String name, PaxLogger delegate )
-    {
+    public Slf4jLogger(String name, PaxLogger delegate) {
         m_name = name;
         m_delegate = delegate;
     }
 
+    @Override
+    public void setPaxLoggingManager(PaxLoggingManager loggingManager) {
+        m_delegate = loggingManager.getLogger(m_name, SLF4J_FQCN);
+    }
+
+    // implementation of org.slf4j.spi.LocationAwareLogger follows.
+    // no need to call isXXXEnable, as the delegated logger (PaxLogger) does it anyway
+
     /**
      * Return the name of this <code>Logger</code> instance.
      */
-    public String getName()
-    {
+    @Override
+    public String getName() {
         return m_name;
     }
 
@@ -55,8 +65,8 @@ public class Slf4jLogger
      * @return True if this Logger is enabled for the DEBUG level,
      *         false otherwise.
      */
-    public boolean isTraceEnabled()
-    {
+    @Override
+    public boolean isTraceEnabled() {
         return m_delegate.isTraceEnabled();
     }
 
@@ -65,12 +75,9 @@ public class Slf4jLogger
      *
      * @param msg the message string to be logged
      */
-    public void trace( String msg )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            m_delegate.trace( msg, null );
-        }
+    @Override
+    public void trace(String msg) {
+        m_delegate.trace(msg, null);
     }
 
     /**
@@ -83,12 +90,11 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void trace( String format, Object arg )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void trace(String format, Object arg) {
+        if (m_delegate.isTraceEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -103,12 +109,11 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void trace( String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void trace(String format, Object arg1, Object arg2) {
+        if (m_delegate.isTraceEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -122,12 +127,11 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void trace( String format, Object[] argArray )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void trace(String format, Object[] argArray) {
+        if (m_delegate.isTraceEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -138,12 +142,9 @@ public class Slf4jLogger
      * @param msg the message accompanying the exception
      * @param t   the exception (throwable) to log
      */
-    public void trace( String msg, Throwable t )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            m_delegate.trace( msg, t );
-        }
+    @Override
+    public void trace(String msg, Throwable t) {
+        m_delegate.trace(msg, t);
     }
 
     /**
@@ -152,8 +153,8 @@ public class Slf4jLogger
      *
      * @param marker The marker data to take into consideration
      */
-    public boolean isTraceEnabled( Marker marker )
-    {
+    @Override
+    public boolean isTraceEnabled(Marker marker) {
         return m_delegate.isTraceEnabled();
     }
 
@@ -163,12 +164,11 @@ public class Slf4jLogger
      * @param marker the marker data specific to this log statement
      * @param msg    the message string to be logged
      */
-    public void trace( Marker marker, String msg )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.trace( msg, null );
+    @Override
+    public void trace(Marker marker, String msg) {
+        if (m_delegate.isTraceEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.trace(msg, null);
             resetMDCMarker();
         }
     }
@@ -181,13 +181,12 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void trace( Marker marker, String format, Object arg )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            setMDCMarker( marker );
-            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void trace(Marker marker, String format, Object arg) {
+        if (m_delegate.isTraceEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            setMDCMarker(marker);
+            m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -202,13 +201,12 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void trace( Marker marker, String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            setMDCMarker( marker );
-            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void trace(Marker marker, String format, Object arg1, Object arg2) {
+        if (m_delegate.isTraceEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            setMDCMarker(marker);
+            m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -222,13 +220,12 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void trace( Marker marker, String format, Object[] argArray )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            setMDCMarker( marker );
-            m_delegate.trace( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void trace(Marker marker, String format, Object[] argArray) {
+        if (m_delegate.isTraceEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            setMDCMarker(marker);
+            m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -241,12 +238,11 @@ public class Slf4jLogger
      * @param msg    the message accompanying the exception
      * @param t      the exception (throwable) to log
      */
-    public void trace( Marker marker, String msg, Throwable t )
-    {
-        if( m_delegate.isTraceEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.trace( msg, t );
+    @Override
+    public void trace(Marker marker, String msg, Throwable t) {
+        if (m_delegate.isTraceEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.trace(msg, t);
             resetMDCMarker();
         }
     }
@@ -257,8 +253,8 @@ public class Slf4jLogger
      * @return True if this Logger is enabled for the DEBUG level,
      *         false otherwise.
      */
-    public boolean isDebugEnabled()
-    {
+    @Override
+    public boolean isDebugEnabled() {
         return m_delegate.isDebugEnabled();
     }
 
@@ -267,12 +263,9 @@ public class Slf4jLogger
      *
      * @param msg the message string to be logged
      */
-    public void debug( String msg )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            m_delegate.debug( msg, null );
-        }
+    @Override
+    public void debug(String msg) {
+        m_delegate.debug(msg, null);
     }
 
     /**
@@ -285,12 +278,11 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void debug( String format, Object arg )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void debug(String format, Object arg) {
+        if (m_delegate.isDebugEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -305,12 +297,11 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void debug( String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void debug(String format, Object arg1, Object arg2) {
+        if (m_delegate.isDebugEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -324,12 +315,11 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void debug( String format, Object[] argArray )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void debug(String format, Object[] argArray) {
+        if (m_delegate.isDebugEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -340,12 +330,9 @@ public class Slf4jLogger
      * @param msg the message accompanying the exception
      * @param t   the exception (throwable) to log
      */
-    public void debug( String msg, Throwable t )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            m_delegate.debug( msg, t );
-        }
+    @Override
+    public void debug(String msg, Throwable t) {
+        m_delegate.debug(msg, t);
     }
 
     /**
@@ -354,8 +341,8 @@ public class Slf4jLogger
      *
      * @param marker The marker data to take into consideration
      */
-    public boolean isDebugEnabled( Marker marker )
-    {
+    @Override
+    public boolean isDebugEnabled(Marker marker) {
         return m_delegate.isDebugEnabled();
     }
 
@@ -365,12 +352,11 @@ public class Slf4jLogger
      * @param marker the marker data specific to this log statement
      * @param msg    the message string to be logged
      */
-    public void debug( Marker marker, String msg )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.debug( msg, null );
+    @Override
+    public void debug(Marker marker, String msg) {
+        if (m_delegate.isDebugEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.debug(msg, null);
             resetMDCMarker();
         }
     }
@@ -383,13 +369,12 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void debug( Marker marker, String format, Object arg )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            setMDCMarker( marker );
-            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void debug(Marker marker, String format, Object arg) {
+        if (m_delegate.isDebugEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            setMDCMarker(marker);
+            m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -404,13 +389,12 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void debug( Marker marker, String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            setMDCMarker( marker );
-            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void debug(Marker marker, String format, Object arg1, Object arg2) {
+        if (m_delegate.isDebugEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            setMDCMarker(marker);
+            m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -424,13 +408,12 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void debug( Marker marker, String format, Object[] argArray )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            setMDCMarker( marker );
-            m_delegate.debug( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void debug(Marker marker, String format, Object[] argArray) {
+        if (m_delegate.isDebugEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            setMDCMarker(marker);
+            m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -443,12 +426,11 @@ public class Slf4jLogger
      * @param msg    the message accompanying the exception
      * @param t      the exception (throwable) to log
      */
-    public void debug( Marker marker, String msg, Throwable t )
-    {
-        if( m_delegate.isDebugEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.debug( msg, t );
+    @Override
+    public void debug(Marker marker, String msg, Throwable t) {
+        if (m_delegate.isDebugEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.debug(msg, t);
             resetMDCMarker();
         }
     }
@@ -459,8 +441,8 @@ public class Slf4jLogger
      * @return True if this Logger is enabled for the INFO level,
      *         false otherwise.
      */
-    public boolean isInfoEnabled()
-    {
+    @Override
+    public boolean isInfoEnabled() {
         return m_delegate.isInfoEnabled();
     }
 
@@ -469,12 +451,9 @@ public class Slf4jLogger
      *
      * @param msg the message string to be logged
      */
-    public void info( String msg )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            m_delegate.inform( msg, null );
-        }
+    @Override
+    public void info(String msg) {
+        m_delegate.inform(msg, null);
     }
 
     /**
@@ -487,12 +466,11 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void info( String format, Object arg )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void info(String format, Object arg) {
+        if (m_delegate.isInfoEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -507,12 +485,11 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void info( String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void info(String format, Object arg1, Object arg2) {
+        if (m_delegate.isInfoEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -526,12 +503,11 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void info( String format, Object[] argArray )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void info(String format, Object[] argArray) {
+        if (m_delegate.isInfoEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -542,12 +518,9 @@ public class Slf4jLogger
      * @param msg the message accompanying the exception
      * @param t   the exception (throwable) to log
      */
-    public void info( String msg, Throwable t )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            m_delegate.inform( msg, t );
-        }
+    @Override
+    public void info(String msg, Throwable t) {
+        m_delegate.inform(msg, t);
     }
 
     /**
@@ -556,8 +529,8 @@ public class Slf4jLogger
      *
      * @param marker The marker data to take into consideration
      */
-    public boolean isInfoEnabled( Marker marker )
-    {
+    @Override
+    public boolean isInfoEnabled(Marker marker) {
         return m_delegate.isInfoEnabled();
     }
 
@@ -567,12 +540,11 @@ public class Slf4jLogger
      * @param marker The marker specific to this log statement
      * @param msg    the message string to be logged
      */
-    public void info( Marker marker, String msg )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.inform( msg, null );
+    @Override
+    public void info(Marker marker, String msg) {
+        if (m_delegate.isInfoEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.inform(msg, null);
             resetMDCMarker();
         }
     }
@@ -585,13 +557,12 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void info( Marker marker, String format, Object arg )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            setMDCMarker( marker );
-            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void info(Marker marker, String format, Object arg) {
+        if (m_delegate.isInfoEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            setMDCMarker(marker);
+            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -606,13 +577,12 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void info( Marker marker, String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            setMDCMarker( marker );
-            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void info(Marker marker, String format, Object arg1, Object arg2) {
+        if (m_delegate.isInfoEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            setMDCMarker(marker);
+            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -626,13 +596,12 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void info( Marker marker, String format, Object[] argArray )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            setMDCMarker( marker );
-            m_delegate.inform( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void info(Marker marker, String format, Object[] argArray) {
+        if (m_delegate.isInfoEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            setMDCMarker(marker);
+            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -645,12 +614,11 @@ public class Slf4jLogger
      * @param msg    the message accompanying the exception
      * @param t      the exception (throwable) to log
      */
-    public void info( Marker marker, String msg, Throwable t )
-    {
-        if( m_delegate.isInfoEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.inform( msg, t );
+    @Override
+    public void info(Marker marker, String msg, Throwable t) {
+        if (m_delegate.isInfoEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.inform(msg, t);
             resetMDCMarker();
         }
     }
@@ -661,8 +629,8 @@ public class Slf4jLogger
      * @return True if this Logger is enabled for the WARN level,
      *         false otherwise.
      */
-    public boolean isWarnEnabled()
-    {
+    @Override
+    public boolean isWarnEnabled() {
         return m_delegate.isWarnEnabled();
     }
 
@@ -671,12 +639,9 @@ public class Slf4jLogger
      *
      * @param msg the message string to be logged
      */
-    public void warn( String msg )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            m_delegate.warn( msg, null );
-        }
+    @Override
+    public void warn(String msg) {
+        m_delegate.warn(msg, null);
     }
 
     /**
@@ -689,12 +654,11 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void warn( String format, Object arg )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void warn(String format, Object arg) {
+        if (m_delegate.isWarnEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -708,12 +672,11 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void warn( String format, Object[] argArray )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void warn(String format, Object[] argArray) {
+        if (m_delegate.isWarnEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -728,12 +691,11 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void warn( String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void warn(String format, Object arg1, Object arg2) {
+        if (m_delegate.isWarnEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -744,12 +706,9 @@ public class Slf4jLogger
      * @param msg the message accompanying the exception
      * @param t   the exception (throwable) to log
      */
-    public void warn( String msg, Throwable t )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            m_delegate.warn( msg, t );
-        }
+    @Override
+    public void warn(String msg, Throwable t) {
+        m_delegate.warn(msg, t);
     }
 
     /**
@@ -758,8 +717,8 @@ public class Slf4jLogger
      *
      * @param marker The marker data to take into consideration
      */
-    public boolean isWarnEnabled( Marker marker )
-    {
+    @Override
+    public boolean isWarnEnabled(Marker marker) {
         return m_delegate.isWarnEnabled();
     }
 
@@ -769,12 +728,11 @@ public class Slf4jLogger
      * @param marker The marker specific to this log statement
      * @param msg    the message string to be logged
      */
-    public void warn( Marker marker, String msg )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.warn( msg, null );
+    @Override
+    public void warn(Marker marker, String msg) {
+        if (m_delegate.isWarnEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.warn(msg, null);
             resetMDCMarker();
         }
     }
@@ -787,13 +745,12 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void warn( Marker marker, String format, Object arg )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            setMDCMarker( marker );
-            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void warn(Marker marker, String format, Object arg) {
+        if (m_delegate.isWarnEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            setMDCMarker(marker);
+            m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -808,13 +765,12 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void warn( Marker marker, String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            setMDCMarker( marker );
-            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void warn(Marker marker, String format, Object arg1, Object arg2) {
+        if (m_delegate.isWarnEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            setMDCMarker(marker);
+            m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -828,13 +784,12 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void warn( Marker marker, String format, Object[] argArray )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            setMDCMarker( marker );
-            m_delegate.warn( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void warn(Marker marker, String format, Object[] argArray) {
+        if (m_delegate.isWarnEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            setMDCMarker(marker);
+            m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -847,12 +802,11 @@ public class Slf4jLogger
      * @param msg    the message accompanying the exception
      * @param t      the exception (throwable) to log
      */
-    public void warn( Marker marker, String msg, Throwable t )
-    {
-        if( m_delegate.isWarnEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.warn( msg, t );
+    @Override
+    public void warn(Marker marker, String msg, Throwable t) {
+        if (m_delegate.isWarnEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.warn(msg, t);
             resetMDCMarker();
         }
     }
@@ -863,8 +817,8 @@ public class Slf4jLogger
      * @return True if this Logger is enabled for the ERROR level,
      *         false otherwise.
      */
-    public boolean isErrorEnabled()
-    {
+    @Override
+    public boolean isErrorEnabled() {
         return m_delegate.isErrorEnabled();
     }
 
@@ -873,12 +827,9 @@ public class Slf4jLogger
      *
      * @param msg the message string to be logged
      */
-    public void error( String msg )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            m_delegate.error( msg, null );
-        }
+    @Override
+    public void error(String msg) {
+        m_delegate.error(msg, null);
     }
 
     /**
@@ -891,12 +842,11 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void error( String format, Object arg )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void error(String format, Object arg) {
+        if (m_delegate.isErrorEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            m_delegate.error(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -911,12 +861,11 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void error( String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void error(String format, Object arg1, Object arg2) {
+        if (m_delegate.isErrorEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            m_delegate.error(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -930,12 +879,11 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void error( String format, Object[] argArray )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void error(String format, Object[] argArray) {
+        if (m_delegate.isErrorEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            m_delegate.error(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -946,12 +894,9 @@ public class Slf4jLogger
      * @param msg the message accompanying the exception
      * @param t   the exception (throwable) to log
      */
-    public void error( String msg, Throwable t )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            m_delegate.error( msg, t );
-        }
+    @Override
+    public void error(String msg, Throwable t) {
+        m_delegate.error(msg, t);
     }
 
     /**
@@ -960,8 +905,8 @@ public class Slf4jLogger
      *
      * @param marker The marker data to take into consideration
      */
-    public boolean isErrorEnabled( Marker marker )
-    {
+    @Override
+    public boolean isErrorEnabled(Marker marker) {
         return m_delegate.isErrorEnabled();
     }
 
@@ -971,12 +916,11 @@ public class Slf4jLogger
      * @param marker The marker specific to this log statement
      * @param msg    the message string to be logged
      */
-    public void error( Marker marker, String msg )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.error( msg, null );
+    @Override
+    public void error(Marker marker, String msg) {
+        if (m_delegate.isErrorEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.error(msg, null);
             resetMDCMarker();
         }
     }
@@ -989,13 +933,12 @@ public class Slf4jLogger
      * @param format the format string
      * @param arg    the argument
      */
-    public void error( Marker marker, String format, Object arg )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg );
-            setMDCMarker( marker );
-            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void error(Marker marker, String format, Object arg) {
+        if (m_delegate.isErrorEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg);
+            setMDCMarker(marker);
+            m_delegate.error(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -1010,13 +953,12 @@ public class Slf4jLogger
      * @param arg1   the first argument
      * @param arg2   the second argument
      */
-    public void error( Marker marker, String format, Object arg1, Object arg2 )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.format( format, arg1, arg2 );
-            setMDCMarker( marker );
-            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void error(Marker marker, String format, Object arg1, Object arg2) {
+        if (m_delegate.isErrorEnabled()) {
+            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+            setMDCMarker(marker);
+            m_delegate.error(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -1030,13 +972,12 @@ public class Slf4jLogger
      * @param format   the format string
      * @param argArray an array of arguments
      */
-    public void error( Marker marker, String format, Object[] argArray )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            FormattingTuple tuple = MessageFormatter.arrayFormat( format, argArray );
-            setMDCMarker( marker );
-            m_delegate.error( tuple.getMessage(), tuple.getThrowable() );
+    @Override
+    public void error(Marker marker, String format, Object[] argArray) {
+        if (m_delegate.isErrorEnabled()) {
+            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+            setMDCMarker(marker);
+            m_delegate.error(tuple.getMessage(), tuple.getThrowable());
             resetMDCMarker();
         }
     }
@@ -1050,17 +991,16 @@ public class Slf4jLogger
      * @param msg    the message accompanying the exception
      * @param t      the exception (throwable) to log
      */
-    public void error( Marker marker, String msg, Throwable t )
-    {
-        if( m_delegate.isErrorEnabled() )
-        {
-            setMDCMarker( marker );
-            m_delegate.error( msg, t );
+    @Override
+    public void error(Marker marker, String msg, Throwable t) {
+        if (m_delegate.isErrorEnabled()) {
+            setMDCMarker(marker);
+            m_delegate.error(msg, t);
             resetMDCMarker();
         }
     }
 
-   /**
+    /**
      * This method implements LocationAwareLogger.log
      *
      * The caller passes in it's own Fully Qualified Class Name (fqcn).
@@ -1072,55 +1012,44 @@ public class Slf4jLogger
      * @param argArray an array of arguments to use in the message format string
      * @param t the throwable to log
      */
-    public void log(Marker marker, String fqcn, int level, String message, Object[] argArray, Throwable t)
-    {
-       setMDCMarker( marker );
-       switch(level)
-       {
-           case(TRACE_INT):
-               if( m_delegate.isTraceEnabled() )
-               {
-                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
-                   m_delegate.trace( tuple.getMessage(), t, fqcn );
-               }
-               break;
-           case(DEBUG_INT):
-               if( m_delegate.isDebugEnabled() )
-               {
-                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
-                   m_delegate.debug( tuple.getMessage(), t, fqcn );
-               }
-               break;
-           case(INFO_INT):
-               if( m_delegate.isInfoEnabled() )
-               {
-                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
-                   m_delegate.inform( tuple.getMessage(), t, fqcn );
-               }
-               break;
-           case(WARN_INT):
-               if( m_delegate.isWarnEnabled() )
-               {
-                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
-                   m_delegate.warn( tuple.getMessage(), t, fqcn );
-               }
-               break;
-           case(ERROR_INT):
-               if( m_delegate.isErrorEnabled() )
-               {
-                   FormattingTuple tuple = MessageFormatter.arrayFormat( message, argArray );
-                   m_delegate.error( tuple.getMessage(), t, fqcn );
-               }
-               break;
-           default:
-               break;
-       }
-       resetMDCMarker();
-    }
-
-    void setPaxLoggingManager( PaxLoggingManager loggingManager, String name )
-    {
-        m_delegate = loggingManager.getLogger( name, SLF4J_FQCN );
+    @Override
+    public void log(Marker marker, String fqcn, int level, String message, Object[] argArray, Throwable t) {
+        setMDCMarker(marker);
+        switch (level) {
+            case (TRACE_INT):
+                if (m_delegate.isTraceEnabled()) {
+                    FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
+                    m_delegate.trace(tuple.getMessage(), t, fqcn);
+                }
+                break;
+            case (DEBUG_INT):
+                if (m_delegate.isDebugEnabled()) {
+                    FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
+                    m_delegate.debug(tuple.getMessage(), t, fqcn);
+                }
+                break;
+            case (INFO_INT):
+                if (m_delegate.isInfoEnabled()) {
+                    FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
+                    m_delegate.inform(tuple.getMessage(), t, fqcn);
+                }
+                break;
+            case (WARN_INT):
+                if (m_delegate.isWarnEnabled()) {
+                    FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
+                    m_delegate.warn(tuple.getMessage(), t, fqcn);
+                }
+                break;
+            case (ERROR_INT):
+                if (m_delegate.isErrorEnabled()) {
+                    FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
+                    m_delegate.error(tuple.getMessage(), t, fqcn);
+                }
+                break;
+            default:
+                break;
+        }
+        resetMDCMarker();
     }
 
     /**
@@ -1128,27 +1057,23 @@ public class Slf4jLogger
      * be reseted the marker would also be applied to all following log messages
      * within the same thread context.
      */
-    private void resetMDCMarker( )
-    {
+    private void resetMDCMarker() {
         m_delegate.getPaxContext().remove(SLF4J_MARKER_MDC_ATTRIBUTE);
     }
 
-    private void setMDCMarker( Marker marker )
-    {
-        if ( marker != null )
-        {
-            m_delegate.getPaxContext().put( SLF4J_MARKER_MDC_ATTRIBUTE, marker.getName( ) );
-            m_delegate.getPaxContext().put( SLF4J_MARKER_MDC_ATTRIBUTE, getMarkerName(marker) );
+    private void setMDCMarker(Marker marker) {
+        if (marker != null) {
+            m_delegate.getPaxContext().put(SLF4J_MARKER_MDC_ATTRIBUTE, marker.getName());
+            m_delegate.getPaxContext().put(SLF4J_MARKER_MDC_ATTRIBUTE, getMarkerName(marker));
         }
     }
 
-    public static String getMarkerName(Marker marker)
-    {
-        StringBuffer sb = new StringBuffer();
+    public static String getMarkerName(Marker marker) {
+        StringBuilder sb = new StringBuilder();
         sb.append(marker.getName());
         if (marker.hasReferences()) {
             // follow only first reference. Multiple references will be ignored.
-            Marker reference = (Marker) marker.iterator().next();
+            Marker reference = marker.iterator().next();
             sb.append(".");
             sb.append(getMarkerName(reference));
         }

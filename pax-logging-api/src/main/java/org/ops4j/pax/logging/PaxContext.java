@@ -5,154 +5,157 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Derived from org.apache.log4j.MDC
- */
 package org.ops4j.pax.logging;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The MDC class is similar to the {@link org.apache.log4j.NDC} class except that it is
- * based on a map instead of a stack. It provides <em>mapped
- * diagnostic contexts</em>. A <em>Mapped Diagnostic Context</em>, or
- * MDC in short, is an instrument for distinguishing interleaved log
- * output from different sources. Log output is typically interleaved
- * when a server handles multiple clients near-simultaneously.
- * <p/>
- * <p><b><em>The MDC is managed on a per thread basis</em></b>. A
- * child thread automatically inherits a <em>copy</em> of the mapped
- * diagnostic context of its parent.
- * <p/>
- * <p>The MDC class requires JDK 1.2 or above. Under JDK 1.1 the MDC
- * will always return empty values but otherwise will not affect or
- * harm your application.
+ * <p>The MDC class that provides <em>mapped diagnostic contexts</em>.</p>
+ *
+ * <p>A <em>Mapped Diagnostic Context</em>, or MDC in short, is an instrument for distinguishing
+ * interleaved log output from different sources. Log output is typically interleaved
+ * when a server handles multiple clients near-simultaneously.</p>
+ *
+ * <p><b><em>The MDC is managed on a per thread basis</em></b>. A child thread automatically
+ * inherits a <em>copy</em> of the mapped diagnostic context of its parent (with normal
+ * {@link InheritableThreadLocal} child inherits the same references).</p>
+ *
+ * <p>The MDC class requires JDK 1.2 or above. Under JDK 1.1 the MDC will always return empty
+ * values but otherwise will not affect or harm your application.</p>
  *
  * @author Ceki G&uuml;lc&uuml;
  * @since 1.2
  */
-public class PaxContext
-{
+public class PaxContext {
 
     static final int HT_SIZE = 7;
 
     final ThreadLocalMap tlm = new ThreadLocalMap();
 
-    public PaxContext()
-    {
-    }
-
-
-    public void putAll(Map<String, Object> context)
-    {
-        Hashtable<String, Object> ht = tlm.get();
-        if (ht == null)
-        {
-            ht = new Hashtable<String, Object>(HT_SIZE);
+    /**
+     * Sets all values from passed map in this thread-bound MDC context.
+     * This methods preserves existing values.
+     * @param context
+     */
+    public void putAll(Map<String, Object> context) {
+        Map<String, Object> ht = tlm.get();
+        if (ht == null) {
+            ht = new HashMap<String, Object>(HT_SIZE);
             tlm.set(ht);
         }
         ht.putAll(context);
     }
 
-    public void put(String key, Object o)
-    {
-        Hashtable<String, Object> ht = tlm.get();
-        if (ht == null)
-        {
-            ht = new Hashtable<String, Object>(HT_SIZE);
+    /**
+     * Sets single value in this thread-bound MDC context.
+     * @param key
+     * @param o
+     */
+    public void put(String key, Object o) {
+        Map<String, Object> ht = tlm.get();
+        if (ht == null) {
+            ht = new HashMap<String, Object>(HT_SIZE);
             tlm.set(ht);
         }
         ht.put(key, o);
     }
 
-    public Object get(String key)
-    {
-        Hashtable ht = tlm.get();
-        if (ht != null && key != null)
-        {
+    /**
+     * Gets a value from this thread-bound MDC context.
+     * @param key
+     * @return
+     */
+    public Object get(String key) {
+        Map ht = tlm.get();
+        if (ht != null && key != null) {
             return ht.get(key);
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
 
-    public void remove(String key)
-    {
-        Hashtable ht = tlm.get();
-        if (ht != null)
-        {
+    /**
+     * Removes a value from this thread-bound MDC context.
+     * @param key
+     */
+    public void remove(String key) {
+        Map ht = tlm.get();
+        if (ht != null) {
             ht.remove(key);
         }
     }
 
-
-    public Map<String, Object> getContext()
-    {
+    /**
+     * Gets full map of values related to this thread-bound MDC context.
+     * @return
+     */
+    public Map<String, Object> getContext() {
         return tlm.get();
     }
 
-    public void clear()
-    {
-        Hashtable<String, Object> ht = tlm.get();
-        if (ht != null)
-        {
-            ht.clear();
-        }
-    }
-
-    public Map<String, Object> getCopyOfContextMap()
-    {
-        Hashtable<String, Object> ht = tlm.get();
-        if (ht != null)
-        {
-            return new Hashtable<String, Object>(ht);
-        }
-        else
-        {
+    /**
+     * Gets a copy of full map of calues related to this thread-bound MDC context.
+     * @return
+     */
+    public Map<String, Object> getCopyOfContextMap() {
+        Map<String, Object> ht = tlm.get();
+        if (ht != null) {
+            return new HashMap<String, Object>(ht);
+        } else {
             return null;
         }
     }
 
-    public void setContextMap(Map<String, Object> contextMap)
-    {
-        Hashtable<String, Object> ht = tlm.get();
-        if (ht != null)
-        {
+    /**
+     * Clears entire thread-bound MDC context.
+     */
+    public void clear() {
+        Map<String, Object> ht = tlm.get();
+        if (ht != null) {
             ht.clear();
         }
-        else
-        {
-            ht = new Hashtable<String, Object>(HT_SIZE);
+    }
+
+    /**
+     * Sets all values from passed map in this thread-bound MDC context.
+     * This methods always clears existing values first.
+     * @param contextMap
+     */
+    public void setContextMap(Map<String, Object> contextMap) {
+        Map<String, Object> ht = tlm.get();
+        if (ht == null) {
+            ht = new HashMap<String, Object>(HT_SIZE);
             tlm.set(ht);
+        } else {
+            ht.clear();
         }
         ht.putAll(contextMap);
     }
 
-    static class ThreadLocalMap extends InheritableThreadLocal<Hashtable<String, Object>>
-    {
+    /**
+     * Version of {@link InheritableThreadLocal} that creates a copy of parent thread's map before
+     * starting child thread. That's why we may use not-synchronized version of {@link Map}.
+     */
+    static class ThreadLocalMap extends InheritableThreadLocal<Map<String, Object>> {
+
         @Override
-        protected Hashtable<String, Object> childValue(Hashtable<String, Object> parentValue)
-        {
-            if (parentValue != null)
-            {
-                return new Hashtable<String, Object>(parentValue);
-            }
-            else
-            {
+        protected Map<String, Object> childValue(Map<String, Object> parentValue) {
+            if (parentValue != null) {
+                return new HashMap<String, Object>(parentValue);
+            } else {
                 return null;
             }
         }
     }
+
 }

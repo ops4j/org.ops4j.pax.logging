@@ -13,24 +13,50 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ops4j.pax.logging;
 
 import org.osgi.framework.Bundle;
 
-public interface PaxLoggingManager
-{
+/**
+ * While {@link PaxLoggingService} represents implementation-specific logging service, this interface
+ * acts as a bridge between logging API specific implementation (like SLF4J LoggerFactory) and
+ * actual implementation of {@link PaxLoggingService}. When given service is gone, Logging switches immediately
+ * to non-dynamic, fallback implementation of {@link PaxLoggingService}.
+ */
+public interface PaxLoggingManager {
 
-    PaxLogger getLogger( String category, String fqcn );
+    /**
+     * Obtains a {@link PaxLogger} from this manager. Implementation delegates to {@link PaxLoggingService} or
+     * to fallback logger provider.
+     * @param category
+     * @param fqcn
+     * @return
+     */
+    PaxLogger getLogger(String category, String fqcn);
 
+    /**
+     * Returns actual, detected, dynamic {@link PaxLoggingService} that's currently used to obtain
+     * {@link PaxLogger loggers}.
+     * @return
+     */
     PaxLoggingService getPaxLoggingService();
 
-    void open();
-
+    /**
+     * Closes {@link PaxLoggingService} service tracker in this manager.
+     */
     void close();
 
+    /**
+     * Stops using associated {@link PaxLoggingService} reference.
+     */
     void dispose();
 
+    /**
+     * Returns {@link Bundle} associated with this manager. Normally it's bundle of pax-logging-api.
+     * @return
+     */
     Bundle getBundle();
+
 }

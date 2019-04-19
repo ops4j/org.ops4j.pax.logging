@@ -58,7 +58,7 @@ public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
     }
 
     public void postEvent( Bundle bundle, int level, LogEntry entry, String message,
-                           Throwable exception, ServiceReference sr, Map<String, ?> context )
+                           Throwable exception, ServiceReference<?> sr, Map<String, ?> context )
     {
         Event event = createEvent( bundle, level, entry, message, exception, sr, context );
         synchronized( m_queue )

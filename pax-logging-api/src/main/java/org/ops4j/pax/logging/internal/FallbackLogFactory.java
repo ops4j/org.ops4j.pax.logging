@@ -21,43 +21,37 @@ package org.ops4j.pax.logging.internal;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.osgi.framework.Bundle;
 import org.ops4j.pax.logging.PaxLogger;
+import org.osgi.framework.Bundle;
 
-/** This factory creates the fallback strategy when Pax Logging Service is not available.
- *
+/**
+ * This factory creates the fallback strategy when Pax Logging Service is not (yet) available.
  */
-public class FallbackLogFactory
-{
-    public static PaxLogger createFallbackLog( Bundle bundle, String categoryName )
-    {
-        if( isBuffering() )
-        {
-            return new BufferingLog( bundle, categoryName );
-        }
-        else
-        {
-            return new DefaultServiceLog( bundle, categoryName );
+public class FallbackLogFactory {
+
+    /**
+     * Create {@link PaxLogger} that doesn't deletage to logger from specific
+     * {@link org.ops4j.pax.logging.PaxLoggingService}.
+     * @param bundle
+     * @param categoryName
+     * @return
+     */
+    public static PaxLogger createFallbackLog(Bundle bundle, String categoryName) {
+        if (isBuffering()) {
+            return new BufferingLog(bundle, categoryName);
+        } else {
+            return new DefaultServiceLog(bundle, categoryName);
         }
     }
 
-    private static boolean isBuffering()
-    {
-        if (System.getSecurityManager() != null)
-        {
+    private static boolean isBuffering() {
+        if (System.getSecurityManager() != null) {
             return AccessController.doPrivileged(
-                    new PrivilegedAction<Boolean>()
-                    {
-                        public Boolean run()
-                        {
-                            return Boolean.getBoolean( "org.ops4j.pax.logging.useBufferingLogFallback" );
-                        }
-                    }
+                    (PrivilegedAction<Boolean>) () -> Boolean.getBoolean("org.ops4j.pax.logging.useBufferingLogFallback")
             );
-        }
-        else
-        {
-            return Boolean.getBoolean( "org.ops4j.pax.logging.useBufferingLogFallback" );
+        } else {
+            return Boolean.getBoolean("org.ops4j.pax.logging.useBufferingLogFallback");
         }
     }
+
 }

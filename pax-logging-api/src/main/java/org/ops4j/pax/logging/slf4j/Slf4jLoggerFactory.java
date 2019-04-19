@@ -17,62 +17,31 @@
  */
 package org.ops4j.pax.logging.slf4j;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.WeakHashMap;
-
-import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.internal.Activator;
 import org.ops4j.pax.logging.internal.FallbackLogFactory;
-import org.osgi.framework.BundleContext;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
 /**
  * <p>pax-logging specific {@link ILoggerFactory} returned from {@link org.slf4j.impl.StaticLoggerBinder}</p>
- * <p></p>
  */
 public class Slf4jLoggerFactory implements ILoggerFactory {
 
-    private static PaxLoggingManager m_paxLogging;
-    private static Map<String, Slf4jLogger> m_loggers;
+    static PaxLoggingManager m_paxLogging;
 
-    static {
-        m_loggers = new WeakHashMap<String, Slf4jLogger>();
-    }
-
-    public static void setBundleContext(BundleContext context) {
-        synchronized (m_loggers) {
-            m_paxLogging = new OSGIPaxLoggingManager(context);
-            // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-            for (Entry<String, Slf4jLogger> entry : m_loggers.entrySet()) {
-                String name = entry.getKey();
-                Slf4jLogger logger = entry.getValue();
-                logger.setPaxLoggingManager(m_paxLogging, name);
-            }
-            m_paxLogging.open();
-        }
+    public static void setPaxLoggingManager(PaxLoggingManager manager) {
+        m_paxLogging = manager;
     }
 
     /**
-     * Releases any held resources and makes the class ready for garbage collection.
-     */
-    public static void release() {
-    }
-
-    /**
-     * Return an appropriate {@link org.slf4j.Logger} instance as specified by the <code>name</code> parameter.
-     *
-     * <p>
-     * Null-valued name arguments are considered invalid.
-     *
-     * <p>
-     * Certain extremely simple logging systems, e.g. NOP, may always return the same logger instance regardless of the
-     * requested name.
+     * <p>Return an appropriate {@link org.slf4j.Logger} instance as specified by the <code>name</code> parameter.</p>
+     * <p>Null-valued name arguments are considered invalid.</p>
      *
      * @param name the name of the Logger to return
      */
+    @Override
     public Logger getLogger(String name) {
         PaxLogger paxLogger;
         if (m_paxLogging == null) {
@@ -83,17 +52,11 @@ public class Slf4jLoggerFactory implements ILoggerFactory {
         Slf4jLogger logger = new Slf4jLogger(name, paxLogger);
         if (m_paxLogging == null) {
             // just add the logger which PaxLoggingManager need to be replaced.
-            synchronized (m_loggers) {
-                m_loggers.put(name, logger);
+            synchronized (Activator.m_loggers) {
+                Activator.m_loggers.put(name, logger);
             }
         }
         return logger;
     }
 
-    /** Pax Logging internal method. Should never be used directly. */
-    public static void dispose() {
-        m_paxLogging.close();
-        m_paxLogging.dispose();
-        m_paxLogging = null;
-    }
 }

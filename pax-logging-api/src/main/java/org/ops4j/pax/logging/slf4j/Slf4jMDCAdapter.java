@@ -19,71 +19,75 @@ package org.ops4j.pax.logging.slf4j;
 
 import java.util.Map;
 
-import org.slf4j.ILoggerFactory;
-import org.slf4j.spi.MDCAdapter;
-import org.osgi.framework.BundleContext;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.ops4j.pax.logging.OSGIPaxLoggingManager;
+import org.ops4j.pax.logging.PaxLoggingService;
+import org.slf4j.spi.MDCAdapter;
 
 /**
  * <p>pax-logging specific {@link MDCAdapter} returned from {@link org.slf4j.impl.StaticMDCBinder}</p>
  */
 public class Slf4jMDCAdapter implements MDCAdapter {
 
-    private static PaxContext m_context;
+    /** {@link PaxContext} used when {@link org.ops4j.pax.logging.PaxLoggingService} is not available */
     private static PaxContext m_defaultContext = new PaxContext();
-
-    private static PaxLoggingManager m_paxLogging;
-
-    public static void setBundleContext(BundleContext ctx) {
-        m_paxLogging = new OSGIPaxLoggingManager(ctx);
-        // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-        m_paxLogging.open();
-    }
+    /** {@link PaxContext} obtained from {@link org.ops4j.pax.logging.PaxLoggingService} */
+    private static PaxContext m_context;
 
     /**
-     * For all the methods that operate against the context, return true if the MDC should use the PaxContext object from the PaxLoggingManager,
-     * or if the logging manager is not set, or does not have its context available yet, use a default context local to this MDC.
+     * <p>For all the methods that use the context, default, static, {@link PaxContext} may be used (tied to pax-logging-api
+     * bundle) if there's no available {@link PaxLoggingManager} or {@link PaxLoggingService}. If the service is
+     * available, it is <strong>always</strong> used to get service specific {@link PaxContext}.</p>
+     * <p>Refering <strong>always</strong> to {@link PaxLoggingService#getPaxContext()} is cheap operation, as it's
+     * only reference to fields.</p>
+     *
+     * <p>See: https://ops4j1.jira.com/browse/PAXLOGGING-247</p>
+     *
      * @return m_context if the MDC should use the PaxContext object from the PaxLoggingManager,
-     * or m_defaultContext if the logging manager is not set, or does not have its context available yet.
+     *      or m_defaultContext if the logging manager is not set, or does not have its context available yet.
      */
     private static PaxContext getContext() {
-        if (m_context == null && m_paxLogging != null) {
-            m_context = (m_paxLogging.getPaxLoggingService() != null) ? m_paxLogging.getPaxLoggingService().getPaxContext() : null;
+        PaxLoggingManager manager = Slf4jLoggerFactory.m_paxLogging;
+        if (manager != null) {
+            synchronized (Slf4jMDCAdapter.class) {
+                PaxLoggingService service = manager.getPaxLoggingService();
+                m_context = service != null ? service.getPaxContext() : null;
+            }
         }
         return m_context != null ? m_context : m_defaultContext;
     }
 
+    @Override
     public void put(String key, String val) {
         getContext().put(key, val);
     }
 
+    @Override
     public String get(String key) {
-        Object value = null;
-        return ((value = getContext().get(key)) != null) ? value.toString() : null;
+        Object value = getContext().get(key);
+        return value != null ? value.toString() : null;
     }
 
+    @Override
     public void remove(String key) {
         getContext().remove(key);
     }
 
+    @Override
     public void clear() {
         getContext().clear();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public Map getCopyOfContextMap() {
         return getContext().getCopyOfContextMap();
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public void setContextMap(Map contextMap) {
         getContext().setContextMap(contextMap);
     }
 
-    /** Pax Logging internal method. Should never be used directly. */
-    public static void dispose() {
-        m_paxLogging.close();
-        m_paxLogging.dispose();
-        m_paxLogging = null;
-    }
 }

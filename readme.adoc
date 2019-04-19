@@ -18,6 +18,16 @@ Logging implementations always provide their own _APIs_ and can be used without 
 * https://logging.apache.org/log4j/2.x/[Apache Log4j2]
 * https://logback.qos.ch/[Logback]
 
+However usage of Logback _without_ SLF4J is very rare and won't be implemented in pax-logging.
+
+And the above three (with their specific configuration file syntax) are supported by (respectively):
+
+* pax-logging-service (log4j1)
+* pax-logging-log4j2 (log4j2)
+* pax-logging-logback (logoback)
+
+`pax-logging-service` is not called `pax-logging-log4j1` due to backward compatibility.
+
 == Different Logging APIs
 
 The fundamental interface is `org.osgi.service.log.LogService` from Chapter 101 of OSGi Compendium specification.
@@ -30,6 +40,10 @@ The history of `org.osgi.service.log` package versions is:
 * `1.4`: OSGi R7
 
 pax-logging-api uses version `1.3` from OSGi Compendium R6.
+
+Each class that's an entry point to specific Logging framework (like `org.slf4j.LoggerFactory`) interacts with pax-logging using `org.ops4j.pax.logging.PaxLoggingManager`. This _manager_ tracks instances of framework-specific `org.ops4j.pax.logging.PaxLoggingService` services that eventually delegate to particular framework (like Log4j2).
+
+This indirection allows to plug-in OSGi specific mechanism (like replacing `org.ops4j.pax.logging.PaxLoggingService` implementation at runtime.
 
 === SLF4J
 
@@ -50,12 +64,86 @@ classes lies on the side of _binding library_ for SLF4J API. Such classes are pr
 pax-logging-api provides own implementation of these three classes. All other classes are directly repackaged (using bndlib) from `slf4j-api-1.7.26.jar` - classes that don't have to be changed are no longer shipped in pax-logging-api source directory.
 
 === Commons Logging
-=== Log4j
-=== Log4j2
+
+While SLF4J takes simple and elegant approach for finding the actual implementation (`StaticLoggerBinder`), Commons Logging uses old school discovery through various ClassLoader and ServiceLoader tricks.
+
+In pax-logging, all this discovery is not needed, so the only reimplemented class is `org.apache.commons.logging.LogFactory` with all the discovery code removed.
+
 === Apache JULI
+
+Apache JULI is specialized (and repackaged) version of Commons Logging with original discovery mechanism already removed for Tomcat's internal logging mechanism purposes.
+
+In pax-logging, there was less work to do - discovery mechanism was already removed, only `org.apache.juli.logging.LogFactory.getInstance(java.lang.String)` method was changed to delegate to `PaxLoggingManager`.
+
+=== Avalon Logging
+
+Ancient Avalon framework predates most (if not all) Java server frameworks aiming to provide code and component organization patterns and programming model. Without dealing much with archeology, pax-logging-api provides support for `org.apache.avalon.framework.logger` package where the ultimate _source of truth_ is https://svn.apache.org/repos/asf/excalibur/tags/avalon-framework-api-4.3-Release/framework/api/src/java/org/apache/avalon/framework/logger/[this SVN tag and directory].
+
+There are no _factory methods_ to access Avalong loggers as we know from SLF4J or even from Commons Logging. There's simply new instance creation, where the reference may be assigned to `org.apache.avalon.framework.logger.Logger` interface. Thus pax-logging-api doesn't include any source from Avalon Framework. Simply implementation of `org.apache.avalon.framework.logger.Logger` is provided.
+
+Excalibur (actual library/framework using Avalon) simply provides concrete implementations of `org.apache.avalon.framework.logger.Logger`, like:
+
+* `org.apache.avalon.excalibur.logger.Log4JLogger`
+* `org.apache.avalon.framework.logger.NullLogger`
+* `org.apache.avalon.framework.logger.CommonsLogger`
+* `org.apache.avalon.excalibur.logger.ServletLogger`
+* `org.apache.avalon.framework.logger.Jdk14Logger`
+* `org.apache.avalon.framework.logger.ConsoleLogger`
+
+To achieve _factory method_ approach, pax-logging-api exports `org.ops4j.pax.logging.avalon` package with special (not implied from Avalon Framework design) factory class for Avalon loggers. For other facades, package with factory classes is not `org.ops4j.pax.logging.*`.
+
 === JBoss Logging
+
+JBoss started to use dedicated logging _bridge_ (facade) with http://docs.jboss.org/hibernate/orm/4.3/topical/html/logging/Logging.html[Hibernate 4.0]. Similarly to e.g., Commons Logging, actual logging framework is discovered at runtime.
+
+JBoss Logging can delegate to either concrete logging implementation (like Log4j1, Log4j2) or another logging facade (like SLF4J or Commons Logging). It uses discovery (ClassLoader + ServiceLoader) mechanism to find the framework to delegate to.
+
+Originally, `org.jboss.logging.provider` property may be set to one of these values:
+
+* jboss
+* jdk
+* log4j2
+* log4j
+* slf4j
+
+Then discovery checks ServiceLoader for `org.jboss.logging.Provider` provider (`/META-INF/services/org.jboss.logging.Provider`).
+
+pax-logging API doesn't yet delegate JBoss Logging API to pax-logging OSGi manager.
+https://ops4j1.jira.com/browse/PAXLOGGING-251[PAXLOGGING-251] tracks issue.
+
 === Knopflerfish
 
 https://www.knopflerfish.org/archive.html[This page] shows Knopflerfish releases groupped by OSGi release version.
 
 Knopflerfish 6 matches OSGi R6 and `org.osgi.service.log` version `1.3`.
+
+Knopflerfish is not yet another Logging facade/bridge. It's fully-fledged OSGi framework while specifically `org.knopflerfish.kf6:log-API` JAR provides specific package `org.knopflerfish.service.log`, where `org.knopflerfish.service.log.LogService` is an extension of standard `org.osgi.service.log.LogService` OSGi service.
+
+What's interesting here is that there's no need to provide special bridge to pax-logging delegation mechanism.
+`org.ops4j.pax.logging.PaxLoggingService` already extends `org.knopflerfish.service.log.LogService`.
+
+`org.knopflerfish.service.log` provides nice utility `org.knopflerfish.service.log.LogRef` which is effectively a `org.osgi.util.tracker.ServiceTracker` that makes it easier to deal with OSGi LogService.
+
+=== Log4j
+
+Ah, the grandfather of all configurable Logging frameworks. Created when there was no logging bridges/facades around. Actually first facades (Commons Logging) was created to bridge common logging API to one of different logging frameworks (back then, it was only Log4j1 and Java Util Logging (JUL) from JDK1.4).
+
+Because its origins are in pre-logging bridge times, Log4j1's API was used directly by very large amount of code. That's why pax-logging fully supports its native API.
+
+Also, this was the first logging framework embraced by pax-logging project itself.
+
+=== Logback
+
+As mentioned on https://logback.qos.ch/[project's web page], Logback _picks up where log4j leaves off_.
+
+Logback was created after the logging-bridge (r)evolution and even if it may be used without any logging facade/bridge, it is very uncommon to do so. That's why there are no special API classes in pax-logging-api related to Logback. Logback is handled by pax-logging _only_ through implementation of `org.ops4j.pax.logging.PaxLoggingService`.
+
+Logback is mostly used behind SLF4J facade and both logger factory and MDC/NDC API comes from SLF4J itself when dealing with Logback.
+
+=== Log4j2
+
+After huge (in my humble, subjective opinion) success of Logback, Log4j2 was created as modernized version of original Log4j project with full awareness of logging bridges/facades and weird properties file syntax.
+
+pax-logging provides dedicated implementation of `org.ops4j.pax.logging.PaxLoggingService` that delegates to Log4j2.
+
+Again, Log4j2 itself may be used without bridge/facade and (differently than with Logback) pax-logging fully supports its native API.

@@ -18,6 +18,14 @@
 
 package org.jboss.logging;
 
+/**
+ * <p>Original {@code LoggerProviders} discovers a provider using {@link ClassLoader} and {@link java.util.ServiceLoader}
+ * tricks. In pax-logging we simply use static provider.
+ * PAXLOGGING-251 is about implementing actual delegating provider.</p>
+ *
+ * <p>Even if there's not much source to take from jboss-logging, pax-logging-api used source from
+ * org.jboss.logging:jboss-logging:3.4.0.Final.</p>
+ */
 final class LoggerProviders {
 
     static final LoggerProvider PROVIDER = new Log4j2LoggerProvider();

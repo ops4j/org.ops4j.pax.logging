@@ -13,7 +13,7 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ops4j.pax.logging;
 
@@ -26,48 +26,115 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
-public class OSGIPaxLoggingManager extends ServiceTracker
-        implements PaxLoggingManager
-{
+/**
+ * <p>{@link PaxLoggingManager} that acts as a singleton that delegates to tracked instance of {@link PaxLoggingService}</p>
+ * <p>More precisely - it returns instances of {@link PaxLogger} that internally delegate to loggers obtained from
+ * available {@link PaxLoggingService} or from fallback service when there's no implementation available.</p>
+ */
+public class OSGIPaxLoggingManager
+        implements PaxLoggingManager, ServiceTrackerCustomizer<PaxLoggingService, PaxLoggingService> {
 
-    private PaxLoggingService m_service;
+    private ServiceTracker<PaxLoggingService, PaxLoggingService> tracker;
+
+    private PaxLoggingService m_logService;
+    private ServiceReference<PaxLoggingService> m_logServiceRef;
+
+    /**
+     * Mapping between logger name and {@link TrackingLogger}. This map is shared between all logging facades.
+     */
+    private final Map<String, TrackingLogger> m_loggers;
 
     private BundleContext m_context;
 
-    private Map<String, TrackingLogger> m_loggers;
+    public OSGIPaxLoggingManager(BundleContext context) {
+        tracker = new ServiceTracker<>(context, PaxLoggingService.class.getName(), this);
+        tracker.open();
 
-    private ServiceReference m_logServiceRef;
-
-    public OSGIPaxLoggingManager(BundleContext context)
-    {
-        super(context, PaxLoggingService.class.getName(), null);
         m_loggers = new HashMap<String, TrackingLogger>();
         m_context = context;
+
         // retrieve the service if any exist at this point.
-        ServiceReference ref = context.getServiceReference(PaxLoggingService.class.getName());
-        if (ref != null)
-        {
-            m_service = (PaxLoggingService) context.getService(ref);
+        ServiceReference<PaxLoggingService> ref = tracker.getServiceReference();
+        if (ref != null) {
+            m_logService = context.getService(ref);
         }
     }
 
-    public Object addingService(ServiceReference reference)
-    {
-        m_logServiceRef = reference;
-        m_service = (PaxLoggingService) m_context.getService(reference);
+    @Override
+    public PaxLogger getLogger(String category, String fqcn) {
+        if (fqcn == null) {
+            fqcn = PaxLogger.class.getName();
+        }
+
+        // PAXLOGGING-174: we should configure skipped callstack entries
+        Bundle bundle = BundleHelper.getCallerBundle(m_context.getBundle());
+
+        String key = fqcn + "#" + category + "#" + (bundle != null ? Long.toString(bundle.getBundleId()) : "0");
+        synchronized (m_loggers) {
+            TrackingLogger logger = m_loggers.get(key);
+            if (logger == null) {
+                logger = new TrackingLogger(m_logService, category, bundle, fqcn);
+                m_loggers.put(key, logger);
+            }
+            return logger;
+        }
+    }
+
+    @Override
+    public PaxLoggingService getPaxLoggingService() {
+        return m_logService;
+    }
+
+    @Override
+    public void close() {
+        tracker.close();
+    }
+
+    @Override
+    public void dispose() {
+        if (m_logServiceRef != null) {
+            m_context.ungetService(m_logServiceRef);
+            m_logServiceRef = null;
+        }
+
         synchronized (m_loggers) {
             for (TrackingLogger logger : m_loggers.values()) {
-                logger.added(m_service);
+                logger.removed();
             }
+            m_loggers.clear();
         }
-        return m_service;
+
+        m_context = null;
     }
 
-    public void removedService(ServiceReference reference, Object service)
-    {
-        m_service = null;
-        if (m_logServiceRef == null) {
+    @Override
+    public Bundle getBundle() {
+        return m_context.getBundle();
+    }
+
+    @Override
+    public PaxLoggingService addingService(ServiceReference<PaxLoggingService> reference) {
+        m_logServiceRef = reference;
+        m_logService = m_context.getService(m_logServiceRef);
+
+        synchronized (m_loggers) {
+            for (TrackingLogger logger : m_loggers.values()) {
+                logger.added(m_logService);
+            }
+        }
+        return m_logService;
+    }
+
+    @Override
+    public void modifiedService(ServiceReference<PaxLoggingService> reference, PaxLoggingService service) {
+    }
+
+    @Override
+    public void removedService(ServiceReference<PaxLoggingService> reference, PaxLoggingService service) {
+        m_logService = null;
+        if (m_logServiceRef != null) {
             m_context.ungetService(m_logServiceRef);
             m_logServiceRef = null;
         }
@@ -79,42 +146,4 @@ public class OSGIPaxLoggingManager extends ServiceTracker
         }
     }
 
-    public PaxLogger getLogger(String category, String fqcn)
-    {
-        if (fqcn == null)
-        {
-            fqcn = PaxLogger.class.getName();
-        }
-        Bundle bundle = BundleHelper.getCallerBundle(m_context.getBundle());
-        String key = fqcn + "#" + category + "#" + (bundle != null ? Long.toString(bundle.getBundleId()) : "0");
-        synchronized (m_loggers) {
-            TrackingLogger logger = m_loggers.get(key);
-            if (logger == null)
-            {
-                logger = new TrackingLogger(m_service, category, bundle, fqcn);
-                m_loggers.put(key, logger);
-            }
-            return logger;
-        }
-    }
-
-    public PaxLoggingService getPaxLoggingService()
-    {
-        return m_service;
-    }
-
-    public void dispose()
-    {
-        if (m_logServiceRef != null)
-        {
-            m_context.ungetService(m_logServiceRef);
-            m_logServiceRef = null;
-        }
-        m_context = null;
-    }
-
-    public Bundle getBundle()
-    {
-        return m_context.getBundle();
-    }
 }
