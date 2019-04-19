@@ -30,6 +30,10 @@ import org.osgi.framework.Bundle;
  */
 public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
 
+    private static final String[] levels = {
+            "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
+    };
+
     private static final int TRACE = 0;
     private static final int DEBUG = 1;
     private static final int INFO = 2;
@@ -38,7 +42,7 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
     private static final int FATAL = 5;
     private static final int NONE = 6;
 
-    public static int level;
+    private static int level;
 
     private Bundle m_bundle;
     private String m_categoryName;
@@ -57,12 +61,12 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
         return level <= DEBUG;
     }
 
-    public boolean isWarnEnabled() {
-        return level <= WARN;
-    }
-
     public boolean isInfoEnabled() {
         return level <= INFO;
+    }
+
+    public boolean isWarnEnabled() {
+        return level <= WARN;
     }
 
     public boolean isErrorEnabled() {
@@ -129,7 +133,12 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
 
         System.out.print("[");
         System.out.print(m_categoryName);
-        System.out.print("] : ");
+        System.out.print("] ");
+        if (level >= 0 && level < levels.length) {
+            System.out.print(levels[level]);
+            System.out.print(" ");
+        }
+        System.out.print(": ");
         System.out.println(message);
 
         if (t != null) {
