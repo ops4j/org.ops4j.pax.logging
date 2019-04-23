@@ -198,7 +198,7 @@
             <roles>
                 <role>Developer</role>
             </roles>
-            <timezone>UTC+1</timezone>
+            <timezone>+1</timezone>
         </developer>
     </developers>
 
