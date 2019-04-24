@@ -127,14 +127,14 @@
             <scope>provided</scope>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>log4j</groupId>-->
-<!--            <artifactId>log4j</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>log4j</groupId>-->
-<!--            <artifactId>apache-log4j-extras</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>apache-log4j-extras</artifactId>
+        </dependency>
 
         <!-- Testing -->
 

@@ -228,7 +228,7 @@ The same packages as in log4j-1.2.17.jar, but with additional classes (most clas
 * org.apache.log4j.varia (has additional `SoundAppender.class`)
 * org.apache.log4j.xml (has additional `XSLTLayout.class`)
 
-With PAXLOGGING-252, I'd like to make it easier to maintain pax-logging itself. The goals are:
+With PAXLOGGING-252, I'd like to make it easier to maintain pax-logging itself. The goals (and kind of work log) are:
 
 * if some classes are needed from original log4j1 (and log4j2 too) they should be Export-Packaged
 * if some classes have to be adjusted for pax-logging (OSGi in general), they should be copied _and committed_ without changing. Changes should be done in separate commit to distinguish original version from changes.
@@ -243,6 +243,10 @@ With PAXLOGGING-252, I'd like to make it easier to maintain pax-logging itself. 
 ** org.apache.log4j.xml
 * possibly the above list will change, if some pax-logging adjustments will remove some _uses_ from the closure.
 * I've removed _all_ log4j1 sources from pax-logging, I'm going to copy `org.apache.log4j.Logger`, `org.apache.log4j.MDC` and `org.apache.log4j.NDC` classes and the classes they require, reapply _all_ the changes done so far in pax-logging with better tracking (_diffability_, _cherrypickability_) and finally remove the sources that don't have changes (those classes will then be simply Export-Packaged from log4j:log4j dependency).
+* After adjusting some classes to pax-logging (like making configuration methods dummy), it turned out that these packages don't have to be exported:
+** org.apache.log4j.config
+** org.apache.log4j.xml
+* But because `org.apache.log4j.xml` was exported in previous versions of pax-logging-api, I'll leave it as is. Also because pax-logging-service requires some classes from `org.apache.log4j.config` and I don't want this bundle to duplicate any pax-logging-api classes (whether exported or private), I'll add export for `org.apache.log4j.config` package.
 
 === Logback
 
