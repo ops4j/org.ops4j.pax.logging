@@ -34,14 +34,13 @@ package org.apache.log4j;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.LoggerRepository;
-import org.apache.log4j.spi.HierarchyEventListener;
 import org.apache.log4j.helpers.NullEnumeration;
-import org.apache.log4j.helpers.AppenderAttachableImpl;
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 
 import java.util.Enumeration;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 
 /**
@@ -86,7 +85,13 @@ import java.util.Vector;
   * @author Ceki G&uuml;lc&uuml;
   * @author Anders Kristensen 
   */
-public class Category implements AppenderAttachable {
+public abstract class Category implements AppenderAttachable, PaxLoggingManagerAwareLogger {
+
+  protected static final String LOG4J_FQCN = Logger.class.getName();
+
+  protected static PaxLoggingManager m_paxLogging;
+
+  protected PaxLogger m_delegate;
 
   /**
      The hierarchy where categories are attached to by default.
@@ -117,13 +122,9 @@ public class Category implements AppenderAttachable {
      getFQCN method. */
   private static final String FQCN = Category.class.getName();
 
-  protected ResourceBundle resourceBundle;
-
   // Categories need to know what Hierarchy they are in
   protected LoggerRepository repository;
 
-
-  AppenderAttachableImpl aai;
 
   /** Additivity is set to true by default, that is children inherit
       the appenders of their ancestors by default. If this variable is
@@ -148,7 +149,31 @@ public class Category implements AppenderAttachable {
     this.name = name;
   }
 
+  protected
+  Category(String name, PaxLogger delegate) {
+    this.name = name;
+    this.m_delegate = delegate;
+  }
+
   /**
+   * Static method is different than usual, because here logger is also a factory.
+   * @param manager
+   */
+  public static void configurePaxLoggingManager(PaxLoggingManager manager) {
+    m_paxLogging = manager;
+  }
+
+  @Override
+  public void setPaxLoggingManager(PaxLoggingManager loggingManager) {
+    m_delegate = loggingManager.getLogger(name, LOG4J_FQCN);
+  }
+
+  // public API of original org.apache.log4j.Category follows.
+  // no need to call isXXXEnabled, as the delegated logger (PaxLogger) does it anyway
+  // non-public API is removed or changed to no-op if that's reasonable in
+  // pax-logging case.
+
+    /**
      Add <code>newAppender</code> to the list of appenders of this
      Category instance.
 
@@ -158,11 +183,7 @@ public class Category implements AppenderAttachable {
   synchronized
   public
   void addAppender(Appender newAppender) {
-    if(aai == null) {
-      aai = new AppenderAttachableImpl();
-    }
-    aai.addAppender(newAppender);
-    repository.fireAddAppenderEvent(this, newAppender);
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
   /**
@@ -197,23 +218,6 @@ public class Category implements AppenderAttachable {
      @param event the event to log.  */
   public
   void callAppenders(LoggingEvent event) {
-    int writes = 0;
-
-    for(Category c = this; c != null; c=c.parent) {
-      // Protected against simultaneous call to addAppender, removeAppender,...
-      synchronized(c) {
-	if(c.aai != null) {
-	  writes += c.aai.appendLoopOnAppenders(event);
-	}
-	if(!c.additive) {
-	  break;
-	}
-      }
-    }
-
-    if(writes == 0) {
-      repository.emitNoAppenderWarning(this);
-    }
   }
 
   /**
@@ -223,15 +227,6 @@ public class Category implements AppenderAttachable {
   */
   synchronized
   void closeNestedAppenders() {
-    Enumeration enumeration = this.getAllAppenders();
-    if(enumeration != null) {
-      while(enumeration.hasMoreElements()) {
-	Appender a = (Appender) enumeration.nextElement();
-	if(a instanceof AppenderAttachable) {
-	  a.close();
-	}
-      }
-    }
   }
 
   /**
@@ -254,11 +249,7 @@ public class Category implements AppenderAttachable {
     @param message the message object to log. */
   public
   void debug(Object message) {
-    if(repository.isDisabled(Level.DEBUG_INT))
-      return;
-    if(Level.DEBUG.isGreaterOrEqual(this.getEffectiveLevel())) {
-      forcedLog(FQCN, Level.DEBUG, message, null);
-    }
+    m_delegate.debug(message == null ? null : message.toString(), null);
   }
 
 
@@ -273,11 +264,12 @@ public class Category implements AppenderAttachable {
    @param t the exception to log, including its stack trace.  */
   public
   void debug(Object message, Throwable t) {
-    if(repository.isDisabled(Level.DEBUG_INT))
-      return;
-    if(Level.DEBUG.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, Level.DEBUG, message, t);
+    m_delegate.debug(message == null ? null : message.toString(), t);
   }
+
+  protected
+  abstract
+  void trace(Object message, Throwable t);
 
   /**
     Log a message object with the {@link Level#ERROR ERROR} Level.
@@ -299,10 +291,7 @@ public class Category implements AppenderAttachable {
     @param message the message object to log */
   public
   void error(Object message) {
-    if(repository.isDisabled(Level.ERROR_INT))
-      return;
-    if(Level.ERROR.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, Level.ERROR, message, null);
+    m_delegate.error(message == null ? null : message.toString(), null);
   }
 
   /**
@@ -316,11 +305,7 @@ public class Category implements AppenderAttachable {
    @param t the exception to log, including its stack trace.  */
   public
   void error(Object message, Throwable t) {
-    if(repository.isDisabled(Level.ERROR_INT))
-      return;
-    if(Level.ERROR.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, Level.ERROR, message, t);
-
+    m_delegate.error(message == null ? null : message.toString(), t);
   }
 
 
@@ -335,7 +320,7 @@ public class Category implements AppenderAttachable {
   public
   static
   Logger exists(String name) {
-    return LogManager.exists(name);
+    throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
   }
 
   /**
@@ -359,10 +344,7 @@ public class Category implements AppenderAttachable {
     @param message the message object to log */
   public
   void fatal(Object message) {
-    if(repository.isDisabled(Level.FATAL_INT))
-      return;
-    if(Level.FATAL.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, Level.FATAL, message, null);
+    m_delegate.fatal(message == null ? null : message.toString(), null);
   }
 
   /**
@@ -376,10 +358,7 @@ public class Category implements AppenderAttachable {
    @param t the exception to log, including its stack trace.  */
   public
   void fatal(Object message, Throwable t) {
-    if(repository.isDisabled(Level.FATAL_INT))
-      return;
-    if(Level.FATAL.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, Level.FATAL, message, t);
+    m_delegate.fatal(message == null ? null : message.toString(), t);
   }
 
 
@@ -388,7 +367,7 @@ public class Category implements AppenderAttachable {
      without further checks.  */
   protected
   void forcedLog(String fqcn, Priority level, Object message, Throwable t) {
-    callAppenders(new LoggingEvent(fqcn, this, level, message, t));
+    log(fqcn, level, message, t);
   }
 
 
@@ -409,10 +388,7 @@ public class Category implements AppenderAttachable {
   synchronized
   public
   Enumeration getAllAppenders() {
-    if(aai == null)
-      return NullEnumeration.getInstance();
-    else
-      return aai.getAllAppenders();
+    return NullEnumeration.getInstance();
   }
 
   /**
@@ -423,10 +399,7 @@ public class Category implements AppenderAttachable {
   synchronized
   public
   Appender getAppender(String name) {
-     if(aai == null || name == null)
-      return null;
-
-     return aai.getAppender(name);
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
   /**
@@ -439,11 +412,23 @@ public class Category implements AppenderAttachable {
    */
   public
   Level getEffectiveLevel() {
-    for(Category c = this; c != null; c=c.parent) {
-      if(c.level != null)
-	return c.level;
+    int level = m_delegate.getLogLevel();
+    if (level == PaxLogger.LEVEL_TRACE) {
+      return Level.TRACE;
     }
-    return null; // If reached will cause an NullPointerException.
+    if (level == PaxLogger.LEVEL_DEBUG) {
+      return Level.DEBUG;
+    }
+    if (level == PaxLogger.LEVEL_INFO) {
+      return Level.INFO;
+    }
+    if (level == PaxLogger.LEVEL_WARNING) {
+      return Level.WARN;
+    }
+    if (level == PaxLogger.LEVEL_ERROR) {
+      return Level.ERROR;
+    }
+    return null;
   }
 
   /**
@@ -453,11 +438,7 @@ public class Category implements AppenderAttachable {
     * */
   public
   Priority getChainedPriority() {
-    for(Category c = this; c != null; c=c.parent) {
-      if(c.level != null)
-	return c.level;
-    }
-    return null; // If reached will cause an NullPointerException.
+    throw new UnsupportedOperationException("Deprecated in log4j since Mar 12, 2002");
   }
 
 
@@ -473,7 +454,7 @@ public class Category implements AppenderAttachable {
   public
   static
   Enumeration getCurrentCategories() {
-    return LogManager.getCurrentLoggers();
+    throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
   }
 
 
@@ -487,7 +468,7 @@ public class Category implements AppenderAttachable {
   public
   static
   LoggerRepository getDefaultHierarchy() {
-    return LogManager.getLoggerRepository();
+    throw new UnsupportedOperationException("Deprecated in log4j since Nov 18, 2001");
   }
 
   /**
@@ -499,7 +480,7 @@ public class Category implements AppenderAttachable {
      @since 1.1 */
   public
   LoggerRepository  getHierarchy() {
-    return repository;
+    throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
   }
 
   /**
@@ -519,7 +500,7 @@ public class Category implements AppenderAttachable {
   public
   static
   Category getInstance(String name) {
-    return LogManager.getLogger(name);
+    return Logger.getLogger(name);
   }
 
  /**
@@ -528,7 +509,7 @@ public class Category implements AppenderAttachable {
   public
   static
   Category getInstance(Class clazz) {
-    return LogManager.getLogger(clazz);
+    return Logger.getLogger(clazz);
   }
 
 
@@ -537,7 +518,7 @@ public class Category implements AppenderAttachable {
   public
   final
   String getName() {
-    return name;
+    return m_delegate.getName();
   }
 
 
@@ -552,7 +533,7 @@ public class Category implements AppenderAttachable {
   final
   public
   Category getParent() {
-    return this.parent;
+    return null;
   }
 
 
@@ -564,7 +545,7 @@ public class Category implements AppenderAttachable {
   final
   public
   Level getLevel() {
-    return this.level;
+    return getEffectiveLevel();
   }
 
   /**
@@ -573,7 +554,7 @@ public class Category implements AppenderAttachable {
   final
   public
   Level getPriority() {
-    return this.level;
+    return getEffectiveLevel();
   }
 
 
@@ -584,7 +565,7 @@ public class Category implements AppenderAttachable {
   public
   static
   Category getRoot() {
-    return LogManager.getRootLogger();
+    throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
   }
 
   /**
@@ -600,11 +581,6 @@ public class Category implements AppenderAttachable {
      @since 0.9.0 */
   public
   ResourceBundle getResourceBundle() {
-    for(Category c = this; c != null; c=c.parent) {
-      if(c.resourceBundle != null)
-	return c.resourceBundle;
-    }
-    // It might be the case that there is no resource bundle
     return null;
   }
 
@@ -618,25 +594,7 @@ public class Category implements AppenderAttachable {
   */
   protected
   String getResourceBundleString(String key) {
-    ResourceBundle rb = getResourceBundle();
-    // This is one of the rare cases where we can use logging in order
-    // to report errors from within log4j.
-    if(rb == null) {
-      //if(!hierarchy.emittedNoResourceBundleWarning) {
-      //error("No resource bundle has been set for category "+name);
-      //hierarchy.emittedNoResourceBundleWarning = true;
-      //}
-      return null;
-    }
-    else {
-      try {
-	return rb.getString(key);
-      }
-      catch(MissingResourceException mre) {
-	error("No resource is associated with key \""+key+"\".");
-	return null;
-      }
-    }
+    return null;
   }
 
   /**
@@ -660,10 +618,7 @@ public class Category implements AppenderAttachable {
     @param message the message object to log */
   public
   void info(Object message) {
-    if(repository.isDisabled(Level.INFO_INT))
-      return;
-    if(Level.INFO.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, Level.INFO, message, null);
+    m_delegate.inform(message == null ? null : message.toString(), null);
   }
 
   /**
@@ -677,10 +632,7 @@ public class Category implements AppenderAttachable {
    @param t the exception to log, including its stack trace.  */
   public
   void info(Object message, Throwable t) {
-    if(repository.isDisabled(Level.INFO_INT))
-      return;
-    if(Level.INFO.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, Level.INFO, message, t);
+    m_delegate.inform(message == null ? null : message.toString(), t);
   }
 
   /**
@@ -688,11 +640,7 @@ public class Category implements AppenderAttachable {
    */
   public
   boolean isAttached(Appender appender) {
-    if(appender == null || aai == null)
-      return false;
-    else {
-      return aai.isAttached(appender);
-    }
+    return false;
   }
 
   /**
@@ -731,9 +679,7 @@ public class Category implements AppenderAttachable {
     *   */
   public
   boolean isDebugEnabled() {
-    if(repository.isDisabled( Level.DEBUG_INT))
-      return false;
-    return Level.DEBUG.isGreaterOrEqual(this.getEffectiveLevel());
+    return m_delegate.isDebugEnabled();
   }
 
   /**
@@ -746,9 +692,26 @@ public class Category implements AppenderAttachable {
   */
   public
   boolean isEnabledFor(Priority level) {
-    if(repository.isDisabled(level.level))
+    if (level == null) {
       return false;
-    return level.isGreaterOrEqual(this.getEffectiveLevel());
+    }
+    switch (level.level) {
+      case Level.FATAL_INT:
+        return m_delegate.isFatalEnabled();
+      case Level.ERROR_INT:
+        return m_delegate.isErrorEnabled();
+      case Level.WARN_INT:
+        return m_delegate.isWarnEnabled();
+      case Level.INFO_INT:
+        return m_delegate.isInfoEnabled();
+      case Level.DEBUG_INT:
+        return m_delegate.isDebugEnabled();
+      case Level.TRACE_INT:
+      case Level.ALL_INT:
+        return m_delegate.isTraceEnabled();
+      default:
+        return false;
+    }
   }
 
   /**
@@ -760,9 +723,7 @@ public class Category implements AppenderAttachable {
   */
   public
   boolean isInfoEnabled() {
-    if(repository.isDisabled(Level.INFO_INT))
-      return false;
-    return Level.INFO.isGreaterOrEqual(this.getEffectiveLevel());
+    return m_delegate.isInfoEnabled();
   }
 
 
@@ -776,18 +737,7 @@ public class Category implements AppenderAttachable {
      @since 0.8.4 */
   public
   void l7dlog(Priority priority, String key, Throwable t) {
-    if(repository.isDisabled(priority.level)) {
-      return;
-    }
-    if(priority.isGreaterOrEqual(this.getEffectiveLevel())) {
-      String msg = getResourceBundleString(key);
-      // if message corresponding to 'key' could not be found in the
-      // resource bundle, then default to 'key'.
-      if(msg == null) {
-	msg = key;
-      }
-      forcedLog(FQCN, priority, msg, t);
-    }
+    log(FQCN, priority, key, t);
   }
   /**
      Log a localized and parameterized message. First, the user
@@ -800,18 +750,7 @@ public class Category implements AppenderAttachable {
   */
   public
   void l7dlog(Priority priority, String key,  Object[] params, Throwable t) {
-    if(repository.isDisabled(priority.level)) {
-      return;
-    }
-    if(priority.isGreaterOrEqual(this.getEffectiveLevel())) {
-      String pattern = getResourceBundleString(key);
-      String msg;
-      if(pattern == null)
-	msg = key;
-      else
-	msg = java.text.MessageFormat.format(pattern, params);
-      forcedLog(FQCN, priority, msg, t);
-    }
+    log(FQCN, priority, key, t);
   }
 
   /**
@@ -819,11 +758,31 @@ public class Category implements AppenderAttachable {
    */
   public
   void log(Priority priority, Object message, Throwable t) {
-    if(repository.isDisabled(priority.level)) {
+    if (priority == null) {
       return;
     }
-    if(priority.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, priority, message, t);
+    switch (priority.level) {
+      case Level.FATAL_INT:
+        fatal(message, t);
+        break;
+      case Level.ERROR_INT:
+        error(message, t);
+        break;
+      case Level.WARN_INT:
+        warn(message, t);
+        break;
+      case Level.INFO_INT:
+        info(message, t);
+        break;
+      case Level.DEBUG_INT:
+        debug(message, t);
+        break;
+      case Level.TRACE_INT:
+      case Level.ALL_INT:
+        trace(message, t);
+      default:
+        break;
+    }
   }
 
  /**
@@ -831,11 +790,7 @@ public class Category implements AppenderAttachable {
  */
   public
   void log(Priority priority, Object message) {
-    if(repository.isDisabled(priority.level)) {
-      return;
-    }
-    if(priority.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, priority, message, null);
+    log(priority, message, null);
   }
 
   /**
@@ -849,30 +804,8 @@ public class Category implements AppenderAttachable {
      @param t The throwable of the logging request, may be null.  */
   public
   void log(String callerFQCN, Priority level, Object message, Throwable t) {
-    if(repository.isDisabled(level.level)) {
-      return;
-    }
-    if(level.isGreaterOrEqual(this.getEffectiveLevel())) {
-      forcedLog(callerFQCN, level, message, t);
-    }
+    log(level, message, t);
   }
-
-    /**
-      *  LoggerRepository forgot the fireRemoveAppenderEvent method,
-      *     if using the stock Hierarchy implementation, then call its fireRemove.
-      *     Custom repositories can implement HierarchyEventListener if they
-      *     want remove notifications.
-     * @param appender appender, may be null.
-     */
-   private void fireRemoveAppenderEvent(final Appender appender) {
-       if (appender != null) {
-         if (repository instanceof Hierarchy) {
-           ((Hierarchy) repository).fireRemoveAppenderEvent(this, appender);
-         } else if (repository instanceof HierarchyEventListener) {
-             ((HierarchyEventListener) repository).removeAppenderEvent(this, appender);
-         }
-       }
-   }
 
   /**
      Remove all previously added appenders from this Category
@@ -883,17 +816,7 @@ public class Category implements AppenderAttachable {
   synchronized
   public
   void removeAllAppenders() {
-    if(aai != null) {
-      Vector appenders = new Vector();
-      for (Enumeration iter = aai.getAllAppenders(); iter != null && iter.hasMoreElements();) {
-          appenders.add(iter.nextElement());
-      }
-      aai.removeAllAppenders();
-      for(Enumeration iter = appenders.elements(); iter.hasMoreElements();) {
-          fireRemoveAppenderEvent((Appender) iter.nextElement());
-      }
-      aai = null;
-    }
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
 
@@ -905,13 +828,7 @@ public class Category implements AppenderAttachable {
   synchronized
   public
   void removeAppender(Appender appender) {
-    if(appender == null || aai == null)
-      return;
-    boolean wasAttached = aai.isAttached(appender);
-    aai.removeAppender(appender);
-    if (wasAttached) {
-        fireRemoveAppenderEvent(appender);
-    }
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
   /**
@@ -922,12 +839,7 @@ public class Category implements AppenderAttachable {
   synchronized
   public
   void removeAppender(String name) {
-    if(name == null || aai == null) return;
-    Appender appender = aai.getAppender(name);
-    aai.removeAppender(name);
-    if (appender != null) {
-        fireRemoveAppenderEvent(appender);
-    }
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
   /**
@@ -944,7 +856,7 @@ public class Category implements AppenderAttachable {
      category. Default package access is MANDATORY here.  */
   final
   void setHierarchy(LoggerRepository repository) {
-    this.repository = repository;
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
   /**
@@ -986,7 +898,7 @@ public class Category implements AppenderAttachable {
    */
   public
   void setResourceBundle(ResourceBundle bundle) {
-    resourceBundle = bundle;
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
   /**
@@ -1011,7 +923,6 @@ public class Category implements AppenderAttachable {
   public
   static
   void shutdown() {
-    LogManager.shutdown();
   }
 
 
@@ -1036,11 +947,7 @@ public class Category implements AppenderAttachable {
     @param message the message object to log.  */
   public
   void warn(Object message) {
-    if(repository.isDisabled( Level.WARN_INT))
-      return;
-
-    if(Level.WARN.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, Level.WARN, message, null);
+    m_delegate.warn(message == null ? null : message.toString(), null);
   }
 
   /**
@@ -1054,9 +961,6 @@ public class Category implements AppenderAttachable {
    @param t the exception to log, including its stack trace.  */
   public
   void warn(Object message, Throwable t) {
-    if(repository.isDisabled(Level.WARN_INT))
-      return;
-    if(Level.WARN.isGreaterOrEqual(this.getEffectiveLevel()))
-      forcedLog(FQCN, Level.WARN, message, t);
+    m_delegate.warn(message == null ? null : message.toString(), t);
   }
 }

@@ -18,11 +18,17 @@
 package org.apache.log4j;
 
 import org.apache.log4j.spi.LoggerFactory;
-
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.internal.Activator;
+import org.ops4j.pax.logging.internal.FallbackLogFactory;
 
 /**
   This is the central class in the log4j package. Most logging
   operations, except configuration, are done through this class.
+
+  <p>pax-logging-api has to treat this class both as a factory and as logger itself
+  - with all the configuration-related consequences.</p>
 
   @since log4j 1.2
 
@@ -39,6 +45,16 @@ public class Logger extends Category {
   Logger(String name) {
     super(name);
   }
+
+  protected
+  Logger(String name, PaxLogger delegate) {
+    super(name, delegate);
+  }
+
+  // public API of original org.apache.log4j.Logger follows.
+  // no need to call isXXXEnabled, as the delegated logger (PaxLogger) does it anyway
+  // non-public API is removed or changed to no-op if that's reasonable in
+  // pax-logging case.
 
   /**
     Log a message object with the {@link Level#FINE FINE} level which
@@ -96,12 +112,27 @@ public class Logger extends Category {
    * from their neareast ancestor with a set level. This is one of the
    * central features of log4j.
    *
+   * <p>In pax-logging, loggers are obtained from current or fallback
+   * {@link PaxLoggingManager}</p>
+   *
    * @param name The name of the logger to retrieve.  
   */
   static
   public
   Logger getLogger(String name) {
-    return LogManager.getLogger(name);
+    PaxLogger logger;
+    if (m_paxLogging == null) {
+      logger = FallbackLogFactory.createFallbackLog(null, name);
+    } else {
+      logger = m_paxLogging.getLogger(name, LOG4J_FQCN);
+    }
+    Logger log4jlogger = new Logger(name, logger);
+    if (m_paxLogging == null) {
+      synchronized (Activator.m_loggers) {
+        Activator.m_loggers.put(name, log4jlogger);
+      }
+    }
+    return log4jlogger;
   }
 
   /**
@@ -114,7 +145,7 @@ public class Logger extends Category {
   static
   public
   Logger getLogger(Class clazz) {
-    return LogManager.getLogger(clazz.getName());
+    return getLogger(clazz.getName());
   }
 
 
@@ -132,7 +163,7 @@ public class Logger extends Category {
   public
   static
   Logger getRootLogger() {
-    return LogManager.getRootLogger();
+    return getLogger("");
   }
 
   /**
@@ -152,7 +183,7 @@ public class Logger extends Category {
   public
   static
   Logger getLogger(String name, LoggerFactory factory) {
-    return LogManager.getLogger(name, factory);
+    return getLogger(name);
   }
 
     /**
@@ -163,13 +194,7 @@ public class Logger extends Category {
      * @since 1.2.12
      */
     public void trace(Object message) {
-      if (repository.isDisabled(Level.TRACE_INT)) {
-        return;
-      }
-
-      if (Level.TRACE.isGreaterOrEqual(this.getEffectiveLevel())) {
-        forcedLog(FQCN, Level.TRACE, message, null);
-      }
+        m_delegate.trace(message == null ? null : message.toString(), null);
     }
 
     /**
@@ -185,13 +210,7 @@ public class Logger extends Category {
      * @since 1.2.12
      */
     public void trace(Object message, Throwable t) {
-      if (repository.isDisabled(Level.TRACE_INT)) {
-        return;
-      }
-
-      if (Level.TRACE.isGreaterOrEqual(this.getEffectiveLevel())) {
-        forcedLog(FQCN, Level.TRACE, message, t);
-      }
+        m_delegate.trace(message == null ? null : message.toString(), t);
     }
 
     /**
@@ -202,11 +221,7 @@ public class Logger extends Category {
      *         TRACE, <code>false</code> otherwise.
      */
     public boolean isTraceEnabled() {
-        if (repository.isDisabled(Level.TRACE_INT)) {
-            return false;
-          }
-
-          return Level.TRACE.isGreaterOrEqual(this.getEffectiveLevel());
+        return m_delegate.isTraceEnabled();
     }
 
 }

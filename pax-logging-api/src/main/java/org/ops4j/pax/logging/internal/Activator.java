@@ -48,9 +48,9 @@ public class Activator implements BundleActivator {
         DefaultServiceLog.setLogLevel(levelName);
 
         // for each logging framework/facade supported, we'll:
-        // 1. configure the facade/bridge/factory with PaxLoggingManager
-        // 2. obtain the framework specific log
-        // 3. use the log
+        // 1. configure the facade/bridge/factory with single instance of PaxLoggingManager
+        // 2. obtain the framework specific log(ger)
+        // 3. use the log(ger)
 
         // SLF4J
         org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory.setPaxLoggingManager(manager);
@@ -76,8 +76,7 @@ public class Activator implements BundleActivator {
         // PAXLOGGING-251
 
         // Log4j1
-//        org.apache.log4j.Logger.setBundleContext(bundleContext);
-//        org.apache.log4j.MDC.setBundleContext(bundleContext);
+        org.apache.log4j.Logger.configurePaxLoggingManager(manager);
         org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger(name);
         log4jLogger.info("Enabling Log4J API support.");
 
@@ -109,17 +108,17 @@ public class Activator implements BundleActivator {
         org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog(name);
         juliLogger.info("Disabling JULI Logger API support.");
 
-        org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger(name);
-        log4jLogger.info("Disabling Log4J API support.");
-
         org.apache.avalon.framework.logger.Logger avalonLogger = org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger(name);
         avalonLogger.info("Disabling Avalon Logger API support.");
+
+        // JBoss Logging - PAXLOGGING-251
+
+        org.apache.log4j.Logger log4j1Logger = org.apache.log4j.Logger.getLogger(name);
+        log4j1Logger.info("Disabling Log4J v1 API support.");
 
         org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(getClass());
         log4j2Logger.info("Disabling Log4J v2 API support.");
 
-//        org.apache.log4j.Logger.dispose();
-//        org.apache.log4j.MDC.dispose();
         org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.dispose();
         org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextMap.dispose();
 
