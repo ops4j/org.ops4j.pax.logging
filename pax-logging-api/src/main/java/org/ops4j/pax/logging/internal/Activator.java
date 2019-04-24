@@ -77,8 +77,8 @@ public class Activator implements BundleActivator {
 
         // Log4j1
         org.apache.log4j.Logger.configurePaxLoggingManager(manager);
-        org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger(name);
-        log4jLogger.info("Enabling Log4J API support.");
+        org.apache.log4j.Logger log4j1Logger = org.apache.log4j.Logger.getLogger(name);
+        log4j1Logger.info("Enabling Log4J v1 API support.");
 
         // Log4j2
         org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.setBundleContext(bundleContext);
