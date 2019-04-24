@@ -17,6 +17,7 @@
 
 package org.apache.log4j;
 
+import org.apache.log4j.helpers.MessageFormatter;
 import org.apache.log4j.spi.LoggerFactory;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -213,15 +214,66 @@ public class Logger extends Category {
         m_delegate.trace(message == null ? null : message.toString(), t);
     }
 
-    /**
-     * Check whether this category is enabled for the TRACE  Level.
-     * @since 1.2.12
-     *
-     * @return boolean - <code>true</code> if this category is enabled for level
-     *         TRACE, <code>false</code> otherwise.
-     */
-    public boolean isTraceEnabled() {
-        return m_delegate.isTraceEnabled();
+  /**
+   * Log a message with the <code>TRACE</code> level with message formatting
+   * done according to the value of <code>messagePattern</code> and
+   * <code>arg</code> parameters.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg The argument to replace the formatting element, i,e,
+   * the '{}' pair within <code>messagePattern</code>.
+   * @since 1.3
+   */
+  public void trace(Object messagePattern, Object arg) {
+    if (m_delegate.isTraceEnabled()) {
+      String msgStr = (String) messagePattern;
+      msgStr = MessageFormatter.format(msgStr, arg);
+      m_delegate.trace(msgStr, null);
     }
+  }
+
+  /**
+   * Log a message with the <code>TRACE</code> level with message formatting
+   * done according to the messagePattern and the arguments arg1 and arg2.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg1 The first argument to replace the first formatting element
+   * @param arg2 The second argument to replace the second formatting element
+   * @since 1.3
+   */
+  public void trace(String messagePattern, Object arg1, Object arg2) {
+    if (m_delegate.isTraceEnabled()) {
+      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+      m_delegate.trace(msgStr, null);
+    }
+  }
+
+  /**
+   * Log a message with the <code>FATAL</code> level with message formatting
+   * done according to the messagePattern and the arguments arg1 and arg2.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg1 The first argument to replace the first formatting element
+   * @param arg2 The second argument to replace the second formatting element
+   * @since 1.3
+   */
+  public void fatal(String messagePattern, Object arg1, Object arg2) {
+    if (m_delegate.isFatalEnabled()) {
+      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+      m_delegate.fatal(msgStr, null);
+    }
+  }
 
 }

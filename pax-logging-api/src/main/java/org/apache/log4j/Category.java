@@ -31,6 +31,7 @@
 
 package org.apache.log4j;
 
+import org.apache.log4j.helpers.MessageFormatter;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.LoggerRepository;
@@ -267,9 +268,62 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     m_delegate.debug(message == null ? null : message.toString(), t);
   }
 
+  /**
+   * Log a message with the <code>DEBUG</code> level with message formatting
+   * done according to the value of <code>messagePattern</code> and
+   * <code>arg</code> parameters.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg The argument to replace the formatting element, i,e,
+   * the '{}' pair within <code>messagePattern</code>.
+   * @since 1.3
+   */
+  public void debug(Object messagePattern, Object arg) {
+    if (m_delegate.isDebugEnabled()) {
+      String msgStr = (String) messagePattern;
+      msgStr = MessageFormatter.format(msgStr, arg);
+      m_delegate.debug(msgStr, null);
+    }
+  }
+
+  /**
+   * Log a message with the <code>DEBUG</code> level with message formatting
+   * done according to the messagePattern and the arguments arg1 and arg2.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg1 The first argument to replace the first formatting element
+   * @param arg2 The second argument to replace the second formatting element
+   * @since 1.3
+   */
+  public void debug(String messagePattern, Object arg1, Object arg2) {
+    if (m_delegate.isDebugEnabled()) {
+      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+      m_delegate.debug(msgStr, null);
+    }
+  }
+
   protected
   abstract
   void trace(Object message, Throwable t);
+
+  /**
+   * Check whether this category is enabled for the ERROR Level. See also
+   * {@link #isDebugEnabled()}.
+   *
+   * @return boolean - <code>true</code> if this category is enabled for level
+   *         ERROR, <code>false</code> otherwise.
+   */
+  public boolean isErrorEnabled() {
+    return m_delegate.isErrorEnabled();
+  }
 
   /**
     Log a message object with the {@link Level#ERROR ERROR} Level.
@@ -308,6 +362,47 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     m_delegate.error(message == null ? null : message.toString(), t);
   }
 
+  /**
+   * Log a message with the <code>ERROR</code> level with message formatting
+   * done according to the value of <code>messagePattern</code> and
+   * <code>arg</code> parameters.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg The argument to replace the formatting element, i,e,
+   * the '{}' pair within <code>messagePattern</code>.
+   * @since 1.3
+   */
+  public void error(Object messagePattern, Object arg) {
+    if (m_delegate.isErrorEnabled()) {
+      String msgStr = (String) messagePattern;
+      msgStr = MessageFormatter.format(msgStr, arg);
+      m_delegate.error(msgStr, null);
+    }
+  }
+
+  /**
+   * Log a message with the <code>ERROR</code> level with message formatting
+   * done according to the messagePattern and the arguments arg1 and arg2.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg1 The first argument to replace the first formatting element
+   * @param arg2 The second argument to replace the second formatting element
+   * @since 1.3
+   */
+  public void error(String messagePattern, Object arg1, Object arg2) {
+    if (m_delegate.isErrorEnabled()) {
+      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+      m_delegate.error(msgStr, null);
+    }
+  }
 
   /**
      If the named category exists (in the default hierarchy) then it
@@ -345,6 +440,28 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
   public
   void fatal(Object message) {
     m_delegate.fatal(message == null ? null : message.toString(), null);
+  }
+
+  /**
+   * Log a message with the <code>FATAL</code> level with message formatting
+   * done according to the value of <code>messagePattern</code> and
+   * <code>arg</code> parameters.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg The argument to replace the formatting element, i,e,
+   * the '{}' pair within <code>messagePattern</code>.
+   * @since 1.3
+   */
+  public void fatal(Object messagePattern, Object arg) {
+    if (m_delegate.isFatalEnabled()) {
+      String msgStr = (String) messagePattern;
+      msgStr = MessageFormatter.format(msgStr, arg);
+      m_delegate.fatal(msgStr, null);
+    }
   }
 
   /**
@@ -622,6 +739,48 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
   }
 
   /**
+   * Log a message with the <code>INFO</code> level with message formatting
+   * done according to the value of <code>messagePattern</code> and
+   * <code>arg</code> parameters.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg The argument to replace the formatting element, i,e,
+   * the '{}' pair within <code>messagePattern</code>.
+   * @since 1.3
+   */
+  public void info(Object messagePattern, Object arg) {
+    if (m_delegate.isInfoEnabled()) {
+      String msgStr = (String) messagePattern;
+      msgStr = MessageFormatter.format(msgStr, arg);
+      m_delegate.inform(msgStr, null);
+    }
+  }
+
+  /**
+   * Log a message with the <code>INFO</code> level with message formatting
+   * done according to the messagePattern and the arguments arg1 and arg2.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg1 The first argument to replace the first formatting element
+   * @param arg2 The second argument to replace the second formatting element
+   * @since 1.3
+   */
+  public void info(String messagePattern, Object arg1, Object arg2) {
+    if (m_delegate.isInfoEnabled()) {
+      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+      m_delegate.inform(msgStr, null);
+    }
+  }
+
+  /**
    Log a message object with the <code>INFO</code> level including
    the stack trace of the {@link Throwable} <code>t</code> passed as
    parameter.
@@ -680,6 +839,17 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
   public
   boolean isDebugEnabled() {
     return m_delegate.isDebugEnabled();
+  }
+
+  /**
+   * Check whether this category is enabled for the TRACE  Level. See also
+   * {@link #isDebugEnabled()}.
+   *
+   * @return boolean - <code>true</code> if this category is enabled for level
+   *         TRACE, <code>false</code> otherwise.
+   */
+  public boolean isTraceEnabled() {
+      return m_delegate.isTraceEnabled();
   }
 
   /**
@@ -925,6 +1095,16 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
   void shutdown() {
   }
 
+  /**
+   * Check whether this category is enabled for the WARN Level. See also
+   * {@link #isDebugEnabled()}.
+   *
+   * @return boolean - <code>true</code> if this category is enabled for level
+   *         WARN, <code>false</code> otherwise.
+   */
+  public boolean isWarnEnabled() {
+    return m_delegate.isWarnEnabled();
+  }
 
   /**
     Log a message object with the {@link Level#WARN WARN} Level.
@@ -962,5 +1142,47 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
   public
   void warn(Object message, Throwable t) {
     m_delegate.warn(message == null ? null : message.toString(), t);
+  }
+
+  /**
+   * Log a message with the <code>WARN</code> level with message formatting
+   * done according to the value of <code>messagePattern</code> and
+   * <code>arg</code> parameters.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg The argument to replace the formatting element, i,e,
+   * the '{}' pair within <code>messagePattern</code>.
+   * @since 1.3
+   */
+  public void warn(Object messagePattern, Object arg) {
+    if (m_delegate.isWarnEnabled()) {
+      String msgStr = (String) messagePattern;
+      msgStr = MessageFormatter.format(msgStr, arg);
+      m_delegate.warn(msgStr, null);
+    }
+  }
+
+  /**
+   * Log a message with the <code>WARN</code> level with message formatting
+   * done according to the messagePattern and the arguments arg1 and arg2.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg1 The first argument to replace the first formatting element
+   * @param arg2 The second argument to replace the second formatting element
+   * @since 1.3
+   */
+  public void warn(String messagePattern, Object arg1, Object arg2) {
+    if (m_delegate.isWarnEnabled()) {
+      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+      m_delegate.warn(msgStr, null);
+    }
   }
 }
