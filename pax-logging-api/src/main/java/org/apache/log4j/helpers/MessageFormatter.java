@@ -91,27 +91,27 @@ public class MessageFormatter {
    */
   public static String format(String messagePattern, Object arg1, Object arg2) {
     int i = 0;
-    int len = messagePattern.length();
+    int patternLength = messagePattern.length();
     int j = messagePattern.indexOf(DELIM_START);
 
-    StringBuffer sbuf = new StringBuffer(messagePattern.length() + 50);
+    StringBuffer sbuf = new StringBuffer(patternLength + 50);
 
     for (int L = 0; L < 2; L++) {
       j = messagePattern.indexOf(DELIM_START, i);
 
-      if (j == -1 || (j+1 == len)) {
+      if (j == -1 || (j+1 == patternLength)) {
         // no more variables
         if (i == 0) { // this is a simple string
           return messagePattern;
         } else { // add the tail string which contains no variables and return the result.
-          sbuf.append(messagePattern.substring(i, messagePattern.length()));
+          sbuf.append(messagePattern.substring(i, patternLength));
           return sbuf.toString();
         }
       } else {
         char delimStop = messagePattern.charAt(j + 1);
         if ((delimStop != DELIM_STOP)) {
           // invalid DELIM_START/DELIM_STOP pair
-          sbuf.append(messagePattern.substring(i, messagePattern.length()));
+          sbuf.append(messagePattern.substring(i, patternLength));
           return sbuf.toString();
         }
         sbuf.append(messagePattern.substring(i, j));
@@ -120,7 +120,7 @@ public class MessageFormatter {
       }
     }
     // append the characters following the second {} pair.
-    sbuf.append(messagePattern.substring(i, messagePattern.length()));
+    sbuf.append(messagePattern.substring(i, patternLength));
     return sbuf.toString();
   }
 }
