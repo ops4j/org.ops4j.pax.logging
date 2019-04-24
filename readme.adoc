@@ -228,6 +228,22 @@ The same packages as in log4j-1.2.17.jar, but with additional classes (most clas
 * org.apache.log4j.varia (has additional `SoundAppender.class`)
 * org.apache.log4j.xml (has additional `XSLTLayout.class`)
 
+With PAXLOGGING-252, I'd like to make it easier to maintain pax-logging itself. The goals are:
+
+* if some classes are needed from original log4j1 (and log4j2 too) they should be Export-Packaged
+* if some classes have to be adjusted for pax-logging (OSGi in general), they should be copied _and committed_ without changing. Changes should be done in separate commit to distinguish original version from changes.
+* log4j classes should only be exported by pax-logging-api *or* Private-Packaged by pax-logging-service - never both (so far it was the case with `org.apache.log4j.Category`)
+* I'm going to export `org.apache.log4j` package with the closure of _uses_, which is:
+** org.apache.log4j
+** org.apache.log4j.config
+** org.apache.log4j.helpers
+** org.apache.log4j.or
+** org.apache.log4j.pattern
+** org.apache.log4j.spi
+** org.apache.log4j.xml
+* possibly the above list will change, if some pax-logging adjustments will remove some _uses_ from the closure.
+* I've removed _all_ log4j1 sources from pax-logging, I'm going to copy `org.apache.log4j.Logger`, `org.apache.log4j.MDC` and `org.apache.log4j.NDC` classes and the classes they require, reapply _all_ the changes done so far in pax-logging with better tracking (_diffability_, _cherrypickability_) and finally remove the sources that don't have changes (those classes will then be simply Export-Packaged from log4j:log4j dependency).
+
 === Logback
 
 As mentioned on https://logback.qos.ch/[project's web page], Logback _picks up where log4j leaves off_.

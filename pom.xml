@@ -655,6 +655,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>apache-log4j-extras</artifactId>
+                <version>${version.log4j}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
@@ -719,8 +724,8 @@
         <module>pax-logging-api</module>
         <module>pax-logging-api-test</module>
         <module>pax-logging-service</module>
-        <module>pax-logging-log4j2</module>
-        <module>pax-logging-logback</module>
+<!--        <module>pax-logging-log4j2</module>-->
+<!--        <module>pax-logging-logback</module>-->
         <module>pax-logging-it</module>
 <!--        <module>pax-logging-samples</module>-->
     </modules>

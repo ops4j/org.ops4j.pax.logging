@@ -76,8 +76,8 @@ public class Activator implements BundleActivator {
         // PAXLOGGING-251
 
         // Log4j1
-        org.apache.log4j.Logger.setBundleContext(bundleContext);
-        org.apache.log4j.MDC.setBundleContext(bundleContext);
+//        org.apache.log4j.Logger.setBundleContext(bundleContext);
+//        org.apache.log4j.MDC.setBundleContext(bundleContext);
         org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger(name);
         log4jLogger.info("Enabling Log4J API support.");
 
@@ -118,8 +118,8 @@ public class Activator implements BundleActivator {
         org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(getClass());
         log4j2Logger.info("Disabling Log4J v2 API support.");
 
-        org.apache.log4j.Logger.dispose();
-        org.apache.log4j.MDC.dispose();
+//        org.apache.log4j.Logger.dispose();
+//        org.apache.log4j.MDC.dispose();
         org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.dispose();
         org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextMap.dispose();
 

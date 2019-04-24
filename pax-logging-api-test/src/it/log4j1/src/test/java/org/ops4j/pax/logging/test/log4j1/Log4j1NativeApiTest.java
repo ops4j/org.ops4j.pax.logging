@@ -18,11 +18,32 @@
  */
 package org.ops4j.pax.logging.test.log4j1;
 
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Category;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.NDC;
+import org.apache.log4j.spi.HierarchyEventListener;
+import org.apache.log4j.spi.LoggerRepository;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * This unit test shows different log4j1 API usages. It's hard to distinguish public vs non public API with log4j1.
+ * OSGi manifest of original bundle may provide some hints, but comments in source code itself shows that some classes,
+ * even in {@code org.apache.log4j} package (the main one) should rather not be used directly.
+ */
 public class Log4j1NativeApiTest {
 
     @Test
@@ -37,6 +58,70 @@ public class Log4j1NativeApiTest {
         log.trace("TRACE");
 
         Logger.getLogger("special").trace("TRACE");
+    }
+
+    @Test
+    public void logManagerAPI() {
+        assertSame(LogManager.getLogger(Log4j1NativeApiTest.class), Logger.getLogger(Log4j1NativeApiTest.class));
+        assertSame(LogManager.getLoggerRepository().getRootLogger(), Logger.getRootLogger());
+        boolean found = false;
+        for (Enumeration<?> e = LogManager.getCurrentLoggers(); e.hasMoreElements(); ) {
+            Logger logger = (Logger) e.nextElement();
+            if (!found && Log4j1NativeApiTest.class.getName().equals(logger.getName())) {
+                found = true;
+            }
+            System.out.println("logger: " + logger.getName());
+        }
+        assertTrue("Should've found logger by name in the repository", found);
+    }
+
+    @Test
+    public void loggerRepositoryAndAppenderAPI() {
+        final boolean[] appenderAdded = { false };
+        final boolean[] appenderRemoved = { false };
+
+        LoggerRepository repo = LogManager.getLoggerRepository();
+        repo.addHierarchyEventListener(new HierarchyEventListener() {
+            @Override
+            public void addAppenderEvent(Category cat, Appender appender) {
+                appenderAdded[0] = true;
+            }
+
+            @Override
+            public void removeAppenderEvent(Category cat, Appender appender) {
+                appenderRemoved[0] = true;
+            }
+        });
+
+        final List<LoggingEvent> events = new LinkedList<>();
+        AppenderSkeleton newAppender = new AppenderSkeleton() {
+            @Override
+            public void close() {
+            }
+
+            @Override
+            public boolean requiresLayout() {
+                return false;
+            }
+
+            @Override
+            protected void append(LoggingEvent event) {
+                events.add(event);
+            }
+        };
+        repo.getRootLogger().addAppender(newAppender);
+
+        Logger.getRootLogger().info("Hello");
+        Logger.getRootLogger().trace("Hello");
+        assertThat(events.size(), equalTo(1));
+        assertTrue(appenderAdded[0] && !appenderRemoved[0]);
+
+        repo.getRootLogger().removeAppender(newAppender);
+
+        Logger.getRootLogger().info("Hello");
+        Logger.getRootLogger().trace("Hello");
+        assertThat(events.size(), equalTo(1));
+        assertTrue(appenderAdded[0] && appenderRemoved[0]);
     }
 
 }
