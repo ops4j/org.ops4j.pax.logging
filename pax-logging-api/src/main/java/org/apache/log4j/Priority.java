@@ -133,7 +133,7 @@ public class Priority {
   static
   Priority[] getAllPossiblePriorities() {
     return new Priority[] {Priority.FATAL, Priority.ERROR, Level.WARN, 
-			   Priority.INFO, Priority.DEBUG};
+			   Priority.INFO, Priority.DEBUG, Level.TRACE};
   }
 
 
