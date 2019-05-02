@@ -16,10 +16,17 @@
  */
 package org.ops4j.pax.logging.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
 
+import org.apache.log4j.helpers.LogLog;
+import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
+import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 import org.osgi.framework.BundleActivator;
@@ -34,6 +41,16 @@ public class Activator implements BundleActivator {
 
     private PaxLoggingManager manager;
 
+    // optional JUL handler to bridge events to pax-logging
+    private JdkHandler m_JdkHandler;
+
+    // optional bridging into Event Admin service
+    private EventAdminPoster m_eventAdmin;
+
+    // bundle/service/framework listener that logs events into log service
+    // as required by "101.6 Mapping of Events"
+    private FrameworkHandler m_frameworkHandler;
+
     public void start(BundleContext bundleContext) throws Exception {
         String name = getClass().getName();
 
@@ -41,11 +58,40 @@ public class Activator implements BundleActivator {
         manager = new OSGIPaxLoggingManager(bundleContext);
 
         // Falback PaxLogger
-        String levelName = System.getProperty("org.ops4j.pax.logging.DefaultServiceLog.level");
+        String levelName = defaultLogLevel();
         if (levelName == null || "".equals(levelName.trim())) {
-            levelName = bundleContext.getProperty("org.ops4j.pax.logging.DefaultServiceLog.level");
+            levelName = bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL);
         }
         DefaultServiceLog.setLogLevel(levelName);
+        if (DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG) {
+            // Log4j1 debug
+            LogLog.setInternalDebugging(true);
+        }
+
+        // for JUL we may install bridging java.util.logging.Handler just like org.slf4j:jul-to-slf4j
+        if (!Boolean.parseBoolean(bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL))
+                && !skipJulRegistration()) {
+            LogManager logManager = LogManager.getLogManager();
+
+            if (!Boolean.valueOf(bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_RESET))
+                    && !skipJulReset()) {
+                logManager.reset();
+            }
+
+            // clear out old handlers
+            java.util.logging.Logger rootLogger = logManager.getLogger("");
+            Handler[] handlers = rootLogger.getHandlers();
+            for (int i = 0; i < handlers.length; i++) {
+                rootLogger.removeHandler(handlers[i]);
+            }
+            rootLogger.setFilter(null);
+
+            m_JdkHandler = new JdkHandler(manager);
+            rootLogger.addHandler(m_JdkHandler);
+
+            java.util.logging.Logger julLogger = java.util.logging.Logger.getLogger(name);
+            julLogger.info("Enabling Java Util Logging API support.");
+        }
 
         // for each logging framework/facade supported, we'll:
         // 1. configure the facade/bridge/factory with single instance of PaxLoggingManager
@@ -82,7 +128,7 @@ public class Activator implements BundleActivator {
 
         // Log4j2
         org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.setBundleContext(bundleContext);
-        org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(getClass());
+        org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(name);
         log4j2Logger.info("Enabling Log4J v2 API support.");
 
         // after all the above facades are configured to get loggers from PaxLoggingManager (and further - from
@@ -94,16 +140,29 @@ public class Activator implements BundleActivator {
                 logger.setPaxLoggingManager(manager);
             }
         }
+
+        // handler that logs framework/bundle/service events, according to OSGi Compendium R6 101.6
+        m_frameworkHandler = new FrameworkHandler(bundleContext, manager);
+        bundleContext.addBundleListener(m_frameworkHandler);
+        bundleContext.addFrameworkListener(m_frameworkHandler);
+        bundleContext.addServiceListener(m_frameworkHandler);
     }
 
     public void stop(BundleContext bundleContext) throws Exception {
+        // Clean up the listeners.
+        if (m_frameworkHandler != null) {
+            bundleContext.removeBundleListener(m_frameworkHandler);
+            bundleContext.removeFrameworkListener(m_frameworkHandler);
+            bundleContext.removeServiceListener(m_frameworkHandler);
+        }
+
         String name = getClass().getName();
 
         org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger(name);
         slf4jLogger.info("Disabling SLF4J API support.");
 
         org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog(name);
-        commonsLogger.info("Disabling Jakarta Commons Logging API support.");
+        commonsLogger.info("Disabling Apache Commons Logging API support.");
 
         org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog(name);
         juliLogger.info("Disabling JULI Logger API support.");
@@ -122,9 +181,48 @@ public class Activator implements BundleActivator {
         org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.dispose();
         org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextMap.dispose();
 
+        // Remove the global handler for all JDK Logging (java.util.logging).
+        if (m_JdkHandler != null) {
+            java.util.logging.Logger julLogger = java.util.logging.Logger.getLogger(name);
+            julLogger.info("Disabling Java Util Logging API support.");
+
+            java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+            rootLogger.removeHandler(m_JdkHandler);
+            m_JdkHandler.flush();
+            m_JdkHandler.close();
+            m_JdkHandler = null;
+        }
+
         if (manager != null) {
             manager.dispose();
             manager.close();
+        }
+    }
+
+    private boolean skipJulRegistration() {
+        if (System.getSecurityManager() != null) {
+            return AccessController.doPrivileged((PrivilegedAction<Boolean>) ()
+                    -> Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL));
+        } else {
+            return Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL);
+        }
+    }
+
+    private boolean skipJulReset() {
+        if (System.getSecurityManager() != null) {
+            return AccessController.doPrivileged((PrivilegedAction<Boolean>) ()
+                    -> Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_RESET));
+        } else {
+            return Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_RESET);
+        }
+    }
+
+    private String defaultLogLevel() {
+        if (System.getSecurityManager() != null) {
+            return AccessController.doPrivileged((PrivilegedAction<String>) ()
+                    -> System.getProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL));
+        } else {
+            return System.getProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL);
         }
     }
 

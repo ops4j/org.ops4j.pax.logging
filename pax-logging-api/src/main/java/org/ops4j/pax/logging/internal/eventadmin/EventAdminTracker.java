@@ -18,7 +18,6 @@ package org.ops4j.pax.logging.internal.eventadmin;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import org.osgi.framework.Bundle;

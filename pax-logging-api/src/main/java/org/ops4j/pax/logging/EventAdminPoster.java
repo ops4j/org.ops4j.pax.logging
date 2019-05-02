@@ -23,7 +23,8 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
 
 /**
- * Interface to implement by logging framework specific provider, to pass logging events to Event Admin.
+ * Interface to implement by logging framework specific provider, to pass logging events to Event Admin
+ * according to OSGi Compendium "101.6.4. Log Events"
  */
 public interface EventAdminPoster {
 

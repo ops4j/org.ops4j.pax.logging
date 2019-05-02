@@ -22,71 +22,101 @@ import java.lang.reflect.Method;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-public final class BundleHelper
-{
-    private BundleHelper()
-    {
+public final class BundleHelper {
+
+    private BundleHelper() {
     }
 
     private static final SecurityManagerEx securityManager;
     private static final Method getBundleMethod;
 
-    static
-    {
+    static {
         securityManager = new SecurityManagerEx();
         Method mth = null;
-        try
-        {
-            mth = FrameworkUtil.class.getMethod("getBundle", new Class[] { Class.class });
-        }
-        catch (NoSuchMethodException e)
-        {
+        try {
+            mth = FrameworkUtil.class.getMethod("getBundle", Class.class);
+        } catch (NoSuchMethodException ignored) {
         }
         getBundleMethod = mth;
     }
 
-    public static Bundle getCallerBundle(Bundle defaultBundle)
-    {
+    /**
+     * <p>Gets a {@link Bundle} invoking logging method which is the first bundle different than
+     * pax-logging-api. If no bundle can't be found, {@code defaultBundle} is returned.</p>
+     * <p>This method analyzes class context top down (skipping two topmost classes, as they're known to
+     * come from pax-logging-api bundle). Also, {@code java.util.logging} packages are skipped.</p>
+     *
+     * @param defaultBundle
+     * @return
+     */
+    public static Bundle getCallerBundle(Bundle defaultBundle) {
         if (getBundleMethod == null) {
             return defaultBundle;
         }
 
-        try
-        {
+        try {
             Class[] classCtx = securityManager.getClassContext();
-            /* Skip first 2 classes on call stack since:
-             *  classCtx[0] is always SecurityManagerEx.getClassContext()
-             *  classCtx[1] is always BundleHelper.getCallerBundle()
+            /*
+             * Skip first 2 classes on call stack since:
+             *  0 = "class org.ops4j.pax.logging.internal.BundleHelper$SecurityManagerEx.getClassContext()"
+             *  1 = "class org.ops4j.pax.logging.internal.BundleHelper.getCallerBundle()"
              */
             Bundle curBundle = null;
-            for (int i = 2; i < classCtx.length; i++)
-            {
+            for (int i = 2; i < classCtx.length; i++) {
                 Bundle bundle = FrameworkUtil.getBundle(classCtx[i]);
-                if (bundle == null)
-                {
+                if (bundle == null && (classCtx[i].getPackage() == null
+                        || !classCtx[i].getPackage().getName().equals("java.util.logging"))) {
                     return defaultBundle;
-                }
-                else if (curBundle == null)
-                {
+                } else if (curBundle == null) {
                     curBundle = bundle;
-                }
-                else if (bundle != curBundle)
-                {
+                } else if (bundle != null && bundle != curBundle) {
                     return bundle;
                 }
             }
+        } catch (Exception ignored) {
         }
-        catch (Exception e)
-        {
-        }
-        
+
         return defaultBundle;
     }
 
-    static class SecurityManagerEx extends SecurityManager
-    {
-        public Class[] getClassContext()
-        {
+    /**
+     * <p>Gets a {@link Bundle} invoking logging method which is the first bundle before the class matching
+     * {@code fqcn} argument. Checking is done bottom-up the stack trace. If no bundle can't be found,
+     * {@code defaultBundle} is returned.</p>
+     *
+     * @param defaultBundle
+     * @return
+     */
+    public static Bundle getCallerBundle(Bundle defaultBundle, String fqcn) {
+        if (getBundleMethod == null) {
+            return defaultBundle;
+        }
+
+        try {
+            Class[] classCtx = securityManager.getClassContext();
+            int previousClass = -1;
+            for (int i = classCtx.length - 1; i >= 0; i--) {
+                if (previousClass != -1 && classCtx[i].getName().equals(fqcn)) {
+                    Bundle bundle = FrameworkUtil.getBundle(classCtx[previousClass]);
+                    if (bundle != null) {
+                        return bundle;
+                    }
+                } else {
+                    previousClass = i;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        return defaultBundle;
+    }
+
+    /**
+     * {@link SecurityManager} that exposes {@code getClassContext} as public method.
+     */
+    static class SecurityManagerEx extends SecurityManager {
+
+        public Class[] getClassContext() {
             return super.getClassContext();
         }
     }

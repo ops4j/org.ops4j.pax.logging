@@ -47,14 +47,15 @@ public interface PaxLoggingService extends LogService {
     PaxLogger getLogger(Bundle bundle, String category, String fqcn);
 
     /**
-     * Returns log level associated with entire logging service. Usually individual loggers may have different
-     * levels specified.
+     * <p>Returns log level associated with entire logging service. Usually individual loggers may have different
+     * levels specified.</p>
+     * <p>This method is specified in Knopflerfish extension to original {@link org.osgi.service.log.LogService}</p>
      * @return
      */
     int getLogLevel();
 
     /**
-     * Returns {@link PaxContext} of this logger that gives access to thread-bound MDC context.
+     * Returns {@link PaxContext} of this service that gives access to thread-bound MDC context.
      * @return
      */
     PaxContext getPaxContext();

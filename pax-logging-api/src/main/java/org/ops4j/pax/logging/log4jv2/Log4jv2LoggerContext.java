@@ -42,7 +42,6 @@ public class Log4jv2LoggerContext implements LoggerContext {
         for (Log4jv2Logger logger : loggers.values()) {
             logger.setPaxLoggingManager(paxLogging);
         }
-        paxLogging.open();
     }
 
     public static void dispose() {

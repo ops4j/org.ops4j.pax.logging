@@ -42,6 +42,10 @@ public interface PaxLogger {
     void error( String message, Throwable t );
     void fatal( String message, Throwable t );
 
+    // logging methods accepting "fqcn" that allows backend framework to analyze stacktrace
+    // when searching for actual Class/Method/File/LineNumber to log using certain
+    // patterns (like %F, %L in Log4J).
+
     void trace( String message, Throwable t, String fqcn);
     void debug( String message, Throwable t, String fqcn);
     void inform( String message, Throwable t, String fqcn);

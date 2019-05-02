@@ -22,6 +22,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.osgi.framework.Bundle;
 
 /**
@@ -30,7 +31,7 @@ import org.osgi.framework.Bundle;
 public class FallbackLogFactory {
 
     /**
-     * Create {@link PaxLogger} that doesn't deletage to logger from specific
+     * Create {@link PaxLogger} that doesn't delegate to logger from specific
      * {@link org.ops4j.pax.logging.PaxLoggingService}.
      * @param bundle
      * @param categoryName
@@ -46,11 +47,11 @@ public class FallbackLogFactory {
 
     private static boolean isBuffering() {
         if (System.getSecurityManager() != null) {
-            return AccessController.doPrivileged(
-                    (PrivilegedAction<Boolean>) () -> Boolean.getBoolean("org.ops4j.pax.logging.useBufferingLogFallback")
+            return AccessController.doPrivileged((PrivilegedAction<Boolean>) ()
+                    -> Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_USE_BUFFERING_FALLBACK_LOGGER)
             );
         } else {
-            return Boolean.getBoolean("org.ops4j.pax.logging.useBufferingLogFallback");
+            return Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_USE_BUFFERING_FALLBACK_LOGGER);
         }
     }
 

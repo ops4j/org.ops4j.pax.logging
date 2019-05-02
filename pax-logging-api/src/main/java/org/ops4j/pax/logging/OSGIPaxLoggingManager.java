@@ -64,12 +64,15 @@ public class OSGIPaxLoggingManager
 
     @Override
     public PaxLogger getLogger(String category, String fqcn) {
+        Bundle bundle = BundleHelper.getCallerBundle(m_context.getBundle());
+        return getLogger(bundle, category, fqcn);
+    }
+
+    @Override
+    public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
         if (fqcn == null) {
             fqcn = PaxLogger.class.getName();
         }
-
-        // PAXLOGGING-174: we should configure skipped callstack entries
-        Bundle bundle = BundleHelper.getCallerBundle(m_context.getBundle());
 
         String key = fqcn + "#" + category + "#" + (bundle != null ? Long.toString(bundle.getBundleId()) : "0");
         synchronized (m_loggers) {

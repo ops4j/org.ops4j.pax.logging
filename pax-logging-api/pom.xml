@@ -37,8 +37,10 @@
     <name>OPS4J Pax Logging - API</name>
 
     <description>
-        The Pax Logging API Library is to allow for the Pax Logging Service to be reloaded without stopping the many
-        dependent bundles. It also contains the OSGi Log Service API and the Knopflerfish Log API.
+        Pax Logging API Library is a collection of logging APIs from different libraries/facades.
+        It supports SLF4J, Commons Logging, JULI Logging, Log4J1 API, Log4J2 API, JBoss Logging, Avalong and Knopflerfish APIs.
+        Additionally, Pax Logging specific library is available as backend implementation with its specific configuration mechanisms,
+        but it's not required.
     </description>
 
     <build>
@@ -47,31 +49,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.avalon.framework</groupId>
-                                    <artifactId>avalon-framework-api</artifactId>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>
-                                ${project.build.directory}/classes
-                            </outputDirectory>
-                            <includes>org/apache/avalon/framework/logger/**</includes>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

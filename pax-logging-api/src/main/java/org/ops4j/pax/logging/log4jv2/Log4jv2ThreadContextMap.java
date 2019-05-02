@@ -46,7 +46,6 @@ public class Log4jv2ThreadContextMap implements ThreadContextMap {
     {
         m_paxLogging = new OSGIPaxLoggingManager( ctx );
         // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-        m_paxLogging.open();
     }
 
     public static void dispose()

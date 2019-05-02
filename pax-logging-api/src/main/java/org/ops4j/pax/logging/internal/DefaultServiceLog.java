@@ -22,11 +22,11 @@ import org.ops4j.pax.logging.PaxContext;
 import org.osgi.framework.Bundle;
 
 /**
- * <p>This Logger will be used when the Pax Logging Service is not available.</p>
+ * <p>This Logger will be used when the Pax Logging Service is not (yet) available.</p>
  *
- * <p>Defaults to DEBUG but can be changed if if the "org.ops4j.pax.logging.DefaultServiceLog.level" system
- * or context property is set to on of the following: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or NONE,
- * by calling the static method {@link #setLogLevel(String)}, where <b>level</b> is one of the same strings.</p>
+ * <p>Default threshold is DEBUG but can be changed if the {@link org.ops4j.pax.logging.PaxLoggingConstants#LOGGING_CFG_DEFAULT_LOG_LEVEL}
+ * system or context property is set to on of the following: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or NONE,
+ * by calling the static method {@link #setLogLevel(String)}, where <b>threshold</b> is one of the same strings.</p>
  */
 public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
 
@@ -34,15 +34,16 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
             "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
     };
 
-    private static final int TRACE = 0;
-    private static final int DEBUG = 1;
-    private static final int INFO = 2;
-    private static final int WARN = 3;
-    private static final int ERROR = 4;
-    private static final int FATAL = 5;
-    private static final int NONE = 6;
+    static final int TRACE = 0;
+    static final int DEBUG = 1;
+    static final int INFO = 2;
+    static final int WARN = 3;
+    static final int ERROR = 4;
+    static final int FATAL = 5;
+    static final int NONE = 6;
 
-    private static int level;
+    /** A threshold level for default log service */
+    private static int threshold;
 
     private Bundle m_bundle;
     private String m_categoryName;
@@ -54,90 +55,105 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
     }
 
     public boolean isTraceEnabled() {
-        return level <= TRACE;
+        return threshold <= TRACE;
     }
 
     public boolean isDebugEnabled() {
-        return level <= DEBUG;
+        return threshold <= DEBUG;
     }
 
     public boolean isInfoEnabled() {
-        return level <= INFO;
+        return threshold <= INFO;
     }
 
     public boolean isWarnEnabled() {
-        return level <= WARN;
+        return threshold <= WARN;
     }
 
     public boolean isErrorEnabled() {
-        return level <= ERROR;
+        return threshold <= ERROR;
     }
 
     public boolean isFatalEnabled() {
-        return level <= FATAL;
+        return threshold <= FATAL;
     }
 
     public void trace(String message, Throwable t) {
         if (isTraceEnabled()) {
-            output(message, t);
+            output(levels[TRACE], message, t);
         }
     }
 
     public void debug(String message, Throwable t) {
         if (isDebugEnabled()) {
-            output(message, t);
+            output(levels[DEBUG], message, t);
         }
     }
 
     public void inform(String message, Throwable t) {
         if (isInfoEnabled()) {
-            output(message, t);
+            output(levels[INFO], message, t);
         }
     }
 
     public void warn(String message, Throwable t) {
         if (isWarnEnabled()) {
-            output(message, t);
+            output(levels[WARN], message, t);
         }
     }
 
     public void error(String message, Throwable t) {
         if (isErrorEnabled()) {
-            output(message, t);
+            output(levels[ERROR], message, t);
         }
     }
 
     public void fatal(String message, Throwable t) {
         if (isFatalEnabled()) {
-            output(message, t);
+            output(levels[FATAL], message, t);
         }
     }
 
     public int getLogLevel() {
-        return level;
+        return threshold;
     }
 
+    public static int getStaticLogLevel() {
+        return threshold;
+    }
+
+    /**
+     * <p>Sets the threshold for this default/fallback logger. Events with level lower than given threshold
+     * won't be logged.</p>
+     * <p>Karaf sets this threshold to {@code ERROR} (in {@code etc/system.properties}).</p>
+     * @param level
+     */
     public static void setLogLevel(String level) {
-        DefaultServiceLog.level = convertLevel(level);
+        DefaultServiceLog.threshold = convertLevel(level);
     }
 
     public String getName() {
         return m_categoryName;
     }
 
-    private void output(String message, Throwable t) {
+    /**
+     * Outputs logging <em>event</em> with preconfigured layout.
+     * @param levelName
+     * @param message
+     * @param t
+     */
+    private void output(String levelName, String message, Throwable t) {
         // Might be [null] if used by standard test cases.
         if (m_bundle != null) {
             System.out.print(m_bundle.getSymbolicName());
+            System.out.print(" ");
         }
 
         System.out.print("[");
         System.out.print(m_categoryName);
         System.out.print("] ");
-        if (level >= 0 && level < levels.length) {
-            System.out.print(levels[level]);
-            System.out.print(" ");
-        }
+        System.out.print(levelName);
+        System.out.print(" ");
         System.out.print(": ");
         System.out.println(message);
 
