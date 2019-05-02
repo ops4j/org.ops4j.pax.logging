@@ -17,7 +17,6 @@
 
 package org.apache.log4j;
 
-import org.apache.log4j.helpers.MessageFormatter;
 import org.apache.log4j.spi.LoggerFactory;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -186,98 +185,26 @@ public class Logger extends Category {
     return getLogger(name);
   }
 
-    /**
-     * Log a message object with the {@link org.apache.log4j.Level#TRACE TRACE} level.
-     *
-     * @param message the message object to log.
-     * @see #debug(Object) for an explanation of the logic applied.
-     * @since 1.2.12
-     */
-    public void trace(Object message) {
-        m_delegate.trace(message == null ? null : message.toString(), null);
-    }
-
-    /**
-     * Log a message object with the <code>TRACE</code> level including the
-     * stack trace of the {@link Throwable}<code>t</code> passed as parameter.
-     *
-     * <p>
-     * See {@link #debug(Object)} form for more detailed information.
-     * </p>
-     *
-     * @param message the message object to log.
-     * @param t the exception to log, including its stack trace.
-     * @since 1.2.12
-     */
-    public void trace(Object message, Throwable t) {
-        m_delegate.trace(message == null ? null : message.toString(), t);
-    }
-
-  /**
-   * Log a message with the <code>TRACE</code> level with message formatting
-   * done according to the value of <code>messagePattern</code> and
-   * <code>arg</code> parameters.
-   * <p>
-   * This form avoids superflous parameter construction. Whenever possible,
-   * you should use this form instead of constructing the message parameter
-   * using string concatenation.
-   *
-   * @param messagePattern The message pattern which will be parsed and formatted
-   * @param arg The argument to replace the formatting element, i,e,
-   * the '{}' pair within <code>messagePattern</code>.
-   * @since 1.3
-   */
-  public void trace(Object messagePattern, Object arg) {
-    if (m_delegate.isTraceEnabled()) {
-      String msgStr = (String) messagePattern;
-      msgStr = MessageFormatter.format(msgStr, arg);
-      m_delegate.trace(msgStr, null);
-    }
-  }
-
-  /**
-   * Log a message with the <code>TRACE</code> level with message formatting
-   * done according to the messagePattern and the arguments arg1 and arg2.
-   * <p>
-   * This form avoids superflous parameter construction. Whenever possible,
-   * you should use this form instead of constructing the message parameter
-   * using string concatenation.
-   *
-   * @param messagePattern The message pattern which will be parsed and formatted
-   * @param arg1 The first argument to replace the first formatting element
-   * @param arg2 The second argument to replace the second formatting element
-   * @since 1.3
-   */
-  public void trace(String messagePattern, Object arg1, Object arg2) {
-    if (m_delegate.isTraceEnabled()) {
-      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
-      m_delegate.trace(msgStr, null);
-    }
-  }
-
-  /**
-   * Log a message with the <code>FATAL</code> level with message formatting
-   * done according to the messagePattern and the arguments arg1 and arg2.
-   * <p>
-   * This form avoids superflous parameter construction. Whenever possible,
-   * you should use this form instead of constructing the message parameter
-   * using string concatenation.
-   *
-   * @param messagePattern The message pattern which will be parsed and formatted
-   * @param arg1 The first argument to replace the first formatting element
-   * @param arg2 The second argument to replace the second formatting element
-   * @since 1.3
-   */
-  public void fatal(String messagePattern, Object arg1, Object arg2) {
-    if (m_delegate.isFatalEnabled()) {
-      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
-      m_delegate.fatal(msgStr, null);
-    }
-  }
-
   // Here are added overriden methods from the Category class (all methods that can be potentially used for logging).
-  // It is needed, because Category class is included in the stack trace in which log4j backend is looking for the LocationInfo instead of Logger class.
+  // It is needed, because Category class is included in the stack trace in which log4j backend is
+  // looking for the LocationInfo instead of Logger class.
   // These methods just call their super methods in the Category class
+
+  public void trace(final Object message) {
+    super.trace(message);
+  }
+
+  public void trace(final Object message, final Throwable t) {
+    super.trace(message, t);
+  }
+
+  public void trace(Object messagePattern, Object arg) {
+    super.trace(messagePattern, arg);
+  }
+
+  public void trace(String messagePattern, Object arg1, Object arg2) {
+    super.trace(messagePattern, arg1, arg2);
+  }
 
   public void debug(final Object message) {
     super.debug(message);
@@ -285,6 +212,14 @@ public class Logger extends Category {
 
   public void debug(final Object message, final Throwable t) {
     super.debug(message, t);
+  }
+
+  public void debug(Object messagePattern, Object arg) {
+    super.debug(messagePattern, arg);
+  }
+
+  public void debug(String messagePattern, Object arg1, Object arg2) {
+    super.debug(messagePattern, arg1, arg2);
   }
 
   public void error(final Object message) {
@@ -295,12 +230,28 @@ public class Logger extends Category {
     super.error(message, t);
   }
 
+  public void error(Object messagePattern, Object arg) {
+    super.error(messagePattern, arg);
+  }
+
+  public void error(String messagePattern, Object arg1, Object arg2) {
+    super.error(messagePattern, arg1, arg2);
+  }
+
   public void fatal(final Object message) {
     super.fatal(message);
   }
 
   public void fatal(final Object message, final Throwable t) {
     super.fatal(message, t);
+  }
+
+  public void fatal(Object messagePattern, Object arg) {
+    super.fatal(messagePattern, arg);
+  }
+
+  public void fatal(String messagePattern, Object arg1, Object arg2) {
+    super.fatal(messagePattern, arg1, arg2);
   }
 
   public void info(final Object message) {
@@ -311,12 +262,48 @@ public class Logger extends Category {
     super.info(message, t);
   }
 
+  public void info(Object messagePattern, Object arg) {
+    super.info(messagePattern, arg);
+  }
+
+  public void info(String messagePattern, Object arg1, Object arg2) {
+    super.info(messagePattern, arg1, arg2);
+  }
+
   public void warn(final Object message) {
     super.warn(message);
   }
 
   public void warn(final Object message, final Throwable t) {
     super.warn(message, t);
+  }
+
+  public void warn(Object messagePattern, Object arg) {
+    super.warn(messagePattern, arg);
+  }
+
+  public void warn(String messagePattern, Object arg1, Object arg2) {
+    super.warn(messagePattern, arg1, arg2);
+  }
+
+  @Override
+  public void assertLog(boolean assertion, String msg) {
+    super.assertLog(assertion, msg);
+  }
+
+  @Override
+  public void log(Priority priority, Object message, Throwable t) {
+    super.log(priority, message, t);
+  }
+
+  @Override
+  public void log(Priority priority, Object message) {
+    super.log(priority, message);
+  }
+
+  @Override
+  public void log(String callerFQCN, Priority level, Object message, Throwable t) {
+    super.log(callerFQCN, level, message, t);
   }
 
 }

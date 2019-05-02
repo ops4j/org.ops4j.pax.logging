@@ -310,9 +310,74 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     }
   }
 
-  protected
-  abstract
-  void trace(Object message, Throwable t);
+  /**
+   * Log a message object with the {@link org.apache.log4j.Level#TRACE TRACE} level.
+   *
+   * @param message the message object to log.
+   * @see #debug(Object) for an explanation of the logic applied.
+   * @since 1.2.12
+   */
+  public void trace(Object message) {
+      m_delegate.trace(message == null ? null : message.toString(), null);
+  }
+
+  /**
+   * Log a message object with the <code>TRACE</code> level including the
+   * stack trace of the {@link Throwable}<code>t</code> passed as parameter.
+   *
+   * <p>
+   * See {@link #debug(Object)} form for more detailed information.
+   * </p>
+   *
+   * @param message the message object to log.
+   * @param t the exception to log, including its stack trace.
+   * @since 1.2.12
+   */
+  public void trace(Object message, Throwable t) {
+      m_delegate.trace(message == null ? null : message.toString(), t);
+  }
+
+  /**
+   * Log a message with the <code>TRACE</code> level with message formatting
+   * done according to the value of <code>messagePattern</code> and
+   * <code>arg</code> parameters.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg The argument to replace the formatting element, i,e,
+   * the '{}' pair within <code>messagePattern</code>.
+   * @since 1.3
+   */
+  public void trace(Object messagePattern, Object arg) {
+    if (m_delegate.isTraceEnabled()) {
+      String msgStr = (String) messagePattern;
+      msgStr = MessageFormatter.format(msgStr, arg);
+      m_delegate.trace(msgStr, null);
+    }
+  }
+
+  /**
+   * Log a message with the <code>TRACE</code> level with message formatting
+   * done according to the messagePattern and the arguments arg1 and arg2.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg1 The first argument to replace the first formatting element
+   * @param arg2 The second argument to replace the second formatting element
+   * @since 1.3
+   */
+  public void trace(String messagePattern, Object arg1, Object arg2) {
+    if (m_delegate.isTraceEnabled()) {
+      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+      m_delegate.trace(msgStr, null);
+    }
+  }
 
   /**
    * Check whether this category is enabled for the ERROR Level. See also
@@ -460,6 +525,26 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     if (m_delegate.isFatalEnabled()) {
       String msgStr = (String) messagePattern;
       msgStr = MessageFormatter.format(msgStr, arg);
+      m_delegate.fatal(msgStr, null);
+    }
+  }
+
+  /**
+   * Log a message with the <code>FATAL</code> level with message formatting
+   * done according to the messagePattern and the arguments arg1 and arg2.
+   * <p>
+   * This form avoids superflous parameter construction. Whenever possible,
+   * you should use this form instead of constructing the message parameter
+   * using string concatenation.
+   *
+   * @param messagePattern The message pattern which will be parsed and formatted
+   * @param arg1 The first argument to replace the first formatting element
+   * @param arg2 The second argument to replace the second formatting element
+   * @since 1.3
+   */
+  public void fatal(String messagePattern, Object arg1, Object arg2) {
+    if (m_delegate.isFatalEnabled()) {
+      String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
       m_delegate.fatal(msgStr, null);
     }
   }
