@@ -34,6 +34,10 @@ import org.apache.log4j.spi.RepositorySelector;
 import org.apache.log4j.spi.RootLogger;
 
 /**
+ * <p>In pax-logging-api, this class is part of Log4j1 API, but it doesn't
+ * perform any discovery. It can be used to access some internal information
+ * from Log4j1.</p>
+ *
  * Use the <code>LogManager</code> class to retreive {@link Logger}
  * instances or to operate on the current {@link
  * LoggerRepository}. When the <code>LogManager</code> class is loaded
@@ -158,17 +162,7 @@ public class LogManager {
   public
   void setRepositorySelector(RepositorySelector selector, Object guard)
                                                  throws IllegalArgumentException {
-    if((LogManager.guard != null) && (LogManager.guard != guard)) {
-      throw new IllegalArgumentException(
-           "Attempted to reset the LoggerFactory without possessing the guard.");
-    }
-
-    if(selector == null) {
-      throw new IllegalArgumentException("RepositorySelector must be non-null.");
-    }
-
-    LogManager.guard = guard;
-    LogManager.repositorySelector = selector;
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
 
@@ -190,19 +184,8 @@ public class LogManager {
 
   static
   public LoggerRepository getLoggerRepository() {
-    if (repositorySelector == null) {
-        repositorySelector = new DefaultRepositorySelector(new NOPLoggerRepository());
-        guard = null;
-        Exception ex = new IllegalStateException("Class invariant violation");
-        String msg =
-                "log4j called after unloading, see http://logging.apache.org/log4j/1.2/faq.html#unload.";
-        if (isLikelySafeScenario(ex)) {
-            LogLog.debug(msg, ex);
-        } else {
-            LogLog.error(msg, ex);
-        }
-    }
-    return repositorySelector.getLoggerRepository();
+    // TODO: we could try return an OSGi service that's registered ONLY by pax-logging-service backend
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
   /**
@@ -210,8 +193,8 @@ public class LogManager {
    */
   public
   static Logger getRootLogger() {
-     // Delegate the actual manufacturing of the logger to the logger repository.
-    return getLoggerRepository().getRootLogger();
+     // Delegate the actual manufacturing of the logger to the logger factory managed by pax-web.
+    return Logger.getRootLogger();
   }
 
   /**
@@ -219,8 +202,8 @@ public class LogManager {
   */
   public
   static Logger getLogger(final String name) {
-     // Delegate the actual manufacturing of the logger to the logger repository.
-    return getLoggerRepository().getLogger(name);
+     // Delegate the actual manufacturing of the logger to the logger factory managed by pax-web.
+    return Logger.getLogger(name);
   }
 
  /**
@@ -228,8 +211,8 @@ public class LogManager {
   */
   public
   static Logger getLogger(final Class clazz) {
-     // Delegate the actual manufacturing of the logger to the logger repository.
-    return getLoggerRepository().getLogger(clazz.getName());
+     // Delegate the actual manufacturing of the logger to the logger factory managed by pax-web.
+    return Logger.getLogger(clazz);
   }
 
 
@@ -238,31 +221,29 @@ public class LogManager {
   */
   public
   static Logger getLogger(final String name, final LoggerFactory factory) {
-     // Delegate the actual manufacturing of the logger to the logger repository.
-    return getLoggerRepository().getLogger(name, factory);
-  }  
+     // Delegate the actual manufacturing of the logger to the logger factory managed by pax-web.
+    return Logger.getLogger(name);
+  }
 
   public
   static Logger exists(final String name) {
-    return getLoggerRepository().exists(name);
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
   public
   static
   Enumeration getCurrentLoggers() {
-    return getLoggerRepository().getCurrentLoggers();
+    throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 
   public
   static
   void shutdown() {
-    getLoggerRepository().shutdown();
   }
 
   public
   static
   void resetConfiguration() {
-    getLoggerRepository().resetConfiguration();
   }
 }
 
