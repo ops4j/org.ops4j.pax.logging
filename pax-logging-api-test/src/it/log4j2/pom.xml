@@ -30,7 +30,7 @@
     </parent>
 
     <groupId>org.ops4j.pax.logging.test</groupId>
-    <artifactId>pax-logging-api-avalon</artifactId>
+    <artifactId>log4j2</artifactId>
     <packaging>jar</packaging>
 
     <build>
@@ -46,19 +46,16 @@
 
     <dependencies>
 
-        <!-- pax-logging own artifacts -->
+        <!-- Logging -->
 
         <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- OSGi -->
-
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -71,27 +68,5 @@
         </dependency>
 
     </dependencies>
-
-    <profiles>
-        <!--
-            This profile adds dependency to all classes from avalon-framework-api, which pax-logging-api will get once it's
-            built. When running inside IDE, pax-logging-api _project_ doesn't expose these classes, so to make it
-            easier to work on pax-logging-api-test/src/it/* projects, we have this optional profile.
-        -->
-        <profile>
-            <id>invoker-tests-development</id>
-            <dependencies>
-
-                <!-- Logging -->
-
-                <dependency>
-                    <groupId>org.apache.avalon.framework</groupId>
-                    <artifactId>avalon-framework-api</artifactId>
-                    <scope>test</scope>
-                </dependency>
-
-            </dependencies>
-        </profile>
-    </profiles>
 
 </project>

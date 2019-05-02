@@ -19,22 +19,49 @@
 
 File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest-output.txt")
 List<String> lines = surefireOutput.readLines()
-boolean found1 = false
-boolean found2 = false
-boolean found3 = false
-boolean found4 = false
+int ok = 0
 for (String l : lines) {
-  if (l.contains("<org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest> : INFO")) {
-    found1 = true
+  if (l.contains("<org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest> : simplestUsage - INFO")) {
+    ok++
   }
-  if (l.contains("<org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest> : TRACE")) {
-    found2 = true
+  if (l.contains("<org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest> : simplestUsage - TRACE")) {
+    ok--
   }
-  if (l.contains("<special> : TRACE")) {
-    found3 = true
+  if (l.contains("<special> : simplestUsage - TRACE")) {
+    ok++
   }
-  if (l.contains("Equestria")) {
-    found4 = true
+  if (l.contains("Equestria") && l.contains("simplestUsage - INFO")) {
+    ok++
+  }
+  if (l.contains("loggerAPI - INFO1")) {
+    ok++
+  }
+  if (l.contains("loggerAPI - INFO2")) {
+    ok++
+  }
+  if (l.contains("loggerAPI - TRACE1")) {
+    ok--
+  }
+  if (l.contains("loggerAPI - TRACE2")) {
+    ok++
+  }
+  if (l.contains("log4j: log log debug1")) {
+    ok++
+  }
+  if (l.contains("log4j:WARN log log warning1")) {
+    ok++
+  }
+  if (l.contains("log4j: log log debug2")) {
+    ok--
+  }
+  if (l.contains("log4j:WARN log log warning2")) {
+    ok++
+  }
+  if (l.contains("<logXFApi> : Hello, Hello World!")) {
+    ok++
+  }
+  if (l.contains("<logSFApi> : Hello World!")) {
+    ok++
   }
 }
-assert found1 && !found2 && found3 && found4
+assert ok == 11

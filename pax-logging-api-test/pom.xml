@@ -63,21 +63,29 @@
         <profile>
             <id>invoker-tests-development</id>
             <modules>
+                <!-- Different pax-logging shaded APIs -->
                 <module>src/it/pax-logging-api-slf4j</module>
                 <module>src/it/pax-logging-api-jcl</module>
                 <module>src/it/pax-logging-api-juli</module>
                 <module>src/it/pax-logging-api-avalon</module>
                 <module>src/it/pax-logging-api-jboss-logging</module>
                 <module>src/it/pax-logging-api-knopflerfish</module>
+                <module>src/it/pax-logging-api-log4j1</module>
 
+                <!-- Different bindings for SLF4J -->
                 <module>src/it/slf4j-without-binder</module>
                 <module>src/it/slf4j-with-simple-binder</module>
                 <module>src/it/slf4j-with-nop-binder</module>
                 <module>src/it/slf4j-with-jcl-binder</module>
 
+                <!-- Pure Commons Logging usage -->
                 <module>src/it/jcl-without-impl</module>
 
+                <!-- Pure Log4J1 usage -->
                 <module>src/it/log4j1</module>
+
+                <!-- Pure Log4J2 usage -->
+                <module>src/it/log4j2</module>
             </modules>
         </profile>
     </profiles>

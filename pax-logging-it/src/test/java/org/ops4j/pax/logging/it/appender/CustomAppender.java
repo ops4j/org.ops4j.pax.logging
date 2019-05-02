@@ -16,35 +16,30 @@
  */
 package org.ops4j.pax.logging.it.appender;
 
-import java.util.LinkedList;
-import java.util.List;
-import org.ops4j.pax.logging.spi.PaxAppender;
-import org.ops4j.pax.logging.spi.PaxLoggingEvent;
-
 /**
  * @author edward.yakop@gmail.com
  */
-final class CustomAppender
-    implements PaxAppender {
-
-  private final List events;
-
-  public CustomAppender() {
-    events = new LinkedList();
-  }
-
-  public final List getEvents() {
-    return events;
-  }
-
-  public void doAppend(PaxLoggingEvent event) {
-    if (null != events) {
-      event.getProperties(); // ensure MDC properties are copied
-      events.add(event);
-    }
-  }
-
-  public String toString() {
-    return "Custom appender";
-  }
+final class CustomAppender/*
+    implements PaxAppender*/ {
+//
+//  private final List events;
+//
+//  public CustomAppender() {
+//    events = new LinkedList();
+//  }
+//
+//  public final List getEvents() {
+//    return events;
+//  }
+//
+//  public void doAppend(PaxLoggingEvent event) {
+//    if (null != events) {
+//      event.getProperties(); // ensure MDC properties are copied
+//      events.add(event);
+//    }
+//  }
+//
+//  public String toString() {
+//    return "Custom appender";
+//  }
 }

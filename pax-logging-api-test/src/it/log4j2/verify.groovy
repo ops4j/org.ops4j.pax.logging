@@ -17,24 +17,12 @@
  * under the License.
  */
 
-File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.logging.test.slf4j.LoggingWithoutBackendTest-output.txt")
+File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest-output.txt")
 List<String> lines = surefireOutput.readLines()
-boolean found1 = false
-boolean found2 = false
-boolean found3 = false
-boolean found4 = false
+int ok = 0
 for (String l : lines) {
-  if (l.contains("[org.ops4j.pax.logging.test.slf4j.LoggingWithoutBackendTest] TRACE : trace message 1")) {
-    found1 = true
-  }
-  if (l.contains("[org.ops4j.pax.logging.test.slf4j.LoggingWithoutBackendTest] TRACE : trace message 2")) {
-    found2 = true
-  }
-  if (l.contains("[org.ops4j.pax.logging.test.slf4j.LoggingWithoutBackendTest] ERROR : error message 1")) {
-    found3 = true
-  }
-  if (l.contains("[org.ops4j.pax.logging.test.slf4j.LoggingWithoutBackendTest] ERROR : error message 2")) {
-    found4 = true
-  }
+//  if (l.contains("<org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest> : simplestUsage - INFO")) {
+//    ok++
+//  }
 }
-assert found1 && !found2 && found3 && found4
+assert ok == 0

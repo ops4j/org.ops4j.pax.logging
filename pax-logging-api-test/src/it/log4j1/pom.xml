@@ -39,9 +39,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <systemPropertyVariables>
-                        <org.apache.commons.logging.diagnostics.dest>STDOUT</org.apache.commons.logging.diagnostics.dest>
-                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>

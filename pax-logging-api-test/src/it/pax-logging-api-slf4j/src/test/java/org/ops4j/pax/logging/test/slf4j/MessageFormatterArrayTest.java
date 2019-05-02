@@ -173,6 +173,11 @@ public class MessageFormatterArrayTest {
             return new TestLogger();
         }
 
+        @Override
+        public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
+            return new TestLogger();
+        }
+
         public PaxLoggingService getPaxLoggingService() {
             return null;
         }

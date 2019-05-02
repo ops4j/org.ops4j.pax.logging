@@ -79,7 +79,7 @@
 
     <profiles>
         <!--
-            This profile adds dependency to all classes from slf4j-api, which pax-logging-api will get once it's
+            This profile adds dependency to all classes from knopflerfish log-API, which pax-logging-api will get once it's
             built. When running inside IDE, pax-logging-api _project_ doesn't expose these classes, so to make it
             easier to work on pax-logging-api-test/src/it/* projects, we have this optional profile.
         -->

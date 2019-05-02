@@ -23,6 +23,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.ProbeBuilder;
+import org.ops4j.pax.exam.TestProbeBuilder;
+import org.ops4j.pax.logging.PaxLoggingConstants;
+import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +44,8 @@ import static org.ops4j.pax.exam.CoreOptions.workingDirectory;
 
 public class AbstractControlledIntegrationTestBase {
 
-    public static Logger LOG = LoggerFactory.getLogger(AbstractControlledIntegrationTestBase.class);
+    public static final Logger LOG = LoggerFactory.getLogger(AbstractControlledIntegrationTestBase.class);
+    public static final String PROBE_SYMBOLIC_NAME = "PaxExam-Probe";
 
     @Rule
     public TestName testName = new TestName();
@@ -88,6 +93,31 @@ public class AbstractControlledIntegrationTestBase {
                 junitBundles(),
         };
         return options;
+    }
+
+    /**
+     * Reasonable defaults for default logging level (actually a threshold) and framework logger level.
+     * @return
+     */
+    protected Option[] defaultLoggingConfig() {
+        return new Option[] {
+            // every log with level higher or equal to DEBUG (i.e., not TRACE) will be logged
+            frameworkProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL).value("DEBUG"),
+            // level at which OSGi R6 Compendium 101.6 logging statements will be printed
+            // (from framework/bundle/service events)
+            frameworkProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL).value("DISABLED")
+        };
+    }
+
+    /**
+     * Configuring symbolic name in test probe we can easily locate related log entries in the output.
+     * @param builder
+     * @return
+     */
+    @ProbeBuilder
+    public TestProbeBuilder probeBuilder(TestProbeBuilder builder) {
+        builder.setHeader(Constants.BUNDLE_SYMBOLICNAME, PROBE_SYMBOLIC_NAME);
+        return builder;
     }
 
 }

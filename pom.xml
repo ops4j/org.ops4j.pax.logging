@@ -212,6 +212,7 @@
         <version.org.apache.tomcat.juli>9.0.19</version.org.apache.tomcat.juli>
         <version.biz.aQute.bnd>4.2.0</version.biz.aQute.bnd>
         <version.ch.qos.logback>1.2.3</version.ch.qos.logback>
+        <version.commons-io>2.6</version.commons-io>
         <version.commons-logging>1.2</version.commons-logging>
         <version.junit>4.12</version.junit>
         <version.log4j>1.2.17</version.log4j>
@@ -258,7 +259,7 @@
         <plugin.felix.maven-bundle-plugin>4.2.0</plugin.felix.maven-bundle-plugin>
 <!--        <plugin.mojo.build-helper-maven-plugin>3.0.0</plugin.mojo.build-helper-maven-plugin>-->
         <plugin.mycila.license-maven-plugin>3.0</plugin.mycila.license-maven-plugin>
-<!--        <plugin.servicemix.depends-maven-plugin>1.4.0</plugin.servicemix.depends-maven-plugin>-->
+        <plugin.servicemix.depends-maven-plugin>1.4.0</plugin.servicemix.depends-maven-plugin>
 <!--        <plugin.sonatype.nexus-staging-maven-plugin>1.6.8</plugin.sonatype.nexus-staging-maven-plugin>-->
     </properties>
 
@@ -409,6 +410,14 @@
                     </dependencies>
                 </plugin>
 
+                <!-- ServiceMix plugins -->
+
+                <plugin>
+                    <groupId>org.apache.servicemix.tooling</groupId>
+                    <artifactId>depends-maven-plugin</artifactId>
+                    <version>${plugin.servicemix.depends-maven-plugin}</version>
+                </plugin>
+
                 <!-- Other -->
 
                 <plugin>
@@ -555,6 +564,16 @@
                 <artifactId>pax-url-aether</artifactId>
                 <version>${version.org.ops4j.pax.url}</version>
             </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.url</groupId>
+                <artifactId>pax-url-link</artifactId>
+                <version>${version.org.ops4j.pax.url}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.url</groupId>
+                <artifactId>pax-url-classpath</artifactId>
+                <version>${version.org.ops4j.pax.url}</version>
+            </dependency>
 
             <!-- OSGi -->
 
@@ -694,6 +713,14 @@
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
                 <version>${version.org.apache.servicemix.bundles.javax-inject}</version>
+            </dependency>
+
+            <!-- Other -->
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${version.commons-io}</version>
             </dependency>
 
             <!-- Testing -->

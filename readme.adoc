@@ -43,9 +43,29 @@ pax-logging-api uses version `1.3` from OSGi Compendium R6.
 
 Each class that's an entry point to specific Logging framework (like `org.slf4j.LoggerFactory`) interacts with pax-logging using `org.ops4j.pax.logging.PaxLoggingManager`. This _manager_ tracks instances of framework-specific `org.ops4j.pax.logging.PaxLoggingService` services that eventually delegate to particular framework (like Log4j2).
 
-This indirection allows to plug-in OSGi specific mechanism (like replacing `org.ops4j.pax.logging.PaxLoggingService` implementation at runtime.
+This indirection allows to plug-in OSGi specific mechanism (like replacing `org.ops4j.pax.logging.PaxLoggingService` implementation at runtime) without refreshing (in OSGi terms) pax-logging-api bundle.
 
-=== SLF4J
+There's one important thing. Logging facades and frameworks share familiar concepts of _category_ (or a logger _name_). This concept was introduced (afair) in Log4J with tree-like _hierarchy_ of loggers where more general loggers could provide shared configuration (like appenders) for more particular loggers.
+
+OSGi Compoendium `org.osgi.service.log.LogService` _doesn't_ have this notion of _category_, but (without a need to provide more technical details) pax-logging implements calls to `org.osgi.service.log.LogService.log()` method in such way that _category_ is (if possible) bundle's _symbolic name_. This _category_ is then used to get a logger from underlying logging backend.
+
+In other words each `org.osgi.service.log.LogService.log()` call may be represended by this pseudo code:
+
+[listing,options=nowrap]
+----
+// calculate category
+category = try to take category from bundle's symbolic name
+
+// obtain logger from underlying backend, like Log4J1
+logger = LoggerFactory.getLogger(bundle, category)
+
+// log a message according to specified level
+logger.info(message, throwable) // or warn() or debug(), ...
+----
+
+Being aware of this, it's actually better to _not_ use `org.osgi.service.log.LogService.log()` in your code directly and just use given logging facade (like SLF4J or Commons Logging) - this removes a need to obtain a logger (which is cached anyway) on each log call.
+
+== SLF4J
 
 `slf4j-api-1.7.26-sources.jar` contains more sources than `slf4j-api-1.7.26.jar` has classes - in particular, `org.slf4j.impl` package is removed from the jar and the responsibility to provide:
 
@@ -63,19 +83,19 @@ classes lies on the side of _binding library_ for SLF4J API. Such classes are pr
 
 pax-logging-api provides own implementation of these three classes. All other classes are directly repackaged (using bndlib) from `slf4j-api-1.7.26.jar` - classes that don't have to be changed are no longer shipped in pax-logging-api source directory.
 
-=== Commons Logging
+== Commons Logging
 
 While SLF4J takes simple and elegant approach for finding the actual implementation (`StaticLoggerBinder`), Commons Logging uses old school discovery through various ClassLoader and ServiceLoader tricks.
 
 In pax-logging, all this discovery is not needed, so the only reimplemented class is `org.apache.commons.logging.LogFactory` with all the discovery code removed.
 
-=== Apache JULI
+== Apache JULI
 
 Apache JULI is specialized (and repackaged) version of Commons Logging with original discovery mechanism already removed for Tomcat's internal logging mechanism purposes.
 
 In pax-logging, there was less work to do - discovery mechanism was already removed, only `org.apache.juli.logging.LogFactory.getInstance(java.lang.String)` method was changed to delegate to `PaxLoggingManager`.
 
-=== Avalon Logging
+== Avalon Logging
 
 Ancient Avalon framework predates most (if not all) Java server frameworks aiming to provide code and component organization patterns and programming model. Without dealing much with archeology, pax-logging-api provides support for `org.apache.avalon.framework.logger` package where the ultimate _source of truth_ is https://svn.apache.org/repos/asf/excalibur/tags/avalon-framework-api-4.3-Release/framework/api/src/java/org/apache/avalon/framework/logger/[this SVN tag and directory].
 
@@ -92,7 +112,7 @@ Excalibur (actual library/framework using Avalon) simply provides concrete imple
 
 To achieve _factory method_ approach, pax-logging-api exports `org.ops4j.pax.logging.avalon` package with special (not implied from Avalon Framework design) factory class for Avalon loggers. For other facades, package with factory classes is not `org.ops4j.pax.logging.*`.
 
-=== JBoss Logging
+== JBoss Logging
 
 JBoss started to use dedicated logging _bridge_ (facade) with http://docs.jboss.org/hibernate/orm/4.3/topical/html/logging/Logging.html[Hibernate 4.0]. Similarly to e.g., Commons Logging, actual logging framework is discovered at runtime.
 
@@ -109,9 +129,9 @@ Originally, `org.jboss.logging.provider` property may be set to one of these val
 Then discovery checks ServiceLoader for `org.jboss.logging.Provider` provider (`/META-INF/services/org.jboss.logging.Provider`).
 
 pax-logging API doesn't yet delegate JBoss Logging API to pax-logging OSGi manager.
-https://ops4j1.jira.com/browse/PAXLOGGING-251[PAXLOGGING-251] tracks issue.
+https://ops4j1.jira.com/browse/PAXLOGGING-251[PAXLOGGING-251] tracks this issue.
 
-=== Knopflerfish
+== Knopflerfish
 
 https://www.knopflerfish.org/archive.html[This page] shows Knopflerfish releases groupped by OSGi release version.
 
@@ -124,7 +144,7 @@ What's interesting here is that there's no need to provide special bridge to pax
 
 `org.knopflerfish.service.log` provides nice utility `org.knopflerfish.service.log.LogRef` which is effectively a `org.osgi.util.tracker.ServiceTracker` that makes it easier to deal with OSGi LogService.
 
-=== Log4j
+== Log4j
 
 Ah, the grandfather of all configurable Logging frameworks. Created when there was no logging bridges/facades around. Actually first facades (Commons Logging) was created to bridge common logging API to one of different logging frameworks (back then, it was only Log4j1 and Java Util Logging (JUL) from JDK1.4).
 
@@ -220,7 +240,7 @@ Not OSGi exported:
 * org.apache.log4j.component
 * org.apache.log4j.receivers
 
-The same packages as in log4j-1.2.17.jar, but with additional classes (most classes are the same):
+apache-log4j-extras-1.2.17.jar duplicates some packages from log4j-1.2.17.jar, but with additional classes (most of the classes are the same):
 
 * org.apache.log4j (has additional `DBAppender.class`, `LoggerRepositoryExImpl.class` (with 2 inner classes))
 * org.apache.log4j.pattern (has additional `ExtrasFormattingInfo.class`, `ExtrasPatternParser.class` and `ExtrasPatternParser$ReadOnlyMap.class`)
@@ -242,13 +262,195 @@ With PAXLOGGING-252, I'd like to make it easier to maintain pax-logging itself. 
 ** org.apache.log4j.spi
 ** org.apache.log4j.xml
 * possibly the above list will change, if some pax-logging adjustments will remove some _uses_ from the closure.
-* I've removed _all_ log4j1 sources from pax-logging, I'm going to copy `org.apache.log4j.Logger`, `org.apache.log4j.MDC` and `org.apache.log4j.NDC` classes and the classes they require, reapply _all_ the changes done so far in pax-logging with better tracking (_diffability_, _cherrypickability_) and finally remove the sources that don't have changes (those classes will then be simply Export-Packaged from log4j:log4j dependency).
+* I've removed _all_ log4j1 sources from pax-logging, I'm going to copy `org.apache.log4j.Logger`, `org.apache.log4j.MDC` and `org.apache.log4j.NDC` classes and the classes they require, reapply _all_ the changes done so far in pax-logging-api with better tracking (_diffability_, _cherrypickability_) and finally remove the sources that don't have changes (those classes will then be simply Export-Packaged from log4j:log4j dependency).
 * After adjusting some classes to pax-logging (like making configuration methods dummy), it turned out that these packages don't have to be exported:
 ** org.apache.log4j.config
 ** org.apache.log4j.xml
-* But because `org.apache.log4j.xml` was exported in previous versions of pax-logging-api, I'll leave it as is. Also because pax-logging-service requires some classes from `org.apache.log4j.config` and I don't want this bundle to duplicate any pax-logging-api classes (whether exported or private), I'll add export for `org.apache.log4j.config` package.
+* But because `org.apache.log4j.xml` was exported in previous versions of pax-logging-api, I'll leave it as is. Also because pax-logging-service requires some classes from `org.apache.log4j.config` and I don't want this bundle to duplicate any pax-logging-api classes (whether exported or private), I'll add export for `org.apache.log4j.config` package in pax-logging-api.
 
-=== Logback
+=== Location Info
+
+When Log4j1 is used with pattern layout that deals with class/method names and/or file names and line numbers, there's a need to analyze stack trace to get this info.
+
+When log4j1 is called normally, without ANY facade (and outside of pax-logging), the relevant stack trace fragment is:
+
+[listing,options=nowrap]
+----
+"main@1" prio=5 tid=0x1 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at org.apache.log4j.spi.LocationInfo.<init>(LocationInfo.java:144)
+	  at org.apache.log4j.spi.LoggingEvent.getLocationInformation(LoggingEvent.java:253)
+	  at org.apache.log4j.helpers.PatternParser$LocationPatternConverter.convert(PatternParser.java:500)
+	  at org.apache.log4j.helpers.PatternConverter.format(PatternConverter.java:65)
+	  at org.apache.log4j.PatternLayout.format(PatternLayout.java:506)
+	  at org.apache.log4j.WriterAppender.subAppend(WriterAppender.java:310)
+	  at org.apache.log4j.WriterAppender.append(WriterAppender.java:162)
+	  at org.apache.log4j.AppenderSkeleton.doAppend(AppenderSkeleton.java:251)
+	  at org.apache.log4j.helpers.AppenderAttachableImpl.appendLoopOnAppenders(AppenderAttachableImpl.java:66)
+	  at org.apache.log4j.Category.callAppenders(Category.java:206)
+	  at org.apache.log4j.Category.forcedLog(Category.java:391)
+	  at org.apache.log4j.Category.info(Category.java:666)
+	  at org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest.loggerAPI(Log4j1NativeApiTest.java:80)
+...
+----
+
+The discovered class name shuold be `org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest`.
+What log4j ensures to make it work is passing `org.apache.log4j.Category.FQCN` (or `org.apache.log4j.Logger.FQCN`) value down through `org.apache.log4j.Category.forcedLog` method. Then the last stack trace element before `FQCN` is used to collection location info.
+
+When Log4j1 is used through SLF4J, `org.slf4j.impl.Log4jLoggerAdapter.FQCN` is used to pass through `org.apache.log4j.Category.log()` and `org.apache.log4j.Category.callAppenders()`.
+
+With pax-logging, the stack trace is a bit more complex:
+[listing,options=nowrap]
+----
+"Karaf Shell Console Thread@9179" daemon prio=5 tid=0x31 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at org.apache.log4j.spi.LocationInfo.<init>(LocationInfo.java:136)
+	  at org.apache.log4j.spi.LoggingEvent.getLocationInformation(LoggingEvent.java:253)
+	  at org.apache.log4j.helpers.PatternParser$ClassNamePatternConverter.getFullyQualifiedName(PatternParser.java:555)
+	  at org.apache.log4j.helpers.PatternParser$NamedPatternConverter.convert(PatternParser.java:528)
+	  at org.apache.log4j.helpers.PatternConverter.format(PatternConverter.java:65)
+	  at org.apache.log4j.PatternLayout.format(PatternLayout.java:506)
+	  at org.apache.log4j.WriterAppender.subAppend(WriterAppender.java:310)
+	  at org.apache.log4j.RollingFileAppender.subAppend(RollingFileAppender.java:276)
+	  at org.apache.log4j.WriterAppender.append(WriterAppender.java:162)
+	  at org.apache.log4j.AppenderSkeleton.doAppend(AppenderSkeleton.java:251)
+	  - locked <0x2402> (a org.apache.log4j.RollingFileAppender)
+	  at org.apache.log4j.helpers.AppenderAttachableImpl.appendLoopOnAppenders(AppenderAttachableImpl.java:59)
+	  at org.apache.log4j.Category.callAppenders(Category.java:179)
+	  at org.apache.log4j.Category.forcedLog(Category.java:333)
+	  at org.apache.log4j.Category.log(Category.java:724)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.doLog0(PaxLoggerImpl.java:152)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.doLog(PaxLoggerImpl.java:145)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.inform(PaxLoggerImpl.java:179)
+	  at org.ops4j.pax.logging.internal.TrackingLogger.inform(TrackingLogger.java:86)
+	  at org.ops4j.pax.logging.slf4j.Slf4jLogger.info(Slf4jLogger.java:476)
+	  at org.ops4j.pax.logging.test.log4j1.Log4j1PaxLoggingApiTest.loggerAPI(...)
+...
+----
+
+And the FQCN that's equal to `org.ops4j.pax.logging.slf4j.Slf4jLogger` is ensured by pax-logging-api and shaded classes from given facade (here - SLF4J).
+
+When pax-logging is used with Log4J1 and without SLF4J, stack trace is like:
+[listing,options=nowrap]
+----
+"Karaf Shell Console Thread@9190" daemon prio=5 tid=0x31 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at org.apache.log4j.spi.LocationInfo.<init>(LocationInfo.java:136)
+	  at org.apache.log4j.spi.LoggingEvent.getLocationInformation(LoggingEvent.java:253)
+	  at org.apache.log4j.helpers.PatternParser$ClassNamePatternConverter.getFullyQualifiedName(PatternParser.java:555)
+	  at org.apache.log4j.helpers.PatternParser$NamedPatternConverter.convert(PatternParser.java:528)
+	  at org.apache.log4j.helpers.PatternConverter.format(PatternConverter.java:65)
+	  at org.apache.log4j.PatternLayout.format(PatternLayout.java:506)
+	  at org.apache.log4j.WriterAppender.subAppend(WriterAppender.java:310)
+	  at org.apache.log4j.RollingFileAppender.subAppend(RollingFileAppender.java:276)
+	  at org.apache.log4j.WriterAppender.append(WriterAppender.java:162)
+	  at org.apache.log4j.AppenderSkeleton.doAppend(AppenderSkeleton.java:251)
+	  - locked <0x240e> (a org.apache.log4j.RollingFileAppender)
+	  at org.apache.log4j.helpers.AppenderAttachableImpl.appendLoopOnAppenders(AppenderAttachableImpl.java:59)
+	  at org.apache.log4j.Category.callAppenders(Category.java:179)
+	  at org.apache.log4j.Category.forcedLog(Category.java:333)
+	  at org.apache.log4j.Category.log(Category.java:724)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.doLog0(PaxLoggerImpl.java:152)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.doLog(PaxLoggerImpl.java:145)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.inform(PaxLoggerImpl.java:179)
+	  at org.ops4j.pax.logging.internal.TrackingLogger.inform(TrackingLogger.java:86)
+	  at org.apache.log4j.Category.info(Category.java:623)
+	  at org.apache.log4j.Logger.info(Logger.java:585)
+	  at org.ops4j.pax.logging.test.log4j1.Log4j1PaxLoggingApiTest.loggerAPI(...)
+...
+----
+
+So the FQCN should be `org.apache.log4j.Logger`. Even if the logger is obtained via `org.apache.log4j.Category` static methods, the logger is of `org.apache.log4j.Logger` class and stack trace analysis works without problems.
+Also, trace/debug/info/warn/error/fatal methods are defined in `Category` class, but overriden in `Logger`, to properly detect the calling class/method.
+
+But not all logging methods are overriden...
+[listing,options=nowrap]
+----
+"Karaf Shell Console Thread@9205" daemon prio=5 tid=0x31 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at org.apache.log4j.spi.LocationInfo.<init>(LocationInfo.java:136)
+	  at org.apache.log4j.spi.LoggingEvent.getLocationInformation(LoggingEvent.java:253)
+	  at org.apache.log4j.helpers.PatternParser$ClassNamePatternConverter.getFullyQualifiedName(PatternParser.java:555)
+	  at org.apache.log4j.helpers.PatternParser$NamedPatternConverter.convert(PatternParser.java:528)
+	  at org.apache.log4j.helpers.PatternConverter.format(PatternConverter.java:65)
+	  at org.apache.log4j.PatternLayout.format(PatternLayout.java:506)
+	  at org.apache.log4j.WriterAppender.subAppend(WriterAppender.java:310)
+	  at org.apache.log4j.RollingFileAppender.subAppend(RollingFileAppender.java:276)
+	  at org.apache.log4j.WriterAppender.append(WriterAppender.java:162)
+	  at org.apache.log4j.AppenderSkeleton.doAppend(AppenderSkeleton.java:251)
+	  - locked <0x240c> (a org.apache.log4j.RollingFileAppender)
+	  at org.apache.log4j.helpers.AppenderAttachableImpl.appendLoopOnAppenders(AppenderAttachableImpl.java:59)
+	  at org.apache.log4j.Category.callAppenders(Category.java:179)
+	  at org.apache.log4j.Category.forcedLog(Category.java:333)
+	  at org.apache.log4j.Category.log(Category.java:724)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.doLog0(PaxLoggerImpl.java:152)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.doLog(PaxLoggerImpl.java:145)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.inform(PaxLoggerImpl.java:179)
+	  at org.ops4j.pax.logging.internal.TrackingLogger.inform(TrackingLogger.java:86)
+	  at org.apache.log4j.Category.info(Category.java:644)
+	  at org.apache.log4j.Logger.info(Logger.java:589)
+	  at org.apache.log4j.Category.log(Category.java:858)
+	  at org.apache.log4j.Category.log(Category.java:829)
+	  at org.ops4j.pax.logging.test.log4j1.Log4j1PaxLoggingApiTest.loggerAPI(...)
+...
+----
+
+When calling `org.apache.log4j.Category.log(org.apache.log4j.Priority, java.lang.Object)` directly, the method is defined in `Category` class, so when analyzing stack trace, `org.apache.log4j.Category.log(Category.java:858)` will be detected as logging event location. This will be fixed with PAXLOGGING-252.
+
+For completeness, when pax-logging-service is used through `org.osgi.service.log.LogService` API, the stack trace is:
+[listing,options=nowrap]
+----
+"Karaf Shell Console Thread@9234" daemon prio=5 tid=0x30 nid=NA runnable
+  java.lang.Thread.State: RUNNABLE
+	  at org.apache.log4j.spi.LocationInfo.<init>(LocationInfo.java:136)
+	  at org.apache.log4j.spi.LoggingEvent.getLocationInformation(LoggingEvent.java:253)
+	  at org.apache.log4j.helpers.PatternParser$ClassNamePatternConverter.getFullyQualifiedName(PatternParser.java:555)
+	  at org.apache.log4j.helpers.PatternParser$NamedPatternConverter.convert(PatternParser.java:528)
+	  at org.apache.log4j.helpers.PatternConverter.format(PatternConverter.java:65)
+	  at org.apache.log4j.PatternLayout.format(PatternLayout.java:506)
+	  at org.apache.log4j.WriterAppender.subAppend(WriterAppender.java:310)
+	  at org.apache.log4j.RollingFileAppender.subAppend(RollingFileAppender.java:276)
+	  at org.apache.log4j.WriterAppender.append(WriterAppender.java:162)
+	  at org.apache.log4j.AppenderSkeleton.doAppend(AppenderSkeleton.java:251)
+	  - locked <0x2885> (a org.apache.log4j.RollingFileAppender)
+	  at org.apache.log4j.helpers.AppenderAttachableImpl.appendLoopOnAppenders(AppenderAttachableImpl.java:59)
+	  at org.apache.log4j.Category.callAppenders(Category.java:179)
+	  at org.apache.log4j.Category.forcedLog(Category.java:333)
+	  at org.apache.log4j.Category.log(Category.java:724)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.doLog0(PaxLoggerImpl.java:152)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.doLog(PaxLoggerImpl.java:145)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggerImpl.inform(PaxLoggerImpl.java:179)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl.log(PaxLoggingServiceImpl.java:167)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl.access$000(PaxLoggingServiceImpl.java:48)
+	  at org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl$1ManagedPaxLoggingService.log(PaxLoggingServiceImpl.java:331)
+	  at org.ops4j.pax.logging.test.OsgiLogServiceApiTest.logServiceAPI(...)
+...
+----
+
+The location info should be `org.ops4j.pax.logging.test.OsgiLogServiceApiTest.logServiceAPI()`.
+FQCN is ... `""` location can't be found and in logs we can see (for pattern `%d{ISO8601} | %-5.5p | {%t} [%c]/[%C] (%F:%L) | %m%n` and symbolic name = `my-bundle`):
+[listing,options=nowrap]
+----
+2019-04-26 08:11:53,126 | INFO  | {Karaf Shell Console Thread} [my-bundle]/[?] (?:?) | Hello!
+----
+
+=== API / Implementation separation
+
+The biggest problem with Log4J1 is not only OSGi-specific problem of having API and implementation classes in single log4j:log4j library. Even methods are mixed within _single class_.
+
+`org.apache.log4j.Logger` (together with its superclass `org.apache.log4j.Category`) class contains ~80 methods.
+These methods can be groupped into:
+
+* factory methods used to obtain a _logger_ (which is of the same instance `org.apache.log4j.Logger`): `getLogger`, `getInstance`, `getRootLogger`, ...
+* logging methods used to log messages: `info`, `debug`, `warn`, ... (with different parameter list)
+* logging threshold methods: `isInfoEnabled`, `isDebugEnabled`, ...
+* methods related to appenders: `addAppender`, `isAttached`, ... - these methods allow (in original usage) to attach appenders to loggers dynamically. In OSGi it doesn't make sense, because Log4J1 *API* may be used to log messages which are eventually handled by Logback or Log4j2 backend (or even `DefaultServiceLog` if pax-logging backend is not (yet) installed)
+* methods related to logger configuration: `getAddittivity`, `getParent`, `setLevel`, ...
+* meta methods related to _logging repository_: `getCurrentCategories`, `getHierarchy`, `getLoggerRepository`, `shutdown`, ... - these methods are generally throwing `UnsupportedOperationException` in pax-logging-api.
+
+The above groupping is much better implemented in other logging frameworks which have separate logger and factory classes and also do the configuration and all the _meta_ in different way (than through single _logger_ class).
+
+== Logback
 
 As mentioned on https://logback.qos.ch/[project's web page], Logback _picks up where log4j leaves off_.
 
@@ -256,7 +458,7 @@ Logback was created after the logging-bridge (r)evolution and even if it may be 
 
 Logback is mostly used behind SLF4J facade and both logger factory and MDC/NDC API comes from SLF4J itself when dealing with Logback.
 
-=== Log4j2
+== Log4j2
 
 After huge (in my humble, subjective opinion) success of Logback, Log4j2 was created as modernized version of original Log4j project with full awareness of logging bridges/facades and weird properties file syntax.
 

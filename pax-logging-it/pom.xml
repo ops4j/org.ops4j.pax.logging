@@ -59,6 +59,8 @@
                     </systemPropertyVariables>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <runOrder>alphabetical</runOrder>
+                    <reuseForks>true</reuseForks>
+                    <forkCount>1</forkCount>
                 </configuration>
                 <executions>
                     <execution>
@@ -82,6 +84,19 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.servicemix.tooling</groupId>
+                <artifactId>depends-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-depends-file</id>
+                        <goals>
+                            <goal>generate-depends-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -89,11 +104,11 @@
 
         <!-- pax-logging own artifacts -->
 
-<!--        <dependency>-->
-<!--            <groupId>org.ops4j.pax.logging</groupId>-->
-<!--            <artifactId>pax-logging-api</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- OPS4J dependencies -->
 
@@ -158,11 +173,43 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-juli</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.avalon.framework</groupId>
+            <artifactId>avalon-framework-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.knopflerfish.kf6</groupId>
+            <artifactId>log-API</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- ServiceMIX -->
 
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Other -->
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
             <scope>test</scope>
         </dependency>
 
