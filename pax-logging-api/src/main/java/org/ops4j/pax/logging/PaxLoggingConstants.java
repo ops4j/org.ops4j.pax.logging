@@ -38,6 +38,11 @@ public interface PaxLoggingConstants {
     };
 
     /**
+     * Context property that specifies service ranking for {@link PaxLoggingService}
+     */
+    String LOGGING_CFG_LOGSERVICE_RANKING = "org.ops4j.pax.logging.ranking";
+
+    /**
      * Context or system property to skip Java Util Logging bridge registration.
      */
     String LOGGING_CFG_SKIP_JUL = "org.ops4j.pax.logging.skipJUL";
@@ -63,5 +68,15 @@ public interface PaxLoggingConstants {
      * Context or system property that selects buffering fallback logger.
      */
     String LOGGING_CFG_USE_BUFFERING_FALLBACK_LOGGER = "org.ops4j.pax.logging.useBufferingLogFallback";
+
+    /**
+     * {@code org.osp4j.pax.logging} PID property to specify max size for {@link org.osgi.service.log.LogReaderService}
+     */
+    String LOGGING_CFG_LOG_READER_SIZE_LEGACY = "pax.logging.entries.size";
+
+    /**
+     * {@code org.osp4j.pax.logging} PID property to specify max size for {@link org.osgi.service.log.LogReaderService}
+     */
+    String LOGGING_CFG_LOG_READER_SIZE = "org.ops4j.pax.logging.logReaderServiceSize";
 
 }

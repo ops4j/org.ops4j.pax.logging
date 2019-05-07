@@ -13,12 +13,16 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ops4j.pax.logging.spi;
 
-public interface PaxAppender
-{
+/**
+ * Framework library agnostic representation of a <em>processor</em> for logging events.
+ * Typical <em>appender</em> writes a line to a file.
+ */
+public interface PaxAppender {
+
     /**
      * Log in <code>Appender</code> specific way. When appropriate,
      * Loggers will call the <code>doAppend</code> method of appender
@@ -26,5 +30,6 @@ public interface PaxAppender
      *
      * @param event The PaxLoggingEvent that has occurred.
      */
-    void doAppend( PaxLoggingEvent event );
+    void doAppend(PaxLoggingEvent event);
+
 }

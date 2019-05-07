@@ -17,6 +17,10 @@
  */
 package org.ops4j.pax.logging.spi;
 
+/**
+ * Framework library agnostic representation of a <em>layout</em> that's used
+ * to turn a <em>logging event</em> into String representation.
+ */
 public interface PaxLayout {
 
     /**

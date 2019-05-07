@@ -24,11 +24,11 @@ import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
 import org.apache.log4j.helpers.LogLog;
-import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
+import org.ops4j.pax.logging.spi.support.BackendSupport;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -44,9 +44,6 @@ public class Activator implements BundleActivator {
     // optional JUL handler to bridge events to pax-logging
     private JdkHandler m_JdkHandler;
 
-    // optional bridging into Event Admin service
-    private EventAdminPoster m_eventAdmin;
-
     // bundle/service/framework listener that logs events into log service
     // as required by "101.6 Mapping of Events"
     private FrameworkHandler m_frameworkHandler;
@@ -57,11 +54,8 @@ public class Activator implements BundleActivator {
         // This class is effectively a tracker of PaxLoggingService services - there should be only one
         manager = new OSGIPaxLoggingManager(bundleContext);
 
-        // Falback PaxLogger
-        String levelName = defaultLogLevel();
-        if (levelName == null || "".equals(levelName.trim())) {
-            levelName = bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL);
-        }
+        // Falback PaxLogger configuration
+        String levelName = BackendSupport.defaultLogLevel(bundleContext);
         DefaultServiceLog.setLogLevel(levelName);
         if (DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG) {
             // Log4j1 debug
@@ -214,15 +208,6 @@ public class Activator implements BundleActivator {
                     -> Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_RESET));
         } else {
             return Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_RESET);
-        }
-    }
-
-    private String defaultLogLevel() {
-        if (System.getSecurityManager() != null) {
-            return AccessController.doPrivileged((PrivilegedAction<String>) ()
-                    -> System.getProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL));
-        } else {
-            return System.getProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL);
         }
     }
 

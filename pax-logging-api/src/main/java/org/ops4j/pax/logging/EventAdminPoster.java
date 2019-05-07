@@ -26,7 +26,7 @@ import org.osgi.service.log.LogEntry;
  * Interface to implement by logging framework specific provider, to pass logging events to Event Admin
  * according to OSGi Compendium "101.6.4. Log Events"
  */
-public interface EventAdminPoster {
+public interface EventAdminPoster extends AutoCloseable {
 
     /**
      * Sends an event to EventAdmin (if available)
@@ -39,7 +39,7 @@ public interface EventAdminPoster {
      * @param context
      */
     void postEvent(Bundle bundle, int level, LogEntry entry, String message,
-                          Throwable exception, ServiceReference<?> sr, Map<String, ?> context);
+                   Throwable exception, ServiceReference<?> sr, Map<String, ?> context);
 
     /**
      * Stops the poster.

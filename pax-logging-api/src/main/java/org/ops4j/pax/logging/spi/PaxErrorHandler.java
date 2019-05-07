@@ -17,6 +17,10 @@
  */
 package org.ops4j.pax.logging.spi;
 
+/**
+ * Framework library agnostic representation of a handler invoked when processing
+ * of <em>logging event</em> fails (usually inside <em>appender</em>).
+ */
 public interface PaxErrorHandler {
 
     /**

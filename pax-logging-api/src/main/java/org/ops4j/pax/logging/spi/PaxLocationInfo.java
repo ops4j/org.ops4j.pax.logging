@@ -13,16 +13,19 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ops4j.pax.logging.spi;
 
-public interface PaxLocationInfo
-{
+/**
+ * Framework library agnostic representation of <em>location info</em> that identifies
+ * the place in code where <em>logging event</em> was created.
+ */
+public interface PaxLocationInfo {
 
     /**
      * Return the file name of the caller.
-     * <p>This information is not always available.
+     * <p>This information is not always available.</p>
      *
      * @return the file name of the caller.
      */
@@ -38,7 +41,7 @@ public interface PaxLocationInfo
 
     /**
      * Returns the line number of the caller.
-     * <p>This information is not always available.
+     * <p>This information is not always available.</p>
      *
      * @return the line number of the caller.
      */
@@ -50,4 +53,5 @@ public interface PaxLocationInfo
      * @return the method name of the caller.
      */
     String getMethodName();
+
 }

@@ -65,6 +65,172 @@ logger.info(message, throwable) // or warn() or debug(), ...
 
 Being aware of this, it's actually better to _not_ use `org.osgi.service.log.LogService.log()` in your code directly and just use given logging facade (like SLF4J or Commons Logging) - this removes a need to obtain a logger (which is cached anyway) on each log call.
 
+== Concepts
+
+pax-logging is not trivial bridge to different (3 actually) logging frameworks (Log4J1, Log4J2, Logback), it also provides SPI layer that allows users to extend any logging framework. The most clear usage is when user wants to provide custom _appender_ that processes _logging events_.
+
+=== Logging events
+
+Each time a method like `log.info()` is called in any code fragment, new _logging event_ is created. This event is a representation of a fact that user wants to log some message/information. Each _logging event_ has some information associated like timestamp, code location (if available), message, exception (if needed) and severity (importance) of the event.
+
+=== Appenders
+
+_Appender_ is kind of processor that does something with the _logging event_ - usually appending new information (typically a line) to a file.
+
+=== Level and threshold
+
+This is a bit confusing part. At first glance it looks trivial - when user wants to invoke logging method, he/she may use one of typical methods like `info()`, `warn()`, `trace()` or other.
+
+Simply from this set of alternatives we can derive the concept of _logging event level_ (or _severity_).
+
+Let's start with something we can treat as _canonical_ - https://en.wikipedia.org/wiki/Syslog#Severity_level[Syslog]. Here are the level names and their numerical equivalents:
+
+.Syslog levels
+|===
+|Numerical value |Severity/level name
+
+|0
+|Emergency
+
+|1
+|Alert
+
+|2
+|Critical
+
+|3
+|Error
+
+|4
+|Warning
+
+|5
+|Notice
+
+|6
+|Informational
+
+|7
+|Debug
+|===
+
+From the above, we can try to summarize:
+
+====
+Numerically _higher_ level is _less important_.
+====
+
+A concept related to _level_ is _threshold_. Without giving precise constraints, _threshold_ is a _limit_ for _logging events_. For the above, Syslog example, setting a _threshold_ value to _Warning_ means that we're interested in events with _Warning_ or (numerically) _lower_ events.
+
+Thus:
+
+====
+The _higher_ (numerically) the threshold, the more logging events are processed. Less important events are processed.
+====
+
+.Adding more confusion
+
+Logging frameworks (and APIs) used in pax-logging treat the _level_ concept differently... Log4J1 has direct relation to Syslog levels, but it's not a case with Log4J2 and java.util.logging.
+Here's a table where Syslog and Log4J1 can be directly related. Placement of levels from other libraries is a bit arbitrary and related to logging level name equivalents.
+
+[options=nowrap]
+|===
+|Syslog |Log4J1 |Log4J2 |java.util.logging |SLF4J |OSGi
+
+|0 - Emergency
+|Integer.MAX_VALUE - OFF
+|0 - OFF
+|Integer.MAX_VALUE - OFF
+|
+|
+
+|0 - Emergency
+|50000 - FATAL
+|100 - FATAL
+|1000 - SEVERE
+|
+|
+
+|1 - Alert
+|
+|
+|
+|
+|
+
+|2 - Critical
+|
+|
+|
+|
+|
+
+|3 - Error
+|40000 - ERROR
+|200 - ERROR
+|1000 - SEVERE
+|40 - ERROR
+|1 - ERROR
+
+|4 - Warning
+|30000 - WARN
+|300 - WARN
+|900 - WARNING
+|30 - WARN
+|2 - WARNING
+
+|5 - Notice
+|
+|
+|
+|
+|
+
+|6 - Informational
+|20000 - INFO
+|400 - INFO
+|800 - INFO, 700 - CONFIG
+|20 - INFO
+|3 - INFO
+
+|7 - Debug
+|10000 - DEBUG
+|500 - DEBUG
+|500 - FINE
+|10 - DEBUG
+|4 - DEBUG
+
+|7 - Debug
+|5000 - TRACE
+|600 - TRACE
+|400 - FINER
+|0 - TRACE
+|
+
+|
+|
+|
+|300 - FINEST
+|
+|
+
+|7 - Debug
+|Integer.MIN_VALUE - ALL
+|Integer.MAX_VALUE - ALL
+|Integer.MIN_VALUE - ALL
+|
+|
+|===
+
+Notes and confusing parts:
+
+* Log4J1's `OFF` level matches numerical value of Syslog `Emergency` level
+* java.util.logging: there are too many less important levels (FINE, FINER, FINEST) and too little more critical ones (only SEVERE)
+* Syslog, Log4J2 and OSGi use increasing numerical level for decreasing event importance
+* Log4J1, java.util.logging and SLF4J use higher numerical levels for more important events
+* Mapping of java.util.logging levels to more popular level names is implemented in `org.ops4j.pax.logging.spi.support.BackendSupport.toJULLevel()`
+* `OFF` and `ALL` special levels have to be treated carefully by pax-logging because the usage of numerical values is totally unintuitive.
+
 == SLF4J
 
 `slf4j-api-1.7.26-sources.jar` contains more sources than `slf4j-api-1.7.26.jar` has classes - in particular, `org.slf4j.impl` package is removed from the jar and the responsibility to provide:

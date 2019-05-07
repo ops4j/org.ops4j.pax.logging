@@ -47,8 +47,8 @@ public interface PaxLoggingService extends LogService {
     PaxLogger getLogger(Bundle bundle, String category, String fqcn);
 
     /**
-     * <p>Returns log level associated with entire logging service. Usually individual loggers may have different
-     * levels specified.</p>
+     * <p>Returns log level (actually, a threahold) associated with entire logging service. Usually individual
+     * loggers may have different levels specified.</p>
      * <p>This method is specified in Knopflerfish extension to original {@link org.osgi.service.log.LogService}</p>
      * @return
      */
