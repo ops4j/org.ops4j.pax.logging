@@ -25,6 +25,7 @@ import org.junit.rules.TestName;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
 import org.ops4j.pax.exam.TestProbeBuilder;
+import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
 import static org.ops4j.pax.exam.CoreOptions.frameworkStartLevel;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.linkBundle;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.systemTimeout;
 import static org.ops4j.pax.exam.CoreOptions.url;
 import static org.ops4j.pax.exam.CoreOptions.workingDirectory;
@@ -118,6 +120,21 @@ public class AbstractControlledIntegrationTestBase {
     public TestProbeBuilder probeBuilder(TestProbeBuilder builder) {
         builder.setHeader(Constants.BUNDLE_SYMBOLICNAME, PROBE_SYMBOLIC_NAME);
         return builder;
+    }
+
+    protected MavenArtifactProvisionOption paxLoggingApi() {
+        return mavenBundle("org.ops4j.pax.logging", "pax-logging-api")
+                .versionAsInProject().startLevel(START_LEVEL_TEST_BUNDLE - 1).start();
+    }
+
+    protected MavenArtifactProvisionOption paxLoggingLog4J1() {
+        return mavenBundle("org.ops4j.pax.logging", "pax-logging-service")
+                .versionAsInProject().startLevel(START_LEVEL_TEST_BUNDLE - 1).start();
+    }
+
+    protected MavenArtifactProvisionOption configAdmin() {
+        return mavenBundle("org.apache.felix", "org.apache.felix.configadmin")
+                .versionAsInProject().startLevel(START_LEVEL_TEST_BUNDLE - 1).start();
     }
 
 }

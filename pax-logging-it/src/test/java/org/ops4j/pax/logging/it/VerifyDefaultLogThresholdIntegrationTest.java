@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -30,7 +31,7 @@ import static org.junit.Assert.assertTrue;
  * This test relies heavily on {@code <runOrder>alphabetical</runOrder>} and
  * {@code <redirectTestOutputToFile>true</redirectTestOutputToFile>} settings of maven-failsafe plugin.
  * It reads the output after we're sure it's flushed to file. {@link DefaultLogIntegrationTest} uses pax-logging-api
- * bundle only, so {@link org.ops4j.pax.logging.internal.DefaultServiceLog} writing to stdout is used. We just
+ * bundle only, so {@link DefaultServiceLog} writing to stdout is used. We just
  * read the file and verify that it contains proper entries.
  */
 public class VerifyDefaultLogThresholdIntegrationTest extends AbstractVerifyIntegrationTestBase {

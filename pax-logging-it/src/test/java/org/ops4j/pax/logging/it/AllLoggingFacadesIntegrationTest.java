@@ -30,6 +30,7 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrat
 
     /**
      * Because only pax-logging-api bundle is installed, all the 10 facades/bridges/apis will log through
-     * {@link org.ops4j.pax.logging.internal.DefaultServiceLog} and down to {@code stdout}.
+     * {@link DefaultServiceLog} and down to {@code stdout}.
      */
     @Test
     public void logUsingEverything() {

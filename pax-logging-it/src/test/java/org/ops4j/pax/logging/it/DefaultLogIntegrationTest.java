@@ -39,6 +39,7 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.logging.PaxLoggingConstants;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -66,7 +67,7 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
  * r: jar:file:~/.m2/repository/org/ops4j/pax/logging/pax-logging-api/1.11.0-SNAPSHOT/pax-logging-api-1.11.0-SNAPSHOT.jar!/org/slf4j/Logger.class
  * r: jar:file:~/.m2/repository/org/slf4j/slf4j-api/1.7.26/slf4j-api-1.7.26.jar!/org/slf4j/Logger.class
  * </pre>
- * That's why even pax-exam logs go through pax-logging-api's {@link org.ops4j.pax.logging.internal.DefaultServiceLog}.</p>
+ * That's why even pax-exam logs go through pax-logging-api's {@link DefaultServiceLog}.</p>
  */
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)

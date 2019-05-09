@@ -131,7 +131,7 @@ public class Activator implements BundleActivator {
         }
 
         Bundle b4 = FrameworkUtil.getBundle(XMLLayout.class);
-        if (paxLoggingService != b4) {
+        if (paxLoggingApi != b4) {
             String b4Bundle = b4 == null ? "system classloader" : b4.toString();
             throw new IllegalStateException("org.apache.log4j.xml.XMLLayout class was loaded from " + b4Bundle +
                     ". It should be loaded from " + paxLoggingApi + ".");
