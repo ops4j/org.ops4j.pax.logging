@@ -19,6 +19,9 @@ package org.apache.log4j;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
+
 import org.apache.log4j.helpers.LogLog;
 
 /**
@@ -136,9 +139,9 @@ public class ConsoleAppender extends WriterAppender {
             }
         } else {
             if (target.equals(SYSTEM_ERR)) {
-               setWriter(createWriter(System.err));
+               setWriter(createWriter(unwrap(System.err)));
             } else {
-               setWriter(createWriter(System.out));
+               setWriter(createWriter(unwrap(System.out)));
             }
         }
 
@@ -156,6 +159,25 @@ public class ConsoleAppender extends WriterAppender {
      }
   }
   
+
+    /**
+     * When working inside an OSGi framework with Felix Gogo installed,
+     * we need to make sure the log statements are actually printed to
+     * the console, not the thread based output stream (for example when
+     * using an SSH connections, logs are not supposed to go back to
+     * the ssh user...).
+     * This method retrieve the wrapped stream/
+     * Note that this method is only called if follow == false.
+     *
+     */
+    private static PrintStream unwrap(PrintStream stream) {
+        try {
+            Method mth = stream.getClass().getMethod("getRoot");
+            return (PrintStream) mth.invoke(stream);
+        } catch (Throwable t) {
+            return stream;
+        }
+    }
 
     /**
      * An implementation of OutputStream that redirects to the
