@@ -609,6 +609,9 @@ This package comes from both log4j:log4j and log4j:apache-log4j-extras (which ad
 ** changes `DOMConfigurator`, so methods are effectively no-op
 * pax-logging-service imports this package from pax-logging-api
 
+org.apache.log4j.zip::
+That's entirely pax-logging-service private package with `ZipRollingFileAppender` class created for https://ops4j1.jira.com/browse/PAXLOGGING-116[PAXLOGGING-116]
+
 === Location Info
 
 When Log4j1 is used with pattern layout that deals with class/method names and/or file names and line numbers, there's a need to analyze stack trace to get this info.
