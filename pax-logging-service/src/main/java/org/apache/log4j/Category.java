@@ -41,7 +41,6 @@ import org.apache.log4j.helpers.AppenderAttachableImpl;
 import java.util.Enumeration;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 
 /**
@@ -123,7 +122,7 @@ public class Category implements AppenderAttachable {
   protected LoggerRepository repository;
 
 
-  AppenderAttachableImpl aai;
+  final AppenderAttachableImpl aai = new AppenderAttachableImpl();
 
   /** Additivity is set to true by default, that is children inherit
       the appenders of their ancestors by default. If this variable is
@@ -155,12 +154,8 @@ public class Category implements AppenderAttachable {
      <p>If <code>newAppender</code> is already in the list of
      appenders, then it won't be added again.
   */
-  synchronized
   public
   void addAppender(Appender newAppender) {
-    if(aai == null) {
-      aai = new AppenderAttachableImpl();
-    }
     aai.addAppender(newAppender);
     repository.fireAddAppenderEvent(this, newAppender);
   }
@@ -200,15 +195,10 @@ public class Category implements AppenderAttachable {
     int writes = 0;
 
     for(Category c = this; c != null; c=c.parent) {
-      // Protected against simultaneous call to addAppender, removeAppender,...
-      synchronized(c) {
-	if(c.aai != null) {
 	  writes += c.aai.appendLoopOnAppenders(event);
-	}
 	if(!c.additive) {
 	  break;
 	}
-      }
     }
 
     if(writes == 0) {
@@ -221,17 +211,8 @@ public class Category implements AppenderAttachable {
      interface.
      @since 1.0
   */
-  synchronized
   void closeNestedAppenders() {
-    Enumeration enumeration = this.getAllAppenders();
-    if(enumeration != null) {
-      while(enumeration.hasMoreElements()) {
-	Appender a = (Appender) enumeration.nextElement();
-	if(a instanceof AppenderAttachable) {
-	  a.close();
-	}
-      }
-    }
+    aai.closeAppenders();
   }
 
   /**
@@ -406,12 +387,8 @@ public class Category implements AppenderAttachable {
      is returned.
 
      @return Enumeration An enumeration of the appenders in this category.  */
-  synchronized
   public
   Enumeration getAllAppenders() {
-    if(aai == null)
-      return NullEnumeration.getInstance();
-    else
       return aai.getAllAppenders();
   }
 
@@ -420,12 +397,8 @@ public class Category implements AppenderAttachable {
 
      <p>Return the appender with that name if in the list. Return
      <code>null</code> otherwise.  */
-  synchronized
   public
   Appender getAppender(String name) {
-     if(aai == null || name == null)
-      return null;
-
      return aai.getAppender(name);
   }
 
@@ -580,7 +553,6 @@ public class Category implements AppenderAttachable {
   /**
    *  @deprecated Please use {@link Logger#getRootLogger()} instead.
    */
-  final
   public
   static
   Category getRoot() {
@@ -688,7 +660,7 @@ public class Category implements AppenderAttachable {
    */
   public
   boolean isAttached(Appender appender) {
-    if(appender == null || aai == null)
+    if(appender == null)
       return false;
     else {
       return aai.isAttached(appender);
@@ -880,19 +852,11 @@ public class Category implements AppenderAttachable {
 
      <p>This is useful when re-reading configuration information.
   */
-  synchronized
   public
   void removeAllAppenders() {
-    if(aai != null) {
-      Vector appenders = new Vector();
-      for (Enumeration iter = aai.getAllAppenders(); iter != null && iter.hasMoreElements();) {
-          appenders.add(iter.nextElement());
-      }
-      aai.removeAllAppenders();
-      for(Enumeration iter = appenders.elements(); iter.hasMoreElements();) {
-          fireRemoveAppenderEvent((Appender) iter.nextElement());
-      }
-      aai = null;
+    for (Appender appender : aai.getAppenders()) {
+      aai.removeAppender(appender);
+      fireRemoveAppenderEvent(appender);
     }
   }
 
@@ -902,14 +866,11 @@ public class Category implements AppenderAttachable {
 
      @since 0.8.2
   */
-  synchronized
   public
   void removeAppender(Appender appender) {
-    if(appender == null || aai == null)
-      return;
     boolean wasAttached = aai.isAttached(appender);
-    aai.removeAppender(appender);
     if (wasAttached) {
+        aai.removeAppender(appender);
         fireRemoveAppenderEvent(appender);
     }
   }
@@ -919,13 +880,11 @@ public class Category implements AppenderAttachable {
      list of appenders.
 
      @since 0.8.2 */
-  synchronized
   public
   void removeAppender(String name) {
-    if(name == null || aai == null) return;
     Appender appender = aai.getAppender(name);
-    aai.removeAppender(name);
     if (appender != null) {
+        aai.removeAppender(name);
         fireRemoveAppenderEvent(appender);
     }
   }
