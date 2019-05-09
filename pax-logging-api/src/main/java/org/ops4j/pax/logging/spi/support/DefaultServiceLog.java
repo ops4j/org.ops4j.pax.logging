@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.spi.support;
 
 import org.ops4j.pax.logging.FqcnIgnoringPaxLogger;
 import org.ops4j.pax.logging.PaxContext;
@@ -30,17 +30,17 @@ import org.osgi.framework.Bundle;
  */
 public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
 
-    private static final String[] levels = {
+    public static final String[] levels = {
             "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"
     };
 
-    static final int TRACE = 0;
-    static final int DEBUG = 1;
-    static final int INFO = 2;
-    static final int WARN = 3;
-    static final int ERROR = 4;
-    static final int FATAL = 5;
-    static final int NONE = 6;
+    public static final int TRACE = 0;
+    public static final int DEBUG = 1;
+    public static final int INFO = 2;
+    public static final int WARN = 3;
+    public static final int ERROR = 4;
+    public static final int FATAL = 5;
+    public static final int NONE = 6;
 
     /** A threshold level for default log service */
     private static int threshold;
@@ -49,7 +49,7 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
     private String m_categoryName;
     private PaxContext m_context = new PaxContext();
 
-    DefaultServiceLog(Bundle bundle, String categoryName) {
+    public DefaultServiceLog(Bundle bundle, String categoryName) {
         m_bundle = bundle;
         m_categoryName = categoryName;
     }

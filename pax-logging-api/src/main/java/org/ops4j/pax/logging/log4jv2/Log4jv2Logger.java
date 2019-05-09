@@ -24,7 +24,7 @@ import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.spi.AbstractLogger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 
 /**
  * This is the default logger that is used when no suitable logging implementation is available.

@@ -24,7 +24,7 @@ import org.ops4j.pax.logging.juli.JuliLogger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 
 /**
  * Modified LogFactory: removed all discovery, hardcode a specific implementation

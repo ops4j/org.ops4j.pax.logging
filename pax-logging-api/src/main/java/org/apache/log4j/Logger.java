@@ -21,7 +21,7 @@ import org.apache.log4j.spi.LoggerFactory;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 
 /**
   This is the central class in the log4j package. Most logging

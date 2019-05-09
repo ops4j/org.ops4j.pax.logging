@@ -17,49 +17,75 @@ package org.ops4j.pax.logging.service.internal;
 
 import java.lang.reflect.Constructor;
 
+import junit.framework.TestCase;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.junit.Test;
 import org.ops4j.pax.logging.PaxLogger;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class PaxLoggerImplTest extends TestCase {
+public class PaxLoggerImplTest {
 
-    public void testGetEffectiveLevel() throws Exception
-    {
-        Constructor<Logger> c = Logger.class.getDeclaredConstructor( new Class[] { String.class } );
-        c.setAccessible( true );
+    @Test
+    public void numericalLog4J1Values() {
+        assertTrue(Level.ERROR.isGreaterOrEqual(Level.INFO));
+        assertTrue(Level.ERROR.isGreaterOrEqual(Level.ERROR));
+        assertFalse(Level.WARN.isGreaterOrEqual(Level.ERROR));
+    }
 
-        Logger logger = c.newInstance( new Object[] { "test" } );
-        PaxLoggerImpl loggerImpl = new PaxLoggerImpl( null, logger, null, null );
+    @Test
+    public void numericalPaxLoggingValues() {
+        Logger l1 = Logger.getLogger("l1");
+        l1.setLevel(Level.ERROR);
+        Logger l2 = Logger.getLogger("l2");
+        l2.setLevel(Level.WARN);
+        Logger l3 = Logger.getLogger("l3");
+        l3.setLevel(Level.INFO);
+        PaxLoggerImpl error = new PaxLoggerImpl(null, l1, "", null);
+        PaxLoggerImpl warn = new PaxLoggerImpl(null, l2, "", null);
+        PaxLoggerImpl info = new PaxLoggerImpl(null, l3, "", null);
 
-        logger.setLevel( null );
-        assertEquals( PaxLogger.LEVEL_ERROR , loggerImpl.getLogLevel() );
+        assertEquals(error.getLogLevel(), PaxLogger.LEVEL_ERROR);
+        assertEquals(warn.getLogLevel(), PaxLogger.LEVEL_WARNING);
+        assertEquals(info.getLogLevel(), PaxLogger.LEVEL_INFO);
+    }
 
-        logger.setLevel( Level.ALL );
-        assertEquals( PaxLogger.LEVEL_TRACE , loggerImpl.getLogLevel() );
+    @Test
+    public void testGetEffectiveLevel() throws Exception {
+        Constructor<Logger> c = Logger.class.getDeclaredConstructor(new Class[] { String.class });
+        c.setAccessible(true);
 
-        logger.setLevel( Level.TRACE );
-        assertEquals( PaxLogger.LEVEL_TRACE , loggerImpl.getLogLevel() );
+        Logger logger = c.newInstance(new Object[] { "test" });
+        PaxLoggerImpl loggerImpl = new PaxLoggerImpl(null, logger, null, null);
 
-        logger.setLevel( Level.DEBUG );
-        assertEquals( PaxLogger.LEVEL_DEBUG , loggerImpl.getLogLevel() );
+        logger.setLevel(null);
+        assertEquals(PaxLogger.LEVEL_ERROR, loggerImpl.getLogLevel());
 
-        logger.setLevel( Level.INFO );
-        assertEquals( PaxLogger.LEVEL_INFO , loggerImpl.getLogLevel() );
+        logger.setLevel(Level.ALL);
+        assertEquals(PaxLogger.LEVEL_TRACE, loggerImpl.getLogLevel());
 
-        logger.setLevel( Level.WARN );
-        assertEquals( PaxLogger.LEVEL_WARNING , loggerImpl.getLogLevel() );
+        logger.setLevel(Level.TRACE);
+        assertEquals(PaxLogger.LEVEL_TRACE, loggerImpl.getLogLevel());
 
-        logger.setLevel( Level.ERROR );
-        assertEquals( PaxLogger.LEVEL_ERROR , loggerImpl.getLogLevel() );
+        logger.setLevel(Level.DEBUG);
+        assertEquals(PaxLogger.LEVEL_DEBUG, loggerImpl.getLogLevel());
 
-        logger.setLevel( Level.FATAL );
-        assertEquals( PaxLogger.LEVEL_ERROR , loggerImpl.getLogLevel() );
+        logger.setLevel(Level.INFO);
+        assertEquals(PaxLogger.LEVEL_INFO, loggerImpl.getLogLevel());
 
-        logger.setLevel( Level.OFF );
-        assertEquals( PaxLogger.LEVEL_ERROR , loggerImpl.getLogLevel() );
+        logger.setLevel(Level.WARN);
+        assertEquals(PaxLogger.LEVEL_WARNING, loggerImpl.getLogLevel());
 
+        logger.setLevel(Level.ERROR);
+        assertEquals(PaxLogger.LEVEL_ERROR, loggerImpl.getLogLevel());
+
+        logger.setLevel(Level.FATAL);
+        assertEquals(PaxLogger.LEVEL_ERROR, loggerImpl.getLogLevel());
+
+        logger.setLevel(Level.OFF);
+        assertEquals(PaxLogger.LEVEL_ERROR, loggerImpl.getLogLevel());
     }
 }
-

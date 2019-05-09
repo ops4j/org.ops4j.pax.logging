@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.internal.eventadmin;
+package org.ops4j.pax.logging.spi.support;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.ops4j.pax.logging.EventAdminPoster;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -30,7 +31,6 @@ import org.osgi.service.event.EventAdmin;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogService;
 import org.osgi.util.tracker.ServiceTracker;
-import org.ops4j.pax.logging.EventAdminPoster;
 
 /**
  * <p>This ServiceTracker is designed to implement the Event Admin service, but delegate

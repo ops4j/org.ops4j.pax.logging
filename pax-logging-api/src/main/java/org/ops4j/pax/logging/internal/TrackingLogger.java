@@ -19,8 +19,8 @@ package org.ops4j.pax.logging.internal;
 
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxContext;
-import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.osgi.framework.Bundle;
 
 public class TrackingLogger

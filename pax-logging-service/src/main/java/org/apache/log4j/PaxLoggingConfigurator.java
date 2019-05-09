@@ -37,11 +37,11 @@ import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.spi.OptionHandler;
-import org.ops4j.pax.logging.service.internal.AppenderBridgeImpl;
-import org.ops4j.pax.logging.service.internal.ErrorHandlerBridgeImpl;
-import org.ops4j.pax.logging.service.internal.FilterBridgeImpl;
-import org.ops4j.pax.logging.service.internal.LayoutBridgeImpl;
-import org.ops4j.pax.logging.service.internal.PaxAppenderProxy;
+import org.ops4j.pax.logging.service.internal.bridges.AppenderBridgeImpl;
+import org.ops4j.pax.logging.service.internal.bridges.ErrorHandlerBridgeImpl;
+import org.ops4j.pax.logging.service.internal.bridges.FilterBridgeImpl;
+import org.ops4j.pax.logging.service.internal.bridges.LayoutBridgeImpl;
+import org.ops4j.pax.logging.service.internal.spi.PaxAppenderProxy;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -68,7 +68,7 @@ public class PaxLoggingConfigurator extends PropertyConfigurator {
         m_bundleContext = bundleContext;
     }
 
-    public List getProxies() {
+    public List<PaxAppenderProxy> getProxies() {
         return proxies;
     }
 

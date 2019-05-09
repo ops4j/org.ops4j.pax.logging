@@ -13,41 +13,42 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
-package org.ops4j.pax.logging.service.internal;
+package org.ops4j.pax.logging.service.internal.spi;
 
 import org.apache.log4j.spi.LocationInfo;
 import org.ops4j.pax.logging.spi.PaxLocationInfo;
 
-public class PaxLocationInfoImpl
-    implements PaxLocationInfo
-{
+/**
+ * Log4J1 delegated {@link PaxLocationInfo}. It's the easiest implementation, because {@link PaxLocationInfo}
+ * was inspired by Log4J1 itself.
+ */
+public class PaxLocationInfoImpl implements PaxLocationInfo {
 
     private LocationInfo m_delegate;
 
-    public PaxLocationInfoImpl( LocationInfo delegate )
-    {
+    public PaxLocationInfoImpl(LocationInfo delegate) {
         m_delegate = delegate;
     }
 
-    public String getFileName()
-    {
+    @Override
+    public String getFileName() {
         return m_delegate.getFileName();
     }
 
-    public String getClassName()
-    {
+    @Override
+    public String getClassName() {
         return m_delegate.getClassName();
     }
 
-    public String getLineNumber()
-    {
+    @Override
+    public String getLineNumber() {
         return m_delegate.getLineNumber();
     }
 
-    public String getMethodName()
-    {
+    @Override
+    public String getMethodName() {
         return m_delegate.getMethodName();
     }
 }

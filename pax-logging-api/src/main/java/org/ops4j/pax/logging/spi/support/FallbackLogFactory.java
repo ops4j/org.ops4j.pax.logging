@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.ops4j.pax.logging.internal;
+package org.ops4j.pax.logging.spi.support;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;

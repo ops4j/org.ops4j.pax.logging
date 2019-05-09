@@ -28,14 +28,6 @@ import org.osgi.framework.Bundle;
  */
 public interface PaxLoggingService extends LogService {
 
-    String APPENDER_NAME_PROPERTY = "org.ops4j.pax.logging.appender.name";
-
-    String LAYOUT_NAME_PROPERTY = "org.ops4j.pax.logging.layout.name";
-
-    String FILTER_NAME_PROPERTY = "org.ops4j.pax.logging.filter.name";
-
-    String ERRORHANDLER_NAME_PROPERTY = "org.ops4j.pax.logging.errorhandler.name";
-
     /**
      * Obtains {@link PaxLogger} instance - implementation-specific logger hidden under {@link PaxLogger} interface.
      * This method is not used directly, but rather through {@link org.ops4j.pax.logging.PaxLoggingManager}

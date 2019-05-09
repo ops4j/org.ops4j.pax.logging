@@ -27,8 +27,6 @@ import java.util.logging.Level;
 
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingConstants;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
-import org.ops4j.pax.logging.internal.eventadmin.EventAdminTracker;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;

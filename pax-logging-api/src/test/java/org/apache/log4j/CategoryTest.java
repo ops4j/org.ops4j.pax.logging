@@ -17,9 +17,10 @@
  */
 package org.apache.log4j;
 
-import junit.framework.TestCase;
+import org.junit.Ignore;
 
-public class CategoryTest extends TestCase
+@Ignore
+public class CategoryTest
 {
 //	public void testIsEnabledForFatal()
 //	{

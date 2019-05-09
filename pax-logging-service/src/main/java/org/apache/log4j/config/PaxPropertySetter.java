@@ -20,10 +20,12 @@
 package org.apache.log4j.config;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.OptionConverter;
+import org.apache.log4j.spi.OptionFactory;
 import org.apache.log4j.spi.OptionHandler;
 import org.apache.log4j.spi.ErrorHandler;
 
@@ -46,7 +48,7 @@ import java.util.Properties;
    
    <p>Usage:
    <pre>
-     PropertySetter ps = new PropertySetter(anObject);
+     PaxPropertySetter ps = new PaxPropertySetter(anObject);
      ps.set("name", "Joe");
      ps.set("age", "32");
      ps.set("isMale", "true");
@@ -63,7 +65,7 @@ public class PaxPropertySetter {
   protected PropertyDescriptor[] props;
   
   /**
-    Create a new PropertySetter for the specified Object. This is done
+    Create a new PaxPropertySetter for the specified Object. This is done
     in prepartion for invoking {@link #setProperty} one or more times.
     
     @param obj  the object for which to set properties
@@ -131,7 +133,7 @@ public class PaxPropertySetter {
         
 	String value = OptionConverter.findAndSubst(key, properties);
         key = key.substring(len);
-        if (("layout".equals(key) || "errorhandler".equals(key)) && obj instanceof Appender) {
+        if (("layout".equals(key) || "errorhandler".equalsIgnoreCase(key) || "appenders".equals(key)) && obj instanceof Appender) {
           continue;
         }
         //
@@ -145,25 +147,16 @@ public class PaxPropertySetter {
                     OptionConverter.instantiateByKey(properties, prefix + key,
                                   prop.getPropertyType(),
                                   null);
-            PropertySetter setter = new PropertySetter(opt);
+            PaxPropertySetter setter = new PaxPropertySetter(opt);
             setter.setProperties(properties, prefix + key + ".");
-            try {
-                prop.getWriteMethod().invoke(this.obj, new Object[] { opt });
-            } catch(IllegalAccessException ex) {
-                LogLog.warn("Failed to set property [" + key +
-                            "] to value \"" + value + "\". ", ex);
-            } catch(InvocationTargetException ex) {
-                if (ex.getTargetException() instanceof InterruptedException
-                        || ex.getTargetException() instanceof InterruptedIOException) {
-                    Thread.currentThread().interrupt();
-                }
-                LogLog.warn("Failed to set property [" + key +
-                            "] to value \"" + value + "\". ", ex);
-            } catch(RuntimeException ex) {
-                LogLog.warn("Failed to set property [" + key +
-                            "] to value \"" + value + "\". ", ex);
-            }
+            safeSetProperty(key, value, prop, opt);
             continue;
+        } else if (prop != null
+            && OptionFactory.class.isAssignableFrom(prop.getPropertyType())
+            && prop.getWriteMethod() != null) {
+          OptionFactory factory = new ObjectFactory(properties, prefix + key);
+          safeSetProperty(key, value, prop, factory);
+          continue;
         }
 
         setProperty(key, value);
@@ -171,9 +164,59 @@ public class PaxPropertySetter {
     }
     activate();
   }
-  
+
+  private void safeSetProperty(String key, String value, PropertyDescriptor prop, Object object) {
+    try {
+        prop.getWriteMethod().invoke(this.obj, object);
+    } catch(IllegalAccessException | RuntimeException ex) {
+        LogLog.warn("Failed to set property [" + key +
+                    "] to value \"" + value + "\". ", ex);
+    } catch(InvocationTargetException ex) {
+        if (ex.getTargetException() instanceof InterruptedException
+                || ex.getTargetException() instanceof InterruptedIOException) {
+            Thread.currentThread().interrupt();
+        }
+        LogLog.warn("Failed to set property [" + key +
+                    "] to value \"" + value + "\". ", ex);
+    }
+  }
+
+  public static class ObjectFactory implements OptionFactory {
+
+    private final Properties properties;
+    private final String prefix;
+
+    public ObjectFactory(Properties properties, String prefix) {
+      this.properties = properties;
+      this.prefix = prefix;
+    }
+
+    public OptionHandler create(Properties variables) {
+      Properties props = new Properties();
+      props.putAll(variables);
+      props.putAll(properties);
+
+      OptionHandler opt = (OptionHandler) OptionConverter.instantiateByKey(props, prefix,
+              OptionHandler.class,
+              null);
+      if (opt instanceof Appender && ((Appender) opt).requiresLayout()) {
+        Layout layout = (Layout) OptionConverter.instantiateByKey(props,
+                prefix + ".layout",
+                Layout.class,
+                null);
+        if (layout != null) {
+          ((Appender) opt).setLayout(layout);
+          PaxPropertySetter.setProperties(layout, props, prefix + ".layout.");
+        }
+      }
+      PaxPropertySetter.setProperties(opt, props, prefix + ".");
+      opt.activateOptions();
+      return opt;
+    }
+  }
+
   /**
-     Set a property on this PropertySetter's Object. If successful, this
+     Set a property on this PaxPropertySetter's Object. If successful, this
      method will invoke a setter method on the underlying Object. The
      setter is the one for the specified property name and the value is
      determined partly from the setter argument type and partly from the
@@ -242,8 +285,8 @@ public class PaxPropertySetter {
     }
     LogLog.debug("Setting property [" + name + "] to [" +arg+"].");
     try {
-      setter.invoke(obj, new Object[]  { arg });
-    } catch (IllegalAccessException ex) {
+      setter.invoke(obj, arg);
+    } catch (IllegalAccessException | RuntimeException ex) {
       throw new PropertySetterException(ex);
     } catch (InvocationTargetException ex) {
         if (ex.getTargetException() instanceof InterruptedException
@@ -251,8 +294,6 @@ public class PaxPropertySetter {
             Thread.currentThread().interrupt();
         }        
         throw new PropertySetterException(ex);
-    } catch (RuntimeException ex) {
-      throw new PropertySetterException(ex);
     }
   }
   
@@ -280,7 +321,7 @@ public class PaxPropertySetter {
         return Boolean.FALSE;
       }
     } else if (Priority.class.isAssignableFrom(type)) {
-      return OptionConverter.toLevel(v, (Level) Level.DEBUG);
+      return OptionConverter.toLevel(v, Level.DEBUG);
     } else if (ErrorHandler.class.isAssignableFrom(type)) {
       return OptionConverter.instantiateByClassName(v, 
 	  ErrorHandler.class, null);

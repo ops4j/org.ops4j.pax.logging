@@ -18,7 +18,8 @@
 package org.apache.log4j.helpers;
 
 import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 
 /**
    This class used to output log statements from within the log4j package.
@@ -34,7 +35,7 @@ import org.ops4j.pax.logging.internal.FallbackLogFactory;
    the string "log4j: ".
 
    <p>In pax-logging, this class is configured to always delegate to
-   {@link org.ops4j.pax.logging.internal.DefaultServiceLog}</p>
+   {@link DefaultServiceLog}</p>
    
    @since 0.8.2
    @author Ceki G&uuml;lc&uuml;

@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.service.internal;
+package org.ops4j.pax.logging.spi.support;
 
 import java.lang.ref.WeakReference;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
@@ -26,8 +27,8 @@ public class LogEntryImpl
 {
 
     private long m_time;
-    private WeakReference/*<Bundle>*/ m_bundle;
-    private WeakReference/*<ServiceReference>*/ m_service;
+    private WeakReference<Bundle> m_bundle;
+    private WeakReference<ServiceReference> m_service;
     private int m_level;
     private String m_message;
     private Throwable m_exception;
@@ -36,11 +37,11 @@ public class LogEntryImpl
     {
         if( bundle != null )
         {
-            m_bundle = new WeakReference( bundle );
+            m_bundle = new WeakReference<>( bundle );
         }
         if( service != null )
         {
-            m_service = new WeakReference( service );
+            m_service = new WeakReference<>( service );
         }
         m_level = level;
         m_message = message;
@@ -54,7 +55,7 @@ public class LogEntryImpl
         {
             return null;
         }
-        return (Bundle) m_bundle.get();
+        return m_bundle.get();
     }
 
     public ServiceReference getServiceReference()
@@ -63,7 +64,7 @@ public class LogEntryImpl
         {
             return null;
         }
-        return (ServiceReference) m_service.get();
+        return m_service.get();
     }
 
     public int getLevel()

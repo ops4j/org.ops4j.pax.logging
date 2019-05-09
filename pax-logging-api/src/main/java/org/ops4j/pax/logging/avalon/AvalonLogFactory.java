@@ -21,7 +21,7 @@ import org.apache.avalon.framework.logger.Logger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 
 /**
  * Unlike with modern (sic!) Logging frameworks like SLF4J and Commons Logging, there's no Avalon-specific

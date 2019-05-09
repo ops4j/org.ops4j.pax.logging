@@ -13,51 +13,48 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
-package org.ops4j.pax.logging.service.internal;
+package org.ops4j.pax.logging.service.internal.spi;
 
 import org.apache.log4j.Level;
 import org.ops4j.pax.logging.spi.PaxLevel;
 
-public class PaxLevelImpl
-    implements PaxLevel
-{
+/**
+ * Log4J1 delegated {@link PaxLevel}. It's the easiest implementation, because {@link PaxLevel}
+ * was inspired by Log4J1 itself.
+ */
+public class PaxLevelImpl implements PaxLevel {
 
     private Level m_delegate;
 
-    public PaxLevelImpl( Level delegate )
-    {
+    public PaxLevelImpl(Level delegate) {
         m_delegate = delegate;
     }
 
-    public boolean isGreaterOrEqual( PaxLevel r )
-    {
-        if (r instanceof PaxLevelImpl)
-        {
+    @Override
+    public boolean isGreaterOrEqual(PaxLevel r) {
+        if (r instanceof PaxLevelImpl) {
             PaxLevelImpl impl = (PaxLevelImpl) r;
-            return m_delegate.isGreaterOrEqual( impl.m_delegate );
-        }
-        else
-        {
+            return m_delegate.isGreaterOrEqual(impl.m_delegate);
+        } else {
             // fallback case: the syslog numbers are portable
             return getSyslogEquivalent() <= r.getSyslogEquivalent();
         }
 
     }
 
-    public int toInt()
-    {
+    @Override
+    public int toInt() {
         return m_delegate.toInt();
     }
 
-    public int getSyslogEquivalent()
-    {
+    @Override
+    public int getSyslogEquivalent() {
         return m_delegate.getSyslogEquivalent();
     }
 
-    public String toString()
-    {
+    public String toString() {
         return m_delegate.toString();
     }
 

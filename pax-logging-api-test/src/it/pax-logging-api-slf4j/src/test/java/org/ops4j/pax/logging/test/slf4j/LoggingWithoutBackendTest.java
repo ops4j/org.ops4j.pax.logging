@@ -19,7 +19,7 @@
 package org.ops4j.pax.logging.test.slf4j;
 
 import org.junit.Test;
-import org.ops4j.pax.logging.internal.DefaultServiceLog;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

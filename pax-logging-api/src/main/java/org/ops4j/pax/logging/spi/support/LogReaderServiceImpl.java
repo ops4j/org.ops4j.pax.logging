@@ -103,8 +103,10 @@ public class LogReaderServiceImpl implements LogReaderService {
         try {
             listener.logged(entry);
         } catch (Throwable e) {
-            m_logger.error("'" + listener + "' is removed as a LogListener since it threw an exception.", e);
-            removeLogListener(listener);
+            if (m_logger != null) {
+                m_logger.error("'" + listener + "' is removed as a LogListener since it threw an exception.", e);
+                removeLogListener(listener);
+            }
         }
     }
 

@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.util;
+package org.ops4j.pax.logging.spi.support;
 
 import java.lang.reflect.InvocationTargetException;
 

@@ -105,12 +105,15 @@
         </dependency>
 
         <dependency>
+            <!--
+                log4j:apache-log4j-extras = log4j:log4j + some additional packages and classes.
+                There are no classes that are present in both libraries but in different version.
+                pax-logging-api however re-exports only classes from log4j:log4j, because some classes
+                from org.apache.log4j package from log4j:apache-log4j-extras introduce too many additional
+                packages that have to be re-exported ("uses" closure is too wide)
+            -->
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>apache-log4j-extras</artifactId>
         </dependency>
 
         <!-- Testing -->

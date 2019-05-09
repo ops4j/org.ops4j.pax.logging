@@ -79,4 +79,24 @@ public interface PaxLoggingConstants {
      */
     String LOGGING_CFG_LOG_READER_SIZE = "org.ops4j.pax.logging.logReaderServiceSize";
 
+    /**
+     * Service property to filter {@link org.ops4j.pax.logging.spi.PaxAppender} OSGi services
+     */
+    String APPENDER_NAME_PROPERTY = "org.ops4j.pax.logging.appender.name";
+
+    /**
+     * Service property to filter {@link org.ops4j.pax.logging.spi.PaxLayout} OSGi services
+     */
+    String LAYOUT_NAME_PROPERTY = "org.ops4j.pax.logging.layout.name";
+
+    /**
+     * Service property to filter {@link org.ops4j.pax.logging.spi.PaxFilter} OSGi services
+     */
+    String FILTER_NAME_PROPERTY = "org.ops4j.pax.logging.filter.name";
+
+    /**
+     * Service property to filter {@link org.ops4j.pax.logging.spi.PaxErrorHandler} OSGi services
+     */
+    String ERRORHANDLER_NAME_PROPERTY = "org.ops4j.pax.logging.errorhandler.name";
+
 }

@@ -45,9 +45,9 @@ Each class that's an entry point to specific Logging framework (like `org.slf4j.
 
 This indirection allows to plug-in OSGi specific mechanism (like replacing `org.ops4j.pax.logging.PaxLoggingService` implementation at runtime) without refreshing (in OSGi terms) pax-logging-api bundle.
 
-There's one important thing. Logging facades and frameworks share familiar concepts of _category_ (or a logger _name_). This concept was introduced (afair) in Log4J with tree-like _hierarchy_ of loggers where more general loggers could provide shared configuration (like appenders) for more particular loggers.
+There's one important thing. Logging facades and frameworks share familiar concepts of _category_ (or a logger _name_). This concept was introduced (afair) in Log4J1 with tree-like _hierarchy_ of loggers where more general loggers could provide shared configuration (like appenders) for more particular loggers.
 
-OSGi Compoendium `org.osgi.service.log.LogService` _doesn't_ have this notion of _category_, but (without a need to provide more technical details) pax-logging implements calls to `org.osgi.service.log.LogService.log()` method in such way that _category_ is (if possible) bundle's _symbolic name_. This _category_ is then used to get a logger from underlying logging backend.
+OSGi Compendium `org.osgi.service.log.LogService` _doesn't_ have this notion of _category_, but (without a need to provide more technical details) pax-logging implements calls to `org.osgi.service.log.LogService.log()` method in such way that _category_ is (if possible) bundle's _symbolic name_. This _category_ is then used to get a logger from underlying logging backend.
 
 In other words each `org.osgi.service.log.LogService.log()` call may be represended by this pseudo code:
 
@@ -314,13 +314,13 @@ What's interesting here is that there's no need to provide special bridge to pax
 
 Ah, the grandfather of all configurable Logging frameworks. Created when there was no logging bridges/facades around. Actually first facades (Commons Logging) was created to bridge common logging API to one of different logging frameworks (back then, it was only Log4j1 and Java Util Logging (JUL) from JDK1.4).
 
-Because its origins are in pre-logging bridge times, Log4j1's API was used directly by very large amount of code. That's why pax-logging fully supports its native API.
+Because its origins are in pre-logging bridge times, Log4J1's API was used directly by very large amount of code. That's why pax-logging fully supports its native API.
 
 Also, this was the first logging framework embraced by pax-logging project itself.
 
-Here, the problem is with splitting log4j original JAR into API (for pax-logging-api) and implementation (for pax-logging-service).
+Here, the problem is with splitting original log4j:log4j JAR into API (for pax-logging-api) and implementation (for pax-logging-service).
 
-The original `Export-Package` header of log4j:log4j is (after formatting):
+The original `Export-Package` header of log4j:log4j (yes - it is correct OSGi bundle) is (after formatting):
 
 [listing,options=nowrap]
 ----
@@ -355,7 +355,7 @@ org.apache.log4j.spi; version=1.2.15; uses:="org.apache.log4j"
 org.apache.log4j.xml; version=1.2.15; uses:="javax.xml.parsers org.w3c.dom"
 ----
 
-I checked original `log4j:log4j` (it is proper OSGi bundle) and started with single reexport of `org.apache.log4j` package. The closure of exports turned out to be:
+I checked original `log4j:log4j` and started with single reexport of `org.apache.log4j` package. The closure of exports turned out to be:
 [listing,options=nowrap]
 ----
 Export-Package:
@@ -390,7 +390,7 @@ Not exported packages:
 * org.apache.log4j.chainsaw
 * org.apache.log4j.lf5
 
-`pax-logging-service` itself should (rather) not export anything (it's not doing it so far).
+`pax-logging-service` itself should not export anything (it's not doing it so far).
 
 Additionally, apache-log4j-extras-1.2.17.jar has some new packages:
 
@@ -416,7 +416,7 @@ apache-log4j-extras-1.2.17.jar duplicates some packages from log4j-1.2.17.jar, b
 
 With PAXLOGGING-252, I'd like to make it easier to maintain pax-logging itself. The goals (and kind of work log) are:
 
-* if some classes are needed from original log4j1 (and log4j2 too) they should be Export-Packaged
+* if some classes are needed from original Log4J1 (and later with Log4J2 too) they should be Export-Packaged
 * if some classes have to be adjusted for pax-logging (OSGi in general), they should be copied _and committed_ without changing. Changes should be done in separate commit to distinguish original version from changes.
 * log4j classes should only be exported by pax-logging-api *or* Private-Packaged by pax-logging-service - never both (so far it was the case with `org.apache.log4j.Category`)
 * I'm going to export `org.apache.log4j` package with the closure of _uses_, which is:
@@ -433,6 +433,181 @@ With PAXLOGGING-252, I'd like to make it easier to maintain pax-logging itself. 
 ** org.apache.log4j.config
 ** org.apache.log4j.xml
 * But because `org.apache.log4j.xml` was exported in previous versions of pax-logging-api, I'll leave it as is. Also because pax-logging-service requires some classes from `org.apache.log4j.config` and I don't want this bundle to duplicate any pax-logging-api classes (whether exported or private), I'll add export for `org.apache.log4j.config` package in pax-logging-api.
+
+.Update
+
+My plan was to export the above set of packages from pax-logging-api and import them in pax-logging-service with few exceptions. Mainly, `org.apache.log4j.Logger` class _has to_ be exported by pax-logging-api (with changes related to delegation to pax-logging services), but it also _has to_ be private packaged in pax-logging-service, because it actually has to call log4j:log4j functionality (like keeping hierarchy of loggers).
+
+OSGi R6 Core specification says:
+
+====
+*3.9.4 Overall Search Order*
+
+Frameworks must adhere to the following rules for class or resource loading. When a bundle's class
+loader is requested to load a class or find a resource, the search must be performed in the following
+order:
+
+…
+
+*3*. If the class or resource is in a package that is imported using Import-Package or was imported dynamically in a previous load, then the request is delegated to the exporting bundle's class loader [...]
+
+...
+
+*5*. Search the bundle's embedded classpath.
+====
+
+So it was not possible:
+
+* to have changed `org.apache.log4j.Logger` class exported from in pax-logging-api and
+* to have unchanged `org.apache.log4j.Logger` class private-packaged in pax-logging-service, while other classes from `org.apache.log4j` package kept being imported from pax-logging-api
+
+The only solution is to *not* import `org.apache.log4j` package from pax-logging-api to pax-logging-service bundle.
+Some Maven tricks (`maven-dependency-plugin:unpack`) have to be involved.
+
+This is set of rules I found:
+
+* first, pax-logging-api has to export consistent set of packages, even if some classes are adjusted for OSGi purposes. This is easy by Export-Packaging and copying to `src/main/java` if needed
+* if pax-logging-service can use *all* the classes from one of the above exported packages from pax-logging-api, it should import them
+* if there's at least one class from the above exported packages, that has to be different in pax-logging-service (like `org.apache.log4j.Category` or `org.apache.log4j.helpers.AppenderAttachableImpl`), then pax-logging-service has to Private-Package such package
+* but because Private-Package handling (by maven-bundle-plugin and bndlib) involves discovery using classpath, we have to be careful. We can only assume that `org.apache.felix.bundleplugin.BundlePlugin.getClasspath()` method uses `currentProject.getBuild().getOutputDirectory()` as *first* directory/location when checking the package.
+* because `org.apache.log4j` package is available both from pax-logging-api and log4j:log4j (and log4j:apache-log4j-extras) dependencies of pax-logging-service, we have to ensure that classes from log4j:log4j are taken. Instead of relying on `<dependency>` order in pax-logging-service POM, we rather use `maven-dependency-plugin:unpack` with this configuration:
+
+.Summary of package splitting for Log4J1
+
+I think users deserve this summary, because there are 4 bundles/jars:
+
+* pax-logging-api
+* pax-logging-service (the Log4J1 _backend_)
+* log4j:log4j - the implementation
+* log4j:apache-log4j-extras which is log4j:log4j + some additional classes
+
+And there's this design flaw that single JAR is treated as both API and Implementation (what's worse - some packages mix API and Implementation classes).
+
+log4j:apache-log4j-extras source JAR (and github repository) duplicates these packages from log4j:log4j:
+
+* org.apache.log4j
+* org.apache.log4j.pattern
+* org.apache.log4j.spi
+* org.apache.log4j.varia
+* org.apache.log4j.xml
+
+But fortunately doesn't duplicate any of actual source files.
+
+log4j:apache-log4j-extras JAR duplicates the above packages where the classes are simply merged from own project and from log4j:log4j JAR. However, pax-logging-api re-exports `org.apache.log4j`, `org.apache.log4j.pattern`, `org.apache.log4j.spi` and `org.apache.log4j.xml` from the log4j:log4j JAR, not from log4j:apache-log4j-extras, because some additional classes (like `org.apache.log4j.DBAppender`) introduce too many additional packages that have to be re-exported (because of `uses` clause).
+
+Here's full list of packages and notes about how it's used in pax-logging.
+
+org.apache.log4j::
+This is the main package mixing all kinds of classes (API, Implementation, internal functionality, ...)
+
+* pax-logging-api re-exports all the classes from log4j:log4j, but `BasicConfigurator`, `Category`, `Hierarchy`, `Logger`, `LogManager`, `MDC`, `NDC`, `Priority` and `PropertyConfigurator` are changed to adjust them for OSGi/pax-logging requirements. The changes turn some methods into noop variants. While factory methods (the most important _get logger_ for example) delegate to pax logging services to obtain loggers.
+* pax-logging-service doesn't import this package from pax-logging-api, instead it Private-Packages all the classes from log4j:apache-log4j-extras without exporting, but there are some additional and changed classes:
+** `AsyncAppender` has fixes related to https://ops4j1.jira.com/browse/PAXLOGGING-101[PAXLOGGING-101] and https://ops4j1.jira.com/browse/PAXLOGGING-182[PAXLOGGING-182]
+** `Category` has fixes related to https://ops4j1.jira.com/browse/PAXLOGGING-99[PAXLOGGING-99] and https://ops4j1.jira.com/browse/PAXLOGGING-182[PAXLOGGING-182]
+** `ConsoleAppender` has fixes related to https://ops4j1.jira.com/browse/PAXLOGGING-90[PAXLOGGING-90]
+** There's new `DailyZipRollingFileAppender` class related to https://ops4j1.jira.com/browse/PAXLOGGING-226[PAXLOGGING-226] - it's not available in original Log4J1
+** There's new `OsgiThrowableRenderer` introduced with https://ops4j1.jira.com/browse/PAXLOGGING-80[PAXLOGGING-80]
+** There's new `PaxLoggingConfigurator` that handles special, OSGi configuration parsing (with references to OSGi services implementing interfaces from `org.ops4j.pax.logging.spi` package)
+** There's new `SanitizingPatternLayout` introduced with https://ops4j1.jira.com/browse/PAXLOGGING-201[PAXLOGGING-201]
+
+org.apache.log4j.chainsaw::
+This package comes from log4j:log4j and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.component.*::
+This package (and subpackages) comes from log4j:apache-log4j-extras and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.config::
+This package comes from log4j:log4j.
+
+* It's exported from pax-logging-api without changes
+* It's Private-Packaged in pax-logging-service from log4j:log4j without importing from pax-logging-api. There's one additional class:
+** `PaxPropertySetter' which is a copy of `PropertySetter` with fixes related to https://ops4j1.jira.com/browse/PAXLOGGING-83[PAXLOGGING-83]
+
+org.apache.log4j.extras::
+This package comes from log4j:apache-log4j-extras and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.filter::
+This package comes from log4j:apache-log4j-extras and is Private-Packaged in pax-logging-service. pax-logging-service contains additional classes:
+
+* `MatchFilterBase` and `MDCMatchFilter` come from abandoned Log4J 1.3 release moved at some point to log4j-sandbox
+
+org.apache.log4j.helpers::
+This package is tricky. It's in `uses` closure of packages exported from pax-logging-api, but pax-logging-service can't import it. pax-logging-service fixes performance problems with `AppenderAttachableImpl`, but it can't import this package from pax-logging-api, because it can't import `org.apache.log4j` package and this _root_ package contains `org.apache.log4j.Appender` class which is used as argument to some of `AppenderAttachableImpl` methods.
+
+* pax-logging-api re-exports this package from log4j:log4j and:
+** changes `Loader` class to load classes using OSGi methods
+** changes `LogLog` class to delegate to fallback logger from pax-logging-api itself
+** adds `MessageFormatter` class from sandbox/abandoned Log4J1 1.3
+
+* pax-logging-service Private-Packages this package from ... pax-logging-api (to include the fixes for `Loader` and `LogLog` classes) and:
+** `AppenderAttachableImpl` has fixes related to https://ops4j1.jira.com/browse/PAXLOGGING-182[PAXLOGGING-182]
+
+org.apache.log4j.jdbc::
+This package comes from log4j:log4j and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.jmx::
+This package comes from log4j:log4j and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.lf5.*::
+This package (and subpackages) comes from log4j:log4j and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.net::
+This package comes from log4j:log4j and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.nt::
+This package comes from log4j:log4j and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.or (Object Renderer)::
+
+* pax-logging-api re-exports this package from log4j:log4j without changes, because it's in the `uses` closure of the exported Log4J1 API.
+* pax-logging-service imports this package from pax-logging-api, because it doesn't add any own changes
+
+org.apache.log4j.or.jms::
+This package comes from log4j:log4j and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.or.sax::
+This package comes from log4j:log4j and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.pattern::
+This package comes from log4j:log4j, but log4j:apache-log4j-extras adds `ExtrasFormattingInfo` and `ExtrasPatternParser`.
+
+* pax-logging-api exports this package from log4j:log4j (because pax-logging-api can't have Maven dependency on log4j:apache-log4j-extras) and keeps a copy if these two additional classes taken directly from log4j:apache-log4j-extras
+* pax-logging-service imports this package from pax-logging-api
+
+org.apache.log4j.receivers.*::
+This package (and subpackages) comes from log4j:apache-log4j-extras and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.rewrite::
+This package comes from log4j:log4j and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.rolling.*::
+This package (and subpackages) comes from log4j:apache-log4j-extras and is Private-Packaged in pax-logging-service.
+
+* `RollingFileAppender` has fixes related to https://ops4j1.jira.com/browse/PAXLOGGING-189[PAXLOGGING-189]
+
+org.apache.log4j.rule::
+This package comes from log4j:apache-log4j-extras and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.sift::
+That's entirely pax-logging-service private package with `MDCSiftingLoggingAppender` class created for https://ops4j1.jira.com/browse/PAXLOGGING-83[PAXLOGGING-83]
+
+org.apache.log4j.spi::
+
+* pax-logging-api re-exports this package from log4j:log4j without changes
+* pax-logging-service doesn't import this package from pax-logging-api, instead, it Private-Packages it from both log4j:log4j and log4j:apache-log4j-extras.
+** log4j:apache-log4j-extras has `LoggingEventFieldResolver` - it couldn't be exported from pax-logging-api because it requires classes from `org.apache.log4j.rule` package, which we don't want to export from pax-logging-api
+** pax-logging-service adds `OptionFactory` - new class created for https://ops4j1.jira.com/browse/PAXLOGGING-83[PAXLOGGING-83]
+
+org.apache.log4j.varia::
+This package comes from both log4j:log4j and log4j:apache-log4j-extras and is Private-Packaged in pax-logging-service without changes.
+
+org.apache.log4j.xml::
+This package comes from both log4j:log4j and log4j:apache-log4j-extras (which adds `XSLTLayout` class).
+
+* pax-logging-api re-exports this package from log4j:log4j, and:
+** adds `XSLTLayout` copied directly from log4j:apache-log4j-extras to own `src/main/java`
+** changes `DOMConfigurator`, so methods are effectively no-op
+* pax-logging-service imports this package from pax-logging-api
 
 === Location Info
 

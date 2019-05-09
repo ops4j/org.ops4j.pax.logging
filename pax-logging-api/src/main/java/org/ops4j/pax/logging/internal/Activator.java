@@ -29,6 +29,8 @@ import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
+import org.ops4j.pax.logging.spi.support.FrameworkHandler;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

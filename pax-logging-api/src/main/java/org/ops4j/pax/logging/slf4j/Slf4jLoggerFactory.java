@@ -20,7 +20,7 @@ package org.ops4j.pax.logging.slf4j;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
-import org.ops4j.pax.logging.internal.FallbackLogFactory;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
