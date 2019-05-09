@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Properties;
 
 
@@ -378,9 +380,12 @@ public final class RollingFileAppender extends FileAppender
   protected void subAppend(final LoggingEvent event) {
     // The rollover check must precede actual writing. This is the 
     // only correct behavior for time driven triggers. 
+    AccessController.doPrivileged(new PrivilegedAction<Void>() {
+      @Override
+      public Void run() {
     if (
       triggeringPolicy.isTriggeringEvent(
-          this, event, getFile(), getFileLength())) {
+          RollingFileAppender.this, event, getFile(), getFileLength())) {
       //
       //   wrap rollover request in try block since
       //    rollover may fail in case read access to directory
@@ -392,6 +397,9 @@ public final class RollingFileAppender extends FileAppender
           LogLog.warn("Exception during rollover attempt.", ex);
       }
     }
+    return null;
+      }
+    });
 
     super.subAppend(event);
   }
