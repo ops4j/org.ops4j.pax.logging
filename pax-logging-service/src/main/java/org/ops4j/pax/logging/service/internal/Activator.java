@@ -23,11 +23,13 @@ import java.util.Hashtable;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.Loader;
+import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.xml.XMLLayout;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
 import org.ops4j.pax.logging.spi.support.RegisteredService;
 import org.osgi.framework.Bundle;
@@ -60,6 +62,14 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         sanityCheck();
+
+        // Falback PaxLogger configuration
+        String levelName = BackendSupport.defaultLogLevel(bundleContext);
+        DefaultServiceLog.setLogLevel(levelName);
+        if (DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG) {
+            // Log4j1 debug
+            LogLog.setInternalDebugging(true);
+        }
 
         // OSGi Compendium 101.4: Log Reader Service
         logReaderInfo = BackendSupport.createAndRegisterLogReaderService(bundleContext);

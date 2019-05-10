@@ -208,7 +208,9 @@ public class PaxLoggingServiceImpl
             bundle = sr.getBundle();
         }
 
-        PaxLogger logger = getLogger(bundle, "?????", "");
+        String category = BackendSupport.category(bundle);
+
+        PaxLogger logger = getLogger(bundle, category, "");
         if (level < LOG_ERROR) {
             logger.fatal(message, exception);
         } else {

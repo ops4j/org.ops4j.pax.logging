@@ -143,22 +143,24 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
      * @param t
      */
     private void output(String levelName, String message, Throwable t) {
-        // Might be [null] if used by standard test cases.
-        if (m_bundle != null) {
-            System.out.print(m_bundle.getSymbolicName());
+        synchronized (this) {
+            // Might be [null] if used by standard test cases.
+            if (m_bundle != null) {
+                System.out.print(m_bundle.getSymbolicName());
+                System.out.print(" ");
+            }
+
+            System.out.print("[");
+            System.out.print(m_categoryName);
+            System.out.print("] ");
+            System.out.print(levelName);
             System.out.print(" ");
-        }
+            System.out.print(": ");
+            System.out.println(message);
 
-        System.out.print("[");
-        System.out.print(m_categoryName);
-        System.out.print("] ");
-        System.out.print(levelName);
-        System.out.print(" ");
-        System.out.print(": ");
-        System.out.println(message);
-
-        if (t != null) {
-            t.printStackTrace(System.out);
+            if (t != null) {
+                t.printStackTrace(System.out);
+            }
         }
     }
 

@@ -173,7 +173,7 @@ public class PaxLoggingConfigurator extends PropertyConfigurator {
                     }
                     ErrorHandler eh = new ErrorHandlerBridgeImpl(m_bundleContext, errorHandlerName, fallback);
                     appender.setErrorHandler(eh);
-                } else {
+                } else if (errorHandlerClass != null) {
                     ErrorHandler eh = (ErrorHandler) OptionConverter.instantiateByKey(props,
                             errorHandlerPrefix,
                             ErrorHandler.class,

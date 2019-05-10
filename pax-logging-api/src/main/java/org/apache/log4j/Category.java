@@ -219,6 +219,10 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      @param event the event to log.  */
   public
   void callAppenders(LoggingEvent event) {
+    // we have to unwrap the event coming from LogMF/LogSF
+    Throwable t = event.getThrowableInformation() == null ? null
+            : event.getThrowableInformation().getThrowable();
+    log(event.getFQNOfLoggerClass(), event.getLevel(), event.getMessage(), t);
   }
 
   /**

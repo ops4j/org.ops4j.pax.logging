@@ -197,4 +197,23 @@ public class BackendSupport {
         return Level.INFO;
     }
 
+    /**
+     * {@link LogService} doesn't know the concept of logger <em>name</em> (or <em>category</em>), so
+     * we have to derive it from what we have - a bundle
+     * @param bundle
+     * @return
+     */
+    public static String category(Bundle bundle) {
+        String category = "undefined";
+
+        if (bundle != null) {
+            category = bundle.getSymbolicName();
+            if (category == null) {
+                category = "bundle@" + bundle.getBundleId();
+            }
+        }
+
+        return category;
+    }
+
 }

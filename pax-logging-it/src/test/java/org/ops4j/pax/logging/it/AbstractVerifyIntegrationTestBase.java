@@ -65,7 +65,7 @@ public class AbstractVerifyIntegrationTestBase {
         while (true) {
             try {
                 List<String> lines = Files.readAllLines(reportFile.toPath());
-                if (lines.get(lines.size() - 1).equals("[org.ops4j.pax.exam.spi.reactors.ReactorManager] INFO : suite finished")) {
+                if (lines.get(lines.size() - 1).contains("org.ops4j.pax.exam.spi.reactors.ReactorManager - suite finished")) {
                     return lines;
                 }
                 Thread.sleep(100);

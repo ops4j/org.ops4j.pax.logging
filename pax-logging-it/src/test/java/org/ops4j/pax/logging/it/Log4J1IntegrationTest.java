@@ -19,14 +19,8 @@
 package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
 import javax.inject.Inject;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogMF;
 import org.apache.log4j.LogManager;
@@ -35,29 +29,27 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.NDC;
 import org.apache.log4j.helpers.Loader;
-import org.apache.log4j.helpers.LogLog;
-import org.apache.log4j.spi.HierarchyEventListener;
-import org.apache.log4j.spi.LoggerRepository;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.BundleContext;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
  * See org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest in pax-logging-api-test project.
  */
 @RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class Log4J1IntegrationTest extends AbstractControlledIntegrationTestBase {
 
     @Inject
@@ -75,192 +67,101 @@ public class Log4J1IntegrationTest extends AbstractControlledIntegrationTestBase
     }
 
     @Test
-    public void logUsingLog4J1API() {
+    public void simplestUsage() {
+        Logger log = Logger.getLogger(Log4J1IntegrationTest.class);
+        // MDC won't be printed because default TTCL layout doesn't handle it
+        MDC.put("user", "me");
+        MDC.put("country", "Equestria");
+        // NDC won't be printed because pax-logging-api doesn't support it (yet?)
+        NDC.push("layer42");
+        NDC.push("layer43");
+
+        log.info("simplestUsage - INFO");
+        log.trace("simplestUsage - TRACE");
+
+        Logger.getLogger("special").trace("simplestUsage - TRACE");
+    }
+
+    @Test
+    public void loggerAPI() {
         Logger log = Logger.getLogger(Log4J1IntegrationTest.class);
 
-        log.error("Log4J1IntegrationTest/ERROR");
-        log.warn("Log4J1IntegrationTest/WARN");
-        log.info("Log4J1IntegrationTest/INFO");
-        log.debug("Log4J1IntegrationTest/DEBUG");
-        log.trace("Log4J1IntegrationTest/TRACE");
+        log.info("loggerAPI - INFO1");
+        log.trace("loggerAPI - TRACE1");
+        assertFalse(log.isTraceEnabled());
+
+        Level l = log.getLevel();
+        log.setLevel(Level.ALL);
+        log.info("loggerAPI - INFO2");
+        log.trace("loggerAPI - TRACE2");
+        assertFalse("setLevel doesn't affect actual delegate logger", log.isTraceEnabled());
+
+        assertNull("This isn't handled by pax-logging", log.getParent());
+
+        try {
+            log.addAppender(null);
+            fail("Should've thrown " + UnsupportedOperationException.class.getName());
+        } catch (UnsupportedOperationException ignored) {
+        }
+
+        assertFalse("This isn't handled by pax-logging", log.isAttached(null));
+
+        try {
+            log.removeAppender("anything");
+            fail("Should've thrown " + UnsupportedOperationException.class.getName());
+        } catch (UnsupportedOperationException ignored) {
+        }
     }
-//
-//    @Test
-//    public void simplestUsage() {
-//        Logger log = Logger.getLogger(Log4J1IntegrationTest.class);
-//        MDC.put("user", "me");
-//        MDC.put("country", "Equestria");
-//        NDC.push("layer42");
-//        NDC.push("layer43");
-//
-//        log.info("simplestUsage - INFO");
-//        log.trace("simplestUsage - TRACE");
-//
-//        Logger.getLogger("special").trace("simplestUsage - TRACE");
-//    }
-//
-//    @Test
-//    public void loggerAPI() {
-//        Logger log = Logger.getLogger(Log4J1IntegrationTest.class);
-//
-//        log.info("loggerAPI - INFO1");
-//        log.trace("loggerAPI - TRACE1");
-//        assertFalse(log.isTraceEnabled());
-//
-//        Level l = log.getLevel();
-//        log.setLevel(Level.ALL);
-//        log.info("loggerAPI - INFO2");
-//        log.trace("loggerAPI - TRACE2");
-//        assertTrue(log.isTraceEnabled());
-//        log.setLevel(l);
-//
-//        boolean found = false;
-//        if (log.getParent() != null) {
-//            for (Enumeration<?> e = log.getParent().getAllAppenders(); e.hasMoreElements(); ) {
-//                found = true;
-//                Appender a = (Appender) e.nextElement();
-//                log.info("Appender: " + a);
-//                assertTrue(log.getParent().isAttached(a));
-//            }
-//        }
-//        assertTrue("Should've found any appender", found);
-//
-//        final List<LoggingEvent> events = new LinkedList<>();
-//        AppenderSkeleton newAppender = new AppenderSkeleton() {
-//            @Override
-//            protected void append(LoggingEvent event) {
-//                events.add(event);
-//            }
-//
-//            @Override
-//            public void close() {
-//            }
-//
-//            @Override
-//            public boolean requiresLayout() {
-//                return false;
-//            }
-//        };
-//        log.addAppender(newAppender);
-//
-//        assertThat(events.size(), equalTo(0));
-//        log.info("just checking");
-//        assertThat(events.size(), equalTo(1));
-//
-//        assertTrue(log.isAttached(newAppender));
-//        log.removeAppender(newAppender);
-//        assertFalse(log.isAttached(newAppender));
-//
-//        log.info("just checking");
-//        assertThat(events.size(), equalTo(1));
-//    }
-//
-//    @Test
-//    public void logManagerAPI() {
-//        assertSame(LogManager.getLogger(Log4J1IntegrationTest.class), Logger.getLogger(Log4J1IntegrationTest.class));
-//        assertSame(LogManager.getLoggerRepository().getRootLogger(), Logger.getRootLogger());
-//        boolean found = false;
-//        for (Enumeration<?> e = LogManager.getCurrentLoggers(); e.hasMoreElements(); ) {
-//            Logger logger = (Logger) e.nextElement();
-//            if (!found && Log4J1IntegrationTest.class.getName().equals(logger.getName())) {
-//                found = true;
-//            }
-//            System.out.println("logger: " + logger.getName());
-//        }
-//        assertTrue("Should've found logger by name in the repository", found);
-//    }
-//
-//    @Test
-//    public void loggerRepositoryAndAppenderAPI() {
-//        final boolean[] appenderAdded = { false };
-//        final boolean[] appenderRemoved = { false };
-//
-//        LoggerRepository repo = LogManager.getLoggerRepository();
-//        repo.addHierarchyEventListener(new HierarchyEventListener() {
-//            @Override
-//            public void addAppenderEvent(Category cat, Appender appender) {
-//                appenderAdded[0] = true;
-//            }
-//
-//            @Override
-//            public void removeAppenderEvent(Category cat, Appender appender) {
-//                appenderRemoved[0] = true;
-//            }
-//        });
-//
-//        final List<LoggingEvent> events = new LinkedList<>();
-//        AppenderSkeleton newAppender = new AppenderSkeleton() {
-//            @Override
-//            public void close() {
-//            }
-//
-//            @Override
-//            public boolean requiresLayout() {
-//                return false;
-//            }
-//
-//            @Override
-//            protected void append(LoggingEvent event) {
-//                events.add(event);
-//            }
-//        };
-//        repo.getRootLogger().addAppender(newAppender);
-//
-//        Logger.getRootLogger().info("Hello");
-//        Logger.getRootLogger().trace("Hello");
-//        assertThat(events.size(), equalTo(1));
-//        assertTrue(appenderAdded[0] && !appenderRemoved[0]);
-//
-//        repo.getRootLogger().removeAppender(newAppender);
-//
-//        Logger.getRootLogger().info("Hello");
-//        Logger.getRootLogger().trace("Hello");
-//        assertThat(events.size(), equalTo(1));
-//        assertTrue(appenderAdded[0] && appenderRemoved[0]);
-//
-//        Level t = repo.getThreshold();
-//        assertFalse(repo.isDisabled(Level.TRACE_INT));
-//        repo.setThreshold("WARN");
-//        assertTrue(repo.isDisabled(Level.TRACE_INT));
-//        repo.setThreshold(t);
-//    }
-//
-//    @Test
-//    public void loaderApi() throws Exception {
-//        Thread.currentThread().setContextClassLoader(null);
-//        // check some internal class and resources from log4j:log4j
-//        assertNotNull(Loader.loadClass("org.apache.log4j.lf5.LF5Appender"));
-//        assertNotNull(Loader.getResource("org/apache/log4j/xml/log4j.dtd"));
-//        assertNotNull(Loader.getResource("META-INF/maven/log4j/log4j/pom.xml"));
-//    }
-//
-//    @Test
-//    public void logLogApi() throws Exception {
-//        LogLog.setQuietMode(false);
-//        LogLog.setInternalDebugging(true);
-//        LogLog.warn("log log warning1", null);
-//        LogLog.debug("log log debug1", null);
-//        LogLog.setInternalDebugging(false);
-//        LogLog.warn("log log warning2", null);
-//        LogLog.debug("log log debug2", null);
-//    }
-//
-//    /**
-//     * Test using {@link java.text.MessageFormat} formatting syntax.
-//     * @throws Exception
-//     */
-//    @Test
-//    public void logXFApi() throws Exception {
-//        LogMF.info(Logger.getLogger("logXFApi"), "{0}, {0} {1}!", "Hello", "World");
-//    }
-//
-//    /**
-//     * Test using SLF4J like pattern formatting syntax.
-//     * @throws Exception
-//     */
-//    @Test
-//    public void logSFApi() throws Exception {
-//        LogSF.info(Logger.getLogger("logSFApi"), "{} {}!", "Hello", "World");
-//    }
+
+    @Test
+    public void logManagerAPI() {
+        assertNotSame("Underlying delegates are the same, but not wrapping TrackingLoggers", LogManager.getLogger(Log4J1IntegrationTest.class), Logger.getLogger(Log4J1IntegrationTest.class));
+
+        try {
+            LogManager.getLoggerRepository();
+            fail("Should've thrown " + UnsupportedOperationException.class.getName());
+        } catch (UnsupportedOperationException ignored) {
+        }
+
+        try {
+            LogManager.getCurrentLoggers();
+            fail("Should've thrown " + UnsupportedOperationException.class.getName());
+        } catch (UnsupportedOperationException ignored) {
+        }
+    }
+
+    @Test
+    public void loaderApi() throws Exception {
+        Thread.currentThread().setContextClassLoader(null);
+        // org.apache.log4j.helpers.Loader is exported by pax-logging-api and is related to this bundle
+        // and its classloader
+        ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(null);
+            assertNotNull(Loader.loadClass("org.ops4j.pax.logging.PaxLogger"));
+            assertNotNull(Loader.getResource("org/ops4j/pax/logging/PaxLoggingConstants.class"));
+            assertNotNull(Loader.getResource("org/apache/log4j/Logger.class"));
+        } finally {
+            Thread.currentThread().setContextClassLoader(tccl);
+        }
+    }
+
+    /**
+     * Test using {@link java.text.MessageFormat} formatting syntax.
+     * @throws Exception
+     */
+    @Test
+    public void logMFApi() throws Exception {
+        LogMF.info(Logger.getLogger("logXFApi"), "MF: {0}, {0} {1}!", "Hello", "World");
+    }
+
+    /**
+     * Test using SLF4J like pattern formatting syntax.
+     * @throws Exception
+     */
+    @Test
+    public void logSFApi() throws Exception {
+        LogSF.info(Logger.getLogger("logSFApi"), "SF: {} {}!", "Hello", "World");
+    }
 
 }

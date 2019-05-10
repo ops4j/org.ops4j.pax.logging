@@ -82,6 +82,7 @@ public class Loader  {
 
         Bundle bundle = FrameworkUtil.getBundle(Loader.class);
         if (bundle != null) {
+            LogLog.debug("Trying to find [" + resource + "] using " + bundle.getSymbolicName() + "/" + bundle.getVersion() + " bundle.");
             url = bundle.getResource(resource);
             if (url != null) {
                 return url;
