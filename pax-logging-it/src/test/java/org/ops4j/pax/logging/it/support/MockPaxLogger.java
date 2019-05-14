@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ops4j.pax.logging.it;
+package org.ops4j.pax.logging.it.support;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -21,7 +21,6 @@ package org.ops4j.pax.logging.it;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,6 @@ import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +42,6 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
 public class CleanIntegrationTest extends AbstractControlledIntegrationTestBase {
 
     public static Logger LOG = LoggerFactory.getLogger(CleanIntegrationTest.class);
-
-    @Inject
-    private BundleContext context;
 
     @Configuration
     public Option[] configure() {

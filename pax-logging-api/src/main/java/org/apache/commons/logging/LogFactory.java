@@ -28,6 +28,7 @@ import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.ops4j.pax.logging.jcl.JclLogger;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * <p>This is an adaptation of the Jakarta Commons Logging API for OSGi usage.</p>
@@ -214,7 +215,7 @@ public class LogFactory {
             throws LogConfigurationException {
         PaxLogger logger;
         if (m_paxLogging == null) {
-            logger = FallbackLogFactory.createFallbackLog(null, name);
+            logger = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Log.class), name);
         } else {
             logger = m_paxLogging.getLogger(name, JclLogger.JCL_FQCN);
         }

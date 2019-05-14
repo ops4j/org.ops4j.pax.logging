@@ -18,8 +18,9 @@
 package org.apache.log4j.helpers;
 
 import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
    This class used to output log statements from within the log4j package.
@@ -71,7 +72,7 @@ public class LogLog {
    */
   private static boolean quietMode = false;
 
-  private static PaxLogger log = FallbackLogFactory.createFallbackLog(null, "log4j");
+  private static PaxLogger log = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(LogLog.class), "log4j");
 
   /**
      Allows to enable/disable log4j internal logging.

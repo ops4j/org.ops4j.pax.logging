@@ -25,6 +25,7 @@ import org.apache.logging.log4j.spi.AbstractLogger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * This is the default logger that is used when no suitable logging implementation is available.
@@ -33,7 +34,7 @@ public class Log4jv2Logger extends AbstractLogger {
 
     private static final String LOG4J_FQCN = Logger.class.getName();
 
-    private volatile PaxLogger delegate;
+    private volatile PaxLogger m_delegate;
 
     public Log4jv2Logger(String name, MessageFactory messageFactory, PaxLoggingManager paxLogging) {
         super(name, messageFactory);
@@ -42,9 +43,9 @@ public class Log4jv2Logger extends AbstractLogger {
 
     public void setPaxLoggingManager(PaxLoggingManager paxLoggingManager) {
         if (paxLoggingManager != null) {
-            delegate = paxLoggingManager.getLogger(getName(), LOG4J_FQCN);
+            m_delegate = paxLoggingManager.getLogger(getName(), LOG4J_FQCN);
         } else {
-            delegate = FallbackLogFactory.createFallbackLog( null, getName() );
+            m_delegate = FallbackLogFactory.createFallbackLog( FrameworkUtil.getBundle(Log4jv2Logger.class), getName() );
         }
     }
 
@@ -132,28 +133,28 @@ public class Log4jv2Logger extends AbstractLogger {
     public void logMessage(String fqcn, Level level, Marker marker, Message message, Throwable t) {
         // TODO: support marker
         if (level.intLevel() >= Level.TRACE.intLevel()) {
-            delegate.trace(message.getFormattedMessage(), t, fqcn);
+            m_delegate.trace(message.getFormattedMessage(), t, fqcn);
         }
         else if (level.intLevel() >= Level.DEBUG.intLevel()) {
-            delegate.debug(message.getFormattedMessage(), t, fqcn);
+            m_delegate.debug(message.getFormattedMessage(), t, fqcn);
         }
         else if (level.intLevel() >= Level.INFO.intLevel()) {
-            delegate.inform(message.getFormattedMessage(), t, fqcn);
+            m_delegate.inform(message.getFormattedMessage(), t, fqcn);
         }
         else if (level.intLevel() >= Level.WARN.intLevel()) {
-            delegate.warn(message.getFormattedMessage(), t, fqcn);
+            m_delegate.warn(message.getFormattedMessage(), t, fqcn);
         }
         else if (level.intLevel() >= Level.ERROR.intLevel()) {
-            delegate.error(message.getFormattedMessage(), t, fqcn);
+            m_delegate.error(message.getFormattedMessage(), t, fqcn);
         }
         else if (level.intLevel() >= Level.FATAL.intLevel()) {
-            delegate.fatal(message.getFormattedMessage(), t, fqcn);
+            m_delegate.fatal(message.getFormattedMessage(), t, fqcn);
         }
     }
 
     @Override
     public Level getLevel() {
-        switch (delegate.getLogLevel()) {
+        switch (m_delegate.getLogLevel()) {
             case PaxLogger.LEVEL_TRACE:
                 return Level.TRACE;
             case PaxLogger.LEVEL_DEBUG:

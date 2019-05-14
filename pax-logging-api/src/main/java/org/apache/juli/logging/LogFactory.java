@@ -25,6 +25,7 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * Modified LogFactory: removed all discovery, hardcode a specific implementation
@@ -178,7 +179,7 @@ public /* abstract */ class LogFactory {
             throws LogConfigurationException {
         PaxLogger logger;
         if (m_paxLogging == null) {
-            logger = FallbackLogFactory.createFallbackLog(null, name);
+            logger = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Log.class), name);
         } else {
             logger = m_paxLogging.getLogger(name, JuliLogger.JULI_FQCN);
         }

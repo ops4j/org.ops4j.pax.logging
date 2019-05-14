@@ -21,6 +21,8 @@ import org.apache.avalon.framework.logger.Logger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * <p>pax-logging specific {@link Logger} that delegates to {@link PaxLogger} that is obtained from
@@ -41,7 +43,11 @@ public class AvalonLogger implements Logger, PaxLoggingManagerAwareLogger {
 
     @Override
     public void setPaxLoggingManager(PaxLoggingManager paxLoggingManager) {
-        m_delegate = paxLoggingManager.getLogger(m_name, AVALON_FQCN);
+        if (paxLoggingManager == null) {
+            m_delegate = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Logger.class), m_name);
+        } else {
+            m_delegate = paxLoggingManager.getLogger(m_name, AVALON_FQCN);
+        }
     }
 
     // implementation of org.apache.avalon.framework.logger.Logger follows.

@@ -30,6 +30,8 @@ import org.junit.rules.TestName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.ops4j.pax.logging.it.AbstractControlledIntegrationTestBase.LOG_DIR;
+
 /**
  * Base test class for tests that verify output of real pax-exam tests.
  */
@@ -39,10 +41,6 @@ public class AbstractVerifyIntegrationTestBase {
 
     @Rule
     public TestName testName = new TestName();
-
-    // location of failsafe test reports - I know it's environment awareness,
-    // but it's not a pure unit test after all
-    protected File base = new File("target/failsafe-reports");
 
     @Before
     public void beforeEach() {
@@ -55,25 +53,13 @@ public class AbstractVerifyIntegrationTestBase {
     }
 
     /**
-     * Actively waits till failsafe report is available (knowing a bit about the location and format,
-     * but hey, we're testing logging framework after all)
-     * @param report
+     * Reads assumed log output from default/fallback logger configured to write to file. File name is assumed
+     * to be this class' name without {@code Verify} prefix
      * @return
      */
-    protected List<String> awaitReport(String report) throws IOException {
-        File reportFile = new File(base, report);
-        while (true) {
-            try {
-                List<String> lines = Files.readAllLines(reportFile.toPath());
-                if (lines.get(lines.size() - 1).contains("org.ops4j.pax.exam.spi.reactors.ReactorManager - suite finished")) {
-                    return lines;
-                }
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IOException("Interrupted", e);
-            }
-        }
+    protected List<String> readLogs() throws IOException {
+        File reportFile = new File(LOG_DIR, getClass().getSimpleName().replaceAll("^Verify", "") + ".log");
+        return Files.readAllLines(reportFile.toPath());
     }
 
 }

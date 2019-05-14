@@ -19,9 +19,8 @@
 package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
-import javax.inject.Inject;
+import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,17 +30,14 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.logging.PaxLoggingConstants;
-import org.osgi.framework.BundleContext;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
 public class Log4J1WithDefaultConfigurationAndNoLog4jDebugIntegrationTest extends AbstractControlledIntegrationTestBase {
-
-    @Inject
-    private BundleContext context;
 
     @Configuration
     public Option[] configure() throws IOException {
@@ -53,7 +49,8 @@ public class Log4J1WithDefaultConfigurationAndNoLog4jDebugIntegrationTest extend
 
                 paxLoggingApi(),
                 paxLoggingLog4J1(),
-                configAdmin()
+                configAdmin(),
+                eventAdmin()
         );
     }
 
@@ -63,6 +60,14 @@ public class Log4J1WithDefaultConfigurationAndNoLog4jDebugIntegrationTest extend
         LogLog.debug("LogLog debug");
         LogLog.warn("LogLog warn");
         LogLog.error("LogLog error");
+
+        List<String> lines = readLines();
+
+        // verification of LogLog messages
+        assertFalse(lines.stream().anyMatch(l -> l.contains("LogLog debug")));
+        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j] WARN : LogLog warn"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j] ERROR : LogLog error"));
+        assertFalse(lines.stream().anyMatch(l -> l.contains("DEBUG : Trying to find [log4j.xml] using")));
     }
 
 }

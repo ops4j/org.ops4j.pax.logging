@@ -50,10 +50,14 @@ public class OSGIPaxLoggingManager
 
     public OSGIPaxLoggingManager(BundleContext context) {
         tracker = new ServiceTracker<>(context, PaxLoggingService.class.getName(), this);
-        tracker.open();
 
         m_loggers = new HashMap<String, TrackingLogger>();
         m_context = context;
+
+        // only now tracker can be opened, because when pax-logging-api bundle is restarted while
+        // pax-logging-service is not, we may already have org.ops4j.pax.logging.OSGIPaxLoggingManager.addingService()
+        // called
+        tracker.open();
 
         // retrieve the service if any exist at this point.
         ServiceReference<PaxLoggingService> ref = tracker.getServiceReference();

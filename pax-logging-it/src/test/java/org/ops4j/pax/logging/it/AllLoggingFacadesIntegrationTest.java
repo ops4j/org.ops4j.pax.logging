@@ -19,10 +19,8 @@
 package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import javax.inject.Inject;
+import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -31,11 +29,10 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
@@ -47,9 +44,6 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
 public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrationTestBase {
 
     public static Logger LOG = LoggerFactory.getLogger(AllLoggingFacadesIntegrationTest.class);
-
-    @Inject
-    private BundleContext context;
 
     @Configuration
     public Option[] configure() throws IOException {
@@ -86,58 +80,19 @@ public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrat
         org.apache.logging.log4j.LogManager.getLogger(name).info("INFO using Log4Jv2");
         // 10. JUL - extra handling without a pax-logging specific facade and shadowing. Only handler redirection
         java.util.logging.Logger.getLogger(name).info("INFO using java.util.logging");
-    }
 
-    /**
-     * Each of the delegate loggers under facade-specific logger should be the same when not using
-     * any pax-logging backend.
-     */
-    @Test
-    @Ignore
-    public void sharedDelegate() throws NoSuchFieldException, IllegalAccessException {
-        String name = "org.ops4j.pax.logging.it.test";
+        List<String> lines = readLines();
 
-        // 1. SLF4j
-        Object d1 = delegateLogger(org.slf4j.LoggerFactory.getLogger(name));
-        // 2. Commons Logging
-        Object d2 = delegateLogger(org.apache.commons.logging.LogFactory.getLog(name));
-        // 3. JULI Logging
-        Object d3 = delegateLogger(org.apache.juli.logging.LogFactory.getLog(name));
-        // 4. Avalon Logging
-        Object d4 = delegateLogger(org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger(name));
-        // 5. JBoss Logging
-//        org.jboss.logging.Logger.getLogger(name);
-        // 6. Knopflerfish - no special facade
-        // 7. Log4J1
-        Object d7 = delegateLogger(org.apache.log4j.Logger.getLogger(name));
-        // 8. Logback - only behind SLF4J
-        // 9. Log4J2
-        // Log4J2 Logging involves log() methods that pass FQCN
-        Object d9 = delegateLogger(org.apache.logging.log4j.LogManager.getLogger(name));
-        // 10. JUL - extra handling without a pax-logging specific facade and shadowing. Only handler redirection
-//        java.util.logging.Logger.getLogger(name);
-
-        assertSame(d1, d2);
-        assertSame(d2, d3);
-        assertSame(d3, d4);
-        assertSame(d4, d7);
-        assertSame(d7, d9);
-    }
-
-    /**
-     * Uses reflection to get underlying delegate logger.
-     * @param logger
-     * @return
-     */
-    private Object delegateLogger(Object logger) throws NoSuchFieldException, IllegalAccessException {
-        Field f = null;
-        try {
-            f = logger.getClass().getDeclaredField("m_delegate");
-        } catch (NoSuchFieldException e) {
-            f = logger.getClass().getSuperclass().getDeclaredField("m_delegate");
-        }
-        f.setAccessible(true);
-        return f.get(logger);
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using SLF4J"));
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using Commons Logging"));
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using Juli Logging"));
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using Avalon Logging"));
+        // here, FQCN is passed, which is explicitly added to message by DefaultServiceLog
+        assertTrue(lines.stream().anyMatch(l -> l.startsWith("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using JBoss Logging")));
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using Log4Jv1"));
+        // here, FQCN is passed, which is explicitly added to message by DefaultServiceLog
+        assertTrue(lines.stream().anyMatch(l -> l.startsWith("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using Log4Jv2")));
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using java.util.logging"));
     }
 
 }

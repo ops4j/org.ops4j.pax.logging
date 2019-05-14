@@ -19,7 +19,7 @@
 package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
-import javax.inject.Inject;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
@@ -30,21 +30,15 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.osgi.framework.BundleContext;
+import org.ops4j.pax.logging.it.support.Helpers;
+import org.osgi.framework.BundleException;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
 public class Log4J1WithDefaultConfigurationIntegrationTest extends AbstractControlledIntegrationTestBase {
-
-    @Inject
-    private BundleContext context;
 
     @Configuration
     public Option[] configure() throws IOException {
@@ -53,7 +47,8 @@ public class Log4J1WithDefaultConfigurationIntegrationTest extends AbstractContr
 
                 paxLoggingApi(),
                 paxLoggingLog4J1(),
-                configAdmin()
+                configAdmin(),
+                eventAdmin()
         );
     }
 
@@ -63,17 +58,15 @@ public class Log4J1WithDefaultConfigurationIntegrationTest extends AbstractContr
         LogLog.debug("LogLog debug");
         LogLog.warn("LogLog warn");
         LogLog.error("LogLog error");
-    }
 
-    @Test
-    public void logUsingLog4J1API() {
-        Logger log = Logger.getLogger(Log4J1WithDefaultConfigurationIntegrationTest.class);
+        List<String> lines = super.readLines();
 
-        log.error("Log4J1WithDefaultConfigurationIntegrationTest/ERROR");
-        log.warn("Log4J1WithDefaultConfigurationIntegrationTest/WARN");
-        log.info("Log4J1WithDefaultConfigurationIntegrationTest/INFO");
-        log.debug("Log4J1WithDefaultConfigurationIntegrationTest/DEBUG");
-        log.trace("Log4J1WithDefaultConfigurationIntegrationTest/TRACE");
+        // we used org.apache.log4j.helpers.LogLog directly, so the bundle in log record is pax-logging-api
+        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j] DEBUG : LogLog debug"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j] WARN : LogLog warn"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j] ERROR : LogLog error"));
+        // here, LogLog was used internally by pax-logging-service, so the bundle in log record is pax-logging-service
+        assertTrue(lines.stream().anyMatch(l -> l.startsWith("org.ops4j.pax.logging.pax-logging-service [log4j] DEBUG : Trying to find [log4j.xml] using org.ops4j.pax.logging.pax-logging-service")));
     }
 
 }

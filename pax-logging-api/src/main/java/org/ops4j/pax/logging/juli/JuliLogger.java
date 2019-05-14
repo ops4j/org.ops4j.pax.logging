@@ -21,6 +21,8 @@ import org.apache.juli.logging.Log;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * <p>pax-logging specific {@link org.apache.juli.logging.Log} that delegates to {@link PaxLogger} that is obtained from
@@ -41,7 +43,11 @@ public class JuliLogger implements Log, PaxLoggingManagerAwareLogger {
 
     @Override
     public void setPaxLoggingManager(PaxLoggingManager paxLoggingManager) {
-        m_delegate = paxLoggingManager.getLogger(m_name, JULI_FQCN);
+        if (paxLoggingManager == null) {
+            m_delegate = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Log.class), m_name);
+        } else {
+            m_delegate = paxLoggingManager.getLogger(m_name, JULI_FQCN);
+        }
     }
 
     // implementation of org.apache.juli.logging.Log follows.

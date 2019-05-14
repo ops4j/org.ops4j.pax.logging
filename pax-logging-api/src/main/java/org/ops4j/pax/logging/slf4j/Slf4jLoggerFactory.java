@@ -21,6 +21,7 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
@@ -45,7 +46,7 @@ public class Slf4jLoggerFactory implements ILoggerFactory {
     public Logger getLogger(String name) {
         PaxLogger paxLogger;
         if (m_paxLogging == null) {
-            paxLogger = FallbackLogFactory.createFallbackLog(null, name);
+            paxLogger = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Logger.class), name);
         } else {
             paxLogger = m_paxLogging.getLogger(name, Slf4jLogger.SLF4J_FQCN);
         }

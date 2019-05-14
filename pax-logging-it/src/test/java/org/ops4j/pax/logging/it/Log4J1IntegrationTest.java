@@ -19,6 +19,7 @@
 package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
+import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.log4j.Level;
@@ -31,45 +32,60 @@ import org.apache.log4j.NDC;
 import org.apache.log4j.helpers.Loader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.knopflerfish.service.log.LogRef;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.osgi.framework.BundleContext;
+import org.ops4j.pax.logging.it.support.Helpers;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogService;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
- * See org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest in pax-logging-api-test project.
+ * <p>See org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest in pax-logging-api-test project.</p>
+ * <p>This test doesn't work from IDE - it requires failsafe-maven-plugin configuration of classpath.</p>
  */
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
-public class Log4J1IntegrationTest extends AbstractControlledIntegrationTestBase {
+public class Log4J1IntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
 
     @Inject
-    private BundleContext context;
+    private org.osgi.service.log.LogService osgiLogService;
+
+    @Inject
+    private org.knopflerfish.service.log.LogService fishLogService;
+
+    @Override
+    public void hijackStdout() throws BundleException {
+        super.hijackStdout();
+        Helpers.restartPaxLoggingService(context, true);
+    }
 
     @Configuration
     public Option[] configure() throws IOException {
+        // even if default/fallback logger would write to a file (and actually Log4J1's LogLog class does that),
+        // Log4J1's default configuration uses ConsoleAppender
         return combine(
                 combine(baseConfigure(), defaultLoggingConfig()),
 
                 paxLoggingApi(),
                 paxLoggingLog4J1(),
-                configAdmin()
+                configAdmin(),
+                eventAdmin()
         );
     }
 
     @Test
-    public void simplestUsage() {
+    public void simplestUsage() throws IOException {
         Logger log = Logger.getLogger(Log4J1IntegrationTest.class);
-        // MDC won't be printed because default TTCL layout doesn't handle it
+        // MDC won't be printed because default TTCC layout doesn't handle it
         MDC.put("user", "me");
         MDC.put("country", "Equestria");
         // NDC won't be printed because pax-logging-api doesn't support it (yet?)
@@ -80,17 +96,110 @@ public class Log4J1IntegrationTest extends AbstractControlledIntegrationTestBase
         log.trace("simplestUsage - TRACE");
 
         Logger.getLogger("special").trace("simplestUsage - TRACE");
+
+        List<String> lines = readLines();
+
+        assertFalse(lines.stream().anyMatch(l -> l.contains("simplestUsage - TRACE")));
+        assertTrue("Line should be printed without MDC",
+                lines.stream().anyMatch(l -> l.contains("simplestUsage - INFO") && !l.contains("Equestria")));
     }
 
     @Test
-    public void loggerAPI() {
+    public void usageThroughJULAPI() throws IOException {
+        java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Log4J1IntegrationTest.class.getName());
+        logger.info("INFO through java.util.logging");
+        logger.fine("FINE through java.util.logging");
+        logger.finer("FINER through java.util.logging");
+        logger.finest("FINEST through java.util.logging");
+
+        List<String> lines = readLines();
+
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1IntegrationTest - INFO through java.util.logging"));
+        assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.Log4J1IntegrationTest - FINE through java.util.logging"));
+        assertFalse(lines.stream().anyMatch(l -> l.contains("FINER through java.util.logging")));
+        assertFalse(lines.stream().anyMatch(l -> l.contains("FINEST through java.util.logging")));
+    }
+
+    @Test
+    public void usageThroughOsgi() throws IOException {
+        ServiceReference<LogService> sr = context.getServiceReference(org.osgi.service.log.LogService.class);
+        LogService log = context.getService(sr);
+        log.log(LogService.LOG_INFO, "INFO1 through org.osgi.service.log");
+        log.log(LogService.LOG_DEBUG, "DEBUG1 through org.osgi.service.log");
+
+        osgiLogService.log(LogService.LOG_INFO, "INFO2 through org.osgi.service.log");
+        osgiLogService.log(LogService.LOG_DEBUG, "DEBUG2 through org.osgi.service.log");
+
+        List<String> lines = readLines();
+
+        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO1 through org.osgi.service.log"));
+        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through org.osgi.service.log"));
+        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO2 through org.osgi.service.log"));
+        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through org.osgi.service.log"));
+    }
+
+    @Test
+    public void usageThroughOtherAPIs() throws IOException {
+        String name = Log4J1IntegrationTest.class.getName();
+
+        org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger(name);
+        slf4jLogger.info("INFO through SLF4J");
+        slf4jLogger.trace("TRACE through SLF4J");
+
+        org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog(name);
+        commonsLogger.info("INFO through Apache Commons Logging");
+        commonsLogger.trace("TRACE through Apache Commons Logging");
+
+        org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog(name);
+        juliLogger.info("INFO through JULI Logging");
+        juliLogger.trace("TRACE through JULI Logging");
+
+        org.apache.avalon.framework.logger.Logger avalonLogger = org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger(name);
+        avalonLogger.info("INFO through Avalon Logger API");
+        avalonLogger.debug("DEBUG through Avalon Logger API");
+
+        // JBoss Logging
+        // PAXLOGGING-251
+
+        // Knopflerfish - the bundle associated with the "logger" will be the bundle used to obtain
+        // service reference - here, PaxExam-Probe
+        LogRef lr = new LogRef(context);
+        lr.info("INFO1 through Knopflerfish");
+        lr.debug("DEBUG1 through Knopflerfish");
+
+        fishLogService.log(LogService.LOG_INFO, "INFO2 through Knopflerfish");
+        fishLogService.log(LogService.LOG_DEBUG, "DEBUG2 through Knopflerfish");
+
+        org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(name);
+        log4j2Logger.info("INFO through Log4J v2 API");
+        log4j2Logger.trace("TRACE through Log4J v2 API");
+
+        List<String> lines = readLines();
+
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1IntegrationTest - INFO through SLF4J"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J1IntegrationTest - TRACE through SLF4J"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1IntegrationTest - INFO through Apache Commons Logging"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J1IntegrationTest - TRACE through Apache Commons Logging"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1IntegrationTest - INFO through JULI Logging"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J1IntegrationTest - TRACE through JULI Logging"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1IntegrationTest - INFO through Avalon Logger API"));
+        assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.Log4J1IntegrationTest - DEBUG through Avalon Logger API"));
+        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO1 through Knopflerfish"));
+        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
+        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO2 through Knopflerfish"));
+        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1IntegrationTest - INFO through Log4J v2 API"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J1IntegrationTest - TRACE through Log4J v2 API"));
+    }
+
+    @Test
+    public void loggerAPI() throws IOException {
         Logger log = Logger.getLogger(Log4J1IntegrationTest.class);
 
         log.info("loggerAPI - INFO1");
         log.trace("loggerAPI - TRACE1");
         assertFalse(log.isTraceEnabled());
 
-        Level l = log.getLevel();
         log.setLevel(Level.ALL);
         log.info("loggerAPI - INFO2");
         log.trace("loggerAPI - TRACE2");
@@ -111,6 +220,13 @@ public class Log4J1IntegrationTest extends AbstractControlledIntegrationTestBase
             fail("Should've thrown " + UnsupportedOperationException.class.getName());
         } catch (UnsupportedOperationException ignored) {
         }
+
+        List<String> lines = readLines();
+
+        assertTrue(lines.stream().anyMatch(l -> l.contains("loggerAPI - INFO1")));
+        assertTrue(lines.stream().anyMatch(l -> l.contains("loggerAPI - INFO2")));
+        assertFalse(lines.stream().anyMatch(l -> l.contains("loggerAPI - TRACE1")));
+        assertFalse(lines.stream().anyMatch(l -> l.contains("loggerAPI - TRACE2")));
     }
 
     @Test
@@ -153,6 +269,10 @@ public class Log4J1IntegrationTest extends AbstractControlledIntegrationTestBase
     @Test
     public void logMFApi() throws Exception {
         LogMF.info(Logger.getLogger("logXFApi"), "MF: {0}, {0} {1}!", "Hello", "World");
+
+        List<String> lines = readLines();
+
+        assertTrue(lines.stream().anyMatch(l -> l.contains("MF: Hello, Hello World!")));
     }
 
     /**
@@ -162,6 +282,10 @@ public class Log4J1IntegrationTest extends AbstractControlledIntegrationTestBase
     @Test
     public void logSFApi() throws Exception {
         LogSF.info(Logger.getLogger("logSFApi"), "SF: {} {}!", "Hello", "World");
+
+        List<String> lines = readLines();
+
+        assertTrue(lines.stream().anyMatch(l -> l.contains("SF: Hello World!")));
     }
 
 }

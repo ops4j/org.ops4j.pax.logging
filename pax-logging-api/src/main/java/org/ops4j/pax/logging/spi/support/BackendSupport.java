@@ -18,8 +18,6 @@
  */
 package org.ops4j.pax.logging.spi.support;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
@@ -65,7 +63,7 @@ public class BackendSupport {
      */
     public static RegisteredService<LogReaderService, LogReaderServiceImpl> createAndRegisterLogReaderService(BundleContext context) {
         // register org.osgi.service.log.LogReaderService
-        LogReaderServiceImpl logReader = new LogReaderServiceImpl(100, FallbackLogFactory.createFallbackLog(null, "pax-logging"));
+        LogReaderServiceImpl logReader = new LogReaderServiceImpl(100, FallbackLogFactory.createFallbackLog(context.getBundle(), "pax-logging"));
         Dictionary<String, Object> serviceProperties = new Hashtable<>();
         serviceProperties.put(Constants.SERVICE_RANKING, paxLoggingServiceRanking(context));
         ServiceRegistration<LogReaderService> registration = context.registerService(LogReaderService.class, logReader, serviceProperties);
@@ -105,24 +103,45 @@ public class BackendSupport {
     }
 
     /**
+     * Prepares (without registration) {@link ConfigurationNotifier} regardles of availability of
+     * Event Admin service
+     * @return
+     */
+    public static RegisteredService<ConfigurationNotifier, ConfigurationNotifier> eventAdminConfigurationNotifier(BundleContext context) {
+        ConfigurationNotifier notifier;
+        try {
+            notifier = new EventAdminConfigurationNotifier(context);
+        } catch (NoClassDefFoundError e) {
+            notifier = new ConfigurationNotifier() {
+                @Override
+                public void configurationDone() {
+                }
+
+                @Override
+                public void configurationError(Throwable t) {
+                }
+
+                @Override
+                public void close() throws Exception {
+                }
+            };
+        }
+
+        return new RegisteredService<>(notifier, null);
+    }
+
+    /**
      * Gets the default level name as configured for pax-logging. The name may not be valid. Simply value
      * specified by user (in system or context properties) is returned (or default {@code DEBUG} value).
      * @param bundleContext
      * @return
      */
     public static String defaultLogLevel(BundleContext bundleContext) {
-        String levelName;
-        if (System.getSecurityManager() != null) {
-            levelName = AccessController.doPrivileged((PrivilegedAction<String>) ()
-                    -> System.getProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL));
-        } else {
-            levelName = System.getProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL);
+        String level = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL);
+        if (level == null || "".equals(level.trim())) {
+            return "DEBUG";
         }
-        if (levelName == null || "".equals(levelName.trim())) {
-            levelName = bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL);
-        }
-
-        return levelName;
+        return level;
     }
 
     /**

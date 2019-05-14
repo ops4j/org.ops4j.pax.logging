@@ -18,15 +18,17 @@
 package org.ops4j.pax.logging.spi.support;
 
 import java.lang.reflect.InvocationTargetException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 
 public class OsgiUtil {
 
-    
     private static final int OSGI_1_0 = 10;
     private static final int OSGI_1_1 = 11;
     private static final int OSGI_1_2 = 12;
@@ -123,6 +125,29 @@ public class OsgiUtil {
             return FrameworkUtil.getBundle(cls);
         }
         return null;
+    }
+
+    /**
+     * Returns a value from system property or context property (if system property is not specified).
+     * @param context
+     * @param property
+     * @return
+     */
+    public static String systemOrContextProperty(BundleContext context, String property) {
+        String value = null;
+        if (System.getSecurityManager() != null) {
+            value = AccessController.doPrivileged((PrivilegedAction<String>) () -> System.getProperty(property));
+        } else {
+            value = System.getProperty(property);
+        }
+        if (value == null && context != null) {
+            try {
+                value = context.getProperty(property);
+            } catch (IllegalStateException ignored) {
+                // happens when bundle is already stopping and trackers switch to fallback logger
+            }
+        }
+        return value;
     }
 
 }

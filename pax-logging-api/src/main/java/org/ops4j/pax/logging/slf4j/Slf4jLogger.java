@@ -18,6 +18,9 @@
 package org.ops4j.pax.logging.slf4j;
 
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
 import org.slf4j.spi.LocationAwareLogger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.FormattingTuple;
@@ -45,7 +48,11 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
 
     @Override
     public void setPaxLoggingManager(PaxLoggingManager loggingManager) {
-        m_delegate = loggingManager.getLogger(m_name, SLF4J_FQCN);
+        if (loggingManager == null) {
+            m_delegate = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Logger.class), m_name);
+        } else {
+            m_delegate = loggingManager.getLogger(m_name, SLF4J_FQCN);
+        }
     }
 
     // implementation of org.slf4j.spi.LocationAwareLogger follows.

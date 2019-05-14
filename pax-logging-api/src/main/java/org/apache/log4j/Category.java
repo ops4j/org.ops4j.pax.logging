@@ -39,6 +39,8 @@ import org.apache.log4j.helpers.NullEnumeration;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 import java.util.Enumeration;
 import java.util.ResourceBundle;
@@ -166,7 +168,11 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
 
   @Override
   public void setPaxLoggingManager(PaxLoggingManager loggingManager) {
-    m_delegate = loggingManager.getLogger(name, LOG4J_FQCN);
+    if (loggingManager == null) {
+      m_delegate = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Logger.class), name);
+    } else {
+      m_delegate = loggingManager.getLogger(name, LOG4J_FQCN);
+    }
   }
 
   // public API of original org.apache.log4j.Category follows.

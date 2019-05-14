@@ -22,6 +22,7 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Level;
@@ -29,6 +30,7 @@ import java.util.logging.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PaxLoggingConfigurator;
+import org.apache.log4j.helpers.LogLog;
 import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxContext;
@@ -37,6 +39,7 @@ import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.service.internal.spi.PaxAppenderProxy;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
+import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
 import org.ops4j.pax.logging.spi.support.LogEntryImpl;
 import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
 import org.osgi.framework.Bundle;
@@ -69,13 +72,22 @@ public class PaxLoggingServiceImpl
     // optional bridging into Event Admin service
     private EventAdminPoster m_eventAdmin;
 
+    // optional notification mechanism for configuration events
+    private final ConfigurationNotifier m_configNotifier;
+
     // Log level (actually a threashold) for this entire service.
     private int m_logLevel = org.osgi.service.log.LogService.LOG_DEBUG;
 
-    public PaxLoggingServiceImpl(BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin) {
+    // there's no need to run configureDefaults() more than once. That was happening in constructor
+    // and millisecond later during registration of ManagedService, upon receiving empty org.ops4j.pax.logging
+    // configuration
+    private AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
+
+    public PaxLoggingServiceImpl(BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin, ConfigurationNotifier configNotifier) {
         m_bundleContext = context;
         m_logReader = logReader;
         m_eventAdmin = eventAdmin;
+        m_configNotifier = configNotifier;
         m_context = new PaxContext();
         m_configLock = new ReentrantReadWriteLock();
         m_julLoggers = new LinkedList<>();
@@ -160,7 +172,7 @@ public class PaxLoggingServiceImpl
 
         getConfigLock().writeLock().lock();
         ClassLoader loader = null;
-        List<PaxAppenderProxy> proxies;
+        List<PaxAppenderProxy> proxies = null;
         try {
             loader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -171,9 +183,16 @@ public class PaxLoggingServiceImpl
                 configureDefaults();
                 return;
             }
-            PaxLoggingConfigurator configurator = new PaxLoggingConfigurator(m_bundleContext);
-            configurator.doConfigure(extracted, LogManager.getLoggerRepository());
-            proxies = configurator.getProxies();
+            try {
+                PaxLoggingConfigurator configurator = new PaxLoggingConfigurator(m_bundleContext);
+                configurator.doConfigure(extracted, LogManager.getLoggerRepository());
+                proxies = configurator.getProxies();
+                emptyConfiguration.set(false);
+                m_configNotifier.configurationDone();
+            } catch (Exception e) {
+                LogLog.error("Configuration problem: " + e.getMessage(), e);
+                m_configNotifier.configurationError(e);
+            }
         } finally {
             getConfigLock().writeLock().unlock();
             Thread.currentThread().setContextClassLoader(loader);
@@ -181,8 +200,10 @@ public class PaxLoggingServiceImpl
         // Avoid holding the configuration lock when starting proxies
         // It could cause deadlock if opening the service trackers block on the log because
         // the service itself wants to log anything
-        for (PaxAppenderProxy proxy : proxies) {
-            proxy.open();
+        if (proxies != null) {
+            for (PaxAppenderProxy proxy : proxies) {
+                proxy.open();
+            }
         }
 
         List<java.util.logging.Logger> loggers = setLevelToJavaLogging(configuration);
@@ -276,26 +297,35 @@ public class PaxLoggingServiceImpl
      * Default configuration, when Configuration Admin is not (yet) available.
      */
     private void configureDefaults() {
-        String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
-        Level julLevel = BackendSupport.toJULLevel(levelName);
+        if (!emptyConfiguration.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
+            Level julLevel = BackendSupport.toJULLevel(levelName);
 
-        m_logLevel = BackendSupport.convertLogServiceLevel(levelName);
+            m_logLevel = BackendSupport.convertLogServiceLevel(levelName);
 
-        PaxLoggingConfigurator configurator = new PaxLoggingConfigurator(m_bundleContext);
+            PaxLoggingConfigurator configurator = new PaxLoggingConfigurator(m_bundleContext);
 
-        Properties defaultProperties = new Properties();
-        defaultProperties.put("log4j.rootLogger", julLevel.getName() + ", A1");
-        defaultProperties.put("log4j.appender.A1", "org.apache.log4j.ConsoleAppender");
-        // "Time, Thread, Category, nested Context layout"
-        defaultProperties.put("log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout");
+            Properties defaultProperties = new Properties();
+            defaultProperties.put("log4j.rootLogger", julLevel.getName() + ", A1");
+            defaultProperties.put("log4j.appender.A1", "org.apache.log4j.ConsoleAppender");
+            // "Time, Thread, Category, nested Context layout"
+            defaultProperties.put("log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout");
 
-        // Extract System Properties prefixed with "pax.log4j", and drop the "pax." and include these
-        extractSystemProperties(defaultProperties);
+            // Extract System Properties prefixed with "pax.log4j", and drop the "pax." and include these
+            extractSystemProperties(defaultProperties);
 
-        configurator.doConfigure(defaultProperties, LogManager.getLoggerRepository());
+            configurator.doConfigure(defaultProperties, LogManager.getLoggerRepository());
 
-        final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
-        rootLogger.setLevel(julLevel);
+            final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+            rootLogger.setLevel(julLevel);
+            m_configNotifier.configurationDone();
+        } catch (Exception e) {
+            LogLog.error("Configuration problem: " + e.getMessage(), e);
+            m_configNotifier.configurationError(e);
+        }
     }
 
     private void extractSystemProperties(Properties output) {

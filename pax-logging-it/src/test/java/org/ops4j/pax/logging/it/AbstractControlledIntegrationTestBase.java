@@ -18,6 +18,17 @@
  */
 package org.ops4j.pax.logging.it;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,8 +37,13 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.ProbeBuilder;
 import org.ops4j.pax.exam.TestProbeBuilder;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.logging.PaxLoggingConstants;
+import org.ops4j.pax.logging.spi.PaxDefaultLogStreamProvider;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +60,22 @@ import static org.ops4j.pax.exam.CoreOptions.systemTimeout;
 import static org.ops4j.pax.exam.CoreOptions.url;
 import static org.ops4j.pax.exam.CoreOptions.workingDirectory;
 
+@ExamReactorStrategy(PerClass.class)
 public class AbstractControlledIntegrationTestBase {
 
     public static final Logger LOG = LoggerFactory.getLogger(AbstractControlledIntegrationTestBase.class);
     public static final String PROBE_SYMBOLIC_NAME = "PaxExam-Probe";
 
+    // location of where pax-logging-api will have output file written according to
+    // "org.ops4j.pax.logging.useFileLogFallback" system/context property
+    // filename will match test class name with ".log" extension
+    static final File LOG_DIR = new File("target/logs-default");
+
     @Rule
     public TestName testName = new TestName();
+
+    @Inject
+    protected BundleContext context;
 
     @Before
     public void beforeEach() {
@@ -63,6 +88,8 @@ public class AbstractControlledIntegrationTestBase {
     }
 
     protected Option[] baseConfigure() {
+        LOG_DIR.mkdirs();
+
         Option[] options = new Option[] {
                 // basic options
                 bootDelegationPackage("sun.*"),
@@ -98,16 +125,28 @@ public class AbstractControlledIntegrationTestBase {
     }
 
     /**
-     * Reasonable defaults for default logging level (actually a threshold) and framework logger level.
+     * Reasonable defaults for default logging level (actually a threshold), framework logger level and usage
+     * of file-based default/fallback logger.
      * @return
      */
     protected Option[] defaultLoggingConfig() {
+        String fileName = null;
+        try {
+            fileName = new File(LOG_DIR, getClass().getSimpleName() + ".log").getCanonicalPath();
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
         return new Option[] {
-            // every log with level higher or equal to DEBUG (i.e., not TRACE) will be logged
-            frameworkProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL).value("DEBUG"),
-            // level at which OSGi R6 Compendium 101.6 logging statements will be printed
-            // (from framework/bundle/service events)
-            frameworkProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL).value("DISABLED")
+                // every log with level higher or equal to DEBUG (i.e., not TRACE) will be logged
+                frameworkProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL).value("DEBUG"),
+                // level at which OSGi R6 Compendium 101.6 logging statements will be printed
+                // (from framework/bundle/service events)
+                frameworkProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL).value("DISABLED"),
+                // default log will be written to file which we can safely read without failsafe-maven-plugin
+                // synchronization problems
+                frameworkProperty(PaxLoggingConstants.LOGGING_CFG_USE_FILE_FALLBACK_LOGGER).value(fileName)
         };
     }
 
@@ -134,7 +173,54 @@ public class AbstractControlledIntegrationTestBase {
 
     protected MavenArtifactProvisionOption configAdmin() {
         return mavenBundle("org.apache.felix", "org.apache.felix.configadmin")
-                .versionAsInProject().startLevel(START_LEVEL_TEST_BUNDLE - 1).start();
+                .versionAsInProject().startLevel(START_LEVEL_SYSTEM_BUNDLES).start();
+    }
+
+    protected MavenArtifactProvisionOption eventAdmin() {
+        return mavenBundle("org.apache.felix", "org.apache.felix.eventadmin")
+                .versionAsInProject().startLevel(START_LEVEL_SYSTEM_BUNDLES).start();
+    }
+
+    /**
+     * Reads log lines written to test class-related log file
+     * (see {@link PaxLoggingConstants#LOGGING_CFG_USE_FILE_FALLBACK_LOGGER}).
+     * @return
+     */
+    protected List<String> readLines() {
+        try {
+            // flush the underlying, cleverly exposed PrintStream
+            ServiceReference<PaxDefaultLogStreamProvider> ref = context.getServiceReference(PaxDefaultLogStreamProvider.class);
+            if (ref != null) {
+                PaxDefaultLogStreamProvider provider = context.getService(ref);
+                if (provider != null && provider.stream() != null) {
+                    provider.stream().flush();
+                }
+            }
+
+            return readLines(new FileInputStream(new File(LOG_DIR, getClass().getSimpleName() + ".log").getCanonicalPath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Returns log lines from any {@link InputStream}
+     * @param input
+     * @return
+     */
+    protected List<String> readLines(InputStream input) {
+        try {
+            InputStreamReader isReader = new InputStreamReader(input, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(isReader);
+            List<String> lines = new ArrayList<>();
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+            return lines;
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
 }

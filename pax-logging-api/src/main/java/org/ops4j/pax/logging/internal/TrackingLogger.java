@@ -13,19 +13,23 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ops4j.pax.logging.internal;
 
-import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxContext;
+import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.Bundle;
 
-public class TrackingLogger
-        implements PaxLogger
-{
+/**
+ * <p>A {@link PaxLogger} that's delegating to real {@link PaxLoggingService} when one's available and falls back
+ * to {@link FallbackLogFactory} when the service is gone.</p>
+ * <p>This class itself doesn't track {@link PaxLoggingService} - {@link org.ops4j.pax.logging.OSGIPaxLoggingManager}
+ * does that and calls {@link #added(PaxLoggingService)} and {@link #removed()} methods.</p>
+ */
+public class TrackingLogger implements PaxLogger {
 
     private PaxLoggingService m_service;
     private String m_category;
@@ -33,137 +37,113 @@ public class TrackingLogger
     private PaxLogger m_delegate;
     private String m_fqcn;
 
-    public TrackingLogger( PaxLoggingService service, String category, Bundle bundle, String fqcn )
-    {
+    public TrackingLogger(PaxLoggingService service, String category, Bundle bundle, String fqcn) {
         m_fqcn = fqcn;
         m_category = category;
         m_bundle = bundle;
-        added( service );
+        added(service);
     }
 
-    public boolean isTraceEnabled()
-    {
+    @Override
+    public boolean isTraceEnabled() {
         return m_delegate.isTraceEnabled();
     }
 
-    public boolean isDebugEnabled()
-    {
+    @Override
+    public boolean isDebugEnabled() {
         return m_delegate.isDebugEnabled();
     }
 
-    public boolean isWarnEnabled()
-    {
-        return m_delegate.isWarnEnabled();
-    }
-
-    public boolean isInfoEnabled()
-    {
+    @Override
+    public boolean isInfoEnabled() {
         return m_delegate.isInfoEnabled();
     }
 
-    public boolean isErrorEnabled()
-    {
+    @Override
+    public boolean isWarnEnabled() {
+        return m_delegate.isWarnEnabled();
+    }
+
+    @Override
+    public boolean isErrorEnabled() {
         return m_delegate.isErrorEnabled();
     }
 
-    public boolean isFatalEnabled()
-    {
+    @Override
+    public boolean isFatalEnabled() {
         return m_delegate.isFatalEnabled();
     }
 
-    public void trace( String message, Throwable t )
-    {
-        m_delegate.trace( message, t );
+    @Override
+    public void trace(String message, Throwable t) {
+        m_delegate.trace(message, t);
     }
 
-    public void debug( String message, Throwable t )
-    {
-        m_delegate.debug( message, t );
+    @Override
+    public void debug(String message, Throwable t) {
+        m_delegate.debug(message, t);
     }
 
-    public void inform( String message, Throwable t )
-    {
-        m_delegate.inform( message, t );
+    @Override
+    public void inform(String message, Throwable t) {
+        m_delegate.inform(message, t);
     }
 
-    public void warn( String message, Throwable t )
-    {
-        m_delegate.warn( message, t );
+    @Override
+    public void warn(String message, Throwable t) {
+        m_delegate.warn(message, t);
     }
 
-    public void error( String message, Throwable t )
-    {
-        m_delegate.error( message, t );
+    @Override
+    public void error(String message, Throwable t) {
+        m_delegate.error(message, t);
     }
 
-    public void fatal( String message, Throwable t )
-    {
-        m_delegate.fatal( message, t );
+    @Override
+    public void fatal(String message, Throwable t) {
+        m_delegate.fatal(message, t);
     }
 
-    public void trace( String message, Throwable t, String fqcn )
-    {
-        m_delegate.trace( message, t, fqcn );
+    @Override
+    public void trace(String message, Throwable t, String fqcn) {
+        m_delegate.trace(message, t, fqcn);
     }
 
-    public void debug( String message, Throwable t, String fqcn  )
-    {
-        m_delegate.debug( message, t, fqcn );
+    @Override
+    public void debug(String message, Throwable t, String fqcn) {
+        m_delegate.debug(message, t, fqcn);
     }
 
-    public void inform( String message, Throwable t, String fqcn )
-    {
-        m_delegate.inform( message, t, fqcn );
+    @Override
+    public void inform(String message, Throwable t, String fqcn) {
+        m_delegate.inform(message, t, fqcn);
     }
 
-    public void warn( String message, Throwable t, String fqcn )
-    {
-        m_delegate.warn( message, t, fqcn );
+    public void warn(String message, Throwable t, String fqcn) {
+        m_delegate.warn(message, t, fqcn);
     }
 
-    public void error( String message, Throwable t, String fqcn )
-    {
-        m_delegate.error( message, t, fqcn );
+    @Override
+    public void error(String message, Throwable t, String fqcn) {
+        m_delegate.error(message, t, fqcn);
     }
 
-    public void fatal( String message, Throwable t, String fqcn )
-    {
-        m_delegate.fatal( message, t, fqcn );
+    @Override
+    public void fatal(String message, Throwable t, String fqcn) {
+        m_delegate.fatal(message, t, fqcn);
     }
 
-    public int getLogLevel()
-    {
+    @Override
+    public int getLogLevel() {
         return m_delegate.getLogLevel();
     }
 
-    public String getName()
-    {
+    @Override
+    public String getName() {
         return m_delegate.getName();
     }
 
-    public void added( PaxLoggingService service )
-    {
-        m_service = service;
-        if( m_service != null )
-        {
-            m_delegate = m_service.getLogger( m_bundle, m_category, m_fqcn );
-        }
-        else
-        {
-            m_delegate = new DefaultServiceLog( m_bundle, m_category );
-        }
-    }
-
-    /**
-     * Called by the tracker when there is no service available, and the reference should
-     * be dropped.
-     */
-    public void removed()
-    {
-        m_service = null;
-        m_delegate = new DefaultServiceLog( m_bundle, m_category );
-    }
-    
+    @Override
     public PaxContext getPaxContext() {
         if (m_service != null) {
             return m_service.getPaxContext();
@@ -171,4 +151,28 @@ public class TrackingLogger
             return m_delegate.getPaxContext();
         }
     }
+
+    /**
+     * {@link org.ops4j.pax.logging.OSGIPaxLoggingManager} sets an instance of real {@link PaxLoggingService}
+     * when it's available. Logger can switch to real delegate.
+     * @param service
+     */
+    public void added(PaxLoggingService service) {
+        m_service = service;
+        if (m_service != null) {
+            m_delegate = m_service.getLogger(m_bundle, m_category, m_fqcn);
+        } else {
+            m_delegate = FallbackLogFactory.createFallbackLog(m_bundle, m_category);
+        }
+    }
+
+    /**
+     * Called by the tracker when there is no service available, and the reference should
+     * be dropped. Delegate is switched to fallback logger.
+     */
+    public void removed() {
+        m_service = null;
+        m_delegate = FallbackLogFactory.createFallbackLog(m_bundle, m_category);
+    }
+
 }

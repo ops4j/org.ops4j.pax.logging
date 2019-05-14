@@ -17,6 +17,8 @@
  */
 package org.ops4j.pax.logging.spi.support;
 
+import java.io.PrintStream;
+
 import org.ops4j.pax.logging.FqcnIgnoringPaxLogger;
 import org.ops4j.pax.logging.PaxContext;
 import org.osgi.framework.Bundle;
@@ -49,7 +51,7 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
     private String m_categoryName;
     private PaxContext m_context = new PaxContext();
 
-    public DefaultServiceLog(Bundle bundle, String categoryName) {
+    DefaultServiceLog(Bundle bundle, String categoryName) {
         m_bundle = bundle;
         m_categoryName = categoryName;
     }
@@ -142,25 +144,29 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
      * @param message
      * @param t
      */
-    private void output(String levelName, String message, Throwable t) {
+    protected void output(String levelName, String message, Throwable t) {
         synchronized (this) {
-            // Might be [null] if used by standard test cases.
-            if (m_bundle != null) {
-                System.out.print(m_bundle.getSymbolicName());
-                System.out.print(" ");
-            }
+            output(System.out, levelName, message, t);
+        }
+    }
 
-            System.out.print("[");
-            System.out.print(m_categoryName);
-            System.out.print("] ");
-            System.out.print(levelName);
-            System.out.print(" ");
-            System.out.print(": ");
-            System.out.println(message);
+    protected final void output(PrintStream out, String levelName, String message, Throwable t) {
+        // Might be [null] if used by standard test cases.
+        if (m_bundle != null) {
+            out.print(m_bundle.getSymbolicName());
+            out.print(" ");
+        }
 
-            if (t != null) {
-                t.printStackTrace(System.out);
-            }
+        out.print("[");
+        out.print(m_categoryName);
+        out.print("] ");
+        out.print(levelName);
+        out.print(" ");
+        out.print(": ");
+        out.println(message);
+
+        if (t != null) {
+            t.printStackTrace(out);
         }
     }
 

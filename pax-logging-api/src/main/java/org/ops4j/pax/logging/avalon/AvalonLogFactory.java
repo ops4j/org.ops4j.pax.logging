@@ -22,6 +22,7 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * Unlike with modern (sic!) Logging frameworks like SLF4J and Commons Logging, there's no Avalon-specific
@@ -49,7 +50,7 @@ public class AvalonLogFactory {
         String newName = parent == null ? name : parent.getName() + "." + name;
         PaxLogger logger;
         if (m_paxLogging == null) {
-            logger = FallbackLogFactory.createFallbackLog(null, name);
+            logger = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Logger.class), name);
         } else {
             logger = m_paxLogging.getLogger(newName, AvalonLogger.AVALON_FQCN);
         }

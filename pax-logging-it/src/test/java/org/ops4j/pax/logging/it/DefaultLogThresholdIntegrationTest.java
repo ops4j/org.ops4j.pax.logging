@@ -24,7 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import javax.inject.Inject;
+import java.net.MalformedURLException;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -37,21 +38,18 @@ import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
-public class DefaultLogThresholdIntegrationTest extends AbstractControlledIntegrationTestBase {
-
-    @Inject
-    private BundleContext context;
+public class DefaultLogThresholdIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
 
     /**
      * Method called by surefire/failsafe, not to be used by @Test method inside OSGi container (even if native)
@@ -77,14 +75,14 @@ public class DefaultLogThresholdIntegrationTest extends AbstractControlledIntegr
     public Option[] configure() throws IOException {
         prepareBundles();
 
+        // this configuration sets up default/fallback logger that prints to System.out
         return combine(
                 baseConfigure(),
-                mavenBundle("org.ops4j.pax.logging", "pax-logging-api").versionAsInProject(),
+                paxLoggingApi(),
 
                 // every log with level higher or equal to INFO (i.e., not TRACE and not DEBUG) will be logged
                 frameworkProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL).value("INFO"),
                 // level at which OSGi R6 Compendium 101.6 logging statements will be printed
-                // (from framework/bundle/service events) - with the above threshold, there won't be such logs
                 frameworkProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL).value("DEBUG")
         );
     }
@@ -98,14 +96,33 @@ public class DefaultLogThresholdIntegrationTest extends AbstractControlledIntegr
         // these should not be logged
         log.debug("DefaultLogThresholdIntegrationTest/DEBUG");
         log.trace("DefaultLogThresholdIntegrationTest/TRACE");
+
+        List<String> lines = readLines();
+
+        // verification of log levels with fallback logger (stdout, but redirected to file)
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.DefaultLogThresholdIntegrationTest] ERROR : DefaultLogThresholdIntegrationTest/ERROR"));
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.DefaultLogThresholdIntegrationTest] WARN : DefaultLogThresholdIntegrationTest/WARN"));
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.DefaultLogThresholdIntegrationTest] INFO : DefaultLogThresholdIntegrationTest/INFO"));
+        assertFalse(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.DefaultLogThresholdIntegrationTest] DEBUG : DefaultLogThresholdIntegrationTest/DEBUG"));
+        assertFalse(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.DefaultLogThresholdIntegrationTest] TRACE : DefaultLogThresholdIntegrationTest/TRACE"));
     }
 
     @Test
-    public void bundleInstallation() throws BundleException, FileNotFoundException {
+    public void bundleInstallation() throws BundleException, FileNotFoundException, MalformedURLException {
         // we should get a bundle even about installing new bundle, but it shouldn't be logged due to threshold
-        Bundle b1 = context.installBundle("test:1", new FileInputStream("target/bundles/sample-bundle1.jar"));
-        Bundle b2 = context.installBundle("test:2", new FileInputStream("target/bundles/sample-bundle2.jar"));
+        File f1 = new File("target/bundles/sample-bundle1.jar");
+        File f2 = new File("target/bundles/sample-bundle2.jar");
+        Bundle b1 = context.installBundle(f1.toURI().toURL().toString(), new FileInputStream(f1));
+        Bundle b2 = context.installBundle(f2.toURI().toURL().toString(), new FileInputStream(f2));
         b2.start();
+
+        List<String> lines = readLines();
+
+        // verification of logging BundleEvents
+        assertFalse(lines.contains("MySpecialBundleThatShouldTriggerBundleEventWhenInstalling [org.osgi.framework.BundleEvent] DEBUG : BundleEvent INSTALLED"));
+        assertFalse(lines.contains("MySpecialBundleThatShouldTriggerBundleEventWhenInstalling [org.osgi.framework.BundleEvent] DEBUG : BundleEvent STARTED"));
+        assertFalse(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] DEBUG : BundleEvent INSTALLED"));
+        assertFalse(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] DEBUG : BundleEvent STARTED"));
     }
 
 }

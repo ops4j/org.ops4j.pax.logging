@@ -216,6 +216,7 @@
         <version.commons-logging>1.2</version.commons-logging>
         <version.junit>4.12</version.junit>
         <version.log4j>1.2.17</version.log4j>
+        <version.org.apache.felix.eventadmin>1.5.0</version.org.apache.felix.eventadmin>
         <version.org.apache.felix.configadmin>1.9.14</version.org.apache.felix.configadmin>
         <version.org.apache.felix.framework>5.6.12</version.org.apache.felix.framework>
         <version.org.apache.logging.log4j>2.11.2</version.org.apache.logging.log4j>
@@ -244,7 +245,7 @@
         <plugin.maven-gpg-plugin>1.6</plugin.maven-gpg-plugin>
         <plugin.maven-install-plugin>2.5.2</plugin.maven-install-plugin>
         <plugin.maven-invoker-plugin>3.2.0</plugin.maven-invoker-plugin>
-        <plugin.maven-jar-plugin>3.1.1</plugin.maven-jar-plugin>
+        <plugin.maven-jar-plugin>3.1.2</plugin.maven-jar-plugin>
         <plugin.maven-javadoc-plugin>3.1.0</plugin.maven-javadoc-plugin>
         <plugin.maven-release-plugin>2.5.3</plugin.maven-release-plugin>
         <plugin.maven-remote-resources-plugin>1.6.0</plugin.maven-remote-resources-plugin>
@@ -604,6 +605,11 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.configadmin</artifactId>
                 <version>${version.org.apache.felix.configadmin}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.eventadmin</artifactId>
+                <version>${version.org.apache.felix.eventadmin}</version>
             </dependency>
 
             <!-- Logging -->

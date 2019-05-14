@@ -22,6 +22,7 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
   This is the central class in the log4j package. Most logging
@@ -122,7 +123,7 @@ public class Logger extends Category {
   Logger getLogger(String name) {
     PaxLogger logger;
     if (m_paxLogging == null) {
-      logger = FallbackLogFactory.createFallbackLog(null, name);
+      logger = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Logger.class), name);
     } else {
       logger = m_paxLogging.getLogger(name, LOG4J_FQCN);
     }

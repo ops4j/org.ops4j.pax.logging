@@ -29,7 +29,9 @@ import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
+import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
 import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
 import org.ops4j.pax.logging.spi.support.RegisteredService;
 import org.osgi.framework.Bundle;
@@ -58,12 +60,13 @@ public class Activator implements BundleActivator {
 
     private RegisteredService<LogReaderService, LogReaderServiceImpl> logReaderInfo;
     private RegisteredService<EventAdminPoster, EventAdminPoster> eventAdminInfo;
+    private RegisteredService<ConfigurationNotifier, ConfigurationNotifier> eventAdminConfigurationNotifierInfo;
 
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         sanityCheck();
 
-        // Falback PaxLogger configuration
+        // Fallback PaxLogger configuration
         String levelName = BackendSupport.defaultLogLevel(bundleContext);
         DefaultServiceLog.setLogLevel(levelName);
         if (DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG) {
@@ -77,8 +80,13 @@ public class Activator implements BundleActivator {
         // OSGi Compendium 101.6.4: Log Events
         eventAdminInfo = BackendSupport.eventAdminSupport(bundleContext);
 
+        // EventAdmin (or mock) service to notify about configuration changes
+        eventAdminConfigurationNotifierInfo = BackendSupport.eventAdminConfigurationNotifier(bundleContext);
+
         // OSGi Compendium 101.2: The Log Service Interface - register Log4J1 specific Pax Logging service
-        m_PaxLogging = new PaxLoggingServiceImpl(bundleContext, logReaderInfo.getService(), eventAdminInfo.getService());
+        m_PaxLogging = new PaxLoggingServiceImpl(bundleContext,
+                logReaderInfo.getService(), eventAdminInfo.getService(),
+                eventAdminConfigurationNotifierInfo.getService());
 
         // registration of log service and CM ManagedService for org.ops4j.pax.logging PID
         Dictionary<String, Object> serviceProperties = new Hashtable<>();
@@ -96,6 +104,9 @@ public class Activator implements BundleActivator {
         if (logReaderInfo != null) {
             logReaderInfo.close();
         }
+        if (eventAdminConfigurationNotifierInfo != null) {
+            eventAdminConfigurationNotifierInfo.close();
+        }
 
         m_RegistrationPaxLogging.unregister();
         m_RegistrationPaxLogging = null;
@@ -105,6 +116,8 @@ public class Activator implements BundleActivator {
             m_PaxLogging.shutdown();
             m_PaxLogging = null;
         }
+
+        FallbackLogFactory.cleanup();
     }
 
     /**

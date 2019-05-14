@@ -50,6 +50,17 @@ public final class BundleHelper {
      * @return
      */
     public static Bundle getCallerBundle(Bundle defaultBundle) {
+        return getCallerBundle(defaultBundle, 2);
+    }
+
+    /**
+     * <p>Gets a {@link Bundle} with configurable number of top-most classes from context.</p>
+     * <p>To be called from places where the class context stack is known. Be careful!</p>
+     * @param defaultBundle
+     * @param skip
+     * @return
+     */
+    public static Bundle getCallerBundle(Bundle defaultBundle, int skip) {
         if (getBundleMethod == null) {
             return defaultBundle;
         }
@@ -62,7 +73,7 @@ public final class BundleHelper {
              *  1 = "class org.ops4j.pax.logging.internal.BundleHelper.getCallerBundle()"
              */
             Bundle curBundle = null;
-            for (int i = 2; i < classCtx.length; i++) {
+            for (int i = skip; i < classCtx.length; i++) {
                 Bundle bundle = FrameworkUtil.getBundle(classCtx[i]);
                 if (bundle == null && (classCtx[i].getPackage() == null
                         || !classCtx[i].getPackage().getName().equals("java.util.logging"))) {

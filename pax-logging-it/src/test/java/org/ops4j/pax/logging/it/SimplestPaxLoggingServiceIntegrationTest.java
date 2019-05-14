@@ -19,7 +19,6 @@
 package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
-import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +28,8 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.it.support.MockPaxLogger;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +46,6 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
  */
 @RunWith(PaxExam.class)
 public class SimplestPaxLoggingServiceIntegrationTest extends AbstractControlledIntegrationTestBase {
-
-    @Inject
-    private BundleContext context;
 
     @Configuration
     public Option[] configure() throws IOException {

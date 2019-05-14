@@ -16,8 +16,6 @@
  */
 package org.ops4j.pax.logging.internal;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Handler;
@@ -30,7 +28,9 @@ import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
 import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.ops4j.pax.logging.spi.support.FrameworkHandler;
+import org.ops4j.pax.logging.spi.support.OsgiUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -49,28 +49,26 @@ public class Activator implements BundleActivator {
     // bundle/service/framework listener that logs events into log service
     // as required by "101.6 Mapping of Events"
     private FrameworkHandler m_frameworkHandler;
+    private BundleContext bundleContext;
 
     public void start(BundleContext bundleContext) throws Exception {
+        this.bundleContext = bundleContext;
         String name = getClass().getName();
 
         // This class is effectively a tracker of PaxLoggingService services - there should be only one
         manager = new OSGIPaxLoggingManager(bundleContext);
 
-        // Falback PaxLogger configuration
+        // Fallback PaxLogger configuration
         String levelName = BackendSupport.defaultLogLevel(bundleContext);
         DefaultServiceLog.setLogLevel(levelName);
-        if (DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG) {
-            // Log4j1 debug
-            LogLog.setInternalDebugging(true);
-        }
+        // Log4j1 debug
+        LogLog.setInternalDebugging(DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG);
 
         // for JUL we may install bridging java.util.logging.Handler just like org.slf4j:jul-to-slf4j
-        if (!Boolean.parseBoolean(bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL))
-                && !skipJulRegistration()) {
+        if (!skipJulRegistration()) {
             LogManager logManager = LogManager.getLogManager();
 
-            if (!Boolean.valueOf(bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_RESET))
-                    && !skipJulReset()) {
+            if (!skipJulReset()) {
                 logManager.reset();
             }
 
@@ -156,26 +154,39 @@ public class Activator implements BundleActivator {
 
         org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger(name);
         slf4jLogger.info("Disabling SLF4J API support.");
+        org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory.setPaxLoggingManager(null);
 
         org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog(name);
         commonsLogger.info("Disabling Apache Commons Logging API support.");
+        org.apache.commons.logging.LogFactory.setPaxLoggingManager(null);
 
         org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog(name);
         juliLogger.info("Disabling JULI Logger API support.");
+        org.apache.juli.logging.LogFactory.setPaxLoggingManager(null);
 
         org.apache.avalon.framework.logger.Logger avalonLogger = org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger(name);
         avalonLogger.info("Disabling Avalon Logger API support.");
+        org.ops4j.pax.logging.avalon.AvalonLogFactory.setPaxLoggingManager(null);
 
         // JBoss Logging - PAXLOGGING-251
 
         org.apache.log4j.Logger log4j1Logger = org.apache.log4j.Logger.getLogger(name);
         log4j1Logger.info("Disabling Log4J v1 API support.");
+        org.apache.log4j.Logger.configurePaxLoggingManager(null);
 
         org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(getClass());
         log4j2Logger.info("Disabling Log4J v2 API support.");
+//        org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.setPaxLoggingManager(null);
 
         org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.dispose();
         org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextMap.dispose();
+
+        synchronized (m_loggers) {
+            // We need to instruct all loggers that they should again switch to fallback loggers
+            for (PaxLoggingManagerAwareLogger logger : m_loggers.values()) {
+                logger.setPaxLoggingManager(null);
+            }
+        }
 
         // Remove the global handler for all JDK Logging (java.util.logging).
         if (m_JdkHandler != null) {
@@ -193,24 +204,18 @@ public class Activator implements BundleActivator {
             manager.dispose();
             manager.close();
         }
+
+        FallbackLogFactory.cleanup();
     }
 
     private boolean skipJulRegistration() {
-        if (System.getSecurityManager() != null) {
-            return AccessController.doPrivileged((PrivilegedAction<Boolean>) ()
-                    -> Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL));
-        } else {
-            return Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL);
-        }
+        String property = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_SKIP_JUL);
+        return Boolean.parseBoolean(property);
     }
 
     private boolean skipJulReset() {
-        if (System.getSecurityManager() != null) {
-            return AccessController.doPrivileged((PrivilegedAction<Boolean>) ()
-                    -> Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_RESET));
-        } else {
-            return Boolean.getBoolean(PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_RESET);
-        }
+        String property = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_RESET);
+        return Boolean.parseBoolean(property);
     }
 
 }
