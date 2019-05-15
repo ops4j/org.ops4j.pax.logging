@@ -54,8 +54,6 @@ public class FallbackLogFactory {
     // and the provider itself
     private static PaxDefaultLogStreamProvider singletonStream;
 
-    // cached context for pax-logging-api bundle
-    private static BundleContext context;
     // cached bundle for pax-logging-api - it's never cleaned, because we want to detect bundle state
     private static Bundle bundle;
 
@@ -81,16 +79,7 @@ public class FallbackLogFactory {
             }
         }
 
-        if (context == null) {
-            synchronized (FallbackLogFactory.class) {
-                if (context == null) {
-                    Bundle b = bundle == null ? FrameworkUtil.getBundle(PaxLogger.class) : bundle;
-                    if (b != null) {
-                        context = b.getBundleContext();
-                    }
-                }
-            }
-        }
+        BundleContext context = bundle == null ? null : bundle.getBundleContext();
 
         if (bundle != null && (bundle.getState() == Bundle.STARTING || bundle.getState() == Bundle.ACTIVE)) {
             // only deal with context (check properties and lookup/register services) in selected
@@ -148,7 +137,9 @@ public class FallbackLogFactory {
                 singletonStream.close();
             } catch (IOException ignored) {
             }
+            singletonStreamRegistration = null;
         }
+        BundleContext context = bundle == null ? null : bundle.getBundleContext();
         if (context != null && singletonStreamReference != null) {
             try {
                 context.ungetService(singletonStreamReference);

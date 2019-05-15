@@ -20,7 +20,6 @@ package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
 import java.util.List;
-
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -88,7 +87,7 @@ public class Log4J1RestartPaxLoggingApiIntegrationTest extends AbstractStdoutInt
 
         // when pax-logging-api bundle is started, OSGIPaxLoggingManager immediately tracks PaxLoggingService
         // registered by pax-logging-service, so it immediately starts printing through Log4J1
-        paxLoggingApi.start(Bundle.STOP_TRANSIENT);
+        paxLoggingApi.start(Bundle.START_TRANSIENT);
 
         // but logging through logger obtained from previous life of pax-logging-api will never get connected
         // to tracking logger again

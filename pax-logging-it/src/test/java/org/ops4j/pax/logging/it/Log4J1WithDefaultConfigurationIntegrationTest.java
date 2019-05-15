@@ -21,19 +21,13 @@ package org.ops4j.pax.logging.it;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
-import org.ops4j.pax.logging.it.support.Helpers;
-import org.osgi.framework.BundleException;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 

@@ -48,23 +48,28 @@ public class Helpers {
         return paxLoggingApi.orElse(null);
     }
 
+    public static Bundle paxLoggingService(BundleContext context) {
+        Optional<Bundle> paxLoggingService = Arrays.stream(context.getBundles())
+                .filter(b -> "org.ops4j.pax.logging.pax-logging-service".equals(b.getSymbolicName()))
+                .findFirst();
+        return paxLoggingService.orElse(null);
+    }
+
     public static void restartPaxLoggingApi(BundleContext context) throws BundleException {
         Bundle paxLoggingApi = paxLoggingApi(context);
         if (paxLoggingApi != null) {
             paxLoggingApi.stop(Bundle.STOP_TRANSIENT);
-            paxLoggingApi.start(Bundle.STOP_TRANSIENT);
+            paxLoggingApi.start(Bundle.START_TRANSIENT);
         }
     }
 
     public static void restartPaxLoggingService(BundleContext context, boolean await) {
         // restart pax-logging-service to pick up replaced stdout
         // awaits for signal indicating successfull (re)configuration
-        Optional<Bundle> paxLoggingService = Arrays.stream(context.getBundles())
-                .filter(b -> "org.ops4j.pax.logging.pax-logging-service".equals(b.getSymbolicName()))
-                .findFirst();
-        paxLoggingService.ifPresent(bundle -> {
+        Bundle paxLoggingService = paxLoggingService(context);
+        if (paxLoggingService != null) {
             try {
-                bundle.stop(Bundle.STOP_TRANSIENT);
+                paxLoggingService.stop(Bundle.STOP_TRANSIENT);
 
                 final CountDownLatch latch = new CountDownLatch(1);
                 ServiceRegistration<EventHandler> sr = null;
@@ -77,7 +82,7 @@ public class Helpers {
                     sr = context.registerService(EventHandler.class, handler, props);
                 }
 
-                bundle.start();
+                paxLoggingService.start();
                 if (await) {
                     assertTrue(latch.await(5, TimeUnit.SECONDS));
                     sr.unregister();
@@ -85,20 +90,7 @@ public class Helpers {
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
-        });
-    }
-
-    public static void stopPaxLoggingService(BundleContext context) {
-        Optional<Bundle> paxLoggingService = Arrays.stream(context.getBundles())
-                .filter(b -> "org.ops4j.pax.logging.pax-logging-service".equals(b.getSymbolicName()))
-                .findFirst();
-        paxLoggingService.ifPresent(bundle -> {
-            try {
-                bundle.stop(Bundle.STOP_TRANSIENT);
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
-        });
+        }
     }
 
     /**
