@@ -26,8 +26,6 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +38,6 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
  * <p>Test that proves that all facades use the same underlying logging service.</p>
  */
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
 public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrationTestBase {
 
     public static Logger LOG = LoggerFactory.getLogger(AllLoggingFacadesIntegrationTest.class);

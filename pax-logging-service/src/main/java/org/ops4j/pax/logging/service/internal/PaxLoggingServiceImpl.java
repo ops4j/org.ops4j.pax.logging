@@ -176,7 +176,6 @@ public class PaxLoggingServiceImpl
         try {
             loader = Thread.currentThread().getContextClassLoader();
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            LogManager.resetConfiguration();
             // If the updated() method is called without any log4j properties,
             // then keep the default/previous configuration.
             if (extracted.size() == 0) {
@@ -184,6 +183,7 @@ public class PaxLoggingServiceImpl
                 return;
             }
             try {
+                LogManager.resetConfiguration();
                 PaxLoggingConfigurator configurator = new PaxLoggingConfigurator(m_bundleContext);
                 configurator.doConfigure(extracted, LogManager.getLoggerRepository());
                 proxies = configurator.getProxies();
@@ -301,6 +301,8 @@ public class PaxLoggingServiceImpl
             return;
         }
         try {
+            LogManager.resetConfiguration();
+
             String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
             Level julLevel = BackendSupport.toJULLevel(levelName);
 

@@ -28,8 +28,6 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
-import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.spi.PaxDefaultLogStreamProvider;
@@ -50,7 +48,6 @@ import static org.ops4j.pax.logging.it.support.Helpers.delegate;
 import static org.ops4j.pax.logging.it.support.Helpers.getField;
 
 @RunWith(PaxExam.class)
-@ExamReactorStrategy(PerClass.class)
 public class DefaultLogToFileSingletonIntegrationTest extends AbstractControlledIntegrationTestBase {
 
     @Configuration

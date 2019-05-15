@@ -18,19 +18,25 @@
  */
 package org.ops4j.pax.logging.it.support;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.ops4j.pax.logging.PaxLoggingConstants;
+import org.ops4j.pax.logging.it.AbstractControlledIntegrationTestBase;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
@@ -94,12 +100,12 @@ public class Helpers {
     }
 
     /**
-     * Uses reflection to get underlying field value.
+     * Uses reflection to set internal field value.
      * @param object
      * @param fieldName
-     * @return
+     * @param value
      */
-    public static Object getField(Object object, String fieldName) {
+    public static void setField(Object object, String fieldName, Object value) {
         Field f = null;
         try {
             f = object.getClass().getDeclaredField(fieldName);
@@ -112,10 +118,40 @@ public class Helpers {
         }
         f.setAccessible(true);
         try {
-            return f.get(object);
+            f.set(object, value);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Uses reflection to get underlying field value.
+     * @param object
+     * @param fieldName
+     * @return
+     */
+    public static Object getField(Object object, String fieldName) {
+        String[] names = fieldName.split("\\.");
+        for (String name : names) {
+            Field f = null;
+            try {
+                f = object.getClass().getDeclaredField(name);
+            } catch (NoSuchFieldException e) {
+                try {
+                    f = object.getClass().getSuperclass().getDeclaredField(name);
+                } catch (NoSuchFieldException ex) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
+            }
+            f.setAccessible(true);
+            try {
+                object = f.get(object);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        }
+
+        return object;
     }
 
     /**
@@ -138,6 +174,96 @@ public class Helpers {
      */
     public static Object delegate(Object object) {
         return getField(object, "m_delegate");
+    }
+
+
+    /**
+     * <p>{@link #updateLoggingConfig(BundleContext, ConfigurationAdmin, Helpers.LoggingLibrary, String, Consumer)} without
+     * any properties processing callback.</p>
+     * @param context
+     * @param cm
+     * @param library
+     * @param prefix
+     */
+    public static void updateLoggingConfig(BundleContext context, ConfigurationAdmin cm, LoggingLibrary library, String prefix) {
+        updateLoggingConfig(context, cm, library, prefix, null);
+    }
+
+    /**
+     * <p>Helper method that does several things:<ul>
+     *     <li>gets current {@link org.ops4j.pax.logging.PaxLoggingConstants#LOGGING_CONFIGURATION_PID} config</li>
+     *     <li>reads single properties configuration file and extracts properties prefixed with {@code prefix}</li>
+     *     <li>registers {@link org.osgi.service.event.EventHandler} for configuration topic</li>
+     *     <li>updates the configuration</li>
+     *     <li>awaits for successful configuration change</li>
+     * </ul></p>
+     * <p>Simply - it synchronously changes logging configuration and waits for it to be effective.</p>
+     * @param context
+     * @param cm
+     * @param library
+     * @param prefix
+     */
+    public static void updateLoggingConfig(BundleContext context, ConfigurationAdmin cm, LoggingLibrary library, String prefix, Consumer<Dictionary<String, Object>> consumer) {
+        try {
+            Configuration c = cm.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, null);
+
+            final CountDownLatch latch = new CountDownLatch(1);
+            EventHandler handler = event -> {
+                latch.countDown();
+            };
+            Dictionary<String, Object> props = new Hashtable<>();
+            props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.LOGGING_EVENT_ADMIN_CONFIGURATION_TOPIC);
+            context.registerService(EventHandler.class, handler, props);
+
+            Dictionary<String, Object> configuration = readPrefixedProperties(library, prefix);
+
+            if (consumer != null) {
+                consumer.accept(configuration);
+            }
+
+            c.update(configuration);
+
+            assertTrue(latch.await(5, TimeUnit.SECONDS));
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * It's better (IMO) to keep all the properties in single file and just prefix them for each test
+     * @param library
+     * @param prefix
+     * @return
+     */
+    public static Dictionary<String, Object> readPrefixedProperties(LoggingLibrary library, String prefix) throws IOException {
+        Properties props = new Properties();
+        props.load(AbstractControlledIntegrationTestBase.class.getResourceAsStream(library.config()));
+
+        Dictionary<String, Object> newProperties = new Hashtable<>();
+
+        for (String key : props.stringPropertyNames()) {
+            if (key.startsWith(prefix + ".")) {
+                newProperties.put(key.substring(prefix.length() + 1), props.getProperty(key));
+            }
+        }
+
+        return newProperties;
+    }
+
+    public enum LoggingLibrary {
+        LOG4J1("log4j-all.properties"),
+        LOG4J2(""),
+        LOGBACK("");
+
+        private final String propertiesFile;
+
+        LoggingLibrary(String propertiesFile) {
+            this.propertiesFile = propertiesFile;
+        }
+
+        public String config() {
+            return this.propertiesFile;
+        }
     }
 
 }

@@ -21,6 +21,7 @@ package org.ops4j.pax.logging.it;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,6 +61,12 @@ import static org.ops4j.pax.exam.CoreOptions.systemTimeout;
 import static org.ops4j.pax.exam.CoreOptions.url;
 import static org.ops4j.pax.exam.CoreOptions.workingDirectory;
 
+/**
+ * Base class for all integration tests - manually sets up pax-exam configuration (without implicit configuration).
+ * {@link PerClass} strategy is needed. maven-failsafe-plugin's {@code reuseForks=false} and {@code forkCount=1} is
+ * not enough to properly clean up JVM between methods and we may miss some URL handlers, etc. In other words - don't
+ * use {@link org.ops4j.pax.exam.spi.reactors.PerMethod}.
+ */
 @ExamReactorStrategy(PerClass.class)
 public class AbstractControlledIntegrationTestBase {
 
@@ -204,6 +211,19 @@ public class AbstractControlledIntegrationTestBase {
     }
 
     /**
+     * Return log lines from named file
+     * @param file
+     * @return
+     */
+    protected List<String> readLines(String file) {
+        try {
+            return readLines(new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    /**
      * Returns log lines from any {@link InputStream}
      * @param input
      * @return
@@ -211,11 +231,13 @@ public class AbstractControlledIntegrationTestBase {
     protected List<String> readLines(InputStream input) {
         try {
             InputStreamReader isReader = new InputStreamReader(input, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(isReader);
-            List<String> lines = new ArrayList<>();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
+            List<String> lines;
+            try (BufferedReader reader = new BufferedReader(isReader)) {
+                lines = new ArrayList<>();
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                }
             }
             return lines;
         } catch (IOException e) {

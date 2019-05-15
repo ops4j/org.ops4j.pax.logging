@@ -117,11 +117,12 @@
             <artifactId>pax-logging-api</artifactId>
             <scope>compile</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.ops4j.pax.logging</groupId>-->
-<!--            <artifactId>pax-logging-service</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-sample-fragment</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- OPS4J dependencies -->
 

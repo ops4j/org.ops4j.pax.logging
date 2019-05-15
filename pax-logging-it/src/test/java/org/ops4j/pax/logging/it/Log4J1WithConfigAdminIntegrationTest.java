@@ -40,6 +40,7 @@ import org.osgi.service.event.EventHandler;
 import org.osgi.service.log.LogService;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
@@ -88,7 +89,7 @@ public class Log4J1WithConfigAdminIntegrationTest extends AbstractStdoutIntercep
         c.update(props);
 
         // there should be no reconfiguration when new properties are empty
-        assert(latch.await(1, TimeUnit.SECONDS));
+        assertFalse(latch.await(1, TimeUnit.SECONDS));
 
         // after the above update, we should keep the default configuration with TTCCLayout
         LoggerFactory.getLogger("defaultConfigurationButUsingConfigAdmin").info("After org.osgi.service.cm.Configuration.update()");

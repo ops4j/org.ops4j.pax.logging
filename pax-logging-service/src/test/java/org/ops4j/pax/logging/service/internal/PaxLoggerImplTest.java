@@ -17,7 +17,6 @@ package org.ops4j.pax.logging.service.internal;
 
 import java.lang.reflect.Constructor;
 
-import junit.framework.TestCase;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -55,10 +54,10 @@ public class PaxLoggerImplTest {
 
     @Test
     public void testGetEffectiveLevel() throws Exception {
-        Constructor<Logger> c = Logger.class.getDeclaredConstructor(new Class[] { String.class });
+        Constructor<Logger> c = Logger.class.getDeclaredConstructor(String.class);
         c.setAccessible(true);
 
-        Logger logger = c.newInstance(new Object[] { "test" });
+        Logger logger = c.newInstance("test");
         PaxLoggerImpl loggerImpl = new PaxLoggerImpl(null, logger, null, null);
 
         logger.setLevel(null);
