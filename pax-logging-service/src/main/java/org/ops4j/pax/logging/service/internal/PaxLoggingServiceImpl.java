@@ -224,6 +224,10 @@ public class PaxLoggingServiceImpl
     }
 
     private void log(Bundle bundle, ServiceReference sr, int level, String message, Throwable exception) {
+        log(bundle, sr, level, message, exception, "");
+    }
+
+    private void log(Bundle bundle, ServiceReference sr, int level, String message, Throwable exception, String fqcn) {
         // failsafe in case bundle is null
         if (null == bundle && null != sr) {
             bundle = sr.getBundle();
@@ -231,7 +235,7 @@ public class PaxLoggingServiceImpl
 
         String category = BackendSupport.category(bundle);
 
-        PaxLogger logger = getLogger(bundle, category, "");
+        PaxLogger logger = getLogger(bundle, category, fqcn);
         if (level < LOG_ERROR) {
             logger.fatal(message, exception);
         } else {
@@ -353,20 +357,22 @@ public class PaxLoggingServiceImpl
         class ManagedPaxLoggingService
                 implements PaxLoggingService, LogService, ManagedService {
 
+            private final String FQCN = ManagedPaxLoggingService.class.getName();
+
             public void log(int level, String message) {
-                PaxLoggingServiceImpl.this.log(bundle, null, level, message, null);
+                PaxLoggingServiceImpl.this.log(bundle, null, level, message, null, FQCN);
             }
 
             public void log(int level, String message, Throwable exception) {
-                PaxLoggingServiceImpl.this.log(bundle, null, level, message, exception);
+                PaxLoggingServiceImpl.this.log(bundle, null, level, message, exception, FQCN);
             }
 
             public void log(ServiceReference sr, int level, String message) {
-                PaxLoggingServiceImpl.this.log(bundle, sr, level, message, null);
+                PaxLoggingServiceImpl.this.log(bundle, sr, level, message, null, FQCN);
             }
 
             public void log(ServiceReference sr, int level, String message, Throwable exception) {
-                PaxLoggingServiceImpl.this.log(bundle, sr, level, message, exception);
+                PaxLoggingServiceImpl.this.log(bundle, sr, level, message, exception, FQCN);
             }
 
             public int getLogLevel() {

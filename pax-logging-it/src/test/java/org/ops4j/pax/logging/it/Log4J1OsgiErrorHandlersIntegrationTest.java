@@ -32,7 +32,6 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.it.support.Helpers;
 import org.ops4j.pax.logging.spi.PaxErrorHandler;
-import org.ops4j.pax.logging.spi.PaxLayout;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
- * <p>Testing layouts that are registered as OSGi services of {@link PaxLayout}
+ * <p>Testing error handlers that are registered as OSGi services of {@link PaxErrorHandler}
  * interface.</p>
  */
 @RunWith(PaxExam.class)
