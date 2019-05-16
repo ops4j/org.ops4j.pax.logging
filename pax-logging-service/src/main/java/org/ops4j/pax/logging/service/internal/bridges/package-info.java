@@ -40,7 +40,7 @@
  *     <li>in case of appender, pass the call to all tracked services without fallback appender(s) when OSGi
  *     appenders are not available. Appender bridge doesn't use a
  *     {@link org.osgi.util.tracker.ServiceTracker service tracker}. Instead, appender bridge delegates to
- *     {@link org.ops4j.pax.logging.service.internal.spi.PaxAppenderProxy} which is
+ *     {@link org.ops4j.pax.logging.spi.support.PaxAppenderProxy} which is
  *     {@link org.osgi.util.tracker.ServiceTracker service tracker}.</li>
  * </ul></p>
  */

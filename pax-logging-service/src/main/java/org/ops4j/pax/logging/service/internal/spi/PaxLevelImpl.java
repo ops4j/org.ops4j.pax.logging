@@ -18,6 +18,7 @@
 package org.ops4j.pax.logging.service.internal.spi;
 
 import org.apache.log4j.Level;
+import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.spi.PaxLevel;
 
 /**
@@ -41,12 +42,19 @@ public class PaxLevelImpl implements PaxLevel {
             // fallback case: the syslog numbers are portable
             return getSyslogEquivalent() <= r.getSyslogEquivalent();
         }
-
     }
 
     @Override
     public int toInt() {
-        return m_delegate.toInt();
+        if (m_delegate.isGreaterOrEqual(Level.ERROR))
+            return PaxLogger.LEVEL_ERROR;
+        if (m_delegate.isGreaterOrEqual(Level.WARN))
+            return PaxLogger.LEVEL_WARNING;
+        if (m_delegate.isGreaterOrEqual(Level.INFO))
+            return PaxLogger.LEVEL_INFO;
+        if (m_delegate.isGreaterOrEqual(Level.DEBUG))
+            return PaxLogger.LEVEL_DEBUG;
+        return PaxLogger.LEVEL_TRACE;
     }
 
     @Override

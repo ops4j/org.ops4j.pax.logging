@@ -84,6 +84,9 @@
                 <!-- Pure Log4J1 usage -->
                 <module>src/it/log4j1</module>
 
+                <!-- Pure Logback usage -->
+                <module>src/it/logback</module>
+
                 <!-- Pure Log4J2 usage -->
                 <module>src/it/log4j2</module>
             </modules>

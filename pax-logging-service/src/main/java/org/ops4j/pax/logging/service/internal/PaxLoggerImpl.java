@@ -46,12 +46,6 @@ public class PaxLoggerImpl implements PaxLogger {
     // actual PaxLoggingService
     private PaxLoggingServiceImpl m_service;
 
-    // TODO: check if it's thread / inter-bundle safe
-    private BundleRevision m_bundleRevision;
-    private Long m_bundleId;
-    private String m_bundleSymbolicName;
-    private String m_bundleVersion;
-
     /**
      * @param bundle   The bundle that this PaxLogger belongs to.
      * @param delegate The Log4J delegate to receive the log message.
@@ -263,16 +257,9 @@ public class PaxLoggerImpl implements PaxLogger {
             }
         }
         if (m_bundle != null) {
-            BundleRevision rev = m_bundle.adapt(BundleRevision.class);
-            if (rev != m_bundleRevision) {
-                m_bundleId = m_bundle.getBundleId();
-                m_bundleSymbolicName = m_bundle.getSymbolicName();
-                m_bundleVersion = m_bundle.getVersion().toString();
-                m_bundleRevision = rev;
-            }
-            put("bundle.id", m_bundleId);
-            put("bundle.name", m_bundleSymbolicName);
-            put("bundle.version", m_bundleVersion);
+            put("bundle.id", String.valueOf(m_bundle.getBundleId()));
+            put("bundle.name", m_bundle.getSymbolicName());
+            put("bundle.version", m_bundle.getVersion().toString());
         }
         m_service.getConfigLock().readLock().lock();
     }

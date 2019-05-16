@@ -1,6 +1,6 @@
 /*
  * Copyright 2011 Avid Technology, Inc.
- * 
+ *
  * Licensed  under the  Apache License,  Version 2.0  (the "License");
  * you may not use  this file  except in  compliance with the License.
  * You may obtain a copy of the License at
@@ -13,25 +13,29 @@
  * implied.
  *
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
-package org.ops4j.pax.logging.logback.internal;
+package org.ops4j.pax.logging.logback.internal.spi;
 
 import ch.qos.logback.classic.Level;
-
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.spi.PaxLevel;
 
 /**
- * A straightforward facade to make a Logback Level instance look like a PaxLevel.
+ * <p>A straightforward facade to make a Logback Level instance look like a PaxLevel.</p>
+ * <p>Logback doesn't refer to Syslog like Log4J1, so we have to do it ourselves.</p>
  * @author Chris Dolan
  */
 public class PaxLevelForLogback implements PaxLevel {
-    // this data comes from the log4j level class
+
+    // this data comes from the Log4J1 org.apache.log4j.Level class
+    public static final int SYSLOG_ALL = 7;
+    public static final int SYSLOG_TRACE = 7;
     public static final int SYSLOG_DEBUG = 7;
     public static final int SYSLOG_INFO = 6;
     public static final int SYSLOG_WARN = 4;
     public static final int SYSLOG_ERROR = 3;
+    public static final int SYSLOG_FATAL = 0;
     public static final int SYSLOG_OFF = 0;
 
     private Level m_delegate;
@@ -40,25 +44,28 @@ public class PaxLevelForLogback implements PaxLevel {
         m_delegate = delegate;
     }
 
-    public boolean isGreaterOrEqual( PaxLevel r ) {
+    @Override
+    public boolean isGreaterOrEqual(PaxLevel r) {
         if (r instanceof PaxLevelForLogback) {
-            return m_delegate.isGreaterOrEqual( ((PaxLevelForLogback) r).m_delegate );
+            PaxLevelForLogback impl = (PaxLevelForLogback) r;
+            return m_delegate.isGreaterOrEqual(impl.m_delegate);
         } else {
             // fallback case: the syslog numbers are portable
             return getSyslogEquivalent() <= r.getSyslogEquivalent();
         }
     }
 
+    @Override
     public int toInt() {
-    	if (m_delegate.isGreaterOrEqual(Level.ERROR))
-    		return PaxLogger.LEVEL_ERROR;
-    	if (m_delegate.isGreaterOrEqual(Level.WARN))
-    		return PaxLogger.LEVEL_WARNING;
-    	if (m_delegate.isGreaterOrEqual(Level.INFO))
-    		return PaxLogger.LEVEL_INFO;
-    	if (m_delegate.isGreaterOrEqual(Level.DEBUG))
-    		return PaxLogger.LEVEL_DEBUG;
-    	return PaxLogger.LEVEL_TRACE;
+        if (m_delegate.isGreaterOrEqual(Level.ERROR))
+            return PaxLogger.LEVEL_ERROR;
+        if (m_delegate.isGreaterOrEqual(Level.WARN))
+            return PaxLogger.LEVEL_WARNING;
+        if (m_delegate.isGreaterOrEqual(Level.INFO))
+            return PaxLogger.LEVEL_INFO;
+        if (m_delegate.isGreaterOrEqual(Level.DEBUG))
+            return PaxLogger.LEVEL_DEBUG;
+        return PaxLogger.LEVEL_TRACE;
     }
 
     public int getSyslogEquivalent() {
@@ -74,9 +81,8 @@ public class PaxLevelForLogback implements PaxLevel {
             return SYSLOG_ERROR;
         if (m_delegate == Level.OFF)
             return SYSLOG_OFF;
-        //noinspection IfStatementWithIdenticalBranches
         if (m_delegate == Level.ALL)
-            return SYSLOG_DEBUG;
+            return SYSLOG_TRACE;
         return SYSLOG_DEBUG; // fallback case...
     }
 

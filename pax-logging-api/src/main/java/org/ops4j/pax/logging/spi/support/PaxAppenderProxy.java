@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.service.internal.spi;
+package org.ops4j.pax.logging.spi.support;
 
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.spi.PaxAppender;
@@ -27,7 +27,7 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * A {@link ServiceTracker} used by {@link org.ops4j.pax.logging.service.internal.bridges.AppenderBridgeImpl appender bridge}.
+ * A {@link ServiceTracker} used by bridges specific to given backend.
  */
 public class PaxAppenderProxy extends ServiceTracker<PaxAppender, PaxAppender> implements PaxAppender {
 
@@ -40,7 +40,7 @@ public class PaxAppenderProxy extends ServiceTracker<PaxAppender, PaxAppender> i
 
     /**
      * Filter in the form of {@code (&(objectClass=org.ops4j.pax.logging.spi.PaxAppender)(org.ops4j.pax.logging.appender.name=NAME))},
-     * where {@code NAME} comes from {@link org.apache.log4j.PaxLoggingConfigurator#OSGI_PREFIX osgi:} prefixed
+     * where {@code NAME} comes from {@code osgi:} prefixed
      * references from logging configuration.
      * @param bundleContext
      * @param name
@@ -50,7 +50,7 @@ public class PaxAppenderProxy extends ServiceTracker<PaxAppender, PaxAppender> i
         try {
             return bundleContext.createFilter(
                     "(&(" + Constants.OBJECTCLASS + "=" + PaxAppender.class.getName() + ")" +
-                            "(" + PaxLoggingConstants.APPENDER_NAME_PROPERTY + "=" + name + "))");
+                            "(" + PaxLoggingConstants.SERVICE_PROPERTY_APPENDER_NAME_PROPERTY + "=" + name + "))");
         } catch (InvalidSyntaxException e) {
             throw new IllegalStateException("unable to create appender tracker", e);
         }
@@ -68,4 +68,5 @@ public class PaxAppenderProxy extends ServiceTracker<PaxAppender, PaxAppender> i
             }
         }
     }
+
 }

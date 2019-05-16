@@ -18,19 +18,18 @@
  */
 package org.ops4j.pax.logging.logback.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+import ch.qos.logback.classic.Logger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.logback.internal.spi.PaxLevelForLogback;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
 import org.slf4j.MDC;
 import org.slf4j.spi.LocationAwareLogger;
 import org.slf4j.spi.MDCAdapter;
-
-import ch.qos.logback.classic.Logger;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 /**
  * A logger implementation specialized for Logback.
@@ -43,69 +42,207 @@ import java.security.PrivilegedAction;
  *     <li>no longer needed special log(level, message, exception) call</li>
  *     <li>send events to a separate eventHandler instead of assuming the service is also the event handler</li>
  *     <li>generics</li>
+ *     <li>Unification of logging backends in 1.11+</li>
  * </ul>
  *
  * @author Chris Dolan
  * @author Raul Kripalani
  */
-public class PaxLoggerImpl
-    implements PaxLogger
-{
+public class PaxLoggerImpl implements PaxLogger {
 
+    // "the" delegate.
     private final Logger m_delegate;
+
+    // FQCN to get location info
     private final String m_fqcn;
+    // bundle associated with PaxLoggingService which is org.osgi.framework.ServiceFactory
     private final Bundle m_bundle;
-    private final PaxLoggingService m_service;
-    private final PaxEventHandler m_eventHandler;
+    // actual PaxLoggingService
+    private final PaxLoggingServiceImpl m_service;
 
     /**
      * @param bundle   The bundle that this PaxLogger belongs to.
      * @param delegate The logback delegate to receive the log message.
      * @param fqcn     The fully qualified class name of the client owning this logger.
      * @param service  The service to be used to handle the logging events.
-     * @param eventHandler helper to process log events
      */
-    PaxLoggerImpl( Bundle bundle, Logger delegate, String fqcn, PaxLoggingService service, PaxEventHandler eventHandler )
-    {
+    PaxLoggerImpl(Bundle bundle, Logger delegate, String fqcn, PaxLoggingServiceImpl service) {
         m_delegate = delegate;
         m_fqcn = fqcn;
         m_bundle = bundle;
         m_service = service;
-        m_eventHandler = eventHandler;
     }
 
-    public boolean isTraceEnabled()
-    {
+    @Override
+    public boolean isTraceEnabled() {
         return m_delegate.isTraceEnabled();
     }
 
-    public boolean isDebugEnabled()
-    {
+    @Override
+    public boolean isDebugEnabled() {
         return m_delegate.isDebugEnabled();
     }
 
-    public boolean isWarnEnabled()
-    {
-        return m_delegate.isWarnEnabled();
-    }
-
-    public boolean isInfoEnabled()
-    {
+    @Override
+    public boolean isInfoEnabled() {
         return m_delegate.isInfoEnabled();
     }
 
-    public boolean isErrorEnabled()
-    {
+    @Override
+    public boolean isWarnEnabled() {
+        return m_delegate.isWarnEnabled();
+    }
+
+    @Override
+    public boolean isErrorEnabled() {
         return m_delegate.isErrorEnabled();
     }
 
-    public boolean isFatalEnabled()
-    {
+    @Override
+    public boolean isFatalEnabled() {
         return m_delegate.isErrorEnabled();
     }
 
-    private void setDelegateContext() 
-    {
+    @Override
+    public void trace(String message, Throwable t) {
+        if (isTraceEnabled()) {
+            doLog(LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void debug(String message, Throwable t) {
+        if (isDebugEnabled()) {
+            doLog(LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void inform(String message, Throwable t) {
+        if (isInfoEnabled()) {
+            doLog(LocationAwareLogger.INFO_INT, LogService.LOG_INFO, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void warn(String message, Throwable t) {
+        if (isWarnEnabled()) {
+            doLog(LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void error(String message, Throwable t) {
+        if (isErrorEnabled()) {
+            doLog(LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void fatal(String message, Throwable t) {
+        if (isFatalEnabled()) {
+            doLog(LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void trace(String message, Throwable t, String fqcn) {
+        if (isTraceEnabled()) {
+            doLog(LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void debug(String message, Throwable t, String fqcn) {
+        if (isDebugEnabled()) {
+            doLog(LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void inform(String message, Throwable t, String fqcn) {
+        if (isInfoEnabled()) {
+            doLog(LocationAwareLogger.INFO_INT, LogService.LOG_INFO, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void warn(String message, Throwable t, String fqcn) {
+        if (isWarnEnabled()) {
+            doLog(LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void error(String message, Throwable t, String fqcn) {
+        if (isErrorEnabled()) {
+            doLog(LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void fatal(String message, Throwable t, String fqcn) {
+        if (isFatalEnabled()) {
+            doLog(LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public int getLogLevel() {
+        return new PaxLevelForLogback(m_delegate.getEffectiveLevel()).toInt();
+    }
+
+    @Override
+    public String getName() {
+        return m_delegate.getName();
+    }
+
+    @Override
+    public PaxContext getPaxContext() {
+        return m_service.getPaxContext();
+    }
+
+    // private methods
+
+
+    private void doLog(final int level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+        if (System.getSecurityManager() != null) {
+            AccessController.doPrivileged(
+                    (PrivilegedAction<Void>) () -> {
+                        doLog0(level, svcLevel, fqcn, message, t);
+                        return null;
+                    }
+            );
+        } else {
+            doLog0(level, svcLevel, fqcn, message, t);
+        }
+    }
+
+    /**
+     * Most important pax-logging-logback log method that bridges pax-logging-api directly into Logback. EAch
+     * log invocation is wrapped with MDC configuration, where the following keys are always available:<ul>
+     *     <li>{@code bundle.id} - from {@link Bundle#getBundleId()}</li>
+     *     <li>{@code bundle.name} - from {@link Bundle#getSymbolicName()}</li>
+     *     <li>{@code bundle.version} - from {@link Bundle#getVersion()}</li>
+     * </ul></p>
+     *
+     * @param level
+     * @param svcLevel
+     * @param fqcn
+     * @param message
+     * @param t
+     */
+    private void doLog0(final int level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+        setDelegateContext();
+        try {
+            m_delegate.log(null, fqcn, level, message, null, t);
+        } finally {
+            clearDelegateContext();
+        }
+        m_service.handleEvents(m_bundle, null, svcLevel, message, t);
+    }
+
+    private void setDelegateContext() {
         // Logback's MDCConverter pulls in MDC properties through the slf4j's MDC class already. 
         // Therefore there's no need to bridge two MDC implementations, like in the log4j PaxLoggerImpl.
         // See PAXLOGGING-165.
@@ -115,11 +252,11 @@ public class PaxLoggerImpl
             adapter.put("bundle.name", m_bundle.getSymbolicName());
             adapter.put("bundle.version", m_bundle.getVersion().toString());
         }
-
+        m_service.getConfigLock().readLock().lock();
     }
 
-    private void clearDelegateContext() 
-    {
+    private void clearDelegateContext() {
+        m_service.getConfigLock().readLock().unlock();
         MDCAdapter adapter = MDC.getMDCAdapter();
         if (m_bundle != null && adapter != null) {
             adapter.remove("bundle.id");
@@ -131,139 +268,4 @@ public class PaxLoggerImpl
         // See PAXLOGGING-165.
     }
 
-    private void doLog( final int level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
-        if (System.getSecurityManager() != null) {
-            AccessController.doPrivileged(
-                    new PrivilegedAction<Void>() {
-                        public Void run() {
-                            doLog0( level, svcLevel, fqcn, message, t );
-                            return null;
-                        }
-                    }
-            );
-        } else {
-            doLog0( level, svcLevel, fqcn, message, t );
-        }
-    }
-
-    private void doLog0( final int level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
-        setDelegateContext();
-        try {
-            m_delegate.log(null, fqcn, level, message, null, t);
-        } finally {
-            clearDelegateContext();
-        }
-        m_eventHandler.handleEvents(m_bundle, null, svcLevel, message, t);
-    }
-
-    public void trace( String message, Throwable t )
-    {
-        if( isTraceEnabled() )
-        {
-            doLog( LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, m_fqcn, message, t );
-        }
-    }
-
-    public void debug( String message, Throwable t )
-    {
-        if( isDebugEnabled() )
-        {
-            doLog( LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, m_fqcn, message, t );
-        }
-    }
-
-    public void inform( String message, Throwable t )
-    {
-        if( isInfoEnabled() )
-        {
-            doLog( LocationAwareLogger.INFO_INT, LogService.LOG_INFO, m_fqcn, message, t );
-        }
-    }
-
-    public void warn( String message, Throwable t )
-    {
-        if( isWarnEnabled() )
-        {
-            doLog( LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, m_fqcn, message, t );
-        }
-    }
-
-    public void error( String message, Throwable t )
-    {
-        if( isErrorEnabled() )
-        {
-            doLog( LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t );
-        }
-    }
-
-    public void fatal( String message, Throwable t )
-    {
-        if( isFatalEnabled() )
-        {
-            doLog( LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t );
-        }
-    }
-
-    public void trace( String message, Throwable t, String fqcn )
-    {
-        if( isTraceEnabled() )
-        {
-            doLog( LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, fqcn, message, t );
-        }
-    }
-
-    public void debug( String message, Throwable t, String fqcn )
-    {
-        if( isDebugEnabled() )
-        {
-            doLog( LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, fqcn, message, t );
-        }
-    }
-
-    public void inform( String message, Throwable t, String fqcn )
-    {
-        if( isInfoEnabled() )
-        {
-            doLog( LocationAwareLogger.INFO_INT, LogService.LOG_INFO, fqcn, message, t );
-        }
-    }
-
-    public void warn( String message, Throwable t, String fqcn )
-    {
-        if( isWarnEnabled() )
-        {
-            doLog( LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, fqcn, message, t );
-        }
-    }
-
-    public void error( String message, Throwable t, String fqcn )
-    {
-        if( isErrorEnabled() )
-        {
-            doLog( LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t );
-        }
-    }
-
-    public void fatal( String message, Throwable t, String fqcn )
-    {
-        if( isFatalEnabled() )
-        {
-            doLog( LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t );
-        }
-    }
-
-    public int getLogLevel()
-    {
-        return new PaxLevelForLogback(m_delegate.getEffectiveLevel()).toInt();
-    }
-
-    public String getName()
-    {
-        return m_delegate.getName();
-    }
-
-    public PaxContext getPaxContext()
-    {
-        return m_service.getPaxContext();
-    }
 }

@@ -84,7 +84,7 @@ public class Helpers {
                         latch.countDown();
                     };
                     Dictionary<String, Object> props = new Hashtable<>();
-                    props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.LOGGING_EVENT_ADMIN_CONFIGURATION_TOPIC);
+                    props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
                     sr = context.registerService(EventHandler.class, handler, props);
                 }
 
@@ -212,7 +212,7 @@ public class Helpers {
                 latch.countDown();
             };
             Dictionary<String, Object> props = new Hashtable<>();
-            props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.LOGGING_EVENT_ADMIN_CONFIGURATION_TOPIC);
+            props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
             context.registerService(EventHandler.class, handler, props);
 
             Dictionary<String, Object> configuration = readPrefixedProperties(library, prefix);

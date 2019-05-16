@@ -92,7 +92,7 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
     @Test
     public void dailyZipRollingFileAppender() {
         Hashtable<String, Object> properties = new Hashtable<>();
-        properties.put(PaxLoggingConstants.FILTER_NAME_PROPERTY, "timestampReplacer");
+        properties.put(PaxLoggingConstants.SERVICE_PROPERTY_FILTER_NAME_PROPERTY, "timestampReplacer");
         context.registerService(PaxFilter.class, new MyPaxFilter(), properties);
 
         Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "builtin.dailyZip");

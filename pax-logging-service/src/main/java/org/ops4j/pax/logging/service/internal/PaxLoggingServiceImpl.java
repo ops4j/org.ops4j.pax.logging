@@ -19,7 +19,6 @@ package org.ops4j.pax.logging.service.internal;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,7 +36,7 @@ import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.service.internal.spi.PaxAppenderProxy;
+import org.ops4j.pax.logging.spi.support.PaxAppenderProxy;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
 import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
 import org.ops4j.pax.logging.spi.support.LogEntryImpl;
@@ -59,7 +58,6 @@ public class PaxLoggingServiceImpl
         implements PaxLoggingService, LogService, ManagedService, ServiceFactory {
 
     private BundleContext m_bundleContext;
-    private List<java.util.logging.Logger> m_julLoggers;
 
     private ReadWriteLock m_configLock;
 
@@ -90,7 +88,6 @@ public class PaxLoggingServiceImpl
         m_configNotifier = configNotifier;
         m_context = new PaxContext();
         m_configLock = new ReentrantReadWriteLock();
-        m_julLoggers = new LinkedList<>();
 
         configureDefaults();
     }
@@ -133,25 +130,27 @@ public class PaxLoggingServiceImpl
     }
 
     // org.osgi.service.log.LogService
+    // these methods are actually never called directly, because the actual published
+    // methods come from service factory produced object - which passes correct FQCN
 
     @Override
     public void log(int level, String message) {
-        log(level, message, null);
+        logImpl(null, level, message, null, "");
     }
 
     @Override
     public void log(int level, String message, Throwable exception) {
-        log((ServiceReference) null, level, message, exception);
+        logImpl(null, level, message, exception, "");
     }
 
     @Override
     public void log(ServiceReference sr, int level, String message) {
-        log(sr, level, message, null);
+        logImpl(sr == null ? null : sr.getBundle(), level, message, null, "");
     }
 
     @Override
     public void log(ServiceReference sr, int level, String message, Throwable exception) {
-        log(null, sr, level, message, exception);
+        logImpl(sr == null ? null : sr.getBundle(), level, message, exception, "");
     }
 
     @Override
@@ -162,8 +161,9 @@ public class PaxLoggingServiceImpl
     // org.osgi.service.cm.ManagedService
 
     @Override
-    public void updated(Dictionary configuration) throws ConfigurationException {
+    public void updated(Dictionary<String, ?> configuration) throws ConfigurationException {
         if (configuration == null) {
+            // mind that there's no synchronization here
             configureDefaults();
             return;
         }
@@ -171,6 +171,9 @@ public class PaxLoggingServiceImpl
         Properties extracted = extractKeys(configuration);
 
         getConfigLock().writeLock().lock();
+
+        Exception problem = null;
+
         ClassLoader loader = null;
         List<PaxAppenderProxy> proxies = null;
         try {
@@ -188,15 +191,15 @@ public class PaxLoggingServiceImpl
                 configurator.doConfigure(extracted, LogManager.getLoggerRepository());
                 proxies = configurator.getProxies();
                 emptyConfiguration.set(false);
-                m_configNotifier.configurationDone();
             } catch (Exception e) {
                 LogLog.error("Configuration problem: " + e.getMessage(), e);
-                m_configNotifier.configurationError(e);
+                problem = e;
             }
         } finally {
             getConfigLock().writeLock().unlock();
             Thread.currentThread().setContextClassLoader(loader);
         }
+
         // Avoid holding the configuration lock when starting proxies
         // It could cause deadlock if opening the service trackers block on the log because
         // the service itself wants to log anything
@@ -206,33 +209,25 @@ public class PaxLoggingServiceImpl
             }
         }
 
-        List<java.util.logging.Logger> loggers = setLevelToJavaLogging(configuration);
-        m_julLoggers.clear();
-        m_julLoggers.addAll(loggers);
+        // do it outside of the lock
+        if (problem == null) {
+            m_configNotifier.configurationDone();
+        } else {
+            m_configNotifier.configurationError(problem);
+        }
+
+        setLevelToJavaLogging(configuration);
     }
 
     /**
-     * This method is used by the FrameworkHandler to log framework events.
-     *
-     * @param bundle    The bundle that caused the event.
-     * @param level     The level to be logged as.
-     * @param message   The message.
-     * @param exception The exception, if any otherwise null.
+     * Actual logging work is done here
+     * @param bundle
+     * @param level
+     * @param message
+     * @param exception
+     * @param fqcn
      */
-    void log(Bundle bundle, int level, String message, Throwable exception) {
-        log(bundle, null, level, message, exception);
-    }
-
-    private void log(Bundle bundle, ServiceReference sr, int level, String message, Throwable exception) {
-        log(bundle, sr, level, message, exception, "");
-    }
-
-    private void log(Bundle bundle, ServiceReference sr, int level, String message, Throwable exception, String fqcn) {
-        // failsafe in case bundle is null
-        if (null == bundle && null != sr) {
-            bundle = sr.getBundle();
-        }
-
+    private void logImpl(Bundle bundle, int level, String message, Throwable exception, String fqcn) {
         String category = BackendSupport.category(bundle);
 
         PaxLogger logger = getLogger(bundle, category, fqcn);
@@ -268,7 +263,7 @@ public class PaxLoggingServiceImpl
         }
     }
 
-    private Properties extractKeys(Dictionary configuration) {
+    private Properties extractKeys(Dictionary<String, ?> configuration) {
         Properties extracted = new Properties();
         Enumeration list = configuration.keys();
         while (list.hasMoreElements()) {
@@ -280,14 +275,14 @@ public class PaxLoggingServiceImpl
         return extracted;
     }
 
-    private void extractKey(Properties extracted, Dictionary configuration, Object obj) {
+    private void extractKey(Properties extracted, Dictionary<String, ?> configuration, Object obj) {
         String key = (String) obj;
         Object value = configuration.get(obj);
         if (key.startsWith("log4j")) {
             extracted.put(key, value);
         } else if (key.startsWith("pax.")) {
-            if (PaxLoggingConstants.LOGGING_CFG_LOG_READER_SIZE_LEGACY.equals(key)
-                    || PaxLoggingConstants.LOGGING_CFG_LOG_READER_SIZE.equals(key)) {
+            if (PaxLoggingConstants.PID_CFG_LOG_READER_SIZE_LEGACY.equals(key)
+                    || PaxLoggingConstants.PID_CFG_LOG_READER_SIZE.equals(key)) {
                 try {
                     m_logReader.setMaxEntries(Integer.parseInt((String) value));
                 } catch (Exception e) {
@@ -315,7 +310,7 @@ public class PaxLoggingServiceImpl
             PaxLoggingConfigurator configurator = new PaxLoggingConfigurator(m_bundleContext);
 
             Properties defaultProperties = new Properties();
-            defaultProperties.put("log4j.rootLogger", julLevel.getName() + ", A1");
+            defaultProperties.put("log4j.rootLogger", BackendSupport.convertLogServiceLevel(m_logLevel) + ", A1");
             defaultProperties.put("log4j.appender.A1", "org.apache.log4j.ConsoleAppender");
             // "Time, Thread, Category, nested Context layout"
             defaultProperties.put("log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout");
@@ -327,6 +322,7 @@ public class PaxLoggingServiceImpl
 
             final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
             rootLogger.setLevel(julLevel);
+
             m_configNotifier.configurationDone();
         } catch (Exception e) {
             LogLog.error("Configuration problem: " + e.getMessage(), e);
@@ -353,41 +349,50 @@ public class PaxLoggingServiceImpl
      * <p>We don't need anything special from bundle-scoped service ({@link ServiceFactory}) except the
      * reference to client bundle.</p>
      */
+    @Override
     public Object getService(final Bundle bundle, ServiceRegistration registration) {
         class ManagedPaxLoggingService
                 implements PaxLoggingService, LogService, ManagedService {
 
             private final String FQCN = ManagedPaxLoggingService.class.getName();
 
+            @Override
             public void log(int level, String message) {
-                PaxLoggingServiceImpl.this.log(bundle, null, level, message, null, FQCN);
+                PaxLoggingServiceImpl.this.logImpl(bundle, level, message, null, FQCN);
             }
 
+            @Override
             public void log(int level, String message, Throwable exception) {
-                PaxLoggingServiceImpl.this.log(bundle, null, level, message, exception, FQCN);
+                PaxLoggingServiceImpl.this.logImpl(bundle, level, message, exception, FQCN);
             }
 
+            @Override
             public void log(ServiceReference sr, int level, String message) {
-                PaxLoggingServiceImpl.this.log(bundle, sr, level, message, null, FQCN);
+                PaxLoggingServiceImpl.this.logImpl(bundle, level, message, null, FQCN);
             }
 
+            @Override
             public void log(ServiceReference sr, int level, String message, Throwable exception) {
-                PaxLoggingServiceImpl.this.log(bundle, sr, level, message, exception, FQCN);
+                PaxLoggingServiceImpl.this.logImpl(bundle, level, message, exception, FQCN);
             }
 
+            @Override
             public int getLogLevel() {
                 return PaxLoggingServiceImpl.this.getLogLevel();
             }
 
+            @Override
             public PaxLogger getLogger(Bundle myBundle, String category, String fqcn) {
                 return PaxLoggingServiceImpl.this.getLogger(myBundle, category, fqcn);
             }
 
-            public void updated(Dictionary configuration)
+            @Override
+            public void updated(Dictionary<String, ?> configuration)
                     throws ConfigurationException {
                 PaxLoggingServiceImpl.this.updated(configuration);
             }
 
+            @Override
             public PaxContext getPaxContext() {
                 return PaxLoggingServiceImpl.this.getPaxContext();
             }
@@ -396,6 +401,7 @@ public class PaxLoggingServiceImpl
         return new ManagedPaxLoggingService();
     }
 
+    @Override
     public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
         // nothing to do...
     }
@@ -407,19 +413,19 @@ public class PaxLoggingServiceImpl
      * It's necessary to do that, because with pax logging, JUL loggers are not replaced.
      * So we need to configure JUL loggers in order that log messages goes correctly to log Handlers.
      *
-     * @param configuration    Properties coming from the configuration.
+     * @param configuration Properties coming from the configuration.
      */
-    private static List<java.util.logging.Logger> setLevelToJavaLogging(final Dictionary configuration) {
+    private static void setLevelToJavaLogging(final Dictionary<String, ?> configuration) {
         for (Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements(); ) {
             String name = (String) enum_.nextElement();
             java.util.logging.Logger.getLogger(name).setLevel(null);
         }
 
-        List<java.util.logging.Logger> loggers = new LinkedList<>();
         for (Enumeration keys = configuration.keys(); keys.hasMoreElements(); ) {
             String name = (String) keys.nextElement();
             String value = (String) configuration.get(name);
             if (name.equals("log4j.rootLogger")) {
+                setJULLevel(java.util.logging.Logger.getGlobal(), value);
                 setJULLevel(java.util.logging.Logger.getLogger(""), value);
                 // "global" comes from java.util.logging.Logger.GLOBAL_LOGGER_NAME, but that constant wasn't added until Java 1.6
                 setJULLevel(java.util.logging.Logger.getLogger("global"), value);
@@ -429,17 +435,15 @@ public class PaxLoggingServiceImpl
                 String packageName = name.substring("log4j.logger.".length());
                 java.util.logging.Logger logger = java.util.logging.Logger.getLogger(packageName);
                 setJULLevel(logger, value);
-                loggers.add(logger);
             }
         }
-        return loggers;
     }
 
     /**
      * Set the log level to the specified JUL logger.
      *
-     * @param logger            The logger to configure
-     * @param log4jLevelConfig    The value contained in the property file. (For example: "ERROR, file")
+     * @param logger The logger to configure
+     * @param log4jLevelConfig The value contained in the property file. (For example: "ERROR, file")
      */
     private static void setJULLevel(java.util.logging.Logger logger, String log4jLevelConfig) {
         String[] crumb = log4jLevelConfig.split("\\s*,\\s*");

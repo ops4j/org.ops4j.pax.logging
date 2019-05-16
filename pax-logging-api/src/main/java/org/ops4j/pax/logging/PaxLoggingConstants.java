@@ -83,37 +83,55 @@ public interface PaxLoggingConstants {
      * {@code org.osp4j.pax.logging} PID property to specify max size for
      * {@link org.osgi.service.log.LogReaderService}
      */
-    String LOGGING_CFG_LOG_READER_SIZE_LEGACY = "pax.logging.entries.size";
+    String PID_CFG_LOG_READER_SIZE_LEGACY = "pax.logging.entries.size";
 
     /**
      * {@code org.osp4j.pax.logging} PID property to specify max size for
      * {@link org.osgi.service.log.LogReaderService}
      */
-    String LOGGING_CFG_LOG_READER_SIZE = "org.ops4j.pax.logging.logReaderServiceSize";
+    String PID_CFG_LOG_READER_SIZE = "org.ops4j.pax.logging.logReaderServiceSize";
 
     /**
      * Service property to filter {@link org.ops4j.pax.logging.spi.PaxAppender} OSGi services
      */
-    String APPENDER_NAME_PROPERTY = "org.ops4j.pax.logging.appender.name";
+    String SERVICE_PROPERTY_APPENDER_NAME_PROPERTY = "org.ops4j.pax.logging.appender.name";
 
     /**
      * Service property to filter {@link org.ops4j.pax.logging.spi.PaxLayout} OSGi services
      */
-    String LAYOUT_NAME_PROPERTY = "org.ops4j.pax.logging.layout.name";
+    String SERVICE_PROPERTY_LAYOUT_NAME_PROPERTY = "org.ops4j.pax.logging.layout.name";
 
     /**
      * Service property to filter {@link org.ops4j.pax.logging.spi.PaxFilter} OSGi services
      */
-    String FILTER_NAME_PROPERTY = "org.ops4j.pax.logging.filter.name";
+    String SERVICE_PROPERTY_FILTER_NAME_PROPERTY = "org.ops4j.pax.logging.filter.name";
 
     /**
      * Service property to filter {@link org.ops4j.pax.logging.spi.PaxErrorHandler} OSGi services
      */
-    String ERRORHANDLER_NAME_PROPERTY = "org.ops4j.pax.logging.errorhandler.name";
+    String SERVICE_PROPERTY_ERRORHANDLER_NAME_PROPERTY = "org.ops4j.pax.logging.errorhandler.name";
 
     /**
      * EventAdmin topic name to publish events related to (re)configuration of logging backend.
      */
-    String LOGGING_EVENT_ADMIN_CONFIGURATION_TOPIC = "org/ops4j/pax/logging/Configuration";
+    String EVENT_ADMIN_CONFIGURATION_TOPIC = "org/ops4j/pax/logging/Configuration";
+
+    /**
+     * Context property that switches from private {@code ch.qos.logback.classic.LoggerContext} to one
+     * managed by {@code org.slf4j.impl.StaticLoggerBinder#defaultLoggerContext} (where {@code StaticLoggerBinder}
+     * is the one available in logback-classic).
+     */
+    String LOGGING_CFG_LOGBACK_USE_STATIC_CONTEXT = "org.ops4j.pax.logging.StaticLogbackContext";
+
+    /**
+     * System or context (in that order) property that sets Logback configuration file (not generic URI - just a path).
+     * See https://logback.qos.ch/manual/configuration.html
+     */
+    String LOGGING_CFG_LOGBACK_CONFIGURATION_FILE = "org.ops4j.pax.logging.StaticLogbackFile";
+
+    /**
+     * {@code org.osp4j.pax.logging} PID property to specify XML file with Logback configuration
+     */
+    String PID_CFG_LOGBACK_CONFIG_FILE = "org.ops4j.pax.logging.logback.config.file";
 
 }

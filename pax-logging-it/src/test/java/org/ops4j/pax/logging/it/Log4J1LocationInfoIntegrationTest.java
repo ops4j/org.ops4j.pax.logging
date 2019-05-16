@@ -27,10 +27,15 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.it.support.Helpers;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.log.LogService;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
@@ -90,21 +95,26 @@ public class Log4J1LocationInfoIntegrationTest extends AbstractStdoutInterceptin
         java.util.logging.Logger.getLogger(name).info("INFO using java.util.logging");
         // 11. OSGi
         osgiLogService.log(LogService.LOG_INFO, "INFO using LogService");
+        // 12. PaxLoggingService itself
+        ServiceReference<PaxLoggingService> sr = context.getServiceReference(PaxLoggingService.class);
+        PaxLoggingService loggingService = context.getService(sr);
+        loggingService.log(LogService.LOG_INFO, "INFO using PaxLoggingService");
 
         List<String> lines = readLines("target/logs-log4j1/location-file-appender.log");
 
         // sorry, but it's important ;) I want these line numbers
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 72 : [INFO] INFO using SLF4J"));
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 74 : [INFO] INFO using Commons Logging"));
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 76 : [INFO] INFO using Juli Logging"));
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 78 : [INFO] INFO using Avalon Logging"));
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 80 : [INFO] INFO using JBoss Logging"));
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 82 : [INFO] INFO using Knopflerfish"));
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 84 : [INFO] INFO using Log4Jv1"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 77 : [INFO] INFO using SLF4J"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 79 : [INFO] INFO using Commons Logging"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 81 : [INFO] INFO using Juli Logging"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 83 : [INFO] INFO using Avalon Logging"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 85 : [INFO] INFO using JBoss Logging"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 87 : [INFO] INFO using Knopflerfish"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 89 : [INFO] INFO using Log4Jv1"));
         // logback is skipped
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 88 : [INFO] INFO using Log4Jv2"));
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 90 : [INFO] INFO using java.util.logging"));
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 92 : [INFO] INFO using LogService"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 93 : [INFO] INFO using Log4Jv2"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 95 : [INFO] INFO using java.util.logging"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 97 : [INFO] INFO using LogService"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J1LocationInfoIntegrationTest | locationInfo | Log4J1LocationInfoIntegrationTest.java | 101 : [INFO] INFO using PaxLoggingService"));
     }
 
 }

@@ -69,7 +69,7 @@ public class Log4J1OsgiLayoutsIntegrationTest extends AbstractStdoutIntercepting
     @Test
     public void customLayout() {
         Hashtable<String, Object> properties = new Hashtable<>();
-        properties.put(PaxLoggingConstants.LAYOUT_NAME_PROPERTY, "custom");
+        properties.put(PaxLoggingConstants.SERVICE_PROPERTY_LAYOUT_NAME_PROPERTY, "custom");
         MyPaxLayout layout = new MyPaxLayout();
         context.registerService(PaxLayout.class, layout, properties);
 

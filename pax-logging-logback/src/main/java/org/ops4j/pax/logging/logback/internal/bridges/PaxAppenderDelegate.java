@@ -15,12 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.logback.appender;
+package org.ops4j.pax.logging.logback.internal.bridges;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
-import org.ops4j.pax.logging.logback.internal.PaxAppenderProxy;
-import org.ops4j.pax.logging.logback.internal.PaxLoggingEventForLogback;
+import org.ops4j.pax.logging.logback.internal.spi.PaxLoggingEventForLogback;
+import org.ops4j.pax.logging.spi.support.PaxAppenderProxy;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -81,6 +81,7 @@ public class PaxAppenderDelegate extends UnsynchronizedAppenderBase<ILoggingEven
 
             super.start();
             proxy = new PaxAppenderProxy(bundleContext, paxname);
+            proxy.open();
         }
     }
 

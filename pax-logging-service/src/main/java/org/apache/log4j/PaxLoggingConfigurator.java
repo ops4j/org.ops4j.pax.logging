@@ -41,7 +41,7 @@ import org.ops4j.pax.logging.service.internal.bridges.AppenderBridgeImpl;
 import org.ops4j.pax.logging.service.internal.bridges.ErrorHandlerBridgeImpl;
 import org.ops4j.pax.logging.service.internal.bridges.FilterBridgeImpl;
 import org.ops4j.pax.logging.service.internal.bridges.LayoutBridgeImpl;
-import org.ops4j.pax.logging.service.internal.spi.PaxAppenderProxy;
+import org.ops4j.pax.logging.spi.support.PaxAppenderProxy;
 import org.osgi.framework.BundleContext;
 
 /**

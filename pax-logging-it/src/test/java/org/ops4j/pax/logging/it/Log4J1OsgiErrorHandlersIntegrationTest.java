@@ -69,7 +69,7 @@ public class Log4J1OsgiErrorHandlersIntegrationTest extends AbstractStdoutInterc
     @Test
     public void customErrorHandler() {
         Hashtable<String, Object> properties = new Hashtable<>();
-        properties.put(PaxLoggingConstants.ERRORHANDLER_NAME_PROPERTY, "custom");
+        properties.put(PaxLoggingConstants.SERVICE_PROPERTY_ERRORHANDLER_NAME_PROPERTY, "custom");
         MyPaxErrorHandler errorHandler = new MyPaxErrorHandler();
         context.registerService(PaxErrorHandler.class, errorHandler, properties);
 

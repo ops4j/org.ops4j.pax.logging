@@ -54,8 +54,15 @@ public interface PaxLogger {
     void fatal( String message, Throwable t, String fqcn);
 
     /**
-     * Returns numerical log level associated with this logger. Higher values mean more <em>important</em>
-     * levels (as in {@link org.ops4j.pax.logging.spi.PaxLevel}).
+     * <p>Returns numerical log level associated with this logger. Higher values mean more <em>important</em>
+     * levels (as in {@link org.ops4j.pax.logging.spi.PaxLevel}). Only these constants should be returned
+     * (in increasing importance/severity):<ul>
+     *     <li>{@link PaxLogger#LEVEL_TRACE}</li>
+     *     <li>{@link PaxLogger#LEVEL_DEBUG}</li>
+     *     <li>{@link PaxLogger#LEVEL_INFO}</li>
+     *     <li>{@link PaxLogger#LEVEL_WARNING}</li>
+     *     <li>{@link PaxLogger#LEVEL_ERROR}</li>
+     * </ul></p>
      * @return
      */
     int getLogLevel();

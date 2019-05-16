@@ -51,7 +51,9 @@ public interface PaxLevel {
      * the numerical value, the more events are rejected (i.e., high <em>threshold</em> means <em>process only
      * more important events</em>).
      *
-     * @return the integer representation of this level.
+     * @return the integer representation of this level. The value is not logging-framework specific - only values
+     * from {@link org.ops4j.pax.logging.PaxLogger} (e.g., {@link org.ops4j.pax.logging.PaxLogger#LEVEL_INFO}) are
+     * returned
      */
     int toInt();
 

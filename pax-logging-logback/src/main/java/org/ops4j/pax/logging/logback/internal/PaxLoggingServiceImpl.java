@@ -17,22 +17,39 @@
  */
 package org.ops4j.pax.logging.logback.internal;
 
+import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import ch.qos.logback.classic.BasicConfigurator;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.ConsoleAppender;
-import ch.qos.logback.core.joran.spi.JoranException;
+import ch.qos.logback.classic.spi.Configurator;
+import ch.qos.logback.core.status.ErrorStatus;
+import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.status.Status;
-import ch.qos.logback.core.status.StatusListener;
+import ch.qos.logback.core.status.StatusManager;
 import ch.qos.logback.core.status.WarnStatus;
+import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.spi.support.BackendSupport;
+import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.ops4j.pax.logging.spi.support.LogEntryImpl;
+import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
+import org.ops4j.pax.logging.spi.support.OsgiUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
@@ -41,17 +58,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
-import org.osgi.service.log.LogService;
 import org.slf4j.impl.StaticLoggerBinder;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Locale;
 
 /**
  * An implementation of PaxLoggingService that delegates to Logback.
@@ -69,6 +76,7 @@ import java.util.Locale;
  *     <li>configuration is completely different</li>
  *     <li>removed setLevelToJavaLogging() because logback already has it's own support for synchronizing with JUL.
  *         See below!</li>
+ *     <li>Unification of logging backends in 1.11+</li>
  * </ul>
  *
  * <p>
@@ -83,53 +91,77 @@ import java.util.Locale;
  *
  * @author Chris Dolan
  */
-public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfish.service.log.LogService,
-        ManagedService, ServiceFactory { // if you add an interface here, add it to the ManagedService below too
+public class PaxLoggingServiceImpl
+        implements PaxLoggingService, LogService, ManagedService, ServiceFactory { // if you add an interface here, add it to the ManagedService below too
 
-    private final LogReaderServiceAccess m_logReader;
-    private final EventAdminPoster m_eventAdmin;
-    private final BundleContext m_bundleContext;
-    private final PaxContext m_paxContext;
-    private final boolean m_useStaticContext;
-    private final String m_staticConfigFile;
-    private final LoggerContext m_logbackContext;
-    private final String m_fqcn;
-
-    private int m_logLevel = LOG_DEBUG;
-    private static final String DEFAULT_SERVICE_LOG_LEVEL = "org.ops4j.pax.logging.DefaultServiceLog.level";
-    private static final String LOGBACK_CONFIG_FILE_KEY = "org.ops4j.pax.logging.logback.config.file";
     public static final String LOGGER_CONTEXT_BUNDLECONTEXT_KEY = "org.ops4j.pax.logging.logback.bundlecontext";
 
-    public PaxLoggingServiceImpl(@Nonnull BundleContext bundleContext, @Nonnull LogReaderServiceAccess logReader,
-                                 @Nonnull EventAdminPoster eventAdmin)
-    {
-        m_fqcn = getClass().getName();
+    private final BundleContext m_bundleContext;
 
+    private ReadWriteLock m_configLock;
+
+    // LogReaderService registration as defined by org.osgi.service.log package
+    private final LogReaderServiceImpl m_logReader;
+
+    // pax-logging-logback specific PaxContext for all MDC access
+    private final PaxContext m_paxContext;
+
+    // optional bridging into Event Admin service
+    private final EventAdminPoster m_eventAdmin;
+
+    // optional notification mechanism for configuration events
+    private final ConfigurationNotifier m_configNotifier;
+
+    // Log level (actually a threashold) for this entire service.
+    private int m_logLevel = org.osgi.service.log.LogService.LOG_DEBUG;
+
+    // choose between LoggerContext managed here or managed inside logback-classic's
+    // org.slf4j.impl.StaticLoggerBinder#defaultLoggerContext
+    private final boolean m_useStaticContext;
+
+    // if static context is not used, here's the one we use
+    private final LoggerContext m_logbackContext;
+
+    // static configuration file URL when not using Configuration Admin
+    private final String m_staticConfigFile;
+    // there's no need to run configureDefaults() more than once. That was happening in constructor
+    // and millisecond later during registration of ManagedService, upon receiving empty org.ops4j.pax.logging
+    // configuration
+    private AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
+
+    // pax-logging-service uses org.apache.log4j.helpers.LogLog, here we'll directly use fallback logger
+    private final PaxLogger logLog;
+
+    private final String fqcn = getClass().getName();
+
+    public PaxLoggingServiceImpl(BundleContext bundleContext, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin, ConfigurationNotifier configNotifier) {
         if (bundleContext == null)
             throw new IllegalArgumentException("bundleContext cannot be null");
         m_bundleContext = bundleContext;
-
         if (logReader == null)
             throw new IllegalArgumentException("logReader cannot be null");
         m_logReader = logReader;
-
         if (eventAdmin == null)
             throw new IllegalArgumentException("eventAdmin cannot be null");
         m_eventAdmin = eventAdmin;
+        m_configNotifier = configNotifier;
 
         m_paxContext = new PaxContext();
-        m_useStaticContext = Boolean.valueOf(bundleContext.getProperty("org.ops4j.pax.logging.StaticLogbackContext"));
-        if (m_useStaticContext)
-        {
+        m_configLock = new ReentrantReadWriteLock();
+
+        logLog = FallbackLogFactory.createFallbackLog(bundleContext.getBundle(), "logback");
+
+        m_useStaticContext = Boolean.valueOf(bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_LOGBACK_USE_STATIC_CONTEXT));
+        if (m_useStaticContext) {
+            // org.slf4j.impl.StaticLoggerBinder is included in logback-classic and private-packaged in
+            // pax-logging-logback - it's not the same class as the one included in pax-logging-api
             m_logbackContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
-        }
-        else
-        {
+        } else {
             m_logbackContext = new LoggerContext();
             m_logbackContext.start();
         }
 
-        m_staticConfigFile = bundleContext.getProperty("org.ops4j.pax.logging.StaticLogbackFile");
+        m_staticConfigFile = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_LOGBACK_CONFIGURATION_FILE);
 
         // not strictly necessary because org.apache.felix.cm.impl.ConfigurationManager will configure us, but this
         // is a safe precaution. In a typical run, we will reset the logback configuration four times:
@@ -137,96 +169,132 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         //  2) via Felix when the service is added: updated(null)
         //  3) again from Felix when the config file is discovered: updated(non-null)
         //  4) from stop()
+        // there's optimization to not reconfigure several times with empty/default configuration
         configureDefaults();
     }
 
-    public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
-    {
-        Logger logger = m_logbackContext.getLogger(category == null ? org.slf4j.Logger.ROOT_LOGGER_NAME : category);
-        return new PaxLoggerImpl( bundle, logger, fqcn, this, new PaxEventHandler() {
-            public void handleEvents( Bundle bundle, @Nullable ServiceReference sr, int level, String message, Throwable exception ) {
-                LogEntry entry = new LogEntryImpl( bundle, sr, level, message, exception );
-                m_logReader.fireEvent( entry );
-                m_eventAdmin.postEvent( bundle, level, entry, message, exception, sr, getPaxContext().getContext() );
-            }
-        } );
+    // org.ops4j.pax.logging.PaxLoggingService
+
+    /**
+     * Shut down the Pax Logging service. Cleans up {@link LoggerContext}.
+     */
+    public void shutdown() {
+        m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, null);
+        if (!m_useStaticContext) {
+            m_logbackContext.stop();
+        }
     }
 
-    public int getLogLevel()
-    {
+    ReadWriteLock getConfigLock() {
+        return m_configLock;
+    }
+
+    // org.knopflerfish.service.log.LogService
+
+    @Override
+    public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
+        Logger logbackLogger;
+        if (category == null) {
+            logbackLogger = m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        } else {
+            logbackLogger = m_logbackContext.getLogger(category);
+        }
+        return new PaxLoggerImpl(bundle, logbackLogger, fqcn, this);
+    }
+
+    // org.osgi.service.log.LogService
+    // these methods are actually never called directly (except in tests), because the actual published
+    // methods come from service factory produced object
+
+    @Override
+    public int getLogLevel() {
         return m_logLevel;
     }
 
-    public void log( int level, String message )
-    {
-        logImpl( null, level, message, null, m_fqcn );
+    @Override
+    public void log(int level, String message) {
+        logImpl(null, level, message, null, fqcn);
     }
 
-    public void log( int level, String message, @Nullable Throwable exception )
-    {
-        logImpl( null, level, message, exception, m_fqcn );
+    @Override
+    public void log(int level, String message, Throwable exception) {
+        logImpl(null, level, message, exception, fqcn);
     }
 
-    public void log( ServiceReference sr, int level, String message )
-    {
-        logImpl( sr == null ? null : sr.getBundle(), level, message, null, m_fqcn );
+    @Override
+    public void log(ServiceReference sr, int level, String message) {
+        logImpl(sr == null ? null : sr.getBundle(), level, message, null, fqcn);
     }
 
-    public void log( ServiceReference sr, int level, String message, @Nullable Throwable exception )
-    {
-        logImpl( sr == null ? null : sr.getBundle(), level, message, exception, m_fqcn );
+    @Override
+    public void log(ServiceReference sr, int level, String message, Throwable exception) {
+        logImpl(sr == null ? null : sr.getBundle(), level, message, exception, fqcn);
+    }
+
+    @Override
+    public PaxContext getPaxContext() {
+        return m_paxContext;
+    }
+
+    // org.osgi.service.cm.ManagedService
+
+    @Override
+    public void updated(Dictionary<String, ?> configuration) throws ConfigurationException {
+        if (configuration == null) {
+            // maintain the existing configuration if there's such file set
+            if (m_staticConfigFile == null) {
+                configureDefaults();
+            }
+            return;
+        }
+
+        Object configfile = configuration.get(PaxLoggingConstants.PID_CFG_LOGBACK_CONFIG_FILE);
+
+        if (m_staticConfigFile != null && (configfile == null || m_staticConfigFile.equals(configfile))) {
+            // maintain the existing configuration
+            return;
+        } else {
+            configureLogback(configfile instanceof String ? (String) configfile : null);
+        }
+
+        // pick up pax-specific configuration of LogReader
+        configurePax(configuration);
+
+        updateLevelsFromLog4J1Config(configuration);
+        setLevelToJavaLogging();
     }
 
     /**
-     * This method is used by the FrameworkHandler to log framework events.
-     *
-     * @param bundle    The bundle that caused the event.
-     * @param level     The level to be logged as.
-     * @param message   The message.
-     * @param exception The exception, if any otherwise null.
+     * Actual logging work is done here
+     * @param bundle
+     * @param level
+     * @param message
+     * @param exception
+     * @param fqcn
      */
-    void log( @Nullable Bundle bundle, int level, String message, @Nullable Throwable exception )
-    {
-        logImpl( bundle, level, message, exception, m_fqcn );
-    }
+    private void logImpl(Bundle bundle, int level, String message, Throwable exception, String fqcn) {
+        String category = BackendSupport.category(bundle);
 
-    private void logImpl( @Nullable Bundle bundle, int level, String message,
-                      @Nullable Throwable exception, String fqcn )
-    {
-        String category = "[undefined]";
-        if( bundle != null )
-        {
-            category = bundle.getSymbolicName();
-            if( null == category )
-            {
-                category = "[bundle@" + bundle.getBundleId() + ']';
-            }
-        }
-        try
-        {
-            PaxLogger logger = getLogger( bundle, category, fqcn );
-            if( level < LOG_ERROR )
-            {
-                logger.fatal( message, exception );
-            }
-            else
-            {
-                switch (level)
-                {
-                case LOG_ERROR:
-                    logger.error( message, exception );
-                    break;
-                case LOG_WARNING:
-                    logger.warn( message, exception );
-                    break;
-                case LOG_INFO:
-                    logger.inform( message, exception );
-                    break;
-                case LOG_DEBUG:
-                    logger.debug( message, exception );
-                    break;
-                default:
-                    logger.trace( message, exception );
+        try {
+            PaxLogger logger = getLogger(bundle, category, fqcn);
+            if (level < LOG_ERROR) {
+                logger.fatal(message, exception);
+            } else {
+                switch (level) {
+                    case LOG_ERROR:
+                        logger.error(message, exception);
+                        break;
+                    case LOG_WARNING:
+                        logger.warn(message, exception);
+                        break;
+                    case LOG_INFO:
+                        logger.inform(message, exception);
+                        break;
+                    case LOG_DEBUG:
+                        logger.debug(message, exception);
+                        break;
+                    default:
+                        logger.trace(message, exception);
                 }
             }
         } catch (RuntimeException e) {
@@ -234,245 +302,244 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         }
     }
 
-    public void updated( Dictionary configuration )
-        throws ConfigurationException
-    {
+    void handleEvents(Bundle bundle, ServiceReference sr, int level, String message, Throwable exception) {
+        LogEntry entry = new LogEntryImpl(bundle, sr, level, message, exception);
+        m_logReader.fireEvent(entry);
 
-        if( configuration == null )
-        {
-            if (m_staticConfigFile != null) {
-                // maintain the existing configuration
-            } else {
-                configureDefaults();
-            }
+        // This should only be null for TestCases.
+        if (m_eventAdmin != null) {
+            m_eventAdmin.postEvent(bundle, level, entry, message, exception, sr, getPaxContext().getContext());
+        }
+    }
+
+    /**
+     * Default configuration, when Configuration Admin is not (yet) available. May choose
+     * staticly configured Logback XML file or just plain defaults (which are used if file is not accessible)
+     */
+    private void configureDefaults() {
+        if (!emptyConfiguration.compareAndSet(false, true)) {
             return;
         }
 
-        Object configfile = configuration.get(LOGBACK_CONFIG_FILE_KEY);
-        if (m_staticConfigFile != null && (configfile == null || m_staticConfigFile.equals(configfile))) {
-            // maintain the existing configuration
-        } else if (configfile != null) {
-            File f = new File(configfile.toString());
-            if (f.exists()) {
-                try {
-                    configureLogback(f);
-                } catch (RuntimeException e) {
-                    m_logbackContext.getStatusManager().add(new WarnStatus(
-                        "Error loading Logback configuration from '" + f + "'", m_logbackContext, e));
-                }
-            } else {
-                m_logbackContext.getStatusManager().add(new WarnStatus(
-                    "Configuration said to load '" + f + "' but that file does not exist", m_logbackContext));
-                configureLogback(null);
-            }
-        } else {
-            configureLogback(null);
-        }
+        String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
+        java.util.logging.Level julLevel = BackendSupport.toJULLevel(levelName);
 
-        configurePax(configuration);
-        updateLevels(configuration);
+        m_logLevel = BackendSupport.convertLogServiceLevel(levelName);
+
+        configureLogback(m_staticConfigFile);
     }
 
-    private void configureDefaults()
-    {
-        if (m_staticConfigFile != null) {
-            File f = new File(m_staticConfigFile);
-            try {
-                configureLogback(f);
-            } catch (RuntimeException e) {
-                m_logbackContext.getStatusManager().add(new WarnStatus(
-                    "Error loading Logback configuration from '" + f + "'", m_logbackContext, e));
+    /**
+     * Main configuration method using XML file - specified either as static file configured as context
+     * property or in {@code org.ops4j.pax.logging} PID.
+     * @param configFileName
+     */
+    private void configureLogback(String configFileName) {
+        getConfigLock().writeLock().lock();
+
+        Exception problem = null;
+
+        try {
+            File file = null;
+            if (configFileName != null) {
+                file = new File(configFileName);
             }
-        } else {
-            ConsoleAppender<ILoggingEvent> consoleAppender = configureLogbackDefaults();
-            consoleAppender.addInfo("default: setting up console logging at WARN level");
-        }
-
-        String levelName;
-        levelName = m_bundleContext.getProperty( DEFAULT_SERVICE_LOG_LEVEL );
-        if( levelName == null )
-        {
-            levelName = "DEBUG";
-        }
-        else
-        {
-            levelName = levelName.trim();
-        }
-        m_logLevel = convertLevel( levelName );
-    }
-
-    private void configureLogback(@Nullable File configFile) {
-        ConsoleAppender<ILoggingEvent> consoleAppender = configureLogbackDefaults();
-
-        if (configFile != null) {
-
-            // get a better representation of the hostname than what Logback provides in the HOSTNAME property
-            try {
-                String hostName = InetAddress.getLocalHost().getCanonicalHostName();
-                int n = hostName.indexOf('.');
-                if(n >= 0)
-                    hostName = hostName.substring(0, n);
-                m_logbackContext.putProperty("HOSTNAMENONCANON", hostName.toLowerCase(Locale.ENGLISH));
-            } catch (UnknownHostException e) {
-                // ignore
+            if (file != null && !file.isFile()) {
+                Status warn = new WarnStatus("Configuration file '" + file + "' is not available. Default configuration will be used.", null);
+                m_logbackContext.getStatusManager().add(warn);
+                file = null;
             }
 
-            JoranConfigurator configurator = new JoranConfigurator();
-            configurator.setContext(m_logbackContext);
-            ClassLoader tccl = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-                configurator.doConfigure(configFile);
-                m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).detachAppender(consoleAppender);
-            } catch (JoranException e) {
-                throw new RuntimeException(e);
-            } finally {
-                Thread.currentThread().setContextClassLoader(tccl);
-            }
-        }
-    }
+                if (file == null) {
+                    Configurator configurator = new BasicConfigurator();
+                    configurator.setContext(m_logbackContext);
+                    configurator.configure(m_logbackContext);
 
-    private ConsoleAppender<ILoggingEvent> configureLogbackDefaults() {
-        // simplest possible useful configuration, make sure there's minimal time when there are no appenders!
-        ConsoleAppender<ILoggingEvent> consoleAppender = makeConsoleAppender();
-
-        //System.err.println("reset"); new Exception().printStackTrace(System.err);
-        m_logbackContext.reset();
-        // minimize time between these two lines of code
-        m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).addAppender(consoleAppender);
-
-        m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, m_bundleContext);
-        m_logbackContext.getStatusManager().add(new StatusListener() {
-            public void addStatusEvent(Status status) {
-                if (status.getLevel() == Status.ERROR || status.getLevel() == Status.WARN) {
-                    String output = String.valueOf(status);
-                    // ignore rare appender warnings when someone attempts to log while config is being reloaded
-                    if (!output.contains("No appenders present") && !output.contains("non started appender")) {
-                        System.err.println(output);
-                        Throwable t = status.getThrowable();
-                        if (t != null) {
-                            t.printStackTrace(System.err);
-                        }
+                    InfoStatus info = new InfoStatus("Logback configured using default configuration", this);
+                    m_logbackContext.getStatusManager().add(info);
+                } else {
+                    // get a better representation of the hostname than what Logback provides in the HOSTNAME property
+                    try {
+                        String hostName = InetAddress.getLocalHost().getCanonicalHostName();
+                        int n = hostName.indexOf('.');
+                        if (n >= 0)
+                            hostName = hostName.substring(0, n);
+                        m_logbackContext.putProperty("HOSTNAMENONCANON", hostName.toLowerCase(Locale.ENGLISH));
+                    } catch (UnknownHostException ignored) {
                     }
+
+                    // This is where the Logback magic happens
+                    JoranConfigurator configurator = new JoranConfigurator();
+                    configurator.setContext(m_logbackContext);
+                    ClassLoader tccl = Thread.currentThread().getContextClassLoader();
+                    try {
+                        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+                        configurator.doConfigure(file);
+                    } finally {
+                        Thread.currentThread().setContextClassLoader(tccl);
+                    }
+
+                    InfoStatus info = new InfoStatus("Logback configured using file '" + file + "'", this);
+                    m_logbackContext.getStatusManager().add(info);
                 }
+            } catch (Exception e) {
+                Status error = new ErrorStatus("Logback configuration problem: " + e.getMessage(), e);
+                m_logbackContext.getStatusManager().add(error);
+                problem = e;
             }
-        });
+        } finally {
+            getConfigLock().writeLock().unlock();
+        }
 
-        return consoleAppender;
+        // do it outside of the lock
+        if (problem == null) {
+            m_configNotifier.configurationDone();
+        } else {
+            m_configNotifier.configurationError(problem);
+        }
+
+        // do what Logback does with ch.qos.logback.core.util.StatusPrinter.print()
+        logbackStatus();
     }
 
-    private ConsoleAppender<ILoggingEvent> makeConsoleAppender() {
-        // This code is similar to ch.qos.logback.classic.BasicConfigurator, but adds a filter
+    private void updateLevelsFromLog4J1Config(Dictionary<String, ?> config) {
+        for (Enumeration keys = config.keys(); keys.hasMoreElements(); ) {
+            String name = (String) keys.nextElement();
+            if (name.equals("log4j.rootLogger")) {
+                Level level = extractLevel((String) config.get(name));
+                m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).setLevel(level);
+            }
 
-        ThresholdFilter filter = new ThresholdFilter();
-        filter.setContext(m_logbackContext);
-        filter.setLevel("WARN");
-        filter.start();
-
-        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(m_logbackContext);
-        encoder.setPattern("%d %-5level [%file:%line] %msg - %logger{20}%n");
-        encoder.start();
-
-        ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<ILoggingEvent>();
-        consoleAppender.setContext(m_logbackContext);
-        consoleAppender.setName("DEFAULT-CONSOLE");
-        consoleAppender.addFilter(filter);
-        consoleAppender.setEncoder(encoder);
-        consoleAppender.start();
-
-        return consoleAppender;
-    }
-
-    private void updateLevels(Dictionary config) {
-      for ( Enumeration keys = config.keys(); keys.hasMoreElements(); )
-      {
-          String name = (String) keys.nextElement();
-          if ( name.equals( "log4j.rootLogger" ) )
-          {
-              Level level = extractLevel((String) config.get( name ));
-              m_logbackContext.getLogger( org.slf4j.Logger.ROOT_LOGGER_NAME ).setLevel( level );
-          }
-
-          if ( name.startsWith( "log4j.logger." ) )
-          {
-              Level level = extractLevel( (String) config.get( name ) );
-              String packageName = name.substring( "log4j.logger.".length() );
-              m_logbackContext.getLogger( packageName ).setLevel( level );
-          }
-      }
+            if (name.startsWith("log4j.logger.")) {
+                Level level = extractLevel((String) config.get(name));
+                String packageName = name.substring("log4j.logger.".length());
+                m_logbackContext.getLogger(packageName).setLevel(level);
+            }
+        }
     }
 
     private Level extractLevel(String log4jLevelConfig) {
-        String[] config = log4jLevelConfig.split(",");
-        return Level.toLevel( config[0] );
+        String[] config = log4jLevelConfig.split("\\s*,\\s*");
+        return Level.toLevel(config[0]);
     }
 
-    private void configurePax(Dictionary config) {
-        Object size = config.get("pax.logging.entries.size");
-        if ( null != size )
-        {
-            try
-            {
-                m_logReader.setMaxEntries( Integer.parseInt( (String) size ) );
+    /**
+     * Uses current {@link LoggerContext} and updates JUL log levels
+     */
+    private void setLevelToJavaLogging() {
+        for (Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements(); ) {
+            String name = (String) enum_.nextElement();
+            java.util.logging.Logger.getLogger(name).setLevel(null);
+        }
+
+        for (Logger logger : m_logbackContext.getLoggerList()) {
+            if (logger != null) {
+                Level l = logger.getLevel();
+                java.util.logging.Level julLevel = BackendSupport.toJULLevel(l.toString());
+                if (org.slf4j.Logger.ROOT_LOGGER_NAME.equals(logger.getName())
+                        || "".equals(logger.getName())) {
+                    java.util.logging.Logger.getGlobal().setLevel(julLevel);
+                    java.util.logging.Logger.getLogger("").setLevel(julLevel);
+                    // "global" comes from java.util.logging.Logger.GLOBAL_LOGGER_NAME, but that constant wasn't added until Java 1.6
+                    java.util.logging.Logger.getLogger("global").setLevel(julLevel);
+                } else {
+                    java.util.logging.Logger.getLogger(logger.getName()).setLevel(julLevel);
+                }
             }
-            catch( Exception e )
-            {
+        }
+    }
+
+    private void configurePax(Dictionary<String, ?> config) {
+        Object size = config.get(PaxLoggingConstants.PID_CFG_LOG_READER_SIZE);
+        if (size == null) {
+            size = config.get(PaxLoggingConstants.PID_CFG_LOG_READER_SIZE_LEGACY);
+        }
+        if (null != size) {
+            try {
+                m_logReader.setMaxEntries(Integer.parseInt((String) size));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    /*
-     * use local class to delegate calls to underlying instance while keeping bundle reference
+    /**
+     * Outputs the collected status (from {@link ch.qos.logback.core.status.StatusManager})
      */
-    public Object getService( final Bundle bundle, ServiceRegistration registration )
-    {
+    private void logbackStatus() {
+        StatusManager sm = m_logbackContext.getStatusManager();
+        if (sm != null) {
+            for (Status status : sm.getCopyOfStatusList()) {
+                switch (status.getLevel()) {
+                    case Status.ERROR:
+                        logLog.error(status.getMessage(), status.getThrowable());
+                        break;
+                    case Status.WARN:
+                        logLog.warn(status.getMessage(), status.getThrowable());
+                        break;
+                    case Status.INFO:
+                        logLog.inform(status.getMessage(), status.getThrowable());
+                        break;
+                }
+            }
+        }
+    }
+
+    // org.osgi.framework.ServiceFactory
+
+    /**
+     * <p>Use local class to delegate calls to underlying instance while keeping bundle reference.</p>
+     * <p>We don't need anything special from bundle-scoped service ({@link ServiceFactory}) except the
+     * reference to client bundle.</p>
+     */
+    @Override
+    public Object getService(final Bundle bundle, ServiceRegistration registration) {
         class ManagedPaxLoggingService
-            implements PaxLoggingService, LogService, ManagedService
-        {
-            private final String fqcn = getClass().getName();
+                implements PaxLoggingService, LogService, ManagedService {
 
-            public void log( int level, String message )
-            {
-                PaxLoggingServiceImpl.this.logImpl( bundle, level, message, null, fqcn );
+            private final String FQCN = ManagedPaxLoggingService.class.getName();
+
+            @Override
+            public void log(int level, String message) {
+                PaxLoggingServiceImpl.this.logImpl(bundle, level, message, null, FQCN);
             }
 
-            public void log( int level, String message, @Nullable Throwable exception )
-            {
-                PaxLoggingServiceImpl.this.logImpl( bundle, level, message, exception, fqcn );
+            @Override
+            public void log(int level, String message, Throwable exception) {
+                PaxLoggingServiceImpl.this.logImpl(bundle, level, message, exception, FQCN);
             }
 
-            public void log( ServiceReference sr, int level, String message )
-            {
+            @Override
+            public void log(ServiceReference sr, int level, String message) {
                 Bundle b = bundle == null && sr != null ? sr.getBundle() : bundle;
-                PaxLoggingServiceImpl.this.logImpl( b, level, message, null, fqcn );
+                PaxLoggingServiceImpl.this.logImpl(b, level, message, null, FQCN);
             }
 
-            public void log( ServiceReference sr, int level, String message, Throwable exception )
-            {
+            @Override
+            public void log(ServiceReference sr, int level, String message, Throwable exception) {
                 Bundle b = bundle == null && sr != null ? sr.getBundle() : bundle;
-                PaxLoggingServiceImpl.this.logImpl( b, level, message, exception, fqcn );
+                PaxLoggingServiceImpl.this.logImpl(b, level, message, exception, FQCN);
             }
 
-            public int getLogLevel()
-            {
+            @Override
+            public int getLogLevel() {
                 return PaxLoggingServiceImpl.this.getLogLevel();
             }
 
-            public PaxLogger getLogger( Bundle myBundle, String category, String fqcn )
-            {
-                return PaxLoggingServiceImpl.this.getLogger( myBundle, category, fqcn );
+            @Override
+            public PaxLogger getLogger(Bundle myBundle, String category, String fqcn) {
+                return PaxLoggingServiceImpl.this.getLogger(myBundle, category, fqcn);
             }
 
-            public void updated( Dictionary configuration )
-                throws ConfigurationException
-            {
-                PaxLoggingServiceImpl.this.updated( configuration );
+            @Override
+            public void updated(Dictionary<String, ?> configuration)
+                    throws ConfigurationException {
+                PaxLoggingServiceImpl.this.updated(configuration);
             }
 
-            public PaxContext getPaxContext()
-            {
+            @Override
+            public PaxContext getPaxContext() {
                 return PaxLoggingServiceImpl.this.getPaxContext();
             }
         }
@@ -480,50 +547,9 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, org.knopflerfis
         return new ManagedPaxLoggingService();
     }
 
-    public void ungetService( Bundle bundle, ServiceRegistration registration, Object service )
-    {
+    @Override
+    public void ungetService(Bundle bundle, ServiceRegistration registration, Object service) {
         // nothing to do...
-    }
-
-    public PaxContext getPaxContext()
-    {
-        return m_paxContext;
-    }
-
-    private static int convertLevel( String levelName )
-    {
-        if( "DEBUG".equals( levelName ) )
-        {
-            return LOG_DEBUG;
-        }
-        else if( "INFO".equals( levelName ) )
-        {
-            return LOG_INFO;
-        }
-        else if( "ERROR".equals( levelName ) )
-        {
-            return LOG_ERROR;
-        }
-        else if( "WARN".equals( levelName ) )
-        {
-            return LOG_WARNING;
-        }
-        else if ( "OFF".equals( levelName ) || "NONE".equals( levelName ) )
-        {
-            return 0;
-        }
-        else
-        {
-            return LOG_DEBUG;
-        }
-    }
-
-    public void stop() {
-        m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, null);
-        if (!m_useStaticContext)
-        {
-            m_logbackContext.stop();
-        }
     }
 
 }

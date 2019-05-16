@@ -55,7 +55,7 @@ public class LayoutBridgeImpl extends Layout {
         try {
             return bundleContext.createFilter(
                     "(&(" + Constants.OBJECTCLASS + "=" + PaxLayout.class.getName() + ")" +
-                            "(" + PaxLoggingConstants.LAYOUT_NAME_PROPERTY + "=" + name + "))");
+                            "(" + PaxLoggingConstants.SERVICE_PROPERTY_LAYOUT_NAME_PROPERTY + "=" + name + "))");
         } catch (InvalidSyntaxException e) {
             throw new IllegalStateException("unable to create layout tracker", e);
         }

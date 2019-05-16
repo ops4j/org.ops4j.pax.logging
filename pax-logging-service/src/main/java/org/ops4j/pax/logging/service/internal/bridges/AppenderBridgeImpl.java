@@ -22,9 +22,9 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
-import org.ops4j.pax.logging.service.internal.spi.PaxAppenderProxy;
 import org.ops4j.pax.logging.service.internal.spi.PaxLoggingEventImpl;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
+import org.ops4j.pax.logging.spi.support.PaxAppenderProxy;
 
 /**
  * Bridge from Log4J to pax-logging. Event is passed to tracked (through {@link PaxAppenderProxy})

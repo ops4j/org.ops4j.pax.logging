@@ -80,7 +80,7 @@ public class Log4J1WithConfigAdminIntegrationTest extends AbstractStdoutIntercep
             latch.countDown();
         };
         Dictionary<String, Object> props = new Hashtable<>();
-        props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.LOGGING_EVENT_ADMIN_CONFIGURATION_TOPIC);
+        props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
         context.registerService(EventHandler.class, handler, props);
 
         LoggerFactory.getLogger("defaultConfigurationButUsingConfigAdmin").info("Before org.osgi.service.cm.Configuration.update()");

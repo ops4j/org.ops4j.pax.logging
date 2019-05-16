@@ -133,13 +133,21 @@ The _higher_ (numerically) the threshold, the more logging events are processed.
 Logging frameworks (and APIs) used in pax-logging treat the _level_ concept differently... Log4J1 has direct relation to Syslog levels, but it's not a case with Log4J2 and java.util.logging.
 Here's a table where Syslog and Log4J1 can be directly related. Placement of levels from other libraries is a bit arbitrary and related to logging level name equivalents.
 
+* Log4J1: constants in `org.apache.log4j.Level` class
+* Log4J2: values in `org.apache.logging.log4j.spi.StandardLevel` enum
+* Logback: constants in `ch.qos.logback.classic.Level` class
+* java.util.logging: values in `java.util.logging.Level` class
+* Slf4J: constants in `org.slf4j.spi.LocationAwareLogger` interface
+* OSGi: constants in `org.osgi.service.log.LogService` interface
+
 [options=nowrap]
 |===
-|Syslog |Log4J1 |Log4J2 |java.util.logging |SLF4J |OSGi
+|Syslog |Log4J1 |Log4J2 |Logback| java.util.logging |SLF4J |OSGi
 
 |0 - Emergency
 |Integer.MAX_VALUE - OFF
 |0 - OFF
+|Integer.MAX_VALUE - OFF
 |Integer.MAX_VALUE - OFF
 |
 |
@@ -147,11 +155,13 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |0 - Emergency
 |50000 - FATAL
 |100 - FATAL
+|
 |1000 - SEVERE
 |
 |
 
 |1 - Alert
+|
 |
 |
 |
@@ -164,10 +174,12 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |
 |
 |
+|
 
 |3 - Error
 |40000 - ERROR
 |200 - ERROR
+|40000 - ERROR
 |1000 - SEVERE
 |40 - ERROR
 |1 - ERROR
@@ -175,6 +187,7 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |4 - Warning
 |30000 - WARN
 |300 - WARN
+|30000 - WARN
 |900 - WARNING
 |30 - WARN
 |2 - WARNING
@@ -185,10 +198,12 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |
 |
 |
+|
 
 |6 - Informational
 |20000 - INFO
 |400 - INFO
+|20000 - INFO
 |800 - INFO, 700 - CONFIG
 |20 - INFO
 |3 - INFO
@@ -196,6 +211,7 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |7 - Debug
 |10000 - DEBUG
 |500 - DEBUG
+|10000 - DEBUG
 |500 - FINE
 |10 - DEBUG
 |4 - DEBUG
@@ -203,10 +219,12 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |7 - Debug
 |5000 - TRACE
 |600 - TRACE
+|5000 - TRACE
 |400 - FINER
 |0 - TRACE
 |
 
+|
 |
 |
 |
@@ -218,6 +236,7 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |Integer.MIN_VALUE - ALL
 |Integer.MAX_VALUE - ALL
 |Integer.MIN_VALUE - ALL
+|Integer.MIN_VALUE - ALL
 |
 |
 |===
@@ -226,6 +245,7 @@ Notes and confusing parts:
 
 * Log4J1's `OFF` level matches numerical value of Syslog `Emergency` level
 * java.util.logging: there are too many less important levels (FINE, FINER, FINEST) and too little more critical ones (only SEVERE)
+* Syslog doesn't define _trace_ level, so its _debug_ entry is duplicated to cover constants from logging frameworks
 * Syslog, Log4J2 and OSGi use increasing numerical level for decreasing event importance
 * Log4J1, java.util.logging and SLF4J use higher numerical levels for more important events
 * Mapping of java.util.logging levels to more popular level names is implemented in `org.ops4j.pax.logging.spi.support.BackendSupport.toJULLevel()`
@@ -801,6 +821,14 @@ As mentioned on https://logback.qos.ch/[project's web page], Logback _picks up w
 Logback was created after the logging-bridge (r)evolution and even if it may be used without any logging facade/bridge, it is very uncommon to do so. That's why there are no special API classes in pax-logging-api related to Logback. Logback is handled by pax-logging _only_ through implementation of `org.ops4j.pax.logging.PaxLoggingService`.
 
 Logback is mostly used behind SLF4J facade and both logger factory and MDC/NDC API comes from SLF4J itself when dealing with Logback.
+
+Logback is initialized using `org.slf4j.impl.StaticLoggerBinder` Slf4J mechanism - but only if such class is
+explicitly requested/loaded (e.g., through `org.slf4j.LoggerFactory.getLogger()` and `org.slf4j.LoggerFactory.bind()`).
+With pax-logging-logback, Logback's version of `org.slf4j.impl.StaticLoggerBinder` is neither exported nor used.
+
+pax-logging-logback implementation of `org.ops4j.pax.logging.PaxLoggingService` explicitly configures `ch.qos.logback.classic.LoggerContext` instance (which, by the way, implements `org.slf4j.ILoggerFactory`).
+
+Logback's `org.slf4j.ILoggerFactory` calls (in static block) `ch.qos.logback.classic.util.ContextInitializer.autoConfig()`, which
 
 == Log4j2
 

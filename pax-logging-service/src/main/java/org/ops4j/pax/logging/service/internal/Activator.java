@@ -66,11 +66,12 @@ public class Activator implements BundleActivator {
     public void start(BundleContext bundleContext) throws Exception {
         sanityCheck();
 
-        // Fallback PaxLogger configuration
+        // Fallback PaxLogger configuration - has to be done in each backed, as org.ops4j.pax.logging.spi.support
+        // package is private in all backends
         String levelName = BackendSupport.defaultLogLevel(bundleContext);
         DefaultServiceLog.setLogLevel(levelName);
         if (DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG) {
-            // Log4j1 debug
+            // Log4j1 internal debug
             LogLog.setInternalDebugging(true);
         }
 

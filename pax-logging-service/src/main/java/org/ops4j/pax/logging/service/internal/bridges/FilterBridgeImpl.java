@@ -54,7 +54,7 @@ public class FilterBridgeImpl extends Filter {
         try {
             return bundleContext.createFilter(
                     "(&(" + Constants.OBJECTCLASS + "=" + PaxFilter.class.getName() + ")" +
-                            "(" + PaxLoggingConstants.FILTER_NAME_PROPERTY + "=" + name + "))");
+                            "(" + PaxLoggingConstants.SERVICE_PROPERTY_FILTER_NAME_PROPERTY + "=" + name + "))");
         } catch (InvalidSyntaxException e) {
             throw new IllegalStateException("unable to create filter tracker", e);
         }

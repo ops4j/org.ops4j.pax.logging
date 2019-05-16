@@ -1,7 +1,28 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.ops4j.pax.logging.logback.internal;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -10,26 +31,24 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.easymock.EasyMock;
-import org.easymock.IArgumentMatcher;
-import org.eclipse.osgi.framework.util.Headers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.PaxLoggingService;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
-
 import org.slf4j.MDC;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Chris Dolan
  * @since 6/13/11 11:13 AM
  */
 public class PaxLoggerImplTest {
-    private interface LogAppender extends Appender<ILoggingEvent> {}
 
     @Test
     public void test() {
@@ -40,30 +59,18 @@ public class PaxLoggerImplTest {
         PaxContext paxContext = new PaxContext();
 
         Bundle bundle = makeBundle();
-        PaxLoggingService svc = EasyMock.createStrictMock(PaxLoggingService.class);
-        EasyMock.expect(svc.getPaxContext()).andReturn(paxContext).anyTimes();
-        PaxEventHandler eventHandler = EasyMock.createNiceMock(PaxEventHandler.class);
+        PaxLoggingServiceImpl svc = mock(PaxLoggingServiceImpl.class);
 
-        Appender<ILoggingEvent> appender = EasyMock.createStrictMock(LogAppender.class);
+        when(svc.getPaxContext()).thenReturn(paxContext);
+        when(svc.getConfigLock()).thenReturn(new ReentrantReadWriteLock());
+
+        Appender<ILoggingEvent> appender = mock(LogAppender.class);
         MDC.put("bundle.name", "bundle1");
         MDC.put("bundle.id", "1");
         MDC.put("bundle.version", "1.2.3.4");
-        appender.doAppend(eqLogEvent(fqcn, logger, Level.DEBUG, "d"));  EasyMock.expectLastCall();
-        appender.doAppend(eqLogEvent(fqcn, logger, Level.INFO,  "i"));  EasyMock.expectLastCall();
-        appender.doAppend(eqLogEvent(fqcn, logger, Level.WARN,  "w"));  EasyMock.expectLastCall();
-        appender.doAppend(eqLogEvent(fqcn, logger, Level.ERROR, "e"));  EasyMock.expectLastCall();
-        appender.doAppend(eqLogEvent(fqcn, logger, Level.ERROR, "f"));  EasyMock.expectLastCall();
-        appender.doAppend(eqLogEvent(fqcn2, logger, Level.DEBUG, "d"));  EasyMock.expectLastCall();
-        appender.doAppend(eqLogEvent(fqcn2, logger, Level.INFO,  "i"));  EasyMock.expectLastCall();
-        appender.doAppend(eqLogEvent(fqcn2, logger, Level.WARN,  "w"));  EasyMock.expectLastCall();
-        appender.doAppend(eqLogEvent(fqcn2, logger, Level.ERROR, "e"));  EasyMock.expectLastCall();
-        appender.doAppend(eqLogEvent(fqcn2, logger, Level.ERROR, "f"));  EasyMock.expectLastCall();
-        MDC.clear();
-
-        EasyMock.replay(bundle, svc, eventHandler, appender);
 
         logger.addAppender(appender);
-        PaxLoggerImpl paxLogger = new PaxLoggerImpl(bundle, logger, fqcn, svc, eventHandler);
+        PaxLoggerImpl paxLogger = new PaxLoggerImpl(bundle, logger, fqcn, svc);
 
         Assert.assertEquals(PaxLogger.LEVEL_DEBUG, paxLogger.getLogLevel());
         Assert.assertEquals("foo", paxLogger.getName());
@@ -75,6 +82,7 @@ public class PaxLoggerImplTest {
         paxLogger.warn("w", null);
         paxLogger.error("e", null);
         paxLogger.fatal("f", null);
+
         paxLogger.trace("t", null, fqcn2); // won't be logged, default level is DEBUG
         paxLogger.debug("d", null, fqcn2);
         paxLogger.inform("i", null, fqcn2);
@@ -89,7 +97,17 @@ public class PaxLoggerImplTest {
         Assert.assertTrue(paxLogger.isErrorEnabled());
         Assert.assertTrue(paxLogger.isFatalEnabled());
 
-        EasyMock.verify(bundle, svc, eventHandler, appender);
+        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.DEBUG, "d"));
+        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.INFO, "i"));
+        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.WARN, "w"));
+        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.ERROR, "e"));
+        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.ERROR, "f"));
+
+        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.DEBUG, "d"));
+        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.INFO, "i"));
+        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.WARN, "w"));
+        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.ERROR, "e"));
+        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.ERROR, "f"));
     }
 
     /**
@@ -106,17 +124,17 @@ public class PaxLoggerImplTest {
         Assert.assertFalse(e1.toString(), new LoggingEventMatcher(e1).matches(new LoggingEvent("foo", logger, Level.INFO, "bar", null, null)));
         Assert.assertFalse(e1.toString(), new LoggingEventMatcher(e1).matches(new LoggingEvent("foo", logger, Level.DEBUG, "bar2", null, null)));
         Assert.assertFalse(e1.toString(), new LoggingEventMatcher(e1).matches(new LoggingEvent("foo", logger, Level.DEBUG, "bar", new Throwable(), null)));
-        Assert.assertFalse(e1.toString(), new LoggingEventMatcher(e1).matches(new LoggingEvent("foo", logger, Level.DEBUG, "bar", null, new Object[] {"xx"})));
+        Assert.assertFalse(e1.toString(), new LoggingEventMatcher(e1).matches(new LoggingEvent("foo", logger, Level.DEBUG, "bar", null, new Object[] { "xx" })));
         MDC.put("arg", "blarg");
         Assert.assertFalse(e1.toString(), new LoggingEventMatcher(e1).matches(new LoggingEvent("foo", logger, Level.DEBUG, "bar", null, null)));
         MDC.clear();
     }
 
     private Bundle makeBundle() {
-        Bundle bundle = EasyMock.createMock(Bundle.class);
-        EasyMock.expect(bundle.getBundleId()).andReturn(1L).anyTimes();
-        EasyMock.expect(bundle.getSymbolicName()).andReturn("bundle1").anyTimes();
-        EasyMock.expect(bundle.getVersion()).andReturn(new Version("1.2.3.4")).anyTimes();
+        Bundle bundle = mock(Bundle.class);
+        when(bundle.getBundleId()).thenReturn(1L);
+        when(bundle.getSymbolicName()).thenReturn("bundle1");
+        when(bundle.getVersion()).thenReturn(new Version("1.2.3.4"));
         return bundle;
     }
 
@@ -125,11 +143,14 @@ public class PaxLoggerImplTest {
     }
 
     private LoggingEvent eqLogEvent(final LoggingEvent le) {
-        EasyMock.reportMatcher(new LoggingEventMatcher(le));
-        return null;
+        return ArgumentMatchers.argThat(argument -> new LoggingEventMatcher(argument).matches(le));
     }
 
-    private static class LoggingEventMatcher implements IArgumentMatcher {
+    private interface LogAppender extends Appender<ILoggingEvent> {
+    }
+
+    private static class LoggingEventMatcher {
+
         private final LoggingEvent le;
 
         public LoggingEventMatcher(LoggingEvent le) {
@@ -149,6 +170,8 @@ public class PaxLoggerImplTest {
                 return false;
             if (!le.getLoggerName().equals(that.getLoggerName()))
                 return false;
+            if (!getField(le, "fqnOfLoggerClass").equals(getField(that, "fqnOfLoggerClass")))
+                return false;
             IThrowableProxy thrown = le.getThrowableProxy();
             IThrowableProxy thatThrown = that.getThrowableProxy();
             if (thrown == null ? thatThrown != null : thatThrown == null)
@@ -161,9 +184,9 @@ public class PaxLoggerImplTest {
             }
             if (!Arrays.equals(le.getArgumentArray(), that.getArgumentArray()))
                 return false;
-            Map<String,String> mdc = le.getMDCPropertyMap();
-            Map<String,String> thatMDC = that.getMDCPropertyMap();
-            if (mdc == null ? thatMDC != null : !mdc.equals(thatMDC))
+            Map<String, String> mdc = le.getMDCPropertyMap();
+            Map<String, String> thatMDC = that.getMDCPropertyMap();
+            if (!Objects.equals(mdc, thatMDC))
                 return false;
             return true;
         }
@@ -172,4 +195,15 @@ public class PaxLoggerImplTest {
             // not implemented
         }
     }
+
+    public static Object getField(Object object, String fieldName) {
+        try {
+            Field f = object.getClass().getDeclaredField(fieldName);
+            f.setAccessible(true);
+            return f.get(object);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
 }

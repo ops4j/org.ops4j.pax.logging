@@ -18,25 +18,25 @@
  */
 package org.ops4j.pax.logging.logback.internal;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import org.ops4j.pax.logging.EventAdminPoster;
+import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.internal.eventadmin.EventAdminTracker;
+import org.ops4j.pax.logging.spi.support.BackendSupport;
+import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
+import org.ops4j.pax.logging.spi.support.RegisteredService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ManagedService;
-import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogReaderService;
-import org.osgi.service.log.LogService;
-
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 /**
  * Starts the logback log services.
@@ -46,147 +46,87 @@ import java.util.logging.Logger;
  * <ul>
  *     <li>added a call to stop the service</li>
  *     <li>added more logging to detect failures at start, which may be otherwise lost in early boot</li>
+ *     <li>unified in 1.11+ with other backends, huge code cleanup</li>
  * </ul>
  *
  * @author Chris Dolan -- some code derived from from pax-logging-service v1.6.0
  */
-@edu.umd.cs.findbugs.annotations.SuppressWarnings("LG_LOST_LOGGER_DUE_TO_WEAK_REFERENCE")
 public class Activator implements BundleActivator {
 
-    /**
-     * The Managed Service PID for the Logback configuration
-     */
-    public static final String CONFIGURATION_PID = "org.ops4j.pax.logging";
-
-    private static final String[] LOG_SERVICE_INTERFACE_NAMES = {
-        LogService.class.getName(),
-        org.knopflerfish.service.log.LogService.class.getName(),
-        PaxLoggingService.class.getName(),
-        ManagedService.class.getName(),
-    };
-
-    /**
-     * Reference to the registered service
-     */
-    private ServiceRegistration m_RegistrationPaxLogging;
-    private JdkHandler m_JdkHandler;
-    private ServiceRegistration m_registrationLogReaderService;
-    private FrameworkHandler m_frameworkHandler;
-    private EventAdminPoster m_eventAdmin;
+    // PaxLoggingService implementation backed by Logback and its registration
+    private ServiceRegistration<?> m_RegistrationPaxLogging;
     private PaxLoggingServiceImpl m_paxLogging;
 
-    /**
-     * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-     */
-    public void start( BundleContext bundleContext ) throws Exception {
-        // This try/catch is to detect failures to load the logging framework, which otherwise are silent...
-        try {
-            startInternal(bundleContext);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        } catch (Error e) {
-            e.printStackTrace();
-            throw e;
-        } catch (Throwable e) { // NOPMD
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
-    private void startInternal( BundleContext bundleContext )
-    {
-        // register the LogReaderService
-        LogReaderServiceImpl logReader = new LogReaderServiceImpl( 100 );
-        String readerServiceName = LogReaderService.class.getName();
-        m_registrationLogReaderService = bundleContext.registerService( readerServiceName, logReader, null );
+    private RegisteredService<LogReaderService, LogReaderServiceImpl> logReaderInfo;
+    private RegisteredService<EventAdminPoster, EventAdminPoster> eventAdminInfo;
+    private RegisteredService<ConfigurationNotifier, ConfigurationNotifier> eventAdminConfigurationNotifierInfo;
 
-        // Tracking for the EventAdmin
-        try
-        {
-            m_eventAdmin = new EventAdminTracker( bundleContext );
-        }
-        catch( NoClassDefFoundError e )
-        {
-            // If we hit a NoClassDefFoundError, this means the event admin package is not available,
-            // so use a dummy poster
-            m_eventAdmin = new EventAdminPoster()
-            {
-                public void postEvent( Bundle bundle, int level, LogEntry entry, String message, Throwable exception,
-                                       ServiceReference sr, Map context )
-                {
-                }
+    public void start(BundleContext bundleContext) throws Exception {
+        sanityCheck();
 
-                public void destroy()
-                {
-                }
-            };
+        // Fallback PaxLogger configuration - has to be done in each backed, as org.ops4j.pax.logging.spi.support
+        // package is private in all backends
+        String levelName = BackendSupport.defaultLogLevel(bundleContext);
+        DefaultServiceLog.setLogLevel(levelName);
+        if (DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG) {
+            // Logback internal debug
         }
 
-        // register the Pax Logging service
-        m_paxLogging = new PaxLoggingServiceImpl( bundleContext, logReader.getAccessDelegate(), m_eventAdmin );
-        Hashtable<String, String> serviceProperties = new Hashtable<String, String>();
-        serviceProperties.put( Constants.SERVICE_ID, "org.ops4j.pax.logging.configuration" );
-        serviceProperties.put( Constants.SERVICE_PID, CONFIGURATION_PID );
-        m_RegistrationPaxLogging = bundleContext.registerService(LOG_SERVICE_INTERFACE_NAMES, m_paxLogging, serviceProperties);
+        // OSGi Compendium 101.4: Log Reader Service
+        logReaderInfo = BackendSupport.createAndRegisterLogReaderService(bundleContext);
 
-        // Add a global handler for all JDK Logging (java.util.logging).
-        if( !Boolean.valueOf(bundleContext.getProperty("org.ops4j.pax.logging.skipJUL")) )
-        {
-            LogManager manager = LogManager.getLogManager();
+        // OSGi Compendium 101.6.4: Log Events
+        eventAdminInfo = BackendSupport.eventAdminSupport(bundleContext);
 
-            if( !Boolean.valueOf(bundleContext.getProperty("org.ops4j.pax.logging.skipJULReset")) )
-            {
-                manager.reset();
-            }
+        // EventAdmin (or mock) service to notify about configuration changes
+        eventAdminConfigurationNotifierInfo = BackendSupport.eventAdminConfigurationNotifier(bundleContext);
 
-            // clear out old handlers
-            Logger rootLogger = manager.getLogger( "" );
-            Handler[] handlers = rootLogger.getHandlers();
-            for (Handler handler : handlers) {
-                rootLogger.removeHandler(handler);
-            }
+        // OSGi Compendium 101.2: The Log Service Interface - register Logback specific Pax Logging service
+        m_paxLogging = new PaxLoggingServiceImpl(bundleContext,
+                logReaderInfo.getService(), eventAdminInfo.getService(),
+                eventAdminConfigurationNotifierInfo.getService());
 
-            rootLogger.setFilter(null);
-
-            m_JdkHandler = new JdkHandler(m_paxLogging);
-            rootLogger.addHandler( m_JdkHandler );
-        }
-        m_frameworkHandler = new FrameworkHandler(m_paxLogging);
-        bundleContext.addBundleListener( m_frameworkHandler );
-        bundleContext.addFrameworkListener( m_frameworkHandler );
-        bundleContext.addServiceListener( m_frameworkHandler );
+        // registration of log service and CM ManagedService for org.ops4j.pax.logging PID
+        Dictionary<String, Object> serviceProperties = new Hashtable<>();
+        serviceProperties.put(Constants.SERVICE_PID, PaxLoggingConstants.LOGGING_CONFIGURATION_PID);
+        serviceProperties.put(Constants.SERVICE_RANKING, BackendSupport.paxLoggingServiceRanking(bundleContext));
+        m_RegistrationPaxLogging = bundleContext.registerService(PaxLoggingConstants.LOGGING_LOGSERVICE_NAMES,
+                m_paxLogging, serviceProperties);
     }
 
     /**
      * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
      */
-    public void stop( BundleContext bundleContext )
-    {
-        // shut down the trackers.
-        m_eventAdmin.destroy();
-
-        // Clean up the listeners.
-        bundleContext.removeBundleListener( m_frameworkHandler );
-        bundleContext.removeFrameworkListener( m_frameworkHandler );
-        bundleContext.removeServiceListener( m_frameworkHandler );
-
-        // Remove the global handler for all JDK Logging (java.util.logging).
-        if( m_JdkHandler != null )
-        {
-            Logger rootLogger = LogManager.getLogManager().getLogger( "" );
-            rootLogger.removeHandler( m_JdkHandler );
-            m_JdkHandler.flush();
-            m_JdkHandler.close();
-            m_JdkHandler = null;
+    public void stop(BundleContext bundleContext) throws Exception {
+        if (eventAdminInfo != null) {
+            eventAdminInfo.close();
+        }
+        if (logReaderInfo != null) {
+            logReaderInfo.close();
+        }
+        if (eventAdminConfigurationNotifierInfo != null) {
+            eventAdminConfigurationNotifierInfo.close();
         }
 
         m_RegistrationPaxLogging.unregister();
         m_RegistrationPaxLogging = null;
 
-        m_registrationLogReaderService.unregister();
-        m_registrationLogReaderService = null;
+        // Shutdown Pax Logging to ensure appender file locks get released
+        if (m_paxLogging != null) {
+            m_paxLogging.shutdown();
+            m_paxLogging = null;
+        }
 
-        m_paxLogging.stop();
-        m_paxLogging = null;
+        FallbackLogFactory.cleanup();
     }
+
+    /**
+     * Ensure that some specific classes are loaded by pax-logging-logback classloader instead of
+     * from pax-logging-api bundle.
+     */
+    private void sanityCheck() {
+        Bundle paxLoggingApi = FrameworkUtil.getBundle(PaxLoggingService.class);
+        Bundle paxLoggingLogback = FrameworkUtil.getBundle(this.getClass());
+    }
+
 }

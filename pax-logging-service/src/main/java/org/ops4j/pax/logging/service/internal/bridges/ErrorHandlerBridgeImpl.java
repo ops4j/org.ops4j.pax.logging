@@ -55,7 +55,7 @@ public class ErrorHandlerBridgeImpl implements ErrorHandler {
         try {
             return bundleContext.createFilter(
                     "(&(" + Constants.OBJECTCLASS + "=" + PaxErrorHandler.class.getName() + ")" +
-                            "(" + PaxLoggingConstants.ERRORHANDLER_NAME_PROPERTY + "=" + name + "))");
+                            "(" + PaxLoggingConstants.SERVICE_PROPERTY_ERRORHANDLER_NAME_PROPERTY + "=" + name + "))");
         } catch (InvalidSyntaxException e) {
             throw new IllegalStateException("unable to create error handler tracker", e);
         }

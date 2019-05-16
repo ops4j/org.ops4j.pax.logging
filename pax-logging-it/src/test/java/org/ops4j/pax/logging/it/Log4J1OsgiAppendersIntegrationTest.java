@@ -66,7 +66,7 @@ public class Log4J1OsgiAppendersIntegrationTest extends AbstractStdoutIntercepti
     @Test
     public void customAppender() {
         Hashtable<String, Object> properties = new Hashtable<>();
-        properties.put(PaxLoggingConstants.APPENDER_NAME_PROPERTY, "custom");
+        properties.put(PaxLoggingConstants.SERVICE_PROPERTY_APPENDER_NAME_PROPERTY, "custom");
         MyPaxAppender appender = new MyPaxAppender();
         context.registerService(PaxAppender.class, appender, properties);
 
