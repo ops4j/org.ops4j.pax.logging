@@ -20,26 +20,18 @@ package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
 import java.util.List;
-import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.logging.it.support.Helpers;
-import org.ops4j.pax.logging.spi.PaxAppender;
-import org.osgi.service.cm.ConfigurationAdmin;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
-public class Log4J1UpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
-
-    @Inject
-    private ConfigurationAdmin cm;
+public class LogbackWithDefaultConfigurationIntegrationTest extends AbstractControlledIntegrationTestBase {
 
     @Configuration
     public Option[] configure() throws IOException {
@@ -47,37 +39,22 @@ public class Log4J1UpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutIn
                 combine(baseConfigure(), defaultLoggingConfig()),
 
                 paxLoggingApi(),
-                paxLoggingLog4J1(),
+                paxLoggingLogback(),
                 configAdmin(),
                 eventAdmin()
         );
     }
 
     @Test
-    public void julLevels() {
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "update.jul");
+    public void logLog() {
+        List<String> lines = super.readLines();
 
-        java.util.logging.Logger l1 = java.util.logging.Logger.getLogger("l1");
-        java.util.logging.Logger l2 = java.util.logging.Logger.getLogger("l2");
-
-        l1.info("INFO using l1 before");
-        l2.info("INFO using l2 before");
-
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "update.jul", props -> {
-            // swap the levels
-            props.put("log4j.logger.l1", "DEBUG");
-            props.put("log4j.logger.l2", "WARN");
-        });
-
-        l1.info("INFO using l1 after");
-        l2.info("INFO using l2 after");
-
-        List<String> lines = readLines();
-
-        assertFalse(lines.contains("[main] INFO l1 - INFO using l1 before"));
-        assertTrue(lines.contains("[main] INFO l2 - INFO using l2 before"));
-        assertTrue(lines.contains("[main] INFO l1 - INFO using l1 after"));
-        assertFalse(lines.contains("[main] INFO l2 - INFO using l2 after"));
+        // PaxLoggingService implementation from pax-logging-logback doesn't use helper classes
+        // like org.apache.log4j.helpers.LogLog, which in pax-logging-api is changed to delegate to fallback
+        // logger. Instead, pax-logging-logback directly calls default/fallback logger to print
+        // what was collected inside ch.qos.logback.core.ContextBase.getStatusManager()
+        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-logback [logback] INFO : Setting up default configuration."));
+        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-logback [logback] INFO : Logback configured using default configuration."));
     }
 
 }

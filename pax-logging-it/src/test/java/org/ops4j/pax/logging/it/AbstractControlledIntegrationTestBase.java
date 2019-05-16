@@ -178,6 +178,11 @@ public class AbstractControlledIntegrationTestBase {
                 .version(System.getProperty("version.pax-logging")).startLevel(START_LEVEL_TEST_BUNDLE - 1).start();
     }
 
+    protected MavenArtifactProvisionOption paxLoggingLogback() {
+        return mavenBundle("org.ops4j.pax.logging", "pax-logging-logback")
+                .version(System.getProperty("version.pax-logging")).startLevel(START_LEVEL_TEST_BUNDLE - 1).start();
+    }
+
     protected MavenArtifactProvisionOption configAdmin() {
         return mavenBundle("org.apache.felix", "org.apache.felix.configadmin")
                 .versionAsInProject().startLevel(START_LEVEL_SYSTEM_BUNDLES).start();

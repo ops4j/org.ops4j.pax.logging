@@ -24,6 +24,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -45,7 +46,7 @@ import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
-public class Log4J1WithConfigAdminIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
+public class LogbackWithConfigAdminIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
 
     @Inject
     private LogService osgiLogService;
@@ -56,7 +57,7 @@ public class Log4J1WithConfigAdminIntegrationTest extends AbstractStdoutIntercep
     @Override
     public void hijackStdout() throws BundleException {
         super.hijackStdout();
-        Helpers.restartPaxLoggingService(context, true);
+        Helpers.restartPaxLoggingLogback(context, true);
     }
 
     @Configuration
@@ -65,7 +66,7 @@ public class Log4J1WithConfigAdminIntegrationTest extends AbstractStdoutIntercep
                 combine(baseConfigure(), defaultLoggingConfig()),
 
                 paxLoggingApi(),
-                paxLoggingLog4J1(),
+                paxLoggingLogback(),
                 configAdmin(),
                 eventAdmin()
         );
@@ -95,6 +96,8 @@ public class Log4J1WithConfigAdminIntegrationTest extends AbstractStdoutIntercep
         LoggerFactory.getLogger("defaultConfigurationButUsingConfigAdmin").info("After org.osgi.service.cm.Configuration.update()");
 
         List<String> lines = readLines();
+        // strip initial date from ch.qos.logback.classic.layout.TTLLLayout
+        lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
         // verification of LogLog messages
         assertTrue(lines.contains("[main] INFO defaultConfigurationButUsingConfigAdmin - Before org.osgi.service.cm.Configuration.update()"));

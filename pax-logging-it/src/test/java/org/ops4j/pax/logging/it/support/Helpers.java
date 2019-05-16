@@ -61,6 +61,13 @@ public class Helpers {
         return paxLoggingService.orElse(null);
     }
 
+    public static Bundle paxLoggingLogback(BundleContext context) {
+        Optional<Bundle> paxLoggingService = Arrays.stream(context.getBundles())
+                .filter(b -> "org.ops4j.pax.logging.pax-logging-logback".equals(b.getSymbolicName()))
+                .findFirst();
+        return paxLoggingService.orElse(null);
+    }
+
     public static void restartPaxLoggingApi(BundleContext context) throws BundleException {
         Bundle paxLoggingApi = paxLoggingApi(context);
         if (paxLoggingApi != null) {
@@ -89,6 +96,36 @@ public class Helpers {
                 }
 
                 paxLoggingService.start();
+                if (await) {
+                    assertTrue(latch.await(5, TimeUnit.SECONDS));
+                    sr.unregister();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        }
+    }
+
+    public static void restartPaxLoggingLogback(BundleContext context, boolean await) {
+        // restart pax-logging-logback to pick up replaced stdout
+        // awaits for signal indicating successfull (re)configuration
+        Bundle paxLoggingLogback = paxLoggingLogback(context);
+        if (paxLoggingLogback != null) {
+            try {
+                paxLoggingLogback.stop(Bundle.STOP_TRANSIENT);
+
+                final CountDownLatch latch = new CountDownLatch(1);
+                ServiceRegistration<EventHandler> sr = null;
+                if (await) {
+                    EventHandler handler = event -> {
+                        latch.countDown();
+                    };
+                    Dictionary<String, Object> props = new Hashtable<>();
+                    props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
+                    sr = context.registerService(EventHandler.class, handler, props);
+                }
+
+                paxLoggingLogback.start();
                 if (await) {
                     assertTrue(latch.await(5, TimeUnit.SECONDS));
                     sr.unregister();

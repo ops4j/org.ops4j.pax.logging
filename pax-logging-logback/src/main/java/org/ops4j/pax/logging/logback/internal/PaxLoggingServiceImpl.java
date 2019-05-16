@@ -317,14 +317,13 @@ public class PaxLoggingServiceImpl
      * staticly configured Logback XML file or just plain defaults (which are used if file is not accessible)
      */
     private void configureDefaults() {
-        if (!emptyConfiguration.compareAndSet(false, true)) {
-            return;
-        }
-
         String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
         java.util.logging.Level julLevel = BackendSupport.toJULLevel(levelName);
 
         m_logLevel = BackendSupport.convertLogServiceLevel(levelName);
+
+        final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+        rootLogger.setLevel(julLevel);
 
         configureLogback(m_staticConfigFile);
     }
@@ -350,13 +349,23 @@ public class PaxLoggingServiceImpl
                 file = null;
             }
 
+            if (file == null && !emptyConfiguration.compareAndSet(false, true)) {
+                // no need to reconfigure default configuration
+                return;
+            }
+
+            // pax-logging-service calls org.apache.log4j.LogManager.resetConfiguration() which
+            // cleans appenders, but preserves loggers. Fortunately logback has equivalent
+            // ch.qos.logback.classic.LoggerContext.reset()
+            m_logbackContext.reset();
+
             try {
                 if (file == null) {
                     Configurator configurator = new BasicConfigurator();
                     configurator.setContext(m_logbackContext);
                     configurator.configure(m_logbackContext);
 
-                    InfoStatus info = new InfoStatus("Logback configured using default configuration", this);
+                    InfoStatus info = new InfoStatus("Logback configured using default configuration.", this);
                     m_logbackContext.getStatusManager().add(info);
                 } else {
                     // get a better representation of the hostname than what Logback provides in the HOSTNAME property
@@ -376,11 +385,12 @@ public class PaxLoggingServiceImpl
                     try {
                         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
                         configurator.doConfigure(file);
+                        emptyConfiguration.set(false);
                     } finally {
                         Thread.currentThread().setContextClassLoader(tccl);
                     }
 
-                    InfoStatus info = new InfoStatus("Logback configured using file '" + file + "'", this);
+                    InfoStatus info = new InfoStatus("Logback configured using file '" + file + "'.", this);
                     m_logbackContext.getStatusManager().add(info);
                 }
             } catch (Exception e) {
@@ -435,7 +445,7 @@ public class PaxLoggingServiceImpl
 
         for (Logger logger : m_logbackContext.getLoggerList()) {
             if (logger != null) {
-                Level l = logger.getLevel();
+                Level l = logger.getEffectiveLevel();
                 java.util.logging.Level julLevel = BackendSupport.toJULLevel(l.toString());
                 if (org.slf4j.Logger.ROOT_LOGGER_NAME.equals(logger.getName())
                         || "".equals(logger.getName())) {

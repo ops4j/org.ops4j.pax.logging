@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
-public class Log4J1UpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
+public class LogbackUpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
 
     @Inject
     private ConfigurationAdmin cm;
@@ -47,7 +47,7 @@ public class Log4J1UpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutIn
                 combine(baseConfigure(), defaultLoggingConfig()),
 
                 paxLoggingApi(),
-                paxLoggingLog4J1(),
+                paxLoggingLogback(),
                 configAdmin(),
                 eventAdmin()
         );

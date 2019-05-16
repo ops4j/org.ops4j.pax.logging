@@ -22,7 +22,6 @@ Bundle-Activator: org.ops4j.pax.logging.logback.internal.Activator
 Private-Package: \
  ch.qos.logback.*; -split-package:=merge-first, \
  org.slf4j.impl.*; -split-package:=merge-first, \
- org.ops4j.pax.logging.internal.eventadmin, \
  org.ops4j.pax.logging.logback.internal, \
  org.ops4j.pax.logging.logback.internal.bridges, \
  org.ops4j.pax.logging.logback.internal.spi, \
