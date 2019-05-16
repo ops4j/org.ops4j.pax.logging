@@ -492,7 +492,7 @@ This is set of rules I found:
 * but because Private-Package handling (by maven-bundle-plugin and bndlib) involves discovery using classpath, we have to be careful. We can only assume that `org.apache.felix.bundleplugin.BundlePlugin.getClasspath()` method uses `currentProject.getBuild().getOutputDirectory()` as *first* directory/location when checking the package.
 * because `org.apache.log4j` package is available both from pax-logging-api and log4j:log4j (and log4j:apache-log4j-extras) dependencies of pax-logging-service, we have to ensure that classes from log4j:log4j are taken. Instead of relying on `<dependency>` order in pax-logging-service POM, we rather use `maven-dependency-plugin:unpack` with this configuration:
 
-.Summary of package splitting for Log4J1
+=== Summary of package splitting for Log4J1
 
 I think users deserve this summary, because there are 4 bundles/jars:
 
