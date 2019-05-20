@@ -20,7 +20,10 @@ package org.ops4j.pax.logging.it;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -33,18 +36,25 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.swing.*;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
+import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.it.support.Helpers;
 import org.ops4j.pax.logging.spi.PaxFilter;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
+import org.ops4j.pax.tinybundles.core.TinyBundles;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNotNull;
@@ -67,6 +77,8 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
 
     @Configuration
     public Option[] configure() throws IOException {
+        prepareBundles();
+
         return combine(
                 combine(baseConfigure(), defaultLoggingConfig()),
 
@@ -75,6 +87,26 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
                 configAdmin(),
                 eventAdmin()
         );
+    }
+
+    /**
+     * Method called by surefire/failsafe, not to be used by @Test method inside OSGi container (even if native)
+     * @throws IOException
+     */
+    public static void prepareBundles() throws IOException {
+        InputStream bundle1 = TinyBundles.bundle()
+                .set("Bundle-ManifestVersion", "2")
+                .set("Bundle-SymbolicName", "b1")
+                .build();
+        new File("target/bundles").mkdirs();
+        IOUtils.copy(bundle1, new FileOutputStream("target/bundles/mdc-bundle1.jar"));
+
+        InputStream bundle2 = TinyBundles.bundle()
+                .set("Bundle-ManifestVersion", "2")
+                .set("Bundle-SymbolicName", "b2")
+                .build();
+        new File("target/bundles").mkdirs();
+        IOUtils.copy(bundle2, new FileOutputStream("target/bundles/mdc-bundle2.jar"));
     }
 
     @Test
@@ -141,7 +173,7 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
     }
 
     @Test
-    public void listModelAppenderAppenderFromExtras() {
+    public void listModelAppenderFromExtras() {
         Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "builtin.list");
 
         Logger log = LoggerFactory.getLogger("my.logger");
@@ -152,6 +184,69 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         Object obj = model.getElementAt(0);
         assertThat(obj.getClass().getName(), equalTo("org.apache.log4j.spi.LoggingEvent"));
         assertThat(Helpers.getField(obj, "message", String.class), equalTo("should be added to list"));
+    }
+
+    @Test
+    public void mdcSiftingAppender() throws Exception {
+        File f1 = new File("target/bundles/mdc-bundle1.jar");
+        File f2 = new File("target/bundles/mdc-bundle2.jar");
+        Bundle b1 = context.installBundle(f1.toURI().toURL().toString(), new FileInputStream(f1));
+        Bundle b2 = context.installBundle(f2.toURI().toURL().toString(), new FileInputStream(f2));
+        b1.start();
+        b2.start();
+
+        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "mdc.appender");
+
+        Logger log = LoggerFactory.getLogger("my.logger");
+        log.info("Hello into FileAppender"); // should go to PaxExam-Probe-file-appender.log
+
+        // it's interesting to check if loggers from the same category, but obtained using different bundles
+        // will correctly handle MDC
+        ServiceReference<PaxLoggingService> sr = context.getServiceReference(PaxLoggingService.class);
+        PaxLoggingService paxLoggingService = context.getService(sr);
+
+        PaxLogger l1 = paxLoggingService.getLogger(b1, "com.example.l1", paxLoggingService.getClass().getName());
+        String fqcn = l1.getClass().getName();
+        // again - with better FQCN
+        l1 = paxLoggingService.getLogger(b1, "com.example.l1", fqcn);
+        PaxLogger l1a = paxLoggingService.getLogger(b1, "com.example.l2", fqcn);
+        PaxLogger l2 = paxLoggingService.getLogger(b2, "com.example.l1", fqcn);
+        PaxLogger l2a = paxLoggingService.getLogger(b2, "com.example.l2", fqcn);
+
+        l1.inform("Hello from b1/l1", null);
+        l1a.inform("Hello from b1/l2", null);
+        l2.inform("Hello from b2/l1", null);
+        l2a.inform("Hello from b2/l2", null);
+
+        List<String> linesB1 = readLines("target/logs-log4j1/" + b1.getBundleId() + "-file-appender.log");
+        List<String> linesB2 = readLines("target/logs-log4j1/" + b2.getBundleId() + "-file-appender.log");
+
+        assertTrue(linesB1.stream().allMatch(l -> l.contains("{bundle.name,b1}") && l.contains("Hello from b1/")));
+        assertTrue(linesB2.stream().allMatch(l -> l.contains("{bundle.name,b2}") && l.contains("Hello from b2/")));
+    }
+
+    @Test
+    public void mdcSiftingAppenderWithNonBundleKey() throws Exception {
+        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "mdc.appender2");
+
+        Logger log = LoggerFactory.getLogger("my.logger");
+
+        log.info("Hello into FileAppender 1");
+        MDC.put("my.key", "f1");
+        log.info("Hello into FileAppender 2");
+        MDC.put("my.key", "f2");
+        log.info("Hello into FileAppender 3");
+        MDC.remove("my.key");
+        log.info("Hello into FileAppender 4");
+
+        List<String> lines1 = readLines("target/logs-log4j1/default-file-appender.log");
+        List<String> lines2 = readLines("target/logs-log4j1/f1-file-appender.log");
+        List<String> lines3 = readLines("target/logs-log4j1/f2-file-appender.log");
+
+        assertTrue(lines1.stream().anyMatch(l -> l.contains("Hello into FileAppender 1")));
+        assertTrue(lines2.stream().anyMatch(l -> l.contains("Hello into FileAppender 2")));
+        assertTrue(lines3.stream().anyMatch(l -> l.contains("Hello into FileAppender 3")));
+        assertTrue(lines1.stream().anyMatch(l -> l.contains("Hello into FileAppender 4")));
     }
 
     private static class MyPaxFilter implements PaxFilter {

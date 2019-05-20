@@ -79,6 +79,7 @@ Private-Package: \
  org.apache.log4j.rolling; -split-package:=merge-first, \
  org.apache.log4j.rolling.helper; -split-package:=merge-first, \
  org.apache.log4j.rule; -split-package:=merge-first, \
+ org.apache.log4j.sift, \
  org.apache.log4j.spi; -split-package:=merge-first, \
  org.apache.log4j.varia; -split-package:=merge-first, \
  META-INF.maven.log4j*, \

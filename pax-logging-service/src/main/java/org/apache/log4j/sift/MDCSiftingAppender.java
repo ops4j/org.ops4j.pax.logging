@@ -30,80 +30,78 @@ import org.apache.log4j.spi.OptionFactory;
 /**
  * A log4j appender which splits the output based on an MDC key
  */
-public class MDCSiftingAppender extends AppenderSkeleton
-{
+public class MDCSiftingAppender extends AppenderSkeleton {
 
+    /** Key in MDC for value that's used to select target {@link org.apache.log4j.Appender} */
     private String key;
+    /** Value used if there's nothing under specified {@link #getKey() key} */
     private String defaultValue = "default";
+
+    /** Lazy information about the dynamic appender selected for given value */
     private OptionFactory appender;
-    private Map appenders = new HashMap();
+
+    /** Cache of already created appenders */
+    private Map<String, Node> appenders = new HashMap<>();
 
     private Node head = null;
     private Node tail = null;
     private long lastCheck;
 
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
 
-    public void setKey(String key)
-    {
+    public void setKey(String key) {
         this.key = key;
     }
 
-    public String getDefault()
-    {
+    public String getDefault() {
         return defaultValue;
     }
 
-    public void setDefault(String defaultValue)
-    {
+    public void setDefault(String defaultValue) {
         this.defaultValue = defaultValue;
     }
 
-    public OptionFactory getAppender()
-    {
+    public OptionFactory getAppender() {
         return appender;
     }
 
-    public void setAppender(OptionFactory appender)
-    {
+    public void setAppender(OptionFactory appender) {
         this.appender = appender;
     }
 
-    protected void append(LoggingEvent event)
-    {
+    @Override
+    protected void append(LoggingEvent event) {
         Object value = event.getMDC(key);
+        Map<?, ?> mdc = event.getProperties();
         String valStr = value == null ? defaultValue : value.toString();
-        Appender app = getAppender(valStr);
+        Appender app = getAppender(valStr, mdc);
         app.doAppend(event);
     }
 
-    public synchronized void close()
-    {
-        for (Iterator it = appenders.values().iterator(); it.hasNext();)
-        {
+    @Override
+    public synchronized void close() {
+        for (Iterator it = appenders.values().iterator(); it.hasNext(); ) {
             Node node = (Node) it.next();
             node.appender.close();
         }
         appenders.clear();
     }
 
-    public boolean requiresLayout()
-    {
+    @Override
+    public boolean requiresLayout() {
         return false;
     }
 
-    protected synchronized Appender getAppender(String valStr)
-    {
+    protected synchronized Appender getAppender(String valStr, Map<?, ?> mdc) {
         long timestamp = System.currentTimeMillis();
-        Node node = (Node) appenders.get(valStr);
-        if (node == null)
-        {
+        Node node = appenders.get(valStr);
+        if (node == null) {
             node = new Node();
             Properties props = new Properties();
             props.put(key, valStr);
+            props.putAll(mdc);
             node.next = head;
             node.prev = null;
             node.appender = (Appender) appender.create(props);
@@ -131,8 +129,7 @@ public class MDCSiftingAppender extends AppenderSkeleton
             node.timestamp = timestamp;
         }
         // Do not check too often
-        if (timestamp - lastCheck > 1000)
-        {
+        if (timestamp - lastCheck > 1000) {
             Node n = tail;
             while (n != null && timestamp - n.timestamp > 30 * 60 * 1000) {
                 n.appender.close();
@@ -148,13 +145,14 @@ public class MDCSiftingAppender extends AppenderSkeleton
         return node.appender;
     }
 
-    protected static class Node
-    {
+    /**
+     * Pointer to real target {@link Appender} with timestamped acces.
+     */
+    protected static class Node {
         Node next;
         Node prev;
         Appender appender;
         long timestamp;
     }
-
 
 }

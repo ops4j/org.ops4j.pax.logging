@@ -103,7 +103,7 @@ public class PaxPropertySetter {
   public
   static
   void setProperties(Object obj, Properties properties, String prefix) {
-    new PropertySetter(obj).setProperties(properties, prefix);
+    new PaxPropertySetter(obj).setProperties(properties, prefix);
   }
   
 
