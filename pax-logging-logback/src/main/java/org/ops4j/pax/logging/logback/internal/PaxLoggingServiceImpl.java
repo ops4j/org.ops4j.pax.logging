@@ -261,7 +261,6 @@ public class PaxLoggingServiceImpl
         configurePax(configuration);
 
         updateLevelsFromLog4J1Config(configuration);
-        setLevelToJavaLogging();
     }
 
     /**
@@ -334,6 +333,8 @@ public class PaxLoggingServiceImpl
      * @param configFileName
      */
     private void configureLogback(String configFileName) {
+        m_logbackContext.getStatusManager().clear();
+
         getConfigLock().writeLock().lock();
 
         Exception problem = null;
@@ -401,6 +402,8 @@ public class PaxLoggingServiceImpl
         } finally {
             getConfigLock().writeLock().unlock();
         }
+
+        setLevelToJavaLogging();
 
         // do it outside of the lock
         if (problem == null) {
@@ -479,7 +482,7 @@ public class PaxLoggingServiceImpl
      */
     private void logbackStatus() {
         StatusManager sm = m_logbackContext.getStatusManager();
-        if (sm != null) {
+        if (sm != null && logLog.isDebugEnabled()) {
             for (Status status : sm.getCopyOfStatusList()) {
                 switch (status.getLevel()) {
                     case Status.ERROR:

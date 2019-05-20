@@ -20,6 +20,7 @@ package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.junit.Test;
@@ -28,7 +29,6 @@ import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.logging.it.support.Helpers;
-import org.ops4j.pax.logging.spi.PaxAppender;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import static org.junit.Assert.assertFalse;
@@ -55,7 +55,7 @@ public class LogbackUpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutI
 
     @Test
     public void julLevels() {
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "update.jul");
+        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOGBACK, "update.jul");
 
         java.util.logging.Logger l1 = java.util.logging.Logger.getLogger("l1");
         java.util.logging.Logger l2 = java.util.logging.Logger.getLogger("l2");
@@ -63,16 +63,13 @@ public class LogbackUpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutI
         l1.info("INFO using l1 before");
         l2.info("INFO using l2 before");
 
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "update.jul", props -> {
-            // swap the levels
-            props.put("log4j.logger.l1", "DEBUG");
-            props.put("log4j.logger.l2", "WARN");
-        });
+        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOGBACK, "update.jul2");
 
         l1.info("INFO using l1 after");
         l2.info("INFO using l2 after");
 
         List<String> lines = readLines();
+        lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
         assertFalse(lines.contains("[main] INFO l1 - INFO using l1 before"));
         assertTrue(lines.contains("[main] INFO l2 - INFO using l2 before"));

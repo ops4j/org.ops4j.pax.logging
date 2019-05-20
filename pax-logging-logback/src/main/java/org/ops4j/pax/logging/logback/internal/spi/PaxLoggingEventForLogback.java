@@ -26,7 +26,9 @@ import org.ops4j.pax.logging.spi.PaxLevel;
 import org.ops4j.pax.logging.spi.PaxLocationInfo;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A facade to make a Logback event look like a Pax Logging event.
@@ -90,8 +92,10 @@ public class PaxLoggingEventForLogback implements PaxLoggingEvent {
         return Logger.class.getName();
     }
 
-    public Map getProperties() {
-        return event.getMDCPropertyMap();
+    @Override
+    public Map<String, Object> getProperties() {
+        // a copy!
+        return new HashMap<>(event.getMDCPropertyMap());
     }
 
     @Override
@@ -101,8 +105,7 @@ public class PaxLoggingEventForLogback implements PaxLoggingEvent {
 
         PaxLoggingEventForLogback that = (PaxLoggingEventForLogback) o;
 
-        return !(event != null ? !event.equals(that.event) : that.event != null);
-
+        return Objects.equals(event, that.event);
     }
 
     @Override

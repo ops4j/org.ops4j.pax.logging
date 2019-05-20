@@ -209,14 +209,14 @@ public class PaxLoggingServiceImpl
             }
         }
 
+        setLevelToJavaLogging(configuration);
+
         // do it outside of the lock
         if (problem == null) {
             m_configNotifier.configurationDone();
         } else {
             m_configNotifier.configurationError(problem);
         }
-
-        setLevelToJavaLogging(configuration);
     }
 
     /**

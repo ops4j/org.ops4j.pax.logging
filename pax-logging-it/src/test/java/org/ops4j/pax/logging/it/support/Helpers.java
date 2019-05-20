@@ -18,6 +18,8 @@
  */
 package org.ops4j.pax.logging.it.support;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -25,9 +27,16 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.it.AbstractControlledIntegrationTestBase;
@@ -39,6 +48,8 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 import static org.junit.Assert.assertTrue;
 
@@ -273,24 +284,44 @@ public class Helpers {
      * @return
      */
     public static Dictionary<String, Object> readPrefixedProperties(LoggingLibrary library, String prefix) throws IOException {
-        Properties props = new Properties();
-        props.load(AbstractControlledIntegrationTestBase.class.getResourceAsStream(library.config()));
+        if (library != LoggingLibrary.LOGBACK) {
+            // properties
+            Properties props = new Properties();
+            props.load(AbstractControlledIntegrationTestBase.class.getResourceAsStream(library.config()));
 
-        Dictionary<String, Object> newProperties = new Hashtable<>();
+            Dictionary<String, Object> newProperties = new Hashtable<>();
 
-        for (String key : props.stringPropertyNames()) {
-            if (key.startsWith(prefix + ".")) {
-                newProperties.put(key.substring(prefix.length() + 1), props.getProperty(key));
+            for (String key : props.stringPropertyNames()) {
+                if (key.startsWith(prefix + ".")) {
+                    newProperties.put(key.substring(prefix.length() + 1), props.getProperty(key));
+                }
+            }
+
+            return newProperties;
+        } else {
+            // XML - we have to store it into some file
+            InputSource is = new InputSource(AbstractControlledIntegrationTestBase.class.getResourceAsStream(library.config()));
+            XPath xp = XPathFactory.newInstance().newXPath();
+            try {
+                NodeList ns = (NodeList) xp.evaluate("/all-configurations/configuration[@id='" + prefix + "']", is, XPathConstants.NODESET);
+                new File("target/xml").mkdirs();
+                String name = "target/xml/" + UUID.randomUUID().toString() + ".xml";
+                TransformerFactory.newInstance().newTransformer()
+                        .transform(new DOMSource(ns.item(0)), new StreamResult(new FileOutputStream(name)));
+                Dictionary<String, Object> newProperties = new Hashtable<>();
+                newProperties.put(PaxLoggingConstants.PID_CFG_LOGBACK_CONFIG_FILE, name);
+
+                return newProperties;
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
-
-        return newProperties;
     }
 
     public enum LoggingLibrary {
         LOG4J1("log4j-all.properties"),
         LOG4J2(""),
-        LOGBACK("");
+        LOGBACK("logback-all.xml");
 
         private final String propertiesFile;
 
