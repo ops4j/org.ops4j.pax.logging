@@ -21,6 +21,10 @@ package org.ops4j.pax.logging.logback.internal;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import ch.qos.logback.core.status.ErrorStatus;
+import ch.qos.logback.core.status.InfoStatus;
+import ch.qos.logback.core.status.WarnStatus;
+import org.apache.log4j.LogManager;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
@@ -127,6 +131,16 @@ public class Activator implements BundleActivator {
     private void sanityCheck() {
         Bundle paxLoggingApi = FrameworkUtil.getBundle(PaxLoggingService.class);
         Bundle paxLoggingLogback = FrameworkUtil.getBundle(this.getClass());
+
+        // lets check and at the same time pre-load some classes
+        FrameworkUtil.getBundle(ErrorStatus.class);
+        FrameworkUtil.getBundle(WarnStatus.class);
+        Bundle b1 = FrameworkUtil.getBundle(InfoStatus.class);
+        if (paxLoggingLogback != b1) {
+            String b1Bundle = b1 == null ? "system classloader" : b1.toString();
+            throw new IllegalStateException("ch.qos.logback.core.status.InfoStatus class was loaded from " + b1Bundle +
+                    ". It should be loaded from " + paxLoggingLogback + ".");
+        }
     }
 
 }

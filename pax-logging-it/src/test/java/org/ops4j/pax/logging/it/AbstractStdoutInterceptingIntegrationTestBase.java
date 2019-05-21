@@ -53,7 +53,16 @@ public class AbstractStdoutInterceptingIntegrationTestBase extends AbstractContr
      * @return
      */
     protected List<String> readLines() {
-        return readLines(new ByteArrayInputStream(buffer.toByteArray()));
+        return readLines(new ByteArrayInputStream(buffer.toByteArray()), 0);
+    }
+
+    /**
+     * Reads log lines intercepted when writing to {@code System.out}.
+     * @param trim how many chars from each line to trim?
+     * @return
+     */
+    protected List<String> readLines(int trim) {
+        return readLines(new ByteArrayInputStream(buffer.toByteArray()), trim);
     }
 
 }

@@ -40,6 +40,7 @@
 <!--        <module>config</module>-->
 <!--        <module>logger</module>-->
         <module>fragment</module>
+        <module>fragment-logback</module>
 <!--        <module>dynamic</module>-->
 <!--        <module>perfs</module>-->
     </modules>

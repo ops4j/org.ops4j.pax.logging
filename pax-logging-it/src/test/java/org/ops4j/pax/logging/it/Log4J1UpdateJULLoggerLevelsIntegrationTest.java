@@ -28,7 +28,6 @@ import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.logging.it.support.Helpers;
-import org.ops4j.pax.logging.spi.PaxAppender;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import static org.junit.Assert.assertFalse;

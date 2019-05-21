@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.junit.After;
@@ -209,7 +210,7 @@ public class AbstractControlledIntegrationTestBase {
                 }
             }
 
-            return readLines(new FileInputStream(new File(LOG_DIR, getClass().getSimpleName() + ".log").getCanonicalPath()));
+            return readLines(new FileInputStream(new File(LOG_DIR, getClass().getSimpleName() + ".log").getCanonicalPath()), 0);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -222,7 +223,7 @@ public class AbstractControlledIntegrationTestBase {
      */
     protected List<String> readLines(String file) {
         try {
-            return readLines(new FileInputStream(file));
+            return readLines(new FileInputStream(file), 0);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -231,9 +232,10 @@ public class AbstractControlledIntegrationTestBase {
     /**
      * Returns log lines from any {@link InputStream}
      * @param input
+     * @param trim how many chars from the beginning of each line to trim?
      * @return
      */
-    protected List<String> readLines(InputStream input) {
+    protected List<String> readLines(InputStream input, int trim) {
         try {
             InputStreamReader isReader = new InputStreamReader(input, StandardCharsets.UTF_8);
             List<String> lines;
@@ -244,6 +246,9 @@ public class AbstractControlledIntegrationTestBase {
                     lines.add(line);
                 }
             }
+            lines = lines.stream()
+                    .map(l -> trim > 0 && l.length() > trim ? l.substring(trim) : l)
+                    .collect(Collectors.toList());
             return lines;
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);

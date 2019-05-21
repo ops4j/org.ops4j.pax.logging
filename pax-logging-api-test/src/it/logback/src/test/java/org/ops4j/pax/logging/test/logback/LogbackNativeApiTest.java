@@ -18,9 +18,14 @@
  */
 package org.ops4j.pax.logging.test.logback;
 
+import ch.qos.logback.classic.BasicConfigurator;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ContextBase;
+import ch.qos.logback.core.filter.AbstractMatcherFilter;
+import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.util.StatusPrinter;
 import org.junit.Test;
@@ -53,6 +58,36 @@ public class LogbackNativeApiTest {
         Logger logger2 = context.getLogger("my.logger2");
         logger2.info("Hello");
         logger2.info("Hello 2");
+
+        StatusPrinter.print(context);
+    }
+
+    @Test
+    public void filters() {
+        LoggerContext context = new LoggerContext();
+        BasicConfigurator bc = new BasicConfigurator();
+        bc.setContext(context);
+        bc.configure(context);
+        context.start();
+
+        Logger logger = context.getLogger("my.logger");
+        logger.info("Hello");
+        logger.info("Hello 2");
+
+        Logger logger2 = context.getLogger("my.logger2");
+        logger2.info("Hello");
+        logger2.info("Hello 2");
+
+        Logger l = context.getLogger(Logger.ROOT_LOGGER_NAME);
+        Appender<ILoggingEvent> console = l.getAppender("console");
+        console.addFilter(new AbstractMatcherFilter<ILoggingEvent>() {
+            @Override
+            public FilterReply decide(ILoggingEvent event) {
+                System.out.println("{" + event.getMessage() + "}");
+                return FilterReply.NEUTRAL;
+            }
+        });
+        l.info("Hello with filter");
 
         StatusPrinter.print(context);
     }

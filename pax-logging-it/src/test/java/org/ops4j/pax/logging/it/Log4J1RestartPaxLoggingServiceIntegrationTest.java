@@ -125,7 +125,7 @@ public class Log4J1RestartPaxLoggingServiceIntegrationTest extends AbstractStdou
         assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest - Before restarting pax-logging-service"));
         assertTrue("TTCCLayout", lines.contains("[main] INFO PaxExam-Probe - Before restarting pax-logging-service"));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest] INFO : When pax-logging-service is stopped"));
-        assertFalse("old LogService reference should not work", lines.contains("When pax-logging-service is stopped (log service)"));
+        assertFalse("old LogService reference should not work", lines.stream().anyMatch(l -> l.contains("When pax-logging-service is stopped (log service)")));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest] INFO : When pax-logging-service is stopped (log1)"));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTestEx] INFO : When pax-logging-service is stopped (log2)"));
         assertTrue("Reconfiguration", lines.contains("org.ops4j.pax.logging.pax-logging-service [log4j] DEBUG : Finished configuring."));

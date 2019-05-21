@@ -182,6 +182,14 @@ public class PaxLoggingServiceImpl
         m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, null);
         if (!m_useStaticContext) {
             m_logbackContext.stop();
+        } else {
+            // static context should be reset just like pax-logging-service
+            // calls static org.apache.log4j.LogManager.resetConfiguration()
+            m_logbackContext.reset();
+
+            // but let's add status listener, so we detect (and log through fallback/default logger)
+            // attempts to log through unconfigured loggers - that's *only* for static logback context
+            m_logbackContext.getStatusManager().add(this::logLogbackStatus);
         }
     }
 
@@ -414,6 +422,12 @@ public class PaxLoggingServiceImpl
 
         // do what Logback does with ch.qos.logback.core.util.StatusPrinter.print()
         logbackStatus();
+
+        // now we're ready to log - let's clear the status
+        m_logbackContext.getStatusManager().clear();
+
+        // register listener to catch status errors
+        m_logbackContext.getStatusManager().add(this::logLogbackStatus);
     }
 
     private void updateLevelsFromLog4J1Config(Dictionary<String, ?> config) {
@@ -484,18 +498,22 @@ public class PaxLoggingServiceImpl
         StatusManager sm = m_logbackContext.getStatusManager();
         if (sm != null && logLog.isDebugEnabled()) {
             for (Status status : sm.getCopyOfStatusList()) {
-                switch (status.getLevel()) {
-                    case Status.ERROR:
-                        logLog.error(status.getMessage(), status.getThrowable());
-                        break;
-                    case Status.WARN:
-                        logLog.warn(status.getMessage(), status.getThrowable());
-                        break;
-                    case Status.INFO:
-                        logLog.inform(status.getMessage(), status.getThrowable());
-                        break;
-                }
+                logLogbackStatus(status);
             }
+        }
+    }
+
+    private void logLogbackStatus(Status status) {
+        switch (status.getLevel()) {
+            case Status.ERROR:
+                logLog.error(status.getMessage(), status.getThrowable());
+                break;
+            case Status.WARN:
+                logLog.warn(status.getMessage(), status.getThrowable());
+                break;
+            case Status.INFO:
+                logLog.inform(status.getMessage(), status.getThrowable());
+                break;
         }
     }
 
