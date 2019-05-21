@@ -17,6 +17,10 @@
  */
 package org.ops4j.pax.logging.logback.internal.spi;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
@@ -25,10 +29,6 @@ import ch.qos.logback.core.CoreConstants;
 import org.ops4j.pax.logging.spi.PaxLevel;
 import org.ops4j.pax.logging.spi.PaxLocationInfo;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * A facade to make a Logback event look like a Pax Logging event.

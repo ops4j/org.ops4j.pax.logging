@@ -24,7 +24,6 @@ import java.util.Hashtable;
 import ch.qos.logback.core.status.ErrorStatus;
 import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.status.WarnStatus;
-import org.apache.log4j.LogManager;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
@@ -65,6 +64,7 @@ public class Activator implements BundleActivator {
     private RegisteredService<EventAdminPoster, EventAdminPoster> eventAdminInfo;
     private RegisteredService<ConfigurationNotifier, ConfigurationNotifier> eventAdminConfigurationNotifierInfo;
 
+    @Override
     public void start(BundleContext bundleContext) throws Exception {
         sanityCheck();
 
@@ -72,9 +72,6 @@ public class Activator implements BundleActivator {
         // package is private in all backends
         String levelName = BackendSupport.defaultLogLevel(bundleContext);
         DefaultServiceLog.setLogLevel(levelName);
-        if (DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG) {
-            // Logback internal debug
-        }
 
         // OSGi Compendium 101.4: Log Reader Service
         logReaderInfo = BackendSupport.createAndRegisterLogReaderService(bundleContext);
@@ -98,9 +95,7 @@ public class Activator implements BundleActivator {
                 m_paxLogging, serviceProperties);
     }
 
-    /**
-     * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-     */
+    @Override
     public void stop(BundleContext bundleContext) throws Exception {
         if (eventAdminInfo != null) {
             eventAdminInfo.close();

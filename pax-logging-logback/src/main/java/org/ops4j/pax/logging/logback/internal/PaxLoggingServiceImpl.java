@@ -345,7 +345,7 @@ public class PaxLoggingServiceImpl
 
         getConfigLock().writeLock().lock();
 
-        Exception problem = null;
+        Throwable problem = null;
 
         try {
             File file = null;
@@ -402,7 +402,7 @@ public class PaxLoggingServiceImpl
                     InfoStatus info = new InfoStatus("Logback configured using file '" + file + "'.", this);
                     m_logbackContext.getStatusManager().add(info);
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 Status error = new ErrorStatus("Logback configuration problem: " + e.getMessage(), e);
                 m_logbackContext.getStatusManager().add(error);
                 problem = e;

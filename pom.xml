@@ -212,6 +212,8 @@
         <version.org.apache.tomcat.juli>9.0.19</version.org.apache.tomcat.juli>
         <version.biz.aQute.bnd>4.2.0</version.biz.aQute.bnd>
         <version.ch.qos.logback>1.2.3</version.ch.qos.logback>
+        <version.ch.qos.logback.contrib>0.1.5</version.ch.qos.logback.contrib>
+        <version.com.fasterxml.jackson>2.9.9</version.com.fasterxml.jackson>
         <version.commons-io>2.6</version.commons-io>
         <version.commons-logging>1.2</version.commons-logging>
         <version.junit>4.12</version.junit>
@@ -734,6 +736,21 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${version.ch.qos.logback}</version>
             </dependency>
+            <dependency>
+                <groupId>ch.qos.logback.contrib</groupId>
+                <artifactId>logback-json-core</artifactId>
+                <version>${version.ch.qos.logback.contrib}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback.contrib</groupId>
+                <artifactId>logback-json-classic</artifactId>
+                <version>${version.ch.qos.logback.contrib}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback.contrib</groupId>
+                <artifactId>logback-jackson</artifactId>
+                <version>${version.ch.qos.logback.contrib}</version>
+            </dependency>
 
             <!-- ServiceMIX -->
 
@@ -749,6 +766,21 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${version.commons-io}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${version.com.fasterxml.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${version.com.fasterxml.jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.com.fasterxml.jackson}</version>
             </dependency>
 
             <!-- Testing -->

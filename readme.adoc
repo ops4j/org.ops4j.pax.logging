@@ -828,7 +828,17 @@ With pax-logging-logback, Logback's version of `org.slf4j.impl.StaticLoggerBinde
 
 pax-logging-logback implementation of `org.ops4j.pax.logging.PaxLoggingService` explicitly configures `ch.qos.logback.classic.LoggerContext` instance (which, by the way, implements `org.slf4j.ILoggerFactory`).
 
-Logback's `org.slf4j.ILoggerFactory` calls (in static block) `ch.qos.logback.classic.util.ContextInitializer.autoConfig()`, which
+=== Logback contrib
+
+See https://github.com/qos-ch/logback-contrib
+
+There are several additional JARs we Private-Package in pax-logging-logback:
+
+* logback-jackson
+* logback-json-core
+* logback-json-classic
+
+After private-packaging the above, I've adjusted the generated `Import-Package` header providing explicit version ranges for Groovy and Jackson and making some imports optional.
 
 == Log4j2
 

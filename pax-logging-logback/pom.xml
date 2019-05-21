@@ -68,21 +68,18 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>ch.qos.logback.contrib</groupId>-->
-<!--            <artifactId>logback-jackson</artifactId>-->
-<!--            <version>0.1.2</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>ch.qos.logback.contrib</groupId>-->
-<!--            <artifactId>logback-json-core</artifactId>-->
-<!--            <version>0.1.2</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>ch.qos.logback.contrib</groupId>-->
-<!--            <artifactId>logback-json-classic</artifactId>-->
-<!--            <version>0.1.2</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-json-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-json-classic</artifactId>
+        </dependency>
 
         <!-- pax-logging own artifacts -->
 
