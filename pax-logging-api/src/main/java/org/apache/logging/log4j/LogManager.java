@@ -17,22 +17,28 @@
 package org.apache.logging.log4j;
 
 import java.net.URI;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 import org.apache.logging.log4j.simple.SimpleLoggerContextFactory;
 import org.apache.logging.log4j.spi.LoggerContext;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
+import org.apache.logging.log4j.spi.Provider;
 import org.apache.logging.log4j.spi.Terminable;
 import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.LoaderUtil;
+import org.apache.logging.log4j.util.PropertiesUtil;
+import org.apache.logging.log4j.util.ProviderUtil;
 import org.apache.logging.log4j.util.StackLocatorUtil;
 import org.apache.logging.log4j.util.Strings;
-import org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContextFactory;
 
 /**
- * The anchor point for the logging system. The most common usage of this class is to obtain a named {@link Logger}. The
- * method {@link #getLogger()} is provided as the most convenient way to obtain a named Logger based on the calling
- * class name. This class also provides method for obtaining named Loggers that use
+ * The anchor point for the Log4j logging system. The most common usage of this class is to obtain a named
+ * {@link Logger}. The method {@link #getLogger()} is provided as the most convenient way to obtain a named Logger based
+ * on the calling class name. This class also provides method for obtaining named Loggers that use
  * {@link String#format(String, Object...)} style messages instead of the default type of parameterized messages. These
  * are obtained through the {@link #getFormatterLogger(Class)} family of methods. Other service provider methods are
  * given through the {@link #getContext()} and {@link #getFactory()} family of methods; these methods are not normally
@@ -63,7 +69,59 @@ public class LogManager {
      * extended to allow multiple implementations to be used.
      */
     static {
-        factory = new Log4jv2LoggerContextFactory();
+        // Shortcut binding to force a specific logging implementation.
+        final PropertiesUtil managerProps = PropertiesUtil.getProperties();
+        final String factoryClassName = managerProps.getStringProperty(FACTORY_PROPERTY_NAME);
+        if (factoryClassName != null) {
+            try {
+                factory = LoaderUtil.newCheckedInstanceOf(factoryClassName, LoggerContextFactory.class);
+            } catch (final ClassNotFoundException cnfe) {
+                LOGGER.error("Unable to locate configured LoggerContextFactory {}", factoryClassName);
+            } catch (final Exception ex) {
+                LOGGER.error("Unable to create configured LoggerContextFactory {}", factoryClassName, ex);
+            }
+        }
+
+        if (factory == null) {
+            final SortedMap<Integer, LoggerContextFactory> factories = new TreeMap<>();
+            // note that the following initial call to ProviderUtil may block until a Provider has been installed when
+            // running in an OSGi environment
+            if (ProviderUtil.hasProviders()) {
+                for (final Provider provider : ProviderUtil.getProviders()) {
+                    final Class<? extends LoggerContextFactory> factoryClass = provider.loadLoggerContextFactory();
+                    if (factoryClass != null) {
+                        try {
+                            factories.put(provider.getPriority(), factoryClass.newInstance());
+                        } catch (final Exception e) {
+                            LOGGER.error("Unable to create class {} specified in provider URL {}", factoryClass.getName(), provider
+                                    .getUrl(), e);
+                        }
+                    }
+                }
+
+                if (factories.isEmpty()) {
+                    LOGGER.error("Log4j2 could not find a logging implementation. "
+                            + "Please add log4j-core to the classpath. Using SimpleLogger to log to the console...");
+                    factory = new SimpleLoggerContextFactory();
+                } else if (factories.size() == 1) {
+                    factory = factories.get(factories.lastKey());
+                } else {
+                    final StringBuilder sb = new StringBuilder("Multiple logging implementations found: \n");
+                    for (final Map.Entry<Integer, LoggerContextFactory> entry : factories.entrySet()) {
+                        sb.append("Factory: ").append(entry.getValue().getClass().getName());
+                        sb.append(", Weighting: ").append(entry.getKey()).append('\n');
+                    }
+                    factory = factories.get(factories.lastKey());
+                    sb.append("Using factory: ").append(factory.getClass().getName());
+                    LOGGER.warn(sb.toString());
+
+                }
+            } else {
+                LOGGER.error("Log4j2 could not find a logging implementation. "
+                        + "Please add log4j-core to the classpath. Using SimpleLogger to log to the console...");
+                factory = new SimpleLoggerContextFactory();
+            }
+        }
     }
 
     /**
@@ -275,6 +333,31 @@ public class LogManager {
         }
     }
 
+
+    /**
+     * Returns a LoggerContext
+     *
+     * @param fqcn The fully qualified class name of the Class that this method is a member of.
+     * @param loader The ClassLoader for the context. If null the context will attempt to determine the appropriate
+     *            ClassLoader.
+     * @param currentContext if false the LoggerContext appropriate for the caller of this method is returned. For
+     *            example, in a web application if the caller is a class in WEB-INF/lib then one LoggerContext may be
+     *            returned and if the caller is a class in the container's classpath then a different LoggerContext may
+     *            be returned. If true then only a single LoggerContext will be returned.
+     * @param configLocation The URI for the configuration to use.
+     * @param name The LoggerContext name.
+     * @return a LoggerContext.
+     */
+    protected static LoggerContext getContext(final String fqcn, final ClassLoader loader,
+                                              final boolean currentContext, final URI configLocation, final String name) {
+        try {
+            return factory.getContext(fqcn, loader, null, currentContext, configLocation, name);
+        } catch (final IllegalStateException ex) {
+            LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
+            return new SimpleLoggerContextFactory().getContext(fqcn, loader, null, currentContext);
+        }
+    }
+
     /**
      * Shutdown using the LoggerContext appropriate for the caller of this method.
      * This is equivalent to calling {@code LogManager.shutdown(false)}.
@@ -320,6 +403,11 @@ public class LogManager {
         if (context != null && context instanceof Terminable) {
             ((Terminable) context).terminate();
         }
+    }
+
+    private static String toLoggerName(final Class<?> cls) {
+        final String canonicalName = cls.getCanonicalName();
+        return canonicalName != null ? canonicalName : cls.getName();
     }
 
     /**
@@ -490,7 +578,7 @@ public class LogManager {
      */
     public static Logger getLogger(final Class<?> clazz) {
         final Class<?> cls = callerClass(clazz);
-        return getContext(cls.getClassLoader(), false).getLogger(cls.getCanonicalName());
+        return getContext(cls.getClassLoader(), false).getLogger(toLoggerName(cls));
     }
 
     /**
@@ -506,7 +594,7 @@ public class LogManager {
      */
     public static Logger getLogger(final Class<?> clazz, final MessageFactory messageFactory) {
         final Class<?> cls = callerClass(clazz);
-        return getContext(cls.getClassLoader(), false).getLogger(cls.getCanonicalName(), messageFactory);
+        return getContext(cls.getClassLoader(), false).getLogger(toLoggerName(cls), messageFactory);
     }
 
     /**

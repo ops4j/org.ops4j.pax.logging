@@ -847,3 +847,65 @@ After huge (in my humble, subjective opinion) success of Logback, Log4j2 was cre
 pax-logging provides dedicated implementation of `org.ops4j.pax.logging.PaxLoggingService` that delegates to Log4j2.
 
 Again, Log4j2 itself may be used without bridge/facade and (differently than with Logback) pax-logging fully supports its native API.
+
+Here's a list of all `org.apache.logging.log4j` artifacts I found in version 2.11.2:
+
+* org.apache.logging.log4j:log4j-api
+* org.apache.logging.log4j:log4j-1.2-api
+* org.apache.logging.log4j:log4j-appserver
+* org.apache.logging.log4j:log4j-cassandra
+* org.apache.logging.log4j:log4j-core
+* org.apache.logging.log4j:log4j-couchdb
+* org.apache.logging.log4j:log4j-flume-ng
+* org.apache.logging.log4j:log4j-iostreams
+* org.apache.logging.log4j:log4j-jcl
+* org.apache.logging.log4j:log4j-jdbc-dbcp2
+* org.apache.logging.log4j:log4j-jmx-gui
+* org.apache.logging.log4j:log4j-jpa
+* org.apache.logging.log4j:log4j-jul
+* org.apache.logging.log4j:log4j-liquibase
+* org.apache.logging.log4j:log4j-mongodb2
+* org.apache.logging.log4j:log4j-mongodb3
+* org.apache.logging.log4j:log4j-osgi
+* org.apache.logging.log4j:log4j-slf4j-impl
+* org.apache.logging.log4j:log4j-slf4j18-impl
+* org.apache.logging.log4j:log4j-taglib
+* org.apache.logging.log4j:log4j-to-slf4j
+* org.apache.logging.log4j:log4j-web
+
+Currently, pax-logging uses 3:
+
+* org.apache.logging.log4j:log4j-api
+* org.apache.logging.log4j:log4j-core
+* org.apache.logging.log4j:log4j-slf4j-impl
+
+I'm going to include some more just like with `log4j:apache-log4j-extras` and `ch.qos.logback.contrib`.
+
+These won't be supported/embedded/referenced:
+
+* org.apache.logging.log4j:log4j-1.2-api - it's Log4J1 "API" (with all the restrictions I mentioned when talking about API/Impl separation problems of Log4J1) and actually it's very similar to how pax-logging-api itself changes original Log4J1 classes
+* org.apache.logging.log4j:log4j-jcl - it's Apache Commons Logging _service_ defined in `/META-INF/services/org.apache.commons.logging.LogFactory`, effectively bridging Apache Commons Logging directly into Log4J2. pax-logging-api does it a bit differently.
+* org.apache.logging.log4j:log4j-jul - it provides `java.util.logging.LogManager` implementation to be used with `-Djava.util.logging.manager` system property. pax-logging-api however registers global `java.util.logging.Handler` which bridges Java Util Logging into pax-logging.
+* org.apache.logging.log4j:log4j-slf4j-impl - provides org.apache.logging.slf4j.Log4jLoggerFactory which is implementation of Slf4J's `org.slf4j.ILoggerFactory`. pax-logging-api provides own `org.slf4j.impl.StaticLoggerBinder` with own `org.slf4j.ILoggerFactory` implementation
+* org.apache.logging.log4j:log4j-slf4j18-impl - just like the above, but for Slf4J 1.8.x (still beta at the time of writing)
+* org.apache.logging.log4j:log4j-to-slf4j - is a library that enforces kind of _reversed_ usage. Log4J2 API calls are directed to Slf4J which (by design) has to be bridged to target logging framework. See https://logging.apache.org/log4j/2.x/log4j-to-slf4j/index.html. This definitely isn't something pax-logging should support.
+* org.apache.logging.log4j:log4j-osgi - strange "bundle" including only some non-pax-exam tests that install other Log4J2 bundles.
+* org.apache.logging.log4j:log4j-appserver - `org.apache.logging.log4j.appserver.jetty.Log4j2Logger` (Jetty) and `org.apache.logging.log4j.appserver.tomcat.TomcatLogger` (Tomcat JULI) implementations
+* org.apache.logging.log4j:log4j-web - `/META-INF/services/javax.servlet.ServletContainerInitializer` service that installs `org.apache.logging.log4j.web.Log4jServletFilter` filter and `org.apache.logging.log4j.web.Log4jServletContextListener` listener
+* org.apache.logging.log4j:log4j-taglib - `http://logging.apache.org/log4j/tld/log` tag library to be used in JSP pages
+* org.apache.logging.log4j:log4j-jmx-gui - `/META-INF/services/com.sun.tools.jconsole.JConsolePlugin` service for JConsole.
+* org.apache.logging.log4j:log4j-liquibase - bridges `liquibase.logging.core.AbstractLogger` into Log4J2
+
+The remaining Log4J2 artifacts can be split into 3 categories:
+
+* API - log4j-api - to be included in (handled by) pax-logging-api (I hope)
+* Implementation - log4j-core - to be included in pax-logging-log4j2
+* Additional appenders, specialized `org.apache.logging.log4j.core.appender.db.jdbc.AbstractConnectionSource` or similar extensions:
+** log4j-iostreams - `java.io` bridges to Log4J2. See https://logging.apache.org/log4j/2.x/log4j-iostreams/index.html
+** log4j-jdbc-dbcp2
+** log4j-jpa
+** log4j-cassandra
+** log4j-couchdb
+** log4j-mongodb2
+** log4j-mongodb3
+** log4j-flume-ng - see https://logging.apache.org/log4j/2.x/log4j-flume-ng/index.html
