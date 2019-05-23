@@ -45,7 +45,7 @@ public class Log4jv2Logger extends AbstractLogger {
         if (paxLoggingManager != null) {
             m_delegate = paxLoggingManager.getLogger(getName(), LOG4J_FQCN);
         } else {
-            m_delegate = FallbackLogFactory.createFallbackLog( FrameworkUtil.getBundle(Log4jv2Logger.class), getName() );
+            m_delegate = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Log4jv2Logger.class), getName());
         }
     }
 
@@ -134,20 +134,15 @@ public class Log4jv2Logger extends AbstractLogger {
         // TODO: support marker
         if (level.intLevel() >= Level.TRACE.intLevel()) {
             m_delegate.trace(message.getFormattedMessage(), t, fqcn);
-        }
-        else if (level.intLevel() >= Level.DEBUG.intLevel()) {
+        } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
             m_delegate.debug(message.getFormattedMessage(), t, fqcn);
-        }
-        else if (level.intLevel() >= Level.INFO.intLevel()) {
+        } else if (level.intLevel() >= Level.INFO.intLevel()) {
             m_delegate.inform(message.getFormattedMessage(), t, fqcn);
-        }
-        else if (level.intLevel() >= Level.WARN.intLevel()) {
+        } else if (level.intLevel() >= Level.WARN.intLevel()) {
             m_delegate.warn(message.getFormattedMessage(), t, fqcn);
-        }
-        else if (level.intLevel() >= Level.ERROR.intLevel()) {
+        } else if (level.intLevel() >= Level.ERROR.intLevel()) {
             m_delegate.error(message.getFormattedMessage(), t, fqcn);
-        }
-        else if (level.intLevel() >= Level.FATAL.intLevel()) {
+        } else if (level.intLevel() >= Level.FATAL.intLevel()) {
             m_delegate.fatal(message.getFormattedMessage(), t, fqcn);
         }
     }

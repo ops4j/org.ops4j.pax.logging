@@ -42,14 +42,9 @@ public class Log4jv2ThreadContextMap implements ThreadContextMap {
 
     private static PaxLoggingManager m_paxLogging;
 
-    public static void setBundleContext( BundleContext ctx )
-    {
-        m_paxLogging = new OSGIPaxLoggingManager( ctx );
+    public static void setBundleContext(BundleContext ctx) {
+        m_paxLogging = new OSGIPaxLoggingManager(ctx);
         // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-    }
-
-    public static void dispose()
-    {
     }
 
     /**
@@ -59,10 +54,10 @@ public class Log4jv2ThreadContextMap implements ThreadContextMap {
      * or m_defaultContext if the logging manager is not set, or does not have its context available yet.
      */
     private static PaxContext getContext() {
-        if( m_context==null && m_paxLogging!=null ){
-            m_context=(m_paxLogging.getPaxLoggingService()!=null)?m_paxLogging.getPaxLoggingService().getPaxContext():null;
+        if (m_context == null && m_paxLogging != null) {
+            m_context = (m_paxLogging.getPaxLoggingService() != null) ? m_paxLogging.getPaxLoggingService().getPaxContext() : null;
         }
-        return m_context!=null?m_context:m_defaultContext;
+        return m_context != null ? m_context : m_defaultContext;
     }
 
     @Override
@@ -102,26 +97,31 @@ public class Log4jv2ThreadContextMap implements ThreadContextMap {
             public Set<Entry<String, String>> entrySet() {
                 return new AbstractSet<Entry<String, String>>() {
                     final Set<Entry<String, Object>> set = copy.entrySet();
+
                     @Override
                     public Iterator<Entry<String, String>> iterator() {
                         return new Iterator<Entry<String, String>>() {
                             Iterator<Entry<String, Object>> it = set.iterator();
+
                             @Override
                             public boolean hasNext() {
                                 return it.hasNext();
                             }
+
                             @Override
                             public Entry<String, String> next() {
                                 Entry<String, Object> entry = it.next();
                                 return new SimpleEntry<String, String>(
                                         entry.getKey(), entry.getValue() != null ? entry.getValue().toString() : null);
                             }
+
                             @Override
                             public void remove() {
                                 // nothing to do
                             }
                         };
                     }
+
                     @Override
                     public int size() {
                         return set.size();

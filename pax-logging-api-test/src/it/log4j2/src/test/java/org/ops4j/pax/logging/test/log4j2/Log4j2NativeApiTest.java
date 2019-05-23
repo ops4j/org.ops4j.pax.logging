@@ -21,6 +21,7 @@ package org.ops4j.pax.logging.test.log4j2;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
@@ -45,7 +46,7 @@ public class Log4j2NativeApiTest {
         AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
                 .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
         appenderBuilder.add(builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "%d {%t} %-5level: %msg%n%throwable"));
+                .addAttribute("pattern", "%d {%t} %c (%X) %-5level: %msg%n%throwable"));
         builder.add(appenderBuilder);
 
         builder.add(builder.newRootLogger(Level.DEBUG)
@@ -72,6 +73,14 @@ public class Log4j2NativeApiTest {
         // as the Logger name.
         Logger log2 = LogManager.getLogger();
         log2.info("simplestUsage - INFO");
+    }
+
+    @Test
+    public void mdc() {
+        Logger log = LogManager.getLogger(Log4j2NativeApiTest.class);
+
+        ThreadContext.put("country", "Equestria");
+        log.info("mdc - INFO");
     }
 
     @Test

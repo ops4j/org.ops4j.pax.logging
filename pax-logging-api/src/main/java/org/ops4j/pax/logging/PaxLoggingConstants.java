@@ -130,8 +130,20 @@ public interface PaxLoggingConstants {
     String LOGGING_CFG_LOGBACK_CONFIGURATION_FILE = "org.ops4j.pax.logging.StaticLogbackFile";
 
     /**
+     * <p>System or context property that can indicate alternative file with properties used instead of
+     * the properties from Configuration Admin. Useful in tests probably.</p>
+     * <p>Currently this is handled only by pax-logging-log4j2.</p>
+     */
+    String LOGGING_CFG_PROPERTY_FILE = "org.ops4j.pax.logging.property.file";
+
+    /**
      * {@code org.osp4j.pax.logging} PID property to specify XML file with Logback configuration
      */
     String PID_CFG_LOGBACK_CONFIG_FILE = "org.ops4j.pax.logging.logback.config.file";
+
+    /**
+     * {@code org.osp4j.pax.logging} PID property to specify XML file with Log4J2 configuration
+     */
+    String PID_CFG_LOG4J2_CONFIG_FILE = "org.ops4j.pax.logging.log4j2.config.file";
 
 }

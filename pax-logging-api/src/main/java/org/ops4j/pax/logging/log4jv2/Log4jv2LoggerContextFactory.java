@@ -22,7 +22,11 @@ import org.apache.logging.log4j.spi.LoggerContext;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
 
 /**
- *
+ * <p>This is the main class that's briding Log4J2 API into Pax Logging. It's responsibility is to
+ * produce {@link LoggerContext} objects.</p>
+ * <p>See http://logging.apache.org/log4j/2.x/manual/architecture.html</p>
+ * <p>Even if there are scenarios where multiple {@link LoggerContext contexts} may be used, this factory
+ * holds single, static Pax Logging-specific {@link LoggerContext}</p>
  */
 public class Log4jv2LoggerContextFactory implements LoggerContextFactory {
 

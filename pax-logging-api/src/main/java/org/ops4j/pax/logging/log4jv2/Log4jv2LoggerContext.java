@@ -23,33 +23,21 @@ import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.spi.AbstractLogger;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.apache.logging.log4j.spi.LoggerContext;
-import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.osgi.framework.BundleContext;
 
 /**
- *
+ * This is the class used to obtain the loggers. Returned loggers have Log4J2 interface ({@link ExtendedLogger}), but
+ * delegate the work to underlying {@link org.ops4j.pax.logging.PaxLogger}.
  */
 public class Log4jv2LoggerContext implements LoggerContext {
 
+    static PaxLoggingManager paxLogging;
+
+    public static void setPaxLoggingManager(PaxLoggingManager manager) {
+        paxLogging = manager;
+    }
+
     private static final ConcurrentMap<String, Log4jv2Logger> loggers = new ConcurrentHashMap<String, Log4jv2Logger>();
-
-    private static PaxLoggingManager paxLogging;
-
-    public static void setBundleContext( BundleContext ctx )
-    {
-        paxLogging = new OSGIPaxLoggingManager( ctx );
-        for (Log4jv2Logger logger : loggers.values()) {
-            logger.setPaxLoggingManager(paxLogging);
-        }
-    }
-
-    public static void dispose() {
-
-    }
-
-    public Log4jv2LoggerContext() {
-    }
 
     @Override
     public ExtendedLogger getLogger(final String name) {

@@ -21,8 +21,11 @@ File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.l
 List<String> lines = surefireOutput.readLines()
 int ok = 0
 for (String l : lines) {
-//  if (l.contains("<org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest> : simplestUsage - INFO")) {
-//    ok++
-//  }
+  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({}) INFO : simplestUsage - INFO")) {
+    ok++
+  }
+  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({country=Equestria}) INFO : mdc - INFO")) {
+    ok++
+  }
 }
-assert ok == 0
+assert ok == 2

@@ -28,7 +28,6 @@ import java.util.NoSuchElementException;
 
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.logging.log4j.spi.DefaultThreadContextMap;
-import org.apache.logging.log4j.spi.DefaultThreadContextStack;
 import org.apache.logging.log4j.spi.NoOpThreadContextMap;
 import org.apache.logging.log4j.spi.ReadOnlyThreadContextMap;
 import org.apache.logging.log4j.spi.ThreadContextMap;
@@ -37,6 +36,8 @@ import org.apache.logging.log4j.spi.CleanableThreadContextMap;
 import org.apache.logging.log4j.spi.ThreadContextMapFactory;
 import org.apache.logging.log4j.spi.ThreadContextStack;
 import org.apache.logging.log4j.util.PropertiesUtil;
+import org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextMap;
+import org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextStack;
 
 /**
  * The ThreadContext allows applications to store information either in a Map or a Stack.
@@ -211,23 +212,17 @@ public final class ThreadContext {
      * <em>Consider private, used for testing.</em>
      */
     static void init() {
-        ThreadContextMapFactory.init();
         contextMap = null;
         final PropertiesUtil managerProps = PropertiesUtil.getProperties();
         disableAll = managerProps.getBooleanProperty(DISABLE_ALL);
         useStack = !(managerProps.getBooleanProperty(DISABLE_STACK) || disableAll);
         useMap = !(managerProps.getBooleanProperty(DISABLE_MAP) || disableAll);
 
-        contextStack = new DefaultThreadContextStack(useStack);
+        contextStack = new Log4jv2ThreadContextStack(useStack);
         if (!useMap) {
             contextMap = new NoOpThreadContextMap();
         } else {
-            contextMap = ThreadContextMapFactory.createThreadContextMap();
-        }
-        if (contextMap instanceof ReadOnlyThreadContextMap) {
-            readOnlyContextMap = (ReadOnlyThreadContextMap) contextMap;
-        } else {
-            readOnlyContextMap = null;
+            contextMap = new Log4jv2ThreadContextMap();
         }
     }
 
@@ -365,8 +360,8 @@ public final class ThreadContext {
      * @return the internal data structure used to store thread context key-value pairs or {@code null}
      * @see ThreadContextMapFactory
      * @see DefaultThreadContextMap
-     * @see org.apache.logging.log4j.spi.CopyOnWriteSortedArrayThreadContextMap
-     * @see org.apache.logging.log4j.spi.GarbageFreeSortedArrayThreadContextMap
+     * @see {@code org.apache.logging.log4j.spi.CopyOnWriteSortedArrayThreadContextMap}
+     * @see {@code }org.apache.logging.log4j.spi.GarbageFreeSortedArrayThreadContextMap}
      * @since 2.8
      */
     public static ReadOnlyThreadContextMap getThreadContextMap() {

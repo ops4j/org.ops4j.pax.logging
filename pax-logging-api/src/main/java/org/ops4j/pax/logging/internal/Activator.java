@@ -121,7 +121,7 @@ public class Activator implements BundleActivator {
         log4j1Logger.info("Enabling Log4J v1 API support.");
 
         // Log4j2
-        org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.setBundleContext(bundleContext);
+        org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.setPaxLoggingManager(manager);
         org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(name);
         log4j2Logger.info("Enabling Log4J v2 API support.");
 
@@ -176,10 +176,7 @@ public class Activator implements BundleActivator {
 
         org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(getClass());
         log4j2Logger.info("Disabling Log4J v2 API support.");
-//        org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.setPaxLoggingManager(null);
-
-        org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.dispose();
-        org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextMap.dispose();
+        org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContext.setPaxLoggingManager(null);
 
         synchronized (m_loggers) {
             // We need to instruct all loggers that they should again switch to fallback loggers
