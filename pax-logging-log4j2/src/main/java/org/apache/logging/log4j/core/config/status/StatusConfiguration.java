@@ -182,10 +182,12 @@ public class StatusConfiguration {
             if (this.status == Level.OFF) {
                 this.initialized = true;
             } else {
-                final boolean configured = configureExistingStatusConsoleListener();
-                if (!configured) {
-                    registerNewStatusConsoleListener();
-                }
+                // we don't want another configuration listener, we rely only on
+                // org.ops4j.pax.logging.PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL setting
+//                final boolean configured = configureExistingStatusConsoleListener();
+//                if (!configured) {
+//                    registerNewStatusConsoleListener();
+//                }
                 migrateSavedLogMessages();
             }
         }

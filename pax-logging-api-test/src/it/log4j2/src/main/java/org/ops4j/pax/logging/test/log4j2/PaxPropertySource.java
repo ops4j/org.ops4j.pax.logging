@@ -16,22 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.ops4j.pax.logging.test.log4j2;
 
-File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest-output.txt")
-List<String> lines = surefireOutput.readLines()
-int ok = 0
-for (String l : lines) {
-  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({}) INFO : simplestUsage - INFO1")) {
-    ok++
-  }
-  if (l.contains("  ({}) INFO : simplestUsage - INFO2")) {
-    ok++
-  }
-  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({}) INFO : simplestUsage - INFO3")) {
-    ok++
-  }
-  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({country=Equestria}) INFO : mdc - INFO")) {
-    ok++
-  }
+import org.apache.logging.log4j.util.BiConsumer;
+import org.apache.logging.log4j.util.PropertySource;
+
+public class PaxPropertySource implements PropertySource {
+
+    private static final String PREFIX = "log4j2.";
+
+    @Override
+    public int getPriority() {
+        return 200;
+    }
+
+    @Override
+    public void forEach(BiConsumer<String, String> action) {
+        action.accept("log4j2.debug", "false");
+    }
+
+    @Override
+    public CharSequence getNormalForm(Iterable<? extends CharSequence> tokens) {
+        return PREFIX + Util.joinAsCamelCase(tokens);
+    }
+
 }
-assert ok == 4

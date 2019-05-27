@@ -20,29 +20,19 @@ package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.inject.Inject;
 
+import org.apache.logging.log4j.status.StatusLogger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.ops4j.pax.logging.it.support.Helpers;
-import org.osgi.service.cm.ConfigurationAdmin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
-public class LogbackJacksonLayoutIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
-
-    @Inject
-    private ConfigurationAdmin cm;
+public class Log4J2WithDefaultConfigurationIntegrationTest extends AbstractControlledIntegrationTestBase {
 
     @Configuration
     public Option[] configure() throws IOException {
@@ -50,33 +40,28 @@ public class LogbackJacksonLayoutIntegrationTest extends AbstractStdoutIntercept
                 combine(baseConfigure(), defaultLoggingConfig()),
 
                 paxLoggingApi(),
-                paxLoggingLogback(),
+                paxLoggingLog4J2(),
                 configAdmin(),
-                eventAdmin(),
-
-                mavenBundle("com.fasterxml.jackson.core", "jackson-annotations").versionAsInProject(),
-                mavenBundle("com.fasterxml.jackson.core", "jackson-core").versionAsInProject(),
-                mavenBundle("com.fasterxml.jackson.core", "jackson-databind").versionAsInProject()
+                eventAdmin()
         );
     }
 
     @Test
-    public void jsonFormatter() {
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOGBACK, "json");
-
-        Logger log = LoggerFactory.getLogger("my.logger");
-        MDC.put("country", "Equestria");
-        log.info("Hello");
+    public void logLog() {
+        // threshold is controlled by PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL context property
+        StatusLogger logLog = StatusLogger.getLogger();
+        logLog.debug("StatusLogger debug");
+        logLog.warn("StatusLogger warn");
+        logLog.error("StatusLogger error");
 
         List<String> lines = readLines();
-        lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        assertTrue(lines.stream().anyMatch(l ->
-                l.contains("\"level\":\"INFO\"")
-                        && l.contains("\"logger\":\"my.logger\"")
-                        && l.contains("\"message\":\"Hello\"")
-                        && l.contains("\"country\":\"Equestria\"")
-        ));
+        // we used org.apache.logging.log4j.status.StatusLogger directly, so the bundle in log record is pax-logging-api
+        assertTrue(lines.stream().anyMatch(l -> l.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] DEBUG : StatusLogger debug")));
+        assertTrue(lines.stream().anyMatch(l -> l.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] WARN : StatusLogger warn")));
+        assertTrue(lines.stream().anyMatch(l -> l.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] ERROR : StatusLogger error")));
+
+        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] INFO : Log4J2 configured using default configuration. Ignored FQCN: org.apache.logging.log4j.spi.AbstractLogger"));
     }
 
 }

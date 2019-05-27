@@ -68,6 +68,7 @@ public class PaxLevelForLogback implements PaxLevel {
         return PaxLogger.LEVEL_TRACE;
     }
 
+    @Override
     public int getSyslogEquivalent() {
         if (m_delegate == Level.TRACE)
             return SYSLOG_DEBUG;

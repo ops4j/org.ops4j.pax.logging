@@ -22,6 +22,8 @@ import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
 import org.apache.log4j.helpers.LogLog;
+import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.PaxPropertySource;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -33,6 +35,7 @@ import org.ops4j.pax.logging.spi.support.FrameworkHandler;
 import org.ops4j.pax.logging.spi.support.OsgiUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 
 public class Activator implements BundleActivator {
 
@@ -61,8 +64,12 @@ public class Activator implements BundleActivator {
         // Fallback PaxLogger configuration
         String levelName = BackendSupport.defaultLogLevel(bundleContext);
         DefaultServiceLog.setLogLevel(levelName);
+
         // Log4j1 debug
         LogLog.setInternalDebugging(DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG);
+        // Log4j2 debug
+        PaxPropertySource.debug = DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG;
+        PaxPropertySource.defaultLevel = levelName;
 
         // for JUL we may install bridging java.util.logging.Handler just like org.slf4j:jul-to-slf4j
         if (!skipJulRegistration()) {

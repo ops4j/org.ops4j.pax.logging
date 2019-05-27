@@ -79,6 +79,13 @@ public class Helpers {
         return paxLoggingService.orElse(null);
     }
 
+    public static Bundle paxLoggingLog4j2(BundleContext context) {
+        Optional<Bundle> paxLoggingLog4j2 = Arrays.stream(context.getBundles())
+                .filter(b -> "org.ops4j.pax.logging.pax-logging-log4j2".equals(b.getSymbolicName()))
+                .findFirst();
+        return paxLoggingLog4j2.orElse(null);
+    }
+
     public static void restartPaxLoggingApi(BundleContext context) throws BundleException {
         Bundle paxLoggingApi = paxLoggingApi(context);
         if (paxLoggingApi != null) {
@@ -137,6 +144,36 @@ public class Helpers {
                 }
 
                 paxLoggingLogback.start();
+                if (await) {
+                    assertTrue(latch.await(5, TimeUnit.SECONDS));
+                    sr.unregister();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        }
+    }
+
+    public static void restartPaxLoggingLog4j2(BundleContext context, boolean await) {
+        // restart pax-logging-logback to pick up replaced stdout
+        // awaits for signal indicating successfull (re)configuration
+        Bundle paxLoggingLog4j2 = paxLoggingLog4j2(context);
+        if (paxLoggingLog4j2 != null) {
+            try {
+                paxLoggingLog4j2.stop(Bundle.STOP_TRANSIENT);
+
+                final CountDownLatch latch = new CountDownLatch(1);
+                ServiceRegistration<EventHandler> sr = null;
+                if (await) {
+                    EventHandler handler = event -> {
+                        latch.countDown();
+                    };
+                    Dictionary<String, Object> props = new Hashtable<>();
+                    props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
+                    sr = context.registerService(EventHandler.class, handler, props);
+                }
+
+                paxLoggingLog4j2.start();
                 if (await) {
                     assertTrue(latch.await(5, TimeUnit.SECONDS));
                     sr.unregister();
@@ -284,7 +321,7 @@ public class Helpers {
      * @return
      */
     public static Dictionary<String, Object> readPrefixedProperties(LoggingLibrary library, String prefix) throws IOException {
-        if (library != LoggingLibrary.LOGBACK) {
+        if (library.supportsProperties()) {
             // properties
             Properties props = new Properties();
             props.load(AbstractControlledIntegrationTestBase.class.getResourceAsStream(library.config()));
@@ -298,7 +335,7 @@ public class Helpers {
             }
 
             return newProperties;
-        } else {
+        } else if (library == LoggingLibrary.LOGBACK) {
             // XML - we have to store it into some file
             InputSource is = new InputSource(AbstractControlledIntegrationTestBase.class.getResourceAsStream(library.config()));
             XPath xp = XPathFactory.newInstance().newXPath();
@@ -316,21 +353,31 @@ public class Helpers {
                 throw new RuntimeException(e.getMessage(), e);
             }
         }
+        return null;
     }
 
     public enum LoggingLibrary {
-        LOG4J1("log4j-all.properties"),
-        LOG4J2(""),
-        LOGBACK("logback-all.xml");
+        LOG4J1("log4j-all.properties", true),
+        LOG4J2_PROPERTIES("log4j2-all.properties", true),
+        LOG4J2_XML("log4j2-all.xml", false),
+        LOG4J2_JSON("log4j2-all.json", false),
+        LOG4J2_YAML("log4j2-all.yaml", false),
+        LOGBACK("logback-all.xml", false);
 
         private final String propertiesFile;
+        private final boolean properties;
 
-        LoggingLibrary(String propertiesFile) {
+        LoggingLibrary(String propertiesFile, boolean supportsProperties) {
             this.propertiesFile = propertiesFile;
+            this.properties = supportsProperties;
         }
 
         public String config() {
             return this.propertiesFile;
+        }
+
+        public boolean supportsProperties() {
+            return properties;
         }
     }
 

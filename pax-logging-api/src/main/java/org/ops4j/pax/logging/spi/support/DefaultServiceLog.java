@@ -171,19 +171,19 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
     }
 
     private static int convertLevel(String levelName) {
-        if ("TRACE".equals(levelName)) {
+        if ("TRACE".equalsIgnoreCase(levelName) || "FINER".equalsIgnoreCase(levelName)) {
             return TRACE;
-        } else if ("DEBUG".equals(levelName)) {
+        } else if ("DEBUG".equalsIgnoreCase(levelName) || "FINE".equalsIgnoreCase(levelName)) {
             return DEBUG;
-        } else if ("INFO".equals(levelName)) {
+        } else if ("INFO".equalsIgnoreCase(levelName) || "CONFIG".equalsIgnoreCase(levelName) || "CONF".equalsIgnoreCase(levelName)) {
             return INFO;
-        } else if ("WARN".equals(levelName)) {
+        } else if ("WARN".equalsIgnoreCase(levelName) || "WARNING".equalsIgnoreCase(levelName)) {
             return WARN;
-        } else if ("ERROR".equals(levelName)) {
+        } else if ("ERROR".equalsIgnoreCase(levelName) || "SEVERE".equalsIgnoreCase(levelName)) {
             return ERROR;
-        } else if ("FATAL".equals(levelName)) {
+        } else if ("FATAL".equalsIgnoreCase(levelName)) {
             return FATAL;
-        } else if ("NONE".equals(levelName) || "OFF".equals(levelName)) {
+        } else if ("NONE".equalsIgnoreCase(levelName) || "OFF".equalsIgnoreCase(levelName) || "DISABLED".equalsIgnoreCase(levelName)) {
             return NONE;
         } else {
             return DEBUG;

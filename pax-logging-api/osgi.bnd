@@ -67,18 +67,18 @@ Export-Package: \
  org.apache.log4j.pattern;-split-package:=merge-first; version=${version.log4j}; provider=paxlogging, \
  org.apache.log4j.spi;-split-package:=merge-first; version=${version.log4j}; provider=paxlogging, \
  org.apache.log4j.xml;-split-package:=merge-first; version=${version.log4j}; provider=paxlogging, \
- org.apache.logging.log4j; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
- org.apache.logging.log4j; version=2.9.1; provider=paxlogging, \
+ org.apache.logging.log4j;-split-package:=merge-first; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
+ org.apache.logging.log4j;-split-package:=merge-first; version=2.9.1; provider=paxlogging, \
  org.apache.logging.log4j.message; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j.message; version=2.9.1; provider=paxlogging, \
  org.apache.logging.log4j.simple; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j.simple; version=2.9.1; provider=paxlogging, \
  org.apache.logging.log4j.spi; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j.spi; version=2.9.1; provider=paxlogging, \
- org.apache.logging.log4j.status; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
- org.apache.logging.log4j.status; version=2.9.1; provider=paxlogging, \
- org.apache.logging.log4j.util; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
- org.apache.logging.log4j.util; version=2.9.1; provider=paxlogging, \
+ org.apache.logging.log4j.status;-split-package:=merge-first; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
+ org.apache.logging.log4j.status;-split-package:=merge-first; version=2.9.1; provider=paxlogging, \
+ org.apache.logging.log4j.util;-split-package:=merge-first; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
+ org.apache.logging.log4j.util;-split-package:=merge-first; version=2.9.1; provider=paxlogging, \
  org.ops4j.pax.logging; version=${pom.version}; provider=paxlogging, \
  org.ops4j.pax.logging.spi; version=${pom.version}; provider=paxlogging, \
  org.osgi.service.log; version=1.3;-split-package:=merge-first

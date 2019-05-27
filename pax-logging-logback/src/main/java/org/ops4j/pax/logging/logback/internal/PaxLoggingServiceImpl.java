@@ -94,6 +94,7 @@ import org.slf4j.impl.StaticLoggerBinder;
 public class PaxLoggingServiceImpl
         implements PaxLoggingService, LogService, ManagedService, ServiceFactory { // if you add an interface here, add it to the ManagedService below too
 
+    // pax-logging-logback-only key to find BundleContext
     public static final String LOGGER_CONTEXT_BUNDLECONTEXT_KEY = "org.ops4j.pax.logging.logback.bundlecontext";
 
     private final BundleContext m_bundleContext;
@@ -124,6 +125,7 @@ public class PaxLoggingServiceImpl
 
     // static configuration file URL when not using Configuration Admin
     private final String m_staticConfigFile;
+
     // there's no need to run configureDefaults() more than once. That was happening in constructor
     // and millisecond later during registration of ManagedService, upon receiving empty org.ops4j.pax.logging
     // configuration
@@ -179,7 +181,7 @@ public class PaxLoggingServiceImpl
      * Shut down the Pax Logging service. Cleans up {@link LoggerContext}.
      */
     public void shutdown() {
-        m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, null);
+        m_logbackContext.removeObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY);
         if (!m_useStaticContext) {
             m_logbackContext.stop();
         } else {
@@ -321,7 +323,7 @@ public class PaxLoggingServiceImpl
 
     /**
      * Default configuration, when Configuration Admin is not (yet) available. May choose
-     * staticly configured Logback XML file or just plain defaults (which are used if file is not accessible)
+     * staticly configured Logback XML file or just plain defaults (which are used if file is not accessible).
      */
     private void configureDefaults() {
         String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
@@ -367,6 +369,8 @@ public class PaxLoggingServiceImpl
             // cleans appenders, but preserves loggers. Fortunately logback has equivalent
             // ch.qos.logback.classic.LoggerContext.reset()
             m_logbackContext.reset();
+
+            m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, m_bundleContext);
 
             try {
                 if (file == null) {

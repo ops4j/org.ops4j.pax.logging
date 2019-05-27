@@ -15,14 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ops4j.pax.logging.log4j2.internal;
+package org.ops4j.pax.logging.log4j2.internal.spi;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.impl.ThrowableProxy;
-import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.spi.PaxLevel;
 import org.ops4j.pax.logging.spi.PaxLocationInfo;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
@@ -93,101 +94,9 @@ public class PaxLoggingEventImpl implements PaxLoggingEvent {
     }
 
     @Override
-    public Map getProperties() {
-        return event.getContextMap();
+    public Map<String, Object> getProperties() {
+        // a copy!
+        return event.getContextData() == null ? Collections.emptyMap() : new HashMap<>(event.getContextData().toMap());
     }
 
-    static class PaxLocationInfoImpl implements PaxLocationInfo {
-
-        private final StackTraceElement source;
-
-        public PaxLocationInfoImpl(StackTraceElement source) {
-            this.source = source;
-        }
-
-        @Override
-        public String getFileName() {
-            String s = source != null ? source.getFileName() : null;
-            return s != null ? s : "?";
-        }
-
-        @Override
-        public String getClassName() {
-            String s = source != null ? source.getClassName() : null;
-            return s != null ? s : "?";
-        }
-
-        @Override
-        public String getLineNumber() {
-            return source != null ? Integer.toString(source.getLineNumber()) : "?";
-        }
-
-        @Override
-        public String getMethodName() {
-            String s = source != null ? source.getMethodName() : null;
-            return s != null ? s : "?";
-        }
-    }
-
-    static class PaxLevelImpl implements PaxLevel {
-
-        // this data comes from the log4j level class
-        public static final int SYSLOG_DEBUG = 7;
-        public static final int SYSLOG_INFO = 6;
-        public static final int SYSLOG_WARN = 4;
-        public static final int SYSLOG_ERROR = 3;
-        public static final int SYSLOG_OFF = 0;
-
-        private final Level level;
-
-        public PaxLevelImpl(Level level) {
-            this.level = level;
-        }
-
-        @Override
-        public boolean isGreaterOrEqual(PaxLevel r) {
-            return getSyslogEquivalent() <= r.getSyslogEquivalent();
-        }
-
-        @Override
-        public int toInt() {
-            int lvl = level.intLevel();
-            if (lvl <= Level.ERROR.intLevel()) {
-                return PaxLogger.LEVEL_ERROR;
-            }
-            if (lvl <= Level.WARN.intLevel()) {
-                return PaxLogger.LEVEL_WARNING;
-            }
-            if (lvl <= Level.INFO.intLevel()) {
-                return PaxLogger.LEVEL_INFO;
-            }
-            if (lvl <= Level.DEBUG.intLevel()) {
-                return PaxLogger.LEVEL_DEBUG;
-            }
-            return PaxLogger.LEVEL_TRACE;
-        }
-
-        @Override
-        public int getSyslogEquivalent() {
-            int lvl = level.intLevel();
-            if (lvl <= Level.OFF.intLevel()) {
-                return SYSLOG_OFF;
-            }
-            if (lvl <= Level.ERROR.intLevel()) {
-                return SYSLOG_ERROR;
-            }
-            if (lvl <= Level.WARN.intLevel()) {
-                return SYSLOG_WARN;
-            }
-            if (lvl <= Level.INFO.intLevel()) {
-                return SYSLOG_INFO;
-            }
-            return SYSLOG_DEBUG;
-        }
-
-        @Override
-        public String toString() {
-            return level.toString();
-        }
-    }
 }

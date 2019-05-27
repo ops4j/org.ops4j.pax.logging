@@ -909,3 +909,83 @@ The remaining Log4J2 artifacts can be split into 3 categories:
 ** log4j-mongodb2
 ** log4j-mongodb3
 ** log4j-flume-ng - see https://logging.apache.org/log4j/2.x/log4j-flume-ng/index.html
+
+The original exports of `org.apache.logging.log4j:log4j-api` are:
+
+[listing,options=nowrap]
+----
+org.apache.logging.log4j;         version="2.11.2"; uses:="org.apache.logging.log4j.message, org.apache.logging.log4j.spi, org.apache.logging.log4j.util"
+org.apache.logging.log4j.message; version="2.11.2"; uses:="org.apache.logging.log4j.util"
+org.apache.logging.log4j.simple;  version="2.11.2"; uses:="org.apache.logging.log4j,org.apache.logging.log4j.message,org.apache.logging.log4j.spi,org.apache.logging.log4j.util"
+org.apache.logging.log4j.spi;     version="2.11.2"; uses:="org.apache.logging.log4j,org.apache.logging.log4j.message,org.apache.logging.log4j.util"
+org.apache.logging.log4j.status;  version="2.11.2"; uses:="org.apache.logging.log4j,org.apache.logging.log4j.message,org.apache.logging.log4j.spi"
+org.apache.logging.log4j.util;    version="2.11.2"; uses:="org.apache.logging.log4j.message,org.apache.logging.log4j.spi,org.osgi.framework"
+----
+
+This perfectly matches what pax-logging-api (re)exported. These are actually all the packages included in `org.apache.logging.log4j:log4j-api`.
+
+=== Plugins
+
+Log4J2 is extended using plugin system. Quoting http://lo[the manual]:
+
+====
+In Log4j 2 a plugin is declared by adding a `@Plugin` annotation to the class declaration. During initialization the `Configuration` will invoke the `PluginManager` to load the built-in Log4j plugins as well as any custom plugins. The `PluginManager` locates plugins by looking in five places:
+
+1. Serialized plugin listing files on the classpath. These files are generated automatically during the build (more details below).
+2. (OSGi only) Serialized plugin listing files in each active OSGi bundle. A BundleListener is added on activation to continue checking new bundles after log4j-core has started.
+3. A comma-separated list of packages specified by the log4j.plugin.packages system property.
+4. Packages passed to the static PluginManager.addPackages method (before Log4j configuration occurs).
+5. The packages declared in your log4j2 configuration file.
+====
+
+Currently, pax-logging doesn't do the same discovery as bundle activator of original `org.apache.logging.log4j:log4j-core`.
+Though similar mechanism may be added in the future.
+
+`org.apache.logging.log4j.core.config.plugins.util.PluginManager.collectPlugins()` collects the plugins from different sources. The cache file is declared as `org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor.PLUGIN_CACHE_FILE` and refers to `META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat`. It's a binary file conforming to `java.io.DataInputStream` which may occur multiple times on the classpath.
+
+pax-logging-log4j2 bundle directly uses the original plugin cache file from `org.apache.logging.log4j:log4j-core` and additional plugins are added using `org.apache.logging.log4j.core.config.plugins.util.PluginManager.addPackage()` during pax-logging-log4j2 initialization.
+
+Default cache file contains exactly these categories and numbers of plugins (206 total):
+[listing,options=nowrap]
+----
+cache = {org.apache.logging.log4j.core.config.plugins.processor.PluginCache@1030}
+ categories: java.util.Map  = {java.util.LinkedHashMap@1059}  size = 6
+  "core" -> {java.util.LinkedHashMap@1069}  size = 117
+  "converter" -> {java.util.LinkedHashMap@1071}  size = 44
+  "lookup" -> {java.util.LinkedHashMap@1073}  size = 13
+  "configurationfactory" -> {java.util.LinkedHashMap@1075}  size = 4
+  "fileconverter" -> {java.util.LinkedHashMap@1077}  size = 2
+  "typeconverter" -> {java.util.LinkedHashMap@1079}  size = 26
+----
+
+=== Configuration
+
+Log4J2 has complex configuration mechanisms and can process configuration from different sources. Configuration may be stored in XML, JSON, YAML and properties files. Among these, properties file (very common in Log4J1 times) is the most confusing...
+
+`org.apache.logging.log4j.core.config.builder.impl.DefaultConfigurationBuilder` is the most important class here that allows to understand how configuration is organized. This builder includes `org.apache.logging.log4j.core.config.builder.api.Component` _components_ for these _concepts_:
+
+* root
+* loggers
+* appenders
+* filters
+* properties
+* custom levels
+* scripts
+
+`org.apache.logging.log4j.core.config.builder.api.Component` is generally a container for:
+
+* attributes (a map)
+* child `org.apache.logging.log4j.core.config.builder.api.Component` instances
+* plugin type
+* name
+
+Plugin types of components inside "root" component may be one of:
+
+* "Scripts"
+* "Loggers"
+* "Appenders"
+* "Filters"
+* "Properties"
+* "CustomLevels"
+
+But generally, plugin _type_ is a key for org.apache.logging.log4j.core.config.plugins.util.PluginManager.plugins map which maps names to `org.apache.logging.log4j.core.config.plugins.util.PluginType`

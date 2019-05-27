@@ -1,209 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.ops4j.pax</groupId>
-    <artifactId>logging</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.ops4j.pax</groupId>
+        <artifactId>logging</artifactId>
+        <version>1.11.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-  <groupId>org.ops4j.pax.logging</groupId>
-  <artifactId>pax-logging-log4j2</artifactId>
-  <packaging>bundle</packaging>
+    <groupId>org.ops4j.pax.logging</groupId>
+    <artifactId>pax-logging-log4j2</artifactId>
+    <packaging>bundle</packaging>
 
-  <name>OPS4J Pax Logging - Log4j v2</name>
-  <description>Pax Logging Service is a Log4J driven service that supports Jakarta Commons Logging,
-    Log4J, Avalon Logging, SLF4J and Pax Logging clients. Note that all this clients must use the Pax Logging
-    Client library in the proper way. See documentation for details.
-  </description>
+    <name>OPS4J Pax Logging - Log4Jv2 implementation</name>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.ops4j</groupId>
-        <artifactId>maven-pax-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <compilerArgument>-proc:none</compilerArgument>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>check-jdk</id>
-            <phase>test</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <ignores>
-                <ignore>com/fasterxml/*</ignore>
-                <ignore>com/lmax/*</ignore>
-                <ignore>javax/jms/*</ignore>
-                <ignore>javax/mail/*</ignore>
-                <ignore>javax/persistence/*</ignore>
-                <ignore>org/apache/commons/*</ignore>
-                <ignore>org/apache/kafka/*</ignore>
-                <ignore>org/zeromq/*</ignore>
-                <ignore>org/fusesource/jansi/*</ignore>
-                <ignore>com/beust/jcommander/*</ignore>
-                <ignore>com/conversantmedia/util/concurrent/*</ignore>
-                <ignore>org/jctools/queues/*</ignore>
-                <ignore>java/lang/invoke/*</ignore>
-              </ignores>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.logging.log4j</groupId>
-                  <artifactId>log4j-core</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>
-                ${project.build.directory}/classes
-              </outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>unpack-sources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.logging.log4j</groupId>
-                  <artifactId>log4j-core</artifactId>
-                  <classifier>sources</classifier>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>
-                ${project.build.directory}/sources
-              </outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-sources</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <tasks>
-                <echo message="Copying sources to include in sources jar" />
-                <mkdir dir="${project.build.directory}/sources" />
-                <copy todir="${project.build.directory}/sources">
-                  <fileset dir="${project.basedir}/src/main/java" />
-                </copy>
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.1</version>
-        <executions>
-          <execution>
-            <id>enhanced-source-jar</id>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <classifier>sources</classifier>
-              <classesDirectory>${project.build.directory}/sources</classesDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <artifactSet>
-                <includes>
-                  <include>org.apache.logging.log4j:log4j-api</include>
-                  <include>org.apache.logging.log4j:log4j-core</include>
-                  <include>${project.groupId}:${project.artifactId}</include>
-                </includes>
-              </artifactSet>
-              <createSourcesJar>true</createSourcesJar>
-              <promoteTransitiveDependencies>false</promoteTransitiveDependencies>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-    </plugins>
-  </build>
+    <description>
+        Pax Logging backend implementation based on Apache Log4J2. It provides Log4J2 specific implementation
+        of PaxLoggingService interface and Log4J2 specific configuration methods.
+        Users may customize Log4J2 behaviour (appenders, layouts) by creating fragment attached to this bundle.
+    </description>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>org.osgi.compendium</artifactId>
-    </dependency>
-      <dependency>
-          <groupId>org.ops4j.pax.logging</groupId>
-          <artifactId>pax-logging-api</artifactId>
-      </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!--
+                        We can't process annotations (as declared in log4j-core's /META-INF/services/javax.annotation.processing.Processor,
+                        which calls org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor) because
+                        we want original log4j-core's /META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat.
+                        Otherwise it'd be re-generated to include only pax-logging-log4j2's two @Plugins
+                    -->
+                    <compilerArgument>-proc:none</compilerArgument>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-log4j-core</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.logging.log4j</groupId>
+                                    <artifactId>log4j-core</artifactId>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                        </configuration>
+                    </execution>
+<!--                    <execution>-->
+<!--                        <id>unpack-sources</id>-->
+<!--                        <phase>generate-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>unpack</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <artifactItems>-->
+<!--                                <artifactItem>-->
+<!--                                    <groupId>org.apache.logging.log4j</groupId>-->
+<!--                                    <artifactId>log4j-core</artifactId>-->
+<!--                                    <classifier>sources</classifier>-->
+<!--                                </artifactItem>-->
+<!--                            </artifactItems>-->
+<!--                            <outputDirectory>-->
+<!--                                ${project.build.directory}/sources-->
+<!--                            </outputDirectory>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+                </executions>
+            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-antrun-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>copy-sources</id>-->
+<!--                        <phase>generate-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>run</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <tasks>-->
+<!--                                <echo message="Copying sources to include in sources jar" />-->
+<!--                                <mkdir dir="${project.build.directory}/sources" />-->
+<!--                                <copy todir="${project.build.directory}/sources">-->
+<!--                                    <fileset dir="${project.basedir}/src/main/java" />-->
+<!--                                </copy>-->
+<!--                            </tasks>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jar-plugin</artifactId>-->
+<!--                <version>3.0.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>enhanced-source-jar</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <classifier>sources</classifier>-->
+<!--                            <classesDirectory>${project.build.directory}/sources</classesDirectory>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <!-- Logging -->
+
+        <dependency>
+            <groupId>org.knopflerfish.kf6</groupId>
+            <artifactId>log-API</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- pax-logging own artifacts -->
+
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+        </dependency>
+
+        <!-- OSGi -->
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.cmpn</artifactId>
+        </dependency>
+
+        <!-- Testing -->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
 
 </project>

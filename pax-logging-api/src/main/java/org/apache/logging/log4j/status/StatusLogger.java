@@ -40,6 +40,10 @@ import org.apache.logging.log4j.spi.AbstractLogger;
 import org.apache.logging.log4j.util.Constants;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.apache.logging.log4j.util.Strings;
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * Records events that occur in the logging system. By default, only error messages are logged to {@link System#err}.
@@ -85,7 +89,7 @@ public final class StatusLogger extends AbstractLogger {
     private static final StatusLogger STATUS_LOGGER = new StatusLogger(StatusLogger.class.getName(),
             ParameterizedNoReferenceMessageFactory.INSTANCE);
 
-    private final SimpleLogger logger;
+    private static PaxLogger logger = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(StatusLogger.class), "log4j2");
 
     private final Collection<StatusListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -105,14 +109,7 @@ public final class StatusLogger extends AbstractLogger {
         super(name, messageFactory);
         final String dateFormat = PROPS.getStringProperty(STATUS_DATE_FORMAT, Strings.EMPTY);
         final boolean showDateTime = !Strings.isEmpty(dateFormat);
-        this.logger = new SimpleLogger("StatusLogger", Level.ERROR, false, true, showDateTime, false,
-                dateFormat, messageFactory, PROPS, System.err);
         this.listenersLevel = Level.toLevel(DEFAULT_STATUS_LEVEL, Level.WARN).intLevel();
-
-        // LOG4J2-1813 if system property "log4j2.debug" is defined, print all status logging
-        if (isDebugPropertyEnabled()) {
-            logger.setLevel(Level.TRACE);
-        }
     }
 
     // LOG4J2-1813 if system property "log4j2.debug" is defined, print all status logging
@@ -130,7 +127,7 @@ public final class StatusLogger extends AbstractLogger {
     }
 
     public void setLevel(final Level level) {
-        logger.setLevel(level);
+        // Configured directly through org.ops4j.pax.logging.spi.support.DefaultServiceLog.setLogLevel()
     }
 
     /**
@@ -242,7 +239,23 @@ public final class StatusLogger extends AbstractLogger {
 
     @Override
     public Level getLevel() {
-        return logger.getLevel();
+        switch (logger.getLogLevel()) {
+            case DefaultServiceLog.TRACE:
+                return Level.TRACE;
+            case DefaultServiceLog.INFO:
+                return Level.INFO;
+            case DefaultServiceLog.WARN:
+                return Level.WARN;
+            case DefaultServiceLog.ERROR:
+                return Level.ERROR;
+            case DefaultServiceLog.FATAL:
+                return Level.FATAL;
+            case DefaultServiceLog.NONE:
+                return Level.OFF;
+            case DefaultServiceLog.DEBUG:
+            default:
+                return Level.DEBUG;
+        }
     }
 
     /**
@@ -270,7 +283,7 @@ public final class StatusLogger extends AbstractLogger {
         }
         // LOG4J2-1813 if system property "log4j2.debug" is defined, all status logging is enabled
         if (isDebugPropertyEnabled()) {
-            logger.logMessage(fqcn, level, marker, msg, t);
+            logMessage0(fqcn, level, marker, msg, t);
         } else {
             if (listeners.size() > 0) {
                 for (final StatusListener listener : listeners) {
@@ -279,8 +292,27 @@ public final class StatusLogger extends AbstractLogger {
                     }
                 }
             } else {
-                logger.logMessage(fqcn, level, marker, msg, t);
+                logMessage0(fqcn, level, marker, msg, t);
             }
+        }
+    }
+
+    private void logMessage0(String fqcn, Level level, Marker marker, Message msg, Throwable t) {
+        if (level == Level.ALL) {
+            // level treated as threshold...
+            logger.trace(msg.getFormattedMessage(), t, fqcn);
+        } else if (level == Level.FATAL) {
+            logger.fatal(msg.getFormattedMessage(), t, fqcn);
+        } else if (level == Level.ERROR) {
+            logger.error(msg.getFormattedMessage(), t, fqcn);
+        } else if (level == Level.WARN) {
+            logger.warn(msg.getFormattedMessage(), t, fqcn);
+        } else if (level == Level.INFO) {
+            logger.inform(msg.getFormattedMessage(), t, fqcn);
+        } else if (level == Level.DEBUG) {
+            logger.debug(msg.getFormattedMessage(), t, fqcn);
+        } else if (level == Level.TRACE) {
+            logger.trace(msg.getFormattedMessage(), t, fqcn);
         }
     }
 
@@ -407,10 +439,38 @@ public final class StatusLogger extends AbstractLogger {
         if (isDebugPropertyEnabled()) {
             return true;
         }
+        int threshold = level.intLevel();
         if (listeners.size() > 0) {
-            return listenersLevel >= level.intLevel();
+            return listenersLevel >= threshold;
         }
-        return logger.isEnabled(level, marker);
+        // the higher int value, the more messages pass, the less important levels pass
+        // i.e., DEBUG > INFO
+        if (threshold == Level.OFF.intLevel()) {
+            return false;
+        }
+        if (threshold == Level.ALL.intLevel()) {
+            return true;
+        }
+        if (threshold == Level.FATAL.intLevel()) {
+            return logger.isFatalEnabled();
+        }
+        if (threshold == Level.ERROR.intLevel()) {
+            return logger.isErrorEnabled();
+        }
+        if (threshold == Level.WARN.intLevel()) {
+            return logger.isWarnEnabled();
+        }
+        if (threshold == Level.INFO.intLevel()) {
+            return logger.isInfoEnabled();
+        }
+        if (threshold == Level.DEBUG.intLevel()) {
+            return logger.isDebugEnabled();
+        }
+        if (threshold == Level.TRACE.intLevel()) {
+            return logger.isTraceEnabled();
+        }
+
+        return false;
     }
 
     /**

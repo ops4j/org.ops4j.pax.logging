@@ -27,7 +27,6 @@ import org.apache.log4j.MDC;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.log.LogService;
 
 /**
@@ -248,7 +247,7 @@ public class PaxLoggerImpl implements PaxLogger {
     }
 
     private void setDelegateContext() {
-        Map context = getPaxContext().getContext();
+        Map<String, Object> context = getPaxContext().getContext();
         if (context != null) {
             for (Object o : context.keySet()) {
                 String key = (String) o;

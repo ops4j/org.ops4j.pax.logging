@@ -27,23 +27,29 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.log.LogService;
 
-public class PaxLoggerImpl
-    implements PaxLogger
-{
+/**
+ * Log4J2 specific {@link PaxLogger} delegating directly to Log4J2's {@link ExtendedLogger}.
+ */
+public class PaxLoggerImpl implements PaxLogger {
 
+    // "the" delegate. org.apache.logging.log4j.spi.ExtendedLogger
     private ExtendedLogger m_delegate;
+
+    // FQCN for Log42 to get location info
     private String m_fqcn;
+    // bundle associated with PaxLoggingService which is org.osgi.framework.ServiceFactory
     private Bundle m_bundle;
-    private BundleRevision m_bundleRevision;
-    private Long m_bundleId;
-    private String m_bundleSymbolicName;
-    private String m_bundleVersion;
+    // actual PaxLoggingService
     private PaxLoggingServiceImpl m_service;
+
+//    private BundleRevision m_bundleRevision;
+//    private Long m_bundleId;
+//    private String m_bundleSymbolicName;
+//    private String m_bundleVersion;
 
     /**
      * @param bundle   The bundle that this PaxLogger belongs to.
@@ -51,8 +57,7 @@ public class PaxLoggerImpl
      * @param fqcn     The fully qualified classname of the client owning this logger.
      * @param service  The service to be used to handle the logging events.
      */
-    PaxLoggerImpl( Bundle bundle, ExtendedLogger delegate, String fqcn, PaxLoggingServiceImpl service )
-    {
+    PaxLoggerImpl(Bundle bundle, ExtendedLogger delegate, String fqcn, PaxLoggingServiceImpl service) {
         m_delegate = delegate;
         m_fqcn = fqcn;
         m_bundle = bundle;
@@ -63,194 +68,121 @@ public class PaxLoggerImpl
         this.m_delegate = m_delegate;
     }
 
-    public boolean isTraceEnabled()
-    {
+    @Override
+    public boolean isTraceEnabled() {
         return m_delegate.isTraceEnabled();
     }
 
-    public boolean isDebugEnabled()
-    {
+    @Override
+    public boolean isDebugEnabled() {
         return m_delegate.isDebugEnabled();
     }
 
-    public boolean isWarnEnabled()
-    {
-        return m_delegate.isWarnEnabled();
-    }
-
-    public boolean isInfoEnabled()
-    {
+    @Override
+    public boolean isInfoEnabled() {
         return m_delegate.isInfoEnabled();
     }
 
-    public boolean isErrorEnabled()
-    {
+    @Override
+    public boolean isWarnEnabled() {
+        return m_delegate.isWarnEnabled();
+    }
+
+    @Override
+    public boolean isErrorEnabled() {
         return m_delegate.isErrorEnabled();
     }
 
-    public boolean isFatalEnabled()
-    {
+    @Override
+    public boolean isFatalEnabled() {
         return m_delegate.isFatalEnabled();
     }
 
-    private void setDelegateContext()
-    {
-        Map<String, Object> context = getPaxContext().getContext();
-        if( context != null )
-        {
-            for (Map.Entry<String, Object> entry : context.entrySet()) {
-                put(entry.getKey(), entry.getValue());
-            }
-        }
-        if (m_bundle != null)
-        {
-            BundleRevision rev = m_bundle.adapt(BundleRevision.class);
-            if (rev != m_bundleRevision) {
-                m_bundleId = m_bundle.getBundleId();
-                m_bundleSymbolicName = m_bundle.getSymbolicName();
-                m_bundleVersion = m_bundle.getVersion().toString();
-                m_bundleRevision = rev;
-            }
-            put("bundle.id", m_bundleId);
-            put("bundle.name", m_bundleSymbolicName);
-            put("bundle.version", m_bundleVersion);
+    public void trace(final String message, final Throwable t) {
+        if (isTraceEnabled()) {
+            doLog(Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, t);
         }
     }
 
-    private void put(String name, Object o)
-    {
-        if (o != null)
-        {
-            ThreadContext.put(name, o.toString());
+    @Override
+    public void debug(String message, Throwable t) {
+        if (isDebugEnabled()) {
+            doLog(Level.DEBUG, LogService.LOG_DEBUG, m_fqcn, message, t);
         }
     }
 
-    private void clearDelegateContext()
-    {
-        ThreadContext.clearMap();
-    }
-
-    private void doLog(final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
-        if (System.getSecurityManager() != null) {
-            AccessController.doPrivileged(
-                    new PrivilegedAction<Void>() {
-                        public Void run() {
-                            doLog0( level, svcLevel, fqcn, message, t );
-                            return null;
-                        }
-                    }
-            );
-        } else {
-            doLog0( level, svcLevel, fqcn, message, t );
+    @Override
+    public void inform(String message, Throwable t) {
+        if (isInfoEnabled()) {
+            doLog(Level.INFO, LogService.LOG_INFO, m_fqcn, message, t);
         }
     }
 
-    private void doLog0( Level level, int svcLevel, final String fqcn, String message, Throwable t ) {
-        setDelegateContext();
-        Message msg = m_delegate.getMessageFactory().newMessage(message);
-        m_delegate.logMessage(fqcn, level, null, msg, t);
-        clearDelegateContext();
-        m_service.handleEvents( m_bundle, null, svcLevel, message, t );
-    }
-
-    public void trace(final String message, final Throwable t )
-    {
-        if( isTraceEnabled() )
-        {
-            doLog( Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, t );
+    @Override
+    public void warn(String message, Throwable t) {
+        if (isWarnEnabled()) {
+            doLog(Level.WARN, LogService.LOG_WARNING, m_fqcn, message, t);
         }
     }
 
-    public void debug( String message, Throwable t )
-    {
-        if( isDebugEnabled() )
-        {
-            doLog( Level.DEBUG, LogService.LOG_DEBUG, m_fqcn, message, t );
+    @Override
+    public void error(String message, Throwable t) {
+        if (isErrorEnabled()) {
+            doLog(Level.ERROR, LogService.LOG_ERROR, m_fqcn, message, t);
         }
     }
 
-    public void inform( String message, Throwable t )
-    {
-        if( isInfoEnabled() )
-        {
-            doLog( Level.INFO, LogService.LOG_INFO, m_fqcn, message, t );
+    @Override
+    public void fatal(String message, Throwable t) {
+        if (isFatalEnabled()) {
+            doLog(Level.FATAL, LogService.LOG_ERROR, m_fqcn, message, t);
         }
     }
 
-    public void warn( String message, Throwable t )
-    {
-        if( isWarnEnabled() )
-        {
-            doLog( Level.WARN, LogService.LOG_WARNING, m_fqcn, message, t );
+    @Override
+    public void trace(String message, Throwable t, String fqcn) {
+        if (isTraceEnabled()) {
+            doLog(Level.TRACE, LogService.LOG_DEBUG, fqcn, message, t);
         }
     }
 
-    public void error( String message, Throwable t )
-    {
-        if( isErrorEnabled() )
-        {
-            doLog( Level.ERROR, LogService.LOG_ERROR, m_fqcn, message, t );
+    @Override
+    public void debug(String message, Throwable t, String fqcn) {
+        if (isDebugEnabled()) {
+            doLog(Level.DEBUG, LogService.LOG_DEBUG, fqcn, message, t);
         }
     }
 
-    public void fatal( String message, Throwable t )
-    {
-        if( isFatalEnabled() )
-        {
-            doLog( Level.FATAL, LogService.LOG_ERROR, m_fqcn, message, t );
+    @Override
+    public void inform(String message, Throwable t, String fqcn) {
+        if (isInfoEnabled()) {
+            doLog(Level.INFO, LogService.LOG_INFO, fqcn, message, t);
         }
     }
 
-    public void trace( String message, Throwable t, String fqcn )
-    {
-        if( isTraceEnabled() )
-        {
-            doLog( Level.TRACE, LogService.LOG_DEBUG, fqcn, message, t );
+    @Override
+    public void warn(String message, Throwable t, String fqcn) {
+        if (isWarnEnabled()) {
+            doLog(Level.WARN, LogService.LOG_WARNING, fqcn, message, t);
         }
     }
 
-    public void debug( String message, Throwable t, String fqcn )
-    {
-        if( isDebugEnabled() )
-        {
-            doLog( Level.DEBUG, LogService.LOG_DEBUG, fqcn, message, t );
+    @Override
+    public void error(String message, Throwable t, String fqcn) {
+        if (isErrorEnabled()) {
+            doLog(Level.ERROR, LogService.LOG_ERROR, fqcn, message, t);
         }
     }
 
-    public void inform( String message, Throwable t, String fqcn )
-    {
-        if( isInfoEnabled() )
-        {
-            doLog( Level.INFO, LogService.LOG_INFO, fqcn, message, t );
+    @Override
+    public void fatal(String message, Throwable t, String fqcn) {
+        if (isFatalEnabled()) {
+            doLog(Level.FATAL, LogService.LOG_ERROR, fqcn, message, t);
         }
     }
 
-    public void warn( String message, Throwable t, String fqcn )
-    {
-        if( isWarnEnabled() )
-        {
-            doLog( Level.WARN, LogService.LOG_WARNING, fqcn, message, t );
-        }
-    }
-
-    public void error( String message, Throwable t, String fqcn )
-    {
-        if( isErrorEnabled() )
-        {
-            doLog( Level.ERROR, LogService.LOG_ERROR, fqcn, message, t );
-        }
-    }
-
-    public void fatal( String message, Throwable t, String fqcn )
-    {
-        if( isFatalEnabled() )
-        {
-            doLog( Level.FATAL, LogService.LOG_ERROR, fqcn, message, t );
-        }
-    }
-
-    public int getLogLevel()
-    {
+    @Override
+    public int getLogLevel() {
         switch (m_delegate.getLevel().getStandardLevel()) {
             case TRACE:
                 return LEVEL_TRACE;
@@ -265,13 +197,73 @@ public class PaxLoggerImpl
         }
     }
 
-    public String getName()
-    {
+    @Override
+    public String getName() {
         return m_delegate.getName();
     }
 
-    public PaxContext getPaxContext()
-    {
+    @Override
+    public PaxContext getPaxContext() {
         return m_service.getPaxContext();
+    }
+
+    // private methods
+
+    private void doLog(final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+        if (System.getSecurityManager() != null) {
+            AccessController.doPrivileged(
+                    (PrivilegedAction<Void>) () -> {
+                        doLog0(level, svcLevel, fqcn, message, t);
+                        return null;
+                    }
+            );
+        } else {
+            doLog0(level, svcLevel, fqcn, message, t);
+        }
+    }
+
+    /**
+     * Most important pax-logging-service log method that bridges pax-logging-api directly into Log4J2.
+     * @param level
+     * @param svcLevel
+     * @param fqcn
+     * @param message
+     * @param t
+     */
+    private void doLog0(Level level, int svcLevel, final String fqcn, String message, Throwable t) {
+        setDelegateContext();
+        try {
+            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            m_delegate.logMessage(fqcn, level, null, msg, t);
+        } finally {
+            clearDelegateContext();
+        }
+        m_service.handleEvents(m_bundle, null, svcLevel, message, t);
+    }
+
+    private void setDelegateContext() {
+        Map<String, Object> context = getPaxContext().getContext();
+        if (context != null) {
+            for (Map.Entry<String, Object> entry : context.entrySet()) {
+                put(entry.getKey(), entry.getValue());
+            }
+        }
+        if (m_bundle != null) {
+            put("bundle.id", m_bundle.getBundleId());
+            put("bundle.name", m_bundle.getSymbolicName());
+            put("bundle.version", m_bundle.getVersion().toString());
+        }
+//        m_service.getConfigLock().readLock().lock();
+    }
+
+    private void put(String name, Object o) {
+        if (o != null) {
+            ThreadContext.put(name, o.toString());
+        }
+    }
+
+    private void clearDelegateContext() {
+//        m_service.getConfigLock().readLock().unlock();
+        ThreadContext.clearMap();
     }
 }

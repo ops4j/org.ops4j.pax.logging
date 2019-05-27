@@ -146,4 +146,11 @@ public interface PaxLoggingConstants {
      */
     String PID_CFG_LOG4J2_CONFIG_FILE = "org.ops4j.pax.logging.log4j2.config.file";
 
+    /**
+     * {@code org.osp4j.pax.logging} PID property to specify whether async context should be used. Used both
+     * for case where properties are taken directly from PID configuration or when
+     * {@link #PID_CFG_LOG4J2_CONFIG_FILE} is used.
+     */
+    String PID_CFG_LOG4J2_ASYNC = "org.ops4j.pax.logging.log4j2.async";
+
 }

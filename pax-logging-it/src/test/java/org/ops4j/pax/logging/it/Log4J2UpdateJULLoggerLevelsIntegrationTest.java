@@ -20,9 +20,9 @@ package org.ops4j.pax.logging.it;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -30,16 +30,13 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.logging.it.support.Helpers;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
-public class LogbackJacksonLayoutIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
+public class Log4J2UpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
 
     @Inject
     private ConfigurationAdmin cm;
@@ -50,33 +47,38 @@ public class LogbackJacksonLayoutIntegrationTest extends AbstractStdoutIntercept
                 combine(baseConfigure(), defaultLoggingConfig()),
 
                 paxLoggingApi(),
-                paxLoggingLogback(),
+                paxLoggingLog4J2(),
                 configAdmin(),
-                eventAdmin(),
-
-                mavenBundle("com.fasterxml.jackson.core", "jackson-annotations").versionAsInProject(),
-                mavenBundle("com.fasterxml.jackson.core", "jackson-core").versionAsInProject(),
-                mavenBundle("com.fasterxml.jackson.core", "jackson-databind").versionAsInProject()
+                eventAdmin()
         );
     }
 
     @Test
-    public void jsonFormatter() {
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOGBACK, "json");
+    @Ignore("for now")
+    public void julLevels() {
+        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "update.jul");
 
-        Logger log = LoggerFactory.getLogger("my.logger");
-        MDC.put("country", "Equestria");
-        log.info("Hello");
+        java.util.logging.Logger l1 = java.util.logging.Logger.getLogger("l1");
+        java.util.logging.Logger l2 = java.util.logging.Logger.getLogger("l2");
+
+        l1.info("INFO using l1 before");
+        l2.info("INFO using l2 before");
+
+        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "update.jul", props -> {
+            // swap the levels
+            props.put("log4j.logger.l1", "DEBUG");
+            props.put("log4j.logger.l2", "WARN");
+        });
+
+        l1.info("INFO using l1 after");
+        l2.info("INFO using l2 after");
 
         List<String> lines = readLines();
-        lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        assertTrue(lines.stream().anyMatch(l ->
-                l.contains("\"level\":\"INFO\"")
-                        && l.contains("\"logger\":\"my.logger\"")
-                        && l.contains("\"message\":\"Hello\"")
-                        && l.contains("\"country\":\"Equestria\"")
-        ));
+        assertFalse(lines.contains("[main] INFO l1 - INFO using l1 before"));
+        assertTrue(lines.contains("[main] INFO l2 - INFO using l2 before"));
+        assertTrue(lines.contains("[main] INFO l1 - INFO using l1 after"));
+        assertFalse(lines.contains("[main] INFO l2 - INFO using l2 after"));
     }
 
 }

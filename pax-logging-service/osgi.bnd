@@ -86,7 +86,7 @@ Private-Package: \
  org.ops4j.pax.logging.service.internal, \
  org.ops4j.pax.logging.service.internal.bridges, \
  org.ops4j.pax.logging.service.internal.spi, \
- org.ops4j.pax.logging.spi.support, \
+ org.ops4j.pax.logging.spi.support
 
 Export-Package: \
  !*

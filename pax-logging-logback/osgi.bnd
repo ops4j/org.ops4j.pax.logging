@@ -27,7 +27,7 @@ Private-Package: \
  org.ops4j.pax.logging.logback.internal, \
  org.ops4j.pax.logging.logback.internal.bridges, \
  org.ops4j.pax.logging.logback.internal.spi, \
- org.ops4j.pax.logging.spi.support, \
+ org.ops4j.pax.logging.spi.support
 
 Export-Package: \
  !*
