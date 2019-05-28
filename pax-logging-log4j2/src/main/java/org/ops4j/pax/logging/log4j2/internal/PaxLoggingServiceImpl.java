@@ -36,7 +36,6 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.plugins.util.PluginManager;
 import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory;
-import org.apache.logging.log4j.core.pattern.DatePatternConverter;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.knopflerfish.service.log.LogService;
@@ -376,7 +375,7 @@ public class PaxLoggingServiceImpl
                 // org.apache.logging.log4j.core.LoggerContext.reconfigure() will be called with empty
                 // org.apache.logging.log4j.core.config.properties.PropertiesConfiguration
                 m_log4jContext.start(new DefaultConfiguration());
-                m_log4jContext.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.INFO);
+                m_log4jContext.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.DEBUG);
 
                 StatusLogger.getLogger().info("Log4J2 configured using default configuration.");
             }
@@ -389,8 +388,7 @@ public class PaxLoggingServiceImpl
 
         m_log4jContext.updateLoggers();
 
-        // TODO: should iterate existing loggers instead of the configuration
-//        setLevelToJavaLogging();
+        setLevelToJavaLogging();
 
         // do it outside of the lock (if there will be lock)
         if (problem == null) {
@@ -406,33 +404,25 @@ public class PaxLoggingServiceImpl
      *
      * It's necessary to do that, because with pax logging, JUL loggers are not replaced.
      * So we need to configure JUL loggers in order that log messages goes correctly to log Handlers.
-     *
-     * @param configuration Properties coming from the configuration.
      */
-    private void setLevelToJavaLogging(final Dictionary<String, ?> configuration) {
+    private void setLevelToJavaLogging() {
         for (Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements(); ) {
             String name = (String) enum_.nextElement();
             java.util.logging.Logger.getLogger(name).setLevel(null);
         }
 
-        // TODO: should iterate existing loggers instead of the configuration
-        for (Enumeration<String> keys = configuration.keys(); keys.hasMoreElements(); ) {
-            String name = keys.nextElement();
-            if (name.equals(LOG4J2_ROOT_LOGGER_LEVEL_PROPERTY)) {
-                String value = (String) configuration.get(LOG4J2_ROOT_LOGGER_LEVEL_PROPERTY);
-                java.util.logging.Level julLevel = BackendSupport.toJULLevel(value);
-                java.util.logging.Logger.getGlobal().setLevel(julLevel);
-                java.util.logging.Logger.getLogger("").setLevel(julLevel);
-                // "global" comes from java.util.logging.Logger.GLOBAL_LOGGER_NAME, but that constant wasn't added until Java 1.6
-                java.util.logging.Logger.getLogger("global").setLevel(julLevel);
-            }
-
-            if (name.startsWith(LOG4J2_LOGGER_PROPERTY_PREFIX)
-                    && name.endsWith(".name")) {
-                String value = (String) configuration.get(name.replaceFirst("\\.name$", ".level"));
-                java.util.logging.Level julLevel = BackendSupport.toJULLevel(value);
-                String packageName = (String) configuration.get(name);
-                java.util.logging.Logger.getLogger(packageName).setLevel(julLevel);
+        for (Logger logger : m_log4jContext.getLoggers()) {
+            if (logger != null) {
+                Level l = logger.getLevel();
+                java.util.logging.Level julLevel = BackendSupport.toJULLevel(l.name());
+                if (logger.getName().equals(LogManager.ROOT_LOGGER_NAME)) {
+                    java.util.logging.Logger.getGlobal().setLevel(julLevel);
+                    java.util.logging.Logger.getLogger("").setLevel(julLevel);
+                    // "global" comes from java.util.logging.Logger.GLOBAL_LOGGER_NAME, but that constant wasn't added until Java 1.6
+                    java.util.logging.Logger.getLogger("global").setLevel(julLevel);
+                } else {
+                    java.util.logging.Logger.getLogger(logger.getName()).setLevel(julLevel);
+                }
             }
         }
     }

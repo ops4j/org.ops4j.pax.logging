@@ -63,8 +63,6 @@ public class LogbackIntegrationTest extends AbstractStdoutInterceptingIntegratio
 
     @Configuration
     public Option[] configure() throws IOException {
-        // even if default/fallback logger would write to a file (and actually Log4J1's LogLog class does that),
-        // Log4J1's default configuration uses ConsoleAppender
         return combine(
                 combine(baseConfigure(), defaultLoggingConfig()),
 
