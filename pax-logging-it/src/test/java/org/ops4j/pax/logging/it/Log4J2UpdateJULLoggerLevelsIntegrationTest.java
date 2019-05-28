@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.List;
 import javax.inject.Inject;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -54,9 +53,8 @@ public class Log4J2UpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutIn
     }
 
     @Test
-    @Ignore("for now")
     public void julLevels() {
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "update.jul");
+        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J2_PROPERTIES, "update.jul");
 
         java.util.logging.Logger l1 = java.util.logging.Logger.getLogger("l1");
         java.util.logging.Logger l2 = java.util.logging.Logger.getLogger("l2");
@@ -64,10 +62,10 @@ public class Log4J2UpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutIn
         l1.info("INFO using l1 before");
         l2.info("INFO using l2 before");
 
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "update.jul", props -> {
+        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J2_PROPERTIES, "update.jul", props -> {
             // swap the levels
-            props.put("log4j.logger.l1", "DEBUG");
-            props.put("log4j.logger.l2", "WARN");
+            props.put("log4j2.logger.l1.level", "debug");
+            props.put("log4j2.logger.l2.level", "warn");
         });
 
         l1.info("INFO using l1 after");
@@ -75,10 +73,10 @@ public class Log4J2UpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutIn
 
         List<String> lines = readLines();
 
-        assertFalse(lines.contains("[main] INFO l1 - INFO using l1 before"));
-        assertTrue(lines.contains("[main] INFO l2 - INFO using l2 before"));
-        assertTrue(lines.contains("[main] INFO l1 - INFO using l1 after"));
-        assertFalse(lines.contains("[main] INFO l2 - INFO using l2 after"));
+        assertFalse(lines.contains("l1/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [INFO] INFO using l1 before"));
+        assertTrue(lines.contains("l2/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [INFO] INFO using l2 before"));
+        assertTrue(lines.contains("l1/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [INFO] INFO using l1 after"));
+        assertFalse(lines.contains("l2/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [INFO] INFO using l2 after"));
     }
 
 }

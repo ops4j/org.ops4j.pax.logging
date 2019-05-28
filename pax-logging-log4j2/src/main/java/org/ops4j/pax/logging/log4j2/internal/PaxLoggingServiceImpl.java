@@ -132,7 +132,6 @@ public class PaxLoggingServiceImpl
      */
     public synchronized void shutdown() {
         m_log4jContext.stop();
-        m_log4jContext = null;
         closed = true;
     }
 

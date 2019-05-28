@@ -155,7 +155,7 @@ public class Helpers {
     }
 
     public static void restartPaxLoggingLog4j2(BundleContext context, boolean await) {
-        // restart pax-logging-logback to pick up replaced stdout
+        // restart pax-logging-log4j2 to pick up replaced stdout
         // awaits for signal indicating successfull (re)configuration
         Bundle paxLoggingLog4j2 = paxLoggingLog4j2(context);
         if (paxLoggingLog4j2 != null) {
