@@ -131,19 +131,19 @@ public class Log4J2RestartPaxLoggingLog4J2ServiceIntegrationTest extends Abstrac
         List<String> lines = readLines();
         List<String> lines2 = readLines(13);
 
-        assertTrue("DEFAULT_PATTERN", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLog4J2ServiceIntegrationTest - Before restarting pax-logging-log4j2"));
+        assertTrue("DEFAULT_PATTERN", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingLog4J2ServiceIntegrationTest - Before restarting pax-logging-log4j2"));
         assertFalse("@Injected LogService reference should not work", lines.stream().anyMatch(l -> l.contains("Before restarting pax-logging-log4j2 (log service old)")));
         assertTrue("new LogService reference should work", lines.stream().anyMatch(l -> l.contains("Before restarting pax-logging-log4j2 (log service new)")));
-        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLog4J2ServiceIntegrationTest] INFO : When pax-logging-log4j2 is stopped"));
+        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingLog4J2ServiceIntegrationTest] INFO : When pax-logging-log4j2 is stopped"));
         assertFalse("old LogService reference should not work", lines.stream().anyMatch(l -> l.contains("When pax-logging-log4j2 is stopped (log service)")));
-        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLog4J2ServiceIntegrationTest] INFO : When pax-logging-log4j2 is stopped (log1)"));
-        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLog4J2ServiceIntegrationTestEx] INFO : When pax-logging-log4j2 is stopped (log2)"));
+        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingLog4J2ServiceIntegrationTest] INFO : When pax-logging-log4j2 is stopped (log1)"));
+        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingLog4J2ServiceIntegrationTestEx] INFO : When pax-logging-log4j2 is stopped (log2)"));
         assertTrue("Reconfiguration", lines.stream().anyMatch(l -> l.startsWith("org.ops4j.pax.logging.pax-logging-api [log4j2] INFO : Log4J2 configured using default configuration.")));
-        assertTrue("DEFAULT_PATTERN", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLog4J2ServiceIntegrationTest - After restarting pax-logging-log4j2"));
-        assertTrue("DEFAULT_PATTERN", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLog4J2ServiceIntegrationTest - After restarting pax-logging-log4j2 (log1)"));
+        assertTrue("DEFAULT_PATTERN", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingLog4J2ServiceIntegrationTest - After restarting pax-logging-log4j2"));
+        assertTrue("DEFAULT_PATTERN", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingLog4J2ServiceIntegrationTest - After restarting pax-logging-log4j2 (log1)"));
         assertFalse("DEFAULT_PATTERN", lines2.contains("[main] INFO  PaxExam-Probe - After restarting pax-logging-log4j2 (log service old ref)"));
         assertTrue("DEFAULT_PATTERN", lines2.contains("[main] INFO  PaxExam-Probe - After restarting pax-logging-log4j2 (log service new ref)"));
-        assertTrue("DEFAULT_PATTERN", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLog4J2ServiceIntegrationTest - After restarting pax-logging-log4j2 (log3)"));
+        assertTrue("DEFAULT_PATTERN", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingLog4J2ServiceIntegrationTest - After restarting pax-logging-log4j2 (log3)"));
     }
 
 }

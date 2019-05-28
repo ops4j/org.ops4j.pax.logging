@@ -534,6 +534,11 @@
                 <artifactId>pax-logging-logback</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-log4j2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
@@ -543,6 +548,11 @@
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-sample-fragment-logback</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-sample-fragment-log4j2</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -807,7 +817,6 @@
     </repositories>
 
     <modules>
-<!--        <module>pax-logging-report</module>-->
         <module>pax-logging-api</module>
         <module>pax-logging-api-test</module>
         <module>pax-logging-service</module>

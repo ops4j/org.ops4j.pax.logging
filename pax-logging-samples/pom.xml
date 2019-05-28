@@ -41,6 +41,7 @@
 <!--        <module>logger</module>-->
         <module>fragment</module>
         <module>fragment-logback</module>
+        <module>fragment-log4j2</module>
 <!--        <module>dynamic</module>-->
 <!--        <module>perfs</module>-->
     </modules>

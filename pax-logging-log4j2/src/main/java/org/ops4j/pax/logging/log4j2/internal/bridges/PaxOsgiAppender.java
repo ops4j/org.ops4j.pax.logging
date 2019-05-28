@@ -35,14 +35,14 @@ import org.osgi.framework.FrameworkUtil;
 /**
  * <p>
  * This is a Log4J2 appender that forwards log messages to any services registered with OSGi with the interface
- * org.ops4j.pax.logging.spi.PaxAppender. That list of appender services is possibly filtered by the filter setting.
+ * {@link org.ops4j.pax.logging.spi.PaxAppender}. That list of appender services is possibly filtered by the filter setting.
  * </p>
  */
 @Plugin(name = "PaxOsgi", category = "Core", elementType = "appender", printObject = true)
 public class PaxOsgiAppender extends AbstractAppender {
 
-    private PaxAppenderProxy proxy;
     private final String filter;
+    private PaxAppenderProxy proxy;
 
     public PaxOsgiAppender(String name, String filter) {
         super(name, null, null, true, Property.EMPTY_ARRAY);
@@ -58,11 +58,9 @@ public class PaxOsgiAppender extends AbstractAppender {
      */
     @PluginFactory
     public static PaxOsgiAppender createAppender(
-            // @formatter:off
             @PluginAttribute("name") final String name,
             @PluginAttribute("filter") final String filter,
             @PluginConfiguration final Configuration config) {
-        // @formatter:on
 
         if (name == null) {
             StatusLogger.getLogger().error("No name provided for PaxOsgiAppender");
@@ -73,16 +71,13 @@ public class PaxOsgiAppender extends AbstractAppender {
 
     @Override
     public void start() {
-        // TODO: use correct bundle context
         BundleContext bundleContext = null;
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        if (bundle != null) {
+            bundleContext = bundle.getBundleContext();
+        }
         if (bundleContext == null) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            if (bundle != null) {
-                bundleContext = bundle.getBundleContext();
-            }
-            if (bundleContext == null) {
-                throw new IllegalArgumentException("missing BundleContext, expected in org.ops4j.pax.logging.log4j2.bundlecontext");
-            }
+            throw new IllegalStateException("Can't determine BundleContext to use for PaxOsgiAppender");
         }
         proxy = new PaxAppenderProxy(bundleContext, filter);
         proxy.open();

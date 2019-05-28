@@ -127,6 +127,11 @@
             <artifactId>pax-logging-sample-fragment-logback</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-sample-fragment-log4j2</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- OPS4J dependencies -->
 

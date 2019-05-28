@@ -142,7 +142,46 @@ public class Log4J2RefreshPaxLoggingApiIntegrationTest extends AbstractStdoutInt
 
         assertTrue("line from DEFAULT_PATTERN", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RefreshPaxLoggingApiIntegrationTest - Before refreshing pax-logging-api"));
         assertTrue("line from DEFAULT_PATTERN", lines2.contains("[main] INFO  PaxExam-Probe - Before refreshing pax-logging-api"));
-        assertTrue("Cascade refresh", lines.stream().anyMatch(l -> l.startsWith("org.ops4j.pax.logging.pax-logging-log4j2 [log4j2] INFO : Log4J2 configured using default configuration.")));
+
+        // this may be both from pax-logging-api or from pax-logging-log4j2 bundle!
+        // depending on which bundle will first grab the default logger.
+        // this depends on the order of bundles calculated in org.apache.felix.framework.Felix.refreshPackages()
+        //
+        // the Status.logger may be initialized like this, if pax-logging-log4j2 is first:
+        // "FelixFrameworkWiring@2062" daemon prio=5 tid=0x16 nid=NA runnable
+        //   java.lang.Thread.State: RUNNABLE
+        //    at org.ops4j.pax.logging.spi.support.FallbackLogFactory.createFallbackLog(FallbackLogFactory.java:71)
+        //    at org.apache.logging.log4j.status.StatusLogger.<clinit>(StatusLogger.java:92)
+        //    at org.apache.logging.log4j.core.config.plugins.util.PluginManager.<clinit>(PluginManager.java:39)
+        //    at org.ops4j.pax.logging.log4j2.internal.PaxLoggingServiceImpl.<clinit>(PaxLoggingServiceImpl.java:75)
+        //    at org.ops4j.pax.logging.log4j2.internal.Activator.start(Activator.java:90)
+        //    at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:697)
+        //    at org.apache.felix.framework.Felix.activateBundle(Felix.java:2240)
+        //    at org.apache.felix.framework.Felix.startBundle(Felix.java:2146)
+        //    at org.apache.felix.framework.Felix$RefreshHelper.restart(Felix.java:5097)
+        //    at org.apache.felix.framework.Felix.refreshPackages(Felix.java:4291)
+        //    at org.apache.felix.framework.FrameworkWiringImpl.run(FrameworkWiringImpl.java:188)
+        //    at java.lang.Thread.run(Thread.java:748)
+        //
+        // or this, if pax-logging-api is first:
+        // "FelixFrameworkWiring@2062" daemon prio=5 tid=0x16 nid=NA runnable
+        //   java.lang.Thread.State: RUNNABLE
+        //    at org.ops4j.pax.logging.spi.support.FallbackLogFactory.createFallbackLog(FallbackLogFactory.java:71)
+        //    at org.apache.logging.log4j.status.StatusLogger.<clinit>(StatusLogger.java:92)
+        //    at org.apache.logging.log4j.LogManager.<clinit>(LogManager.java:54)
+        //    at org.ops4j.pax.logging.internal.Activator.start(Activator.java:130)
+        //    at org.apache.felix.framework.util.SecureAction.startActivator(SecureAction.java:697)
+        //    at org.apache.felix.framework.Felix.activateBundle(Felix.java:2240)
+        //    at org.apache.felix.framework.Felix.startBundle(Felix.java:2146)
+        //    at org.apache.felix.framework.Felix$RefreshHelper.restart(Felix.java:5097)
+        //    at org.apache.felix.framework.Felix.refreshPackages(Felix.java:4291)
+        //    at org.apache.felix.framework.FrameworkWiringImpl.run(FrameworkWiringImpl.java:188)
+        //    at java.lang.Thread.run(Thread.java:748)
+        assertTrue("Cascade refresh", lines.stream().anyMatch(l ->
+                l.contains("org.ops4j.pax.logging.pax-logging-log4j2 [log4j2] INFO : Log4J2 configured using default configuration.")
+                || l.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] INFO : Log4J2 configured using default configuration.")
+        ));
+
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api"));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api (log1)"));
         assertTrue("new reference", lines2.contains("[main] INFO  PaxExam-Probe - After refreshing pax-logging-log4j2 (log service new ref)"));

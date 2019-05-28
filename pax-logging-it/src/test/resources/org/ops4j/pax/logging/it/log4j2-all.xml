@@ -21,75 +21,43 @@
 -->
 <all-configurations>
 
-    <!-- test for plain FileAppender -->
-    <configuration id="builtin.file">
-        <appender name="file" class="ch.qos.logback.core.FileAppender">
-            <file>target/logs-logback/file-appender.log</file>
-            <append>false</append>
-            <encoder>
-                <!-- https://logback.qos.ch/manual/layouts.html#ClassicPatternLayout -->
-<!--                <pattern>%c/%C [%p] %m%n</pattern>-->
-                <pattern>%logger/%class [%level] %message%n</pattern>
-            </encoder>
-        </appender>
-
-        <root level="info">
-            <appender-ref ref="file" />
-        </root>
-    </configuration>
-
     <!-- test for rolling appender and a filter available in fragment bundle -->
-    <configuration id="builtin.rolling">
-        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-                <layout class="ch.qos.logback.classic.layout.TTLLLayout" />
-            </encoder>
-        </appender>
-        <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>target/logs-logback/rf-appender.log</file>
-            <append>true</append>
-            <encoder>
-                <pattern>%logger/%class [%level] %mdc %message%n</pattern>
-            </encoder>
-            <!--
-                A RollingPolicy is responsible for performing the rolling over of the active log file.
-                The RollingPolicy is also responsible for providing the active log file, that is the live
-                file where logging output will be directed.
-                "what"
-                 - ch.qos.logback.core.rolling.FixedWindowRollingPolicy
-                 - ch.qos.logback.core.rolling.TimeBasedRollingPolicy
-                 - ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy
+    <Configuration id="builtin.rolling">
+        <Appenders>
+            <Console name="console">
+                <PatternLayout pattern="%logger/%class [%level] %message%n" />
+            </Console>
+            <RollingFile name="file" append="true">
+                <fileName>target/logs-log4j2/rf-appender.log</fileName>
+                <filePattern>target/logs-log4j2/rf-appender.log.%d{yyyy-MM}</filePattern>
+                <PatternLayout pattern="%logger/%class [%level] %mdc %message%n" />
+                <Policies>
+                    <!-- "Policies" == org.apache.logging.log4j.core.appender.rolling.CompositeTriggeringPolicy -->
+                    <TimeBasedTriggeringPolicy  />
+                    <Always />
+                </Policies>
+                <filters>
+                    <!-- "filters" == org.apache.logging.log4j.core.filter.CompositeFilter -->
+                    <PaxDebug />
+                </filters>
+<!--                <rollingPolicy class="org.ops4j.pax.logging.logback.extra.AlwaysTriggerPolicy">-->
+<!--                    <fileNamePattern>target/logs-logback/rf-appender.log</fileNamePattern>-->
+<!--                    <maxHistory>5</maxHistory>-->
+<!--                    <totalSizeCap>100KB</totalSizeCap>-->
+<!--                </rollingPolicy>-->
+<!--                <filter class="org.ops4j.pax.logging.logback.extra.DebugFilter" />-->
+            </RollingFile>
+        </Appenders>
 
-                A TriggeringPolicy controls the conditions under which roll-over occurs. Such conditions include
-                time of day, file size, an external event, the log request or a combination thereof.
-                "when"
-                 - ch.qos.logback.core.rolling.TimeBasedRollingPolicy
-                 - ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy
-                 - ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy
-                 - ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP
-                 - ch.qos.logback.core.rolling.DefaultTimeBasedFileNamingAndTriggeringPolicy
-
-                Both the above policies are required. But if RollingPolicy is both
-                ch.qos.logback.core.rolling.RollingPolicy and ch.qos.logback.core.rolling.TriggeringPolicy,
-                only one is sufficient. These are:
-                 - ch.qos.logback.core.rolling.TimeBasedRollingPolicy
-                 - ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy
-            -->
-            <rollingPolicy class="org.ops4j.pax.logging.logback.extra.AlwaysTriggerPolicy">
-                <fileNamePattern>target/logs-logback/rf-appender.log.%d{yyyy-MM}</fileNamePattern>
-                <maxHistory>5</maxHistory>
-                <totalSizeCap>100KB</totalSizeCap>
-            </rollingPolicy>
-            <filter class="org.ops4j.pax.logging.logback.extra.DebugFilter" />
-        </appender>
-
-        <logger name="my.logger" level="info" additivity="false">
-            <appender-ref ref="file" />
-        </logger>
-        <root level="debug">
-            <appender-ref ref="console" />
-        </root>
-    </configuration>
+        <Loggers>
+            <Logger name="my.logger" level="info" additivity="false">
+                <AppenderRef ref="file" />
+            </Logger>
+            <Root level="debug">
+                <AppenderRef ref="console" />
+            </Root>
+        </Loggers>
+    </Configuration>
 
     <!-- test for MDC accessed through different APIs -->
     <Configuration id="mdc">
@@ -127,135 +95,81 @@
     </Configuration>
 
     <!-- test for MDCSiftingAppender -->
-    <configuration id="mdc.appender">
-        <appender name="sift" class="ch.qos.logback.classic.sift.SiftingAppender">
-            <!-- without class, it's ch.qos.logback.classic.sift.MDCBasedDiscriminator -->
-            <discriminator>
-                <key>bundle.name</key>
-                <defaultValue>no-such-bundle</defaultValue>
-            </discriminator>
-            <sift>
-                <appender name="file-${bundle.name}" class="ch.qos.logback.core.FileAppender">
-                    <!-- here we can't use different key (as fixed for Log4J1 with PAXLOGGING-256) -->
-                    <file>target/logs-logback/${bundle.name}-file-appender.log</file>
-                    <append>false</append>
-                    <encoder>
-                        <pattern>%c/%C [%p] {%X} %m%n</pattern>
-                    </encoder>
-                </appender>
-            </sift>
-        </appender>
+    <Configuration id="mdc.appender">
+        <Appenders>
+            <Routing name="sift">
+                <!--
+                    "ctx" is one of the prefixes supported by org.apache.logging.log4j.core.lookup.StrSubstitutor.variableResolver
+                    which is org.apache.logging.log4j.core.lookup.Interpolator which maps:
+                        strLookupMap = {java.util.HashMap@5274}  size = 13
+                         "date" -> {org.apache.logging.log4j.core.lookup.DateLookup@5319}
+                         "ctx" -> {org.apache.logging.log4j.core.lookup.ContextMapLookup@5321}
+                         "main" -> {org.apache.logging.log4j.core.lookup.MainMapLookup@5323}
+                         "env" -> {org.apache.logging.log4j.core.lookup.EnvironmentLookup@5325}
+                         "sys" -> {org.apache.logging.log4j.core.lookup.SystemPropertiesLookup@5327}
+                         "sd" -> {org.apache.logging.log4j.core.lookup.StructuredDataLookup@5329}
+                         "java" -> {org.apache.logging.log4j.core.lookup.JavaLookup@5331}
+                         "marker" -> {org.apache.logging.log4j.core.lookup.MarkerLookup@5333}
+                         "jndi" -> {org.apache.logging.log4j.core.lookup.JndiLookup@5335}
+                         "jvmrunargs" -> {org.apache.logging.log4j.core.lookup.JmxRuntimeInputArgumentsLookup@5337}
+                         "map" -> {org.apache.logging.log4j.core.lookup.MapLookup@5339}
+                         "bundle" -> {org.apache.logging.log4j.core.lookup.ResourceBundleLookup@5341}
+                         "log4j" -> {org.apache.logging.log4j.core.lookup.Log4jLookup@5343}
+                -->
+                <Routes pattern="${ctx:bundle.name}">
+                    <Route>
+                        <File name="file-${ctx:bundle.name}">
+                            <fileName>target/logs-log4j2/${ctx:bundle.name}-file-appender.log</fileName>
+                            <append>true</append>
+                            <PatternLayout>
+                                <pattern>%logger/%class [%level] %mdc %message%n</pattern>
+                            </PatternLayout>
+                        </File>
+                    </Route>
+                </Routes>
+            </Routing>
+        </Appenders>
 
-        <root level="info">
-            <appender-ref ref="sift" />
-        </root>
-    </configuration>
-
-    <!-- test for MDCSiftingAppender with arbitrary key -->
-    <configuration id="mdc.appender2">
-        <appender name="sift" class="ch.qos.logback.classic.sift.SiftingAppender">
-            <!-- without class, it's ch.qos.logback.classic.sift.MDCBasedDiscriminator -->
-            <discriminator>
-                <key>my.key</key>
-                <defaultValue>default</defaultValue>
-            </discriminator>
-            <sift>
-                <appender name="file-${my.key}" class="ch.qos.logback.core.FileAppender">
-                    <!-- here we can't use different key (as fixed for Log4J1 with PAXLOGGING-256) -->
-                    <file>target/logs-logback/${my.key}-file-appender.log</file>
-                    <append>false</append>
-                    <encoder>
-                        <pattern>%c/%C [%p] {%X} %m%n</pattern>
-                    </encoder>
-                </appender>
-            </sift>
-        </appender>
-
-        <root level="info">
-            <appender-ref ref="sift" />
-        </root>
-    </configuration>
-
-    <!--
-        https://logback.qos.ch/manual/appenders.html#serverSocketAppender
-        test for SocketAppender - it's opposite than the one from Log4J1. It listens, not connects.
-    -->
-    <configuration id="builtin.socket">
-        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-                <layout class="ch.qos.logback.classic.layout.TTLLLayout" />
-            </encoder>
-        </appender>
-        <appender name="s" class="ch.qos.logback.classic.net.server.ServerSocketAppender">
-            <address>localhost</address>
-            <!-- System.setProperty("socketAppender.port", Integer.toString(port)); -->
-            <port>${socketAppender.port}</port>
-            <includeCallerData>true</includeCallerData>
-        </appender>
-
-        <logger name="my.logger" level="info" additivity="false">
-            <appender-ref ref="s" />
-        </logger>
-        <root level="info">
-            <appender-ref ref="console" />
-        </root>
-    </configuration>
-
-    <!-- test for ch.qos.logback.core.read.ListAppender -->
-    <configuration id="builtin.list">
-        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-                <layout class="ch.qos.logback.classic.layout.TTLLLayout" />
-            </encoder>
-        </appender>
-        <appender name="list" class="ch.qos.logback.core.read.ListAppender" />
-
-        <logger name="my.logger" level="info" additivity="false">
-            <appender-ref ref="list" />
-        </logger>
-        <root level="info">
-            <appender-ref ref="console" />
-        </root>
-    </configuration>
+        <Loggers>
+            <Root level="info">
+                <AppenderRef ref="sift" />
+            </Root>
+        </Loggers>
+    </Configuration>
 
     <!-- test for custom, OSGi registered PaxAppender -->
-    <configuration id="custom">
-        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-                <layout class="ch.qos.logback.classic.layout.TTLLLayout" />
-            </encoder>
-        </appender>
-        <appender name="any-name" class="org.ops4j.pax.logging.logback.internal.bridges.PaxAppenderDelegate">
+    <Configuration id="custom">
+        <Appenders>
+            <Console name="console">
+                <PatternLayout pattern="%logger/%class [%level] %message%n" />
+            </Console>
             <!-- Will translate to "(&(objectClass=org.ops4j.pax.logging.spi.PaxAppender)(org.ops4j.pax.logging.appender.name=custom))" -->
-            <paxname>custom</paxname>
-        </appender>
+            <PaxOsgi name="custom" filter="custom" />
+        </Appenders>
 
-        <logger name="my.logger" level="info" additivity="false">
-            <!--
-                In Log4J1 we had "osgi:custom" refrences.
-                Here we have to be more explicit with the above <appender />
-            -->
-<!--            <appender-ref ref="osgi:custom" />-->
-            <appender-ref ref="any-name" />
-        </logger>
-        <root level="info">
-            <appender-ref ref="console" />
-        </root>
-    </configuration>
+        <Loggers>
+            <Logger name="my.logger" level="info" additivity="false">
+                <AppenderRef ref="custom" />
+            </Logger>
+            <Root level="debug">
+                <AppenderRef ref="console" />
+            </Root>
+        </Loggers>
+    </Configuration>
 
-    <!-- test for layout included in logback contrib -->
-    <configuration id="json">
-        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-                <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
-                    <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter" />
-                </layout>
-            </encoder>
-        </appender>
+    <!-- test for org.apache.logging.log4j.core.layout.JsonLayout -->
+    <Configuration id="json">
+        <Appenders>
+            <Console name="console">
+                <JsonLayout compact="false" properties="true" />
+            </Console>
+        </Appenders>
 
-        <root level="info">
-            <appender-ref ref="console" />
-        </root>
-    </configuration>
+        <Loggers>
+            <Root level="debug">
+                <AppenderRef ref="console" />
+            </Root>
+        </Loggers>
+    </Configuration>
 
 </all-configurations>
