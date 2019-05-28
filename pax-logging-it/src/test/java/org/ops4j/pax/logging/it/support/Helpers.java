@@ -335,6 +335,23 @@ public class Helpers {
             }
 
             return newProperties;
+        } else if (library == LoggingLibrary.LOG4J2_XML) {
+            // XML - we have to store it into some file
+            InputSource is = new InputSource(AbstractControlledIntegrationTestBase.class.getResourceAsStream(library.config()));
+            XPath xp = XPathFactory.newInstance().newXPath();
+            try {
+                NodeList ns = (NodeList) xp.evaluate("/all-configurations/Configuration[@id='" + prefix + "']", is, XPathConstants.NODESET);
+                new File("target/xml").mkdirs();
+                String name = "target/xml/" + UUID.randomUUID().toString() + ".xml";
+                TransformerFactory.newInstance().newTransformer()
+                        .transform(new DOMSource(ns.item(0)), new StreamResult(new FileOutputStream(name)));
+                Dictionary<String, Object> newProperties = new Hashtable<>();
+                newProperties.put(PaxLoggingConstants.PID_CFG_LOG4J2_CONFIG_FILE, name);
+
+                return newProperties;
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
         } else if (library == LoggingLibrary.LOGBACK) {
             // XML - we have to store it into some file
             InputSource is = new InputSource(AbstractControlledIntegrationTestBase.class.getResourceAsStream(library.config()));

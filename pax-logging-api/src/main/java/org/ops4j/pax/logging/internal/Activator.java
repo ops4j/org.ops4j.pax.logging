@@ -22,7 +22,6 @@ import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
 import org.apache.log4j.helpers.LogLog;
-import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PaxPropertySource;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingConstants;
@@ -35,7 +34,6 @@ import org.ops4j.pax.logging.spi.support.FrameworkHandler;
 import org.ops4j.pax.logging.spi.support.OsgiUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
 public class Activator implements BundleActivator {
 

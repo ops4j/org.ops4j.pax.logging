@@ -28,7 +28,6 @@ import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.log.LogService;
 
 /**
@@ -264,6 +263,8 @@ public class PaxLoggerImpl implements PaxLogger {
 
     private void clearDelegateContext() {
 //        m_service.getConfigLock().readLock().unlock();
-        ThreadContext.clearMap();
+        ThreadContext.remove("bundle.id");
+        ThreadContext.remove("bundle.name");
+        ThreadContext.remove("bundle.version");
     }
 }

@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
-public class LogbackMDCIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
+public class Log4J2MDCIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {
 
     @Inject
     private ConfigurationAdmin cm;
@@ -55,7 +55,7 @@ public class LogbackMDCIntegrationTest extends AbstractStdoutInterceptingIntegra
                 combine(baseConfigure(), defaultLoggingConfig()),
 
                 paxLoggingApi(),
-                paxLoggingLogback(),
+                paxLoggingLog4J2(),
                 configAdmin(),
                 eventAdmin()
         );
@@ -63,7 +63,7 @@ public class LogbackMDCIntegrationTest extends AbstractStdoutInterceptingIntegra
 
     @Test
     public void mdc() {
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOGBACK, "mdc");
+        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J2_XML, "mdc");
 
         Logger log = LoggerFactory.getLogger("my.logger");
         MDC.put("country", "Equestria");
@@ -90,10 +90,10 @@ public class LogbackMDCIntegrationTest extends AbstractStdoutInterceptingIntegra
         assertNotNull(loggingService);
         assertThat(loggingService.getPaxContext().get("country"), equalTo("Equestria"));
 
-        List<String> lines = readLines("target/logs-logback/mdc-file-appender.log");
+        List<String> lines = readLines("target/logs-log4j2/mdc-file-appender.log");
 
         assertTrue(lines.stream().anyMatch(l ->
-                l.contains("my.logger/org.ops4j.pax.logging.it.LogbackMDCIntegrationTest")
+                l.contains("my.logger/org.ops4j.pax.logging.it.Log4J2MDCIntegrationTest")
                         && l.contains("bundle.name=PaxExam-Probe")
                         && l.contains("country=Equestria")
         ));

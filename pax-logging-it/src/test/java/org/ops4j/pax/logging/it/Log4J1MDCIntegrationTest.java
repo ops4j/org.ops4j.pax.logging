@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.inject.Inject;
 
+import org.apache.logging.log4j.ThreadContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -79,8 +80,8 @@ public class Log4J1MDCIntegrationTest extends AbstractStdoutInterceptingIntegrat
 
         // Log4J1
         assertThat(org.apache.log4j.MDC.get("country"), equalTo("Equestria"));
-        // Log4J2 - doesn't work yet (?)
-//        assertThat(ThreadContext.get("country"), equalTo("Equestria"));
+        // Log4J2
+        assertThat(ThreadContext.get("country"), equalTo("Equestria"));
 
         // through PaxLoggingService.getPaxContext()
         ServiceReference<PaxLoggingService> sr = context.getServiceReference(PaxLoggingService.class);
