@@ -18,8 +18,6 @@ package org.apache.logging.log4j.core.impl;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -136,20 +134,24 @@ public class ThrowableProxy implements Serializable {
         this.name = throwable.getClass().getName();
         this.message = throwable.getMessage();
         this.localizedMessage = throwable.getLocalizedMessage();
-        Stack<Class<?>> stack;
-        try {
-            Class<?>[] classCtx = (Class<?>[]) classContextMethod.invoke(throwable);
-            stack = new Stack<Class<?>>();
-            stack.addAll(Arrays.asList(classCtx));
-        } catch (Exception e) {
-            stack = StackLocatorUtil.getCurrentStackTrace();
-        }
         final Map<String, CacheEntry> map = new HashMap<>();
+        Stack<Class<?>> stack;
+        if (classContextMethod == null) {
+            stack = StackLocatorUtil.getCurrentStackTrace();
+        } else {
+            try {
+                Class<?>[] classCtx = (Class<?>[]) classContextMethod.invoke(throwable);
+                stack = new Stack<Class<?>>();
+                stack.addAll(Arrays.asList(classCtx));
+            } catch (Exception e) {
+                stack = StackLocatorUtil.getCurrentStackTrace();
+            }
+        }
         this.extendedStackTrace = this.toExtendedStackTrace(stack, map, null, throwable.getStackTrace());
         final Throwable throwableCause = throwable.getCause();
         final Set<Throwable> causeVisited = new HashSet<>(1);
         this.causeProxy = throwableCause == null ? null : new ThrowableProxy(throwable, stack, map, throwableCause,
-                visited, causeVisited);
+            visited, causeVisited);
         this.suppressedProxies = this.toSuppressedProxies(throwable, visited);
     }
 
@@ -165,6 +167,7 @@ public class ThrowableProxy implements Serializable {
                 // Karaf < 4.1
                 method = Exception.class.getMethod("getClassContext");
             } catch (NoSuchMethodException e2) {
+                // KARAF-5416, Karaf 4.2+
                 method = null;
             }
         }
@@ -193,7 +196,7 @@ public class ThrowableProxy implements Serializable {
         this.extendedStackTrace = this.toExtendedStackTrace(stack, map, parent.getStackTrace(), cause.getStackTrace());
         final Throwable causeCause = cause.getCause();
         this.causeProxy = causeCause == null || causeVisited.contains(causeCause) ? null : new ThrowableProxy(parent,
-                stack, map, causeCause, suppressedVisited, causeVisited);
+            stack, map, causeCause, suppressedVisited, causeVisited);
         this.suppressedProxies = this.toSuppressedProxies(cause, suppressedVisited);
     }
 
@@ -252,7 +255,7 @@ public class ThrowableProxy implements Serializable {
         renderSuffix(suffix, sb, textRenderer);
         textRenderer.render(EOL_STR, sb, "Text");
         this.formatElements(sb, prefix, throwableProxy.commonElementCount,
-                throwableProxy.getStackTrace(), throwableProxy.extendedStackTrace, ignorePackages, textRenderer, suffix);
+            throwableProxy.getStackTrace(), throwableProxy.extendedStackTrace, ignorePackages, textRenderer, suffix);
         this.formatSuppressed(sb, prefix + TAB, throwableProxy.suppressedProxies, ignorePackages, textRenderer, suffix);
         this.formatCause(sb, prefix, throwableProxy.causeProxy, ignorePackages, textRenderer, suffix);
     }
@@ -383,7 +386,7 @@ public class ThrowableProxy implements Serializable {
         renderSuffix(suffix, sb, textRenderer);
         textRenderer.render(EOL_STR, sb, "Text");
         this.formatElements(sb, Strings.EMPTY, cause.commonElementCount,
-                cause.getThrowable().getStackTrace(), cause.extendedStackTrace, ignorePackages, textRenderer, suffix);
+            cause.getThrowable().getStackTrace(), cause.extendedStackTrace, ignorePackages, textRenderer, suffix);
     }
 
     public ThrowableProxy getCauseProxy() {
@@ -430,7 +433,7 @@ public class ThrowableProxy implements Serializable {
         renderSuffix(suffix, sb, textRenderer);
         textRenderer.render(EOL_STR, sb, "Text");
         this.formatElements(sb, Strings.EMPTY, 0, this.throwable.getStackTrace(), this.extendedStackTrace,
-                ignorePackages, textRenderer, suffix);
+            ignorePackages, textRenderer, suffix);
         return sb.toString();
     }
 
@@ -451,6 +454,16 @@ public class ThrowableProxy implements Serializable {
      */
     public ExtendedStackTraceElement[] getExtendedStackTrace() {
         return this.extendedStackTrace;
+    }
+
+    /**
+     * Format the stack trace including packaging information.
+     *
+     * @return The formatted stack trace including packaging information.
+     * @param suffix
+     */
+    public String getExtendedStackTraceAsString() {
+        return this.getExtendedStackTraceAsString(null, PlainTextRenderer.getInstance(), "");
     }
 
     /**
@@ -638,7 +651,11 @@ public class ThrowableProxy implements Serializable {
             } catch (final Exception ex) {
                 // Ignore the exception.
             }
-            lastLoader = callerClass.getClassLoader();
+            try {
+                lastLoader = callerClass.getClassLoader();
+            } catch (final SecurityException e) {
+                lastLoader = null;
+            }
         }
         return new CacheEntry(new ExtendedClassInfo(exact, location, version), lastLoader);
     }
@@ -695,7 +712,7 @@ public class ThrowableProxy implements Serializable {
                     }
                 } else {
                     final CacheEntry entry = this.toCacheEntry(stackTraceElement,
-                            this.loadClass(lastLoader, className), false);
+                        this.loadClass(lastLoader, className), false);
                     extClassInfo = entry.element;
                     map.put(stackTraceElement.toString(), entry);
                     if (entry.loader != null) {
