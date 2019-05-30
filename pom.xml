@@ -817,6 +817,7 @@
     </repositories>
 
     <modules>
+        <module>pax-logging-report</module>
         <module>pax-logging-api</module>
         <module>pax-logging-api-test</module>
         <module>pax-logging-service</module>
