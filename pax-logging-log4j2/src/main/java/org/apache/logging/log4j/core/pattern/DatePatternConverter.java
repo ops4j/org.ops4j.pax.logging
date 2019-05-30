@@ -26,6 +26,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.util.Constants;
+import org.apache.logging.log4j.core.time.Instant;
+import org.apache.logging.log4j.core.time.MutableInstant;
 import org.apache.logging.log4j.core.util.datetime.FastDateFormat;
 import org.apache.logging.log4j.core.util.datetime.FixedDateFormat;
 import org.apache.logging.log4j.core.util.datetime.FixedDateFormat.FixedFormat;
@@ -41,10 +43,11 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
 
     private abstract static class Formatter {
         long previousTime; // for ThreadLocal caching mode
+        int nanos;
 
-        abstract String format(long timeMillis);
+        abstract String format(final Instant instant);
 
-        abstract void formatToBuffer(long timeMillis, StringBuilder destination);
+        abstract void formatToBuffer(final Instant instant, StringBuilder destination);
 
         public String toPattern() {
             return null;
@@ -62,12 +65,13 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
         }
 
         @Override
-        String format(final long timeMillis) {
-            return fastDateFormat.format(timeMillis);
+        String format(final Instant instant) {
+            return fastDateFormat.format(instant.getEpochMillisecond());
         }
 
         @Override
-        void formatToBuffer(final long timeMillis, final StringBuilder destination) {
+        void formatToBuffer(final Instant instant, final StringBuilder destination) {
+            final long timeMillis = instant.getEpochMillisecond();
             if (previousTime != timeMillis) {
                 cachedBuffer.setLength(0);
                 fastDateFormat.format(timeMillis, cachedBuffer);
@@ -85,7 +89,7 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
         private final FixedDateFormat fixedDateFormat;
 
         // below fields are only used in ThreadLocal caching mode
-        private final char[] cachedBuffer = new char[64]; // max length of formatted date-time in any format < 64
+        private final char[] cachedBuffer = new char[70]; // max length of formatted date-time in any format < 70
         private int length = 0;
 
         FixedFormatter(final FixedDateFormat fixedDateFormat) {
@@ -93,14 +97,18 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
         }
 
         @Override
-        String format(final long timeMillis) {
-            return fixedDateFormat.format(timeMillis);
+        String format(final Instant instant) {
+            return fixedDateFormat.formatInstant(instant);
         }
 
         @Override
-        void formatToBuffer(final long timeMillis, final StringBuilder destination) {
-            if (previousTime != timeMillis) {
-                length = fixedDateFormat.format(timeMillis, cachedBuffer, 0);
+        void formatToBuffer(final Instant instant, final StringBuilder destination) {
+            final long epochSecond = instant.getEpochSecond();
+            final int nanoOfSecond = instant.getNanoOfSecond();
+            if (previousTime != epochSecond || nanos != nanoOfSecond) {
+                length = fixedDateFormat.formatInstant(instant, cachedBuffer, 0);
+                previousTime = epochSecond;
+                nanos = nanoOfSecond;
             }
             destination.append(cachedBuffer, 0, length);
         }
@@ -114,36 +122,38 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
     private static final class UnixFormatter extends Formatter {
 
         @Override
-        String format(final long timeMillis) {
-            return Long.toString(timeMillis / 1000);
+        String format(final Instant instant) {
+            return Long.toString(instant.getEpochSecond());
         }
 
         @Override
-        void formatToBuffer(final long timeMillis, final StringBuilder destination) {
-            destination.append(timeMillis / 1000); // no need for caching
+        void formatToBuffer(final Instant instant, final StringBuilder destination) {
+            destination.append(instant.getEpochSecond()); // no need for caching
         }
     }
 
     private static final class UnixMillisFormatter extends Formatter {
 
         @Override
-        String format(final long timeMillis) {
-            return Long.toString(timeMillis);
+        String format(final Instant instant) {
+            return Long.toString(instant.getEpochMillisecond());
         }
 
         @Override
-        void formatToBuffer(final long timeMillis, final StringBuilder destination) {
-            destination.append(timeMillis); // no need for caching
+        void formatToBuffer(final Instant instant, final StringBuilder destination) {
+            destination.append(instant.getEpochMillisecond()); // no need for caching
         }
     }
 
     private final class CachedTime {
-        public long timestampMillis;
+        public long epochSecond;
+        public int nanoOfSecond;
         public String formatted;
 
-        public CachedTime(final long timestampMillis) {
-            this.timestampMillis = timestampMillis;
-            this.formatted = formatter.format(this.timestampMillis);
+        public CachedTime(final Instant instant) {
+            this.epochSecond = instant.getEpochSecond();
+            this.nanoOfSecond = instant.getNanoOfSecond();
+            this.formatted = formatter.format(instant);
         }
     }
 
@@ -158,6 +168,7 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
     private static final String UNIX_MILLIS_FORMAT = "UNIX_MILLIS";
 
     private final String[] options;
+    private final ThreadLocal<WeakReference<MutableInstant>> threadLocalMutableInstant = new ThreadLocal<>();
     private final ThreadLocal<WeakReference<Formatter>> threadLocalFormatter = new ThreadLocal<>();
     private final AtomicReference<CachedTime> cachedTime;
     private final Formatter formatter;
@@ -171,7 +182,13 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
         super("Date", "date");
         this.options = options == null ? null : Arrays.copyOf(options, options.length);
         this.formatter = createFormatter(options);
-        cachedTime = new AtomicReference<>(new CachedTime(System.currentTimeMillis()));
+        cachedTime = new AtomicReference<>(fromEpochMillis(System.currentTimeMillis()));
+    }
+
+    private CachedTime fromEpochMillis(final long epochMillis) {
+        final MutableInstant temp = new MutableInstant();
+        temp.initFromEpochMilli(epochMillis, 0);
+        return new CachedTime(temp);
     }
 
     private Formatter createFormatter(final String[] options) {
@@ -200,7 +217,7 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
         // if we get here, options is a non-null array with at least one element (first of which non-null)
         Objects.requireNonNull(options);
         if (options.length == 0) {
-            throw new IllegalArgumentException("options array must have at least one element");
+            throw new IllegalArgumentException("Options array must have at least one element");
         }
         Objects.requireNonNull(options[0]);
         final String patternOption = options[0];
@@ -246,19 +263,39 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
      */
     @Override
     public void format(final LogEvent event, final StringBuilder output) {
-        format(event.getTimeMillis(), output);
+        format(event.getInstant(), output);
     }
 
-    public void format(final long timestampMillis, final StringBuilder output) {
+    public void format(final long epochMilli, final StringBuilder output) {
+        final MutableInstant instant = getMutableInstant();
+        instant.initFromEpochMilli(epochMilli, 0);
+        format(instant, output);
+    }
+
+    private MutableInstant getMutableInstant() {
         if (Constants.ENABLE_THREADLOCALS) {
-            formatWithoutAllocation(timestampMillis, output);
+            WeakReference<MutableInstant> refResult = threadLocalMutableInstant.get();
+            MutableInstant result = refResult == null ? null : refResult.get();
+            if (result == null) {
+                result = new MutableInstant();
+                refResult = new WeakReference<>(result);
+                threadLocalMutableInstant.set(refResult);
+            }
+            return result;
+        }
+        return new MutableInstant();
+    }
+
+    public void format(final Instant instant, final StringBuilder output) {
+        if (Constants.ENABLE_THREADLOCALS) {
+            formatWithoutAllocation(instant, output);
         } else {
-            formatWithoutThreadLocals(timestampMillis, output);
+            formatWithoutThreadLocals(instant, output);
         }
     }
 
-    private void formatWithoutAllocation(final long timestampMillis, final StringBuilder output) {
-        getThreadLocalFormatter().formatToBuffer(timestampMillis, output);
+    private void formatWithoutAllocation(final Instant instant, final StringBuilder output) {
+        getThreadLocalFormatter().formatToBuffer(instant, output);
     }
 
     private Formatter getThreadLocalFormatter() {
@@ -272,10 +309,10 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
         return result;
     }
 
-    private void formatWithoutThreadLocals(final long timestampMillis, final StringBuilder output) {
+    private void formatWithoutThreadLocals(final Instant instant, final StringBuilder output) {
         CachedTime cached = cachedTime.get();
-        if (timestampMillis != cached.timestampMillis) {
-            final CachedTime newTime = new CachedTime(timestampMillis);
+        if (instant.getEpochSecond() != cached.epochSecond || instant.getNanoOfSecond() != cached.nanoOfSecond) {
+            final CachedTime newTime = new CachedTime(instant);
             if (cachedTime.compareAndSet(cached, newTime)) {
                 cached = newTime;
             } else {
