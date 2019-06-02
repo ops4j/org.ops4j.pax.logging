@@ -56,6 +56,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.Logger;
+import org.osgi.service.log.LoggerFactory;
 
 public class PaxLoggingServiceImpl
     implements PaxLoggingService, LogService, ManagedService, ServiceFactory
@@ -128,6 +130,7 @@ public class PaxLoggingServiceImpl
         closed = true;
     }
 
+    @Override
     public PaxLogger getLogger( Bundle bundle, String category, String fqcn )
     {
         String name = category == null ? LogManager.ROOT_LOGGER_NAME : category;
@@ -139,6 +142,17 @@ public class PaxLoggingServiceImpl
         return m_loggers.get( name );
     }
 
+    @Override
+    public PaxLogger getLogger(String category) {
+        String name = category == null ? LogManager.ROOT_LOGGER_NAME : category;
+        PaxLoggerImpl logger = m_loggers.get(name);
+        if (logger == null) {
+            logger = new PaxLoggerImpl(m_bundleContext.getBundle(), m_log4jContext.getLogger(name), this);
+        }
+        return m_loggers.get(name);
+    }
+
+    @Override
     public synchronized void updated( Dictionary<String,?> configuration ) throws ConfigurationException
     {
         if( closed )
@@ -384,51 +398,84 @@ public class PaxLoggingServiceImpl
     public Object getService( final Bundle bundle, ServiceRegistration registration )
     {
         class ManagedPaxLoggingService
-            implements PaxLoggingService, LogService, ManagedService
+            implements PaxLoggingService, LoggerFactory, ManagedService
         {
             private final String fqcn = getClass().getName();
 
+            @Override
             public void log( int level, String message )
             {
                 PaxLoggingServiceImpl.this.log(bundle, level, message, null, fqcn);
             }
 
+            @Override
             public void log( int level, String message, Throwable exception )
             {
                 PaxLoggingServiceImpl.this.log(bundle, level, message, exception, fqcn);
             }
 
+            @Override
             public void log( ServiceReference sr, int level, String message )
             {
                 Bundle b = bundle == null && sr != null ? sr.getBundle() : bundle;
                 PaxLoggingServiceImpl.this.log(b, level, message, null, fqcn);
             }
 
+            @Override
             public void log( ServiceReference sr, int level, String message, Throwable exception )
             {
                 Bundle b = bundle == null && sr != null ? sr.getBundle() : bundle;
                 PaxLoggingServiceImpl.this.log(b, level, message, exception, fqcn);
             }
 
+            @Override
             public int getLogLevel()
             {
                 return PaxLoggingServiceImpl.this.getLogLevel();
             }
 
+            @Override
             public PaxLogger getLogger( Bundle myBundle, String category, String fqcn )
             {
                 return PaxLoggingServiceImpl.this.getLogger( myBundle, category, fqcn );
             }
 
+            @Override
             public void updated( Dictionary<String, ?> configuration )
                 throws ConfigurationException
             {
                 PaxLoggingServiceImpl.this.updated( configuration );
             }
 
+            @Override
             public PaxContext getPaxContext()
             {
                 return PaxLoggingServiceImpl.this.getPaxContext();
+            }
+
+            @Override
+            public Logger getLogger(String s) {
+                return PaxLoggingServiceImpl.this.getLogger(s);
+            }
+
+            @Override
+            public Logger getLogger(Class<?> aClass) {
+                return PaxLoggingServiceImpl.this.getLogger(aClass);
+            }
+
+            @Override
+            public <L extends Logger> L getLogger(String s, Class<L> aClass) {
+                return PaxLoggingServiceImpl.this.getLogger(s, aClass);
+            }
+
+            @Override
+            public <L extends Logger> L getLogger(Class<?> aClass, Class<L> aClass1) {
+                return PaxLoggingServiceImpl.this.getLogger(aClass, aClass1);
+            }
+
+            @Override
+            public <L extends Logger> L getLogger(Bundle bundle, String s, Class<L> aClass) {
+                return PaxLoggingServiceImpl.this.getLogger(bundle, s, aClass);
             }
         }
 

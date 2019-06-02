@@ -53,4 +53,6 @@ public abstract class FqcnIgnoringPaxLogger implements PaxLogger
     {
         fatal(appendToMessage(message,fqcn), t);
     }
+
+    public void audit( String message, Throwable t, String fqcn ) { audit(appendToMessage(message,fqcn), t); }
 }

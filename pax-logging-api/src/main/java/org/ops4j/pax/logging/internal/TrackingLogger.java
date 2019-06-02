@@ -41,6 +41,8 @@ public class TrackingLogger
         added( service );
     }
 
+    public boolean isAuditEnabled() { return m_delegate.isAuditEnabled(); }
+
     public boolean isTraceEnabled()
     {
         return m_delegate.isTraceEnabled();
@@ -101,6 +103,8 @@ public class TrackingLogger
         m_delegate.fatal( message, t );
     }
 
+    public void audit( String message, Throwable t) { m_delegate.audit( message, t ); }
+
     public void trace( String message, Throwable t, String fqcn )
     {
         m_delegate.trace( message, t, fqcn );
@@ -130,6 +134,8 @@ public class TrackingLogger
     {
         m_delegate.fatal( message, t, fqcn );
     }
+
+    public void audit( String message, Throwable t, String fqcn ) { m_delegate.audit( message, t, fqcn ); }
 
     public int getLogLevel()
     {

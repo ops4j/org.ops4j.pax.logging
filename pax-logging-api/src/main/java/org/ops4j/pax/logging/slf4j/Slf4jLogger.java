@@ -69,7 +69,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isTraceEnabled() )
         {
-            m_delegate.trace( msg, null );
+            m_delegate.trace( msg, (Throwable) null );
         }
     }
 
@@ -168,7 +168,7 @@ public class Slf4jLogger
         if( m_delegate.isTraceEnabled() )
         {
             setMDCMarker( marker );
-            m_delegate.trace( msg, null );
+            m_delegate.trace( msg, (Throwable) null );
             resetMDCMarker();
         }
     }
@@ -271,7 +271,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isDebugEnabled() )
         {
-            m_delegate.debug( msg, null );
+            m_delegate.debug( msg, (Throwable) null );
         }
     }
 
@@ -370,7 +370,7 @@ public class Slf4jLogger
         if( m_delegate.isDebugEnabled() )
         {
             setMDCMarker( marker );
-            m_delegate.debug( msg, null );
+            m_delegate.debug( msg, (Throwable) null );
             resetMDCMarker();
         }
     }
@@ -675,7 +675,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isWarnEnabled() )
         {
-            m_delegate.warn( msg, null );
+            m_delegate.warn( msg, (Throwable) null );
         }
     }
 
@@ -774,7 +774,7 @@ public class Slf4jLogger
         if( m_delegate.isWarnEnabled() )
         {
             setMDCMarker( marker );
-            m_delegate.warn( msg, null );
+            m_delegate.warn( msg, (Throwable) null );
             resetMDCMarker();
         }
     }
@@ -877,7 +877,7 @@ public class Slf4jLogger
     {
         if( m_delegate.isErrorEnabled() )
         {
-            m_delegate.error( msg, null );
+            m_delegate.error( msg, (Throwable) null );
         }
     }
 
@@ -976,7 +976,7 @@ public class Slf4jLogger
         if( m_delegate.isErrorEnabled() )
         {
             setMDCMarker( marker );
-            m_delegate.error( msg, null );
+            m_delegate.error( msg, (Throwable) null );
             resetMDCMarker();
         }
     }

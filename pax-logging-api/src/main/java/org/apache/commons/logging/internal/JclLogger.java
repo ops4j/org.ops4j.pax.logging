@@ -69,7 +69,7 @@ public class JclLogger
     {
         if( m_delegate.isTraceEnabled() && message != null )
         {
-            m_delegate.trace( message.toString(), null );
+            m_delegate.trace( message.toString(), (Throwable) null );
         }
     }
 
@@ -92,7 +92,7 @@ public class JclLogger
     {
         if( m_delegate.isDebugEnabled() && message != null )
         {
-            m_delegate.debug( message.toString(), null );
+            m_delegate.debug( message.toString(), (Throwable) null );
         }
     }
 
@@ -139,7 +139,7 @@ public class JclLogger
     {
         if( m_delegate.isWarnEnabled() && message != null )
         {
-            m_delegate.warn( message.toString(), null );
+            m_delegate.warn( message.toString(), (Throwable) null );
         }
     }
 
@@ -161,7 +161,7 @@ public class JclLogger
     {
         if( m_delegate.isErrorEnabled() && message != null )
         {
-            m_delegate.error( message.toString(), null );
+            m_delegate.error( message.toString(), (Throwable) null );
         }
 
     }

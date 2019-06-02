@@ -39,7 +39,8 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger
     private static final int WARN = 3;
     private static final int ERROR = 4;
     private static final int FATAL = 5;
-    private static final int NONE = 6;
+    private static final int AUDIT = 6;
+    private static final int NONE = 7;
 
     public static int level;
 
@@ -58,6 +59,8 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger
         m_bundle = bundle;
         m_categoryName = categoryName;
     }
+
+    public boolean isAuditEnabled() { return level <= AUDIT; }
 
     public boolean isTraceEnabled()
     {
@@ -137,6 +140,14 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger
         }
     }
 
+    public void audit( String message, Throwable t )
+    {
+        if( isAuditEnabled() )
+        {
+            output( message, t );
+        }
+    }
+
     public int getLogLevel()
     {
         return level;
@@ -196,6 +207,10 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger
         else if( "FATAL".equals( levelName ) )
         {
             level = FATAL;
+        }
+        else if ("AUDIT".equals( levelName ) )
+        {
+            level = AUDIT;
         }
         else if( "NONE".equals( levelName ) || "OFF".equals( levelName ) )
         {

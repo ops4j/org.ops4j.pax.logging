@@ -163,7 +163,7 @@ public abstract class Category
     {
         if( m_delegate.isDebugEnabled() && message != null )
         {
-            m_delegate.debug( message.toString(), null );
+            m_delegate.debug( message.toString(), (Throwable) null );
         }
     }
 
@@ -219,7 +219,7 @@ public abstract class Category
     {
         if( m_delegate.isErrorEnabled() && message != null )
         {
-            m_delegate.error( message.toString(), null );
+            m_delegate.error( message.toString(), (Throwable) null );
         }
     }
 
@@ -1073,7 +1073,7 @@ public abstract class Category
     {
         if( m_delegate.isWarnEnabled() && message != null )
         {
-            m_delegate.warn( message.toString(), null );
+            m_delegate.warn( message.toString(), (Throwable) null );
         }
     }
 

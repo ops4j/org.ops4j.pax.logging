@@ -17,7 +17,9 @@
  */
 package org.ops4j.pax.logging;
 
-public interface PaxLogger
+import org.osgi.service.log.Logger;
+
+public interface PaxLogger extends Logger
 {
     int LEVEL_TRACE = 0;
     int LEVEL_DEBUG = 1;
@@ -25,6 +27,7 @@ public interface PaxLogger
     int LEVEL_WARNING = 3;
     int LEVEL_ERROR = 4;
 
+    boolean isAuditEnabled();
     boolean isTraceEnabled();
     boolean isDebugEnabled();
     boolean isWarnEnabled();
@@ -32,6 +35,7 @@ public interface PaxLogger
     boolean isErrorEnabled();
     boolean isFatalEnabled();
 
+    void audit(String message, Throwable t );
     void trace( String message, Throwable t );
     void debug( String message, Throwable t );
     void inform( String message, Throwable t );
@@ -39,6 +43,7 @@ public interface PaxLogger
     void error( String message, Throwable t );
     void fatal( String message, Throwable t );
 
+    void audit( String message, Throwable t, String fqcn);
     void trace( String message, Throwable t, String fqcn);
     void debug( String message, Throwable t, String fqcn);
     void inform( String message, Throwable t, String fqcn);

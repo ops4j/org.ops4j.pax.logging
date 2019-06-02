@@ -196,7 +196,7 @@ public class Logger extends Category
     {
         if( m_delegate.isTraceEnabled() && message != null )
         {
-            m_delegate.trace( message.toString(), null );
+            m_delegate.trace( message.toString(), (Throwable) null );
         }
     }
 
@@ -249,7 +249,7 @@ public class Logger extends Category
         {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format( msgStr, arg );
-            m_delegate.trace( msgStr, null );
+            m_delegate.trace( msgStr, (Throwable) null );
         }
     }
 
@@ -272,7 +272,7 @@ public class Logger extends Category
         if( m_delegate.isTraceEnabled() )
         {
             String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
-            m_delegate.trace( msgStr, null );
+            m_delegate.trace( msgStr, (Throwable) null );
         }
     }
 
@@ -320,7 +320,7 @@ public class Logger extends Category
         {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format( msgStr, arg );
-            m_delegate.debug( msgStr, null );
+            m_delegate.debug( msgStr, (Throwable) null );
         }
     }
 
@@ -343,7 +343,7 @@ public class Logger extends Category
         if( m_delegate.isDebugEnabled() )
         {
             String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
-            m_delegate.debug( msgStr, null );
+            m_delegate.debug( msgStr, (Throwable) null );
         }
     }
 
@@ -380,7 +380,7 @@ public class Logger extends Category
         {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format( msgStr, arg );
-            m_delegate.error( msgStr, null );
+            m_delegate.error( msgStr, (Throwable) null );
         }
     }
 
@@ -403,7 +403,7 @@ public class Logger extends Category
         if( m_delegate.isErrorEnabled() )
         {
             String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
-            m_delegate.error( msgStr, null );
+            m_delegate.error( msgStr, (Throwable) null );
         }
     }
 
@@ -525,7 +525,7 @@ public class Logger extends Category
         {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format( msgStr, arg );
-            m_delegate.warn( msgStr, null );
+            m_delegate.warn( msgStr, (Throwable) null );
         }
     }
 
@@ -548,7 +548,7 @@ public class Logger extends Category
         if( m_delegate.isWarnEnabled() )
         {
             String msgStr = MessageFormatter.format( messagePattern, arg1, arg2 );
-            m_delegate.warn( msgStr, null );
+            m_delegate.warn( msgStr, (Throwable) null );
         }
     }
 

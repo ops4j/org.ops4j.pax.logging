@@ -40,6 +40,7 @@ public class BufferingLog implements PaxLogger
         private static final int WARN_INT = 3;
         private static final int ERROR_INT = 4;
         private static final int FATAL_INT = 5;
+        private static final int AUDIT_INT = 6;
 
         private static LogType trace = new LogType( TRACE_INT );
         private static LogType debug = new LogType( DEBUG_INT );
@@ -47,6 +48,7 @@ public class BufferingLog implements PaxLogger
         private static LogType warn = new LogType( WARN_INT );
         private static LogType error = new LogType( ERROR_INT );
         private static LogType fatal = new LogType( FATAL_INT );
+        private static LogType audit = new LogType( AUDIT_INT );
 
         private final int m_type;
 
@@ -100,10 +102,15 @@ public class BufferingLog implements PaxLogger
                 case LogType.FATAL_INT:
                     destination.fatal( message, throwable, fqcn );
                     break;
+                case LogType.AUDIT_INT:
+                    destination.audit( message, throwable, fqcn );
+                    break;
             }
             getPaxContext().clear();
         }
     }
+
+    public boolean isAuditEnabled() { return true; }
 
     public boolean isTraceEnabled()
     {
@@ -171,6 +178,18 @@ public class BufferingLog implements PaxLogger
         m_queue.add( p );
     }
 
+    public void audit( String message, Throwable t )
+    {
+        LogPackage p = new LogPackage( m_fqcn, LogType.audit, message, t, getPaxContext().getContext() );
+        m_queue.add( p );
+    }
+
+    public void audit( String message, Object o)
+    {
+        // TODO formatting
+        audit(message);
+    }
+
     public void trace( String message, Throwable t, String fqcn )
     {
         LogPackage p = new LogPackage( fqcn, LogType.trace, message, t, getPaxContext().getContext() );
@@ -205,6 +224,23 @@ public class BufferingLog implements PaxLogger
     {
         LogPackage p = new LogPackage( fqcn, LogType.fatal, message, t, getPaxContext().getContext() );
         m_queue.add( p );
+    }
+
+    public void audit( String message, Throwable t, String fqcn )
+    {
+        LogPackage p = new LogPackage( fqcn, LogType.audit, message, t, getPaxContext().getContext() );
+        m_queue.add( p );
+    }
+
+    public void audit( String message, Object... format) {
+        // TODO formatting
+        LogPackage p = new LogPackage(m_fqcn, LogType.audit, message, null, getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    public void audit( String message, Object o1, Object o2) {
+        // TODO formatting
+        audit(message);
     }
 
     public int getLogLevel()

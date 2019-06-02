@@ -37,7 +37,7 @@ public class AvalonLogger
     public void debug( String string )
     {
       if (m_delegate.isDebugEnabled()) {
-        m_delegate.debug( string, null );
+        m_delegate.debug( string, (Throwable) null );
       }
     }
 
@@ -75,7 +75,7 @@ public class AvalonLogger
     public void warn( String string )
     {
       if (m_delegate.isWarnEnabled()) {
-        m_delegate.warn( string, null );
+        m_delegate.warn( string, (Throwable) null );
       }
     }
 
@@ -94,7 +94,7 @@ public class AvalonLogger
     public void error( String string )
     {
       if (m_delegate.isErrorEnabled()) {
-        m_delegate.error( string, null );
+        m_delegate.error( string, (Throwable) null );
       }
     }
 

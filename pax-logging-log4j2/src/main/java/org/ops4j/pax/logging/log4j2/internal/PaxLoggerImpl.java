@@ -161,6 +161,22 @@ public class PaxLoggerImpl
         }
     }
 
+    public void trace(final String message) {
+        if (isTraceEnabled()) {
+            doLog(Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, null);
+        }
+    }
+
+    public void trace(final String message, Object cause) {
+        if (isTraceEnabled()) {
+            if (cause instanceof Throwable) {
+                doLog(Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, (Throwable) cause);
+            } else {
+                doLog(Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, null);
+            }
+        }
+    }
+
     public void debug( String message, Throwable t )
     {
         if( isDebugEnabled() )
