@@ -15,7 +15,13 @@ Export-Package: \
 
 Import-Package: \
  javax.xml.*, \
- (com|sun|javax).*;resolution:=optional, \
+ !com.beust.*, \
+ !com.fasterxml.*, \
+ !com.lmax.*, \
+ !com.conversantmedia.*, \
+ !javax.jms, \
+ !javax.mail*, \
+ !javax.persistence, \
  org.knopflerfish.service.log; provider="paxlogging"; version="[1.1.0,2.0.0)", \
  org.ops4j.pax.logging; version="[0.9.5,2.0.0)", \
  org.ops4j.pax.logging.spi; version="[0.9.5,2.0.0)", \
@@ -28,12 +34,12 @@ Import-Package: \
  org.apache.logging.log4j.simple; version="[2.8.0,3.0.0)", \
  org.apache.logging.log4j.spi; version="[2.8.0,3.0.0)", \
  org.apache.logging.log4j.status; version="[2.8.0,3.0.0)", \
- org.apache.commons.*;resolution:=optional, \
- org.apache.kafka.*;resolution:=optional, \
- org.codehaus.stax2.*;resolution:=optional, \
- org.zeromq.*;resolution:=optional, \
- org.fusesource.jansi.*;resolution:=optional, \
- org.jctools.queues.*;resolution:=optional, \
+ !org.apache.commons.*, \
+ !org.apache.kafka.*, \
+ !org.codehaus.stax2.*, \
+ !org.zeromq.*, \
+ !org.fusesource.jansi.*, \
+ !org.jctools.queues.*, \
  *
 
 Provide-Capability: \
