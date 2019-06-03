@@ -50,6 +50,7 @@ public class Log4J2JacksonLayoutIntegrationTest extends AbstractStdoutIntercepti
 
                 paxLoggingApi(),
                 paxLoggingLog4J2(),
+                paxLoggingLog4J2Extra(),
                 configAdmin(),
                 eventAdmin(),
 
