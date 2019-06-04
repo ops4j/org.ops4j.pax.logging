@@ -19,14 +19,13 @@
 
   <issueManagement>
     <system>jira</system>
-    <url>http://issues.ops4j.org/jira/browse/PAXLOGGING</url>
+    <url>http://ops4j1.jira.com/browse/PAXLOGGING</url>
   </issueManagement>
 
   <scm>
-    <connection>scm:git:git://github.com/ops4j/org.ops4j.pax.logging.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/ops4j/org.ops4j.pax.logging.git</developerConnection>
-    <url>http://github.com/ops4j/org.ops4j.pax.logging/tree/master</url>
-    <tag>HEAD</tag>
+    <connection>scm:git:https://github.com/ops4j/org.ops4j.pax.logging</connection>
+    <developerConnection>scm:git:https://github.com/ops4j/org.ops4j.pax.logging</developerConnection>
+    <url>https://github.com/ops4j/org.ops4j.pax.logging</url>
   </scm>
 
   <build>
