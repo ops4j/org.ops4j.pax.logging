@@ -24,28 +24,32 @@ import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.spi.AbstractLogger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
 
 /**
  * This is the default logger that is used when no suitable logging implementation is available.
  */
-public class Log4jv2Logger extends AbstractLogger {
+public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAwareLogger {
 
-    private static final String LOG4J_FQCN = Logger.class.getName();
+    static final String LOG4J_FQCN = Logger.class.getName();
 
+    private String m_name;
     private volatile PaxLogger m_delegate;
 
-    public Log4jv2Logger(String name, MessageFactory messageFactory, PaxLoggingManager paxLogging) {
+    public Log4jv2Logger(String name, MessageFactory messageFactory, PaxLogger delegate) {
         super(name, messageFactory);
-        setPaxLoggingManager(paxLogging);
+        m_name = name;
+        m_delegate = delegate;
     }
 
+    @Override
     public void setPaxLoggingManager(PaxLoggingManager paxLoggingManager) {
-        if (paxLoggingManager != null) {
-            m_delegate = paxLoggingManager.getLogger(getName(), LOG4J_FQCN);
+        if (paxLoggingManager == null) {
+            m_delegate = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Log4jv2Logger.class), m_name);
         } else {
-            m_delegate = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Log4jv2Logger.class), getName());
+            m_delegate = paxLoggingManager.getLogger(m_name, LOG4J_FQCN);
         }
     }
 

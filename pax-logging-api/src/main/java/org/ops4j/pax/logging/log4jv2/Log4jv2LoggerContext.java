@@ -16,14 +16,14 @@
  */
 package org.ops4j.pax.logging.log4jv2;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import org.apache.logging.log4j.message.MessageFactory;
-import org.apache.logging.log4j.spi.AbstractLogger;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.apache.logging.log4j.spi.LoggerContext;
+import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.internal.Activator;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * This is the class used to obtain the loggers. Returned loggers have Log4J2 interface ({@link ExtendedLogger}), but
@@ -37,8 +37,6 @@ public class Log4jv2LoggerContext implements LoggerContext {
         paxLogging = manager;
     }
 
-    private static final ConcurrentMap<String, Log4jv2Logger> loggers = new ConcurrentHashMap<String, Log4jv2Logger>();
-
     @Override
     public ExtendedLogger getLogger(final String name) {
         return getLogger(name, null);
@@ -46,18 +44,28 @@ public class Log4jv2LoggerContext implements LoggerContext {
 
     @Override
     public ExtendedLogger getLogger(final String name, final MessageFactory messageFactory) {
-        final ExtendedLogger extendedLogger = loggers.get(name);
-        if (extendedLogger != null) {
-            AbstractLogger.checkMessageFactory(extendedLogger, messageFactory);
-            return extendedLogger;
+        PaxLogger paxLogger;
+        if (paxLogging == null) {
+            paxLogger = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(ExtendedLogger.class), name);
+        } else {
+            paxLogger = paxLogging.getLogger(name, Log4jv2Logger.LOG4J_FQCN);
         }
-        loggers.putIfAbsent(name, new Log4jv2Logger(name, messageFactory, paxLogging));
-        return loggers.get(name);
+        Log4jv2Logger logger = new Log4jv2Logger(name, messageFactory, paxLogger);
+        if (paxLogging == null) {
+            // just add the logger which PaxLoggingManager need to be replaced.
+            synchronized (Activator.m_loggers) {
+                Activator.m_loggers.put(name, logger);
+            }
+        }
+        return logger;
     }
 
     @Override
     public boolean hasLogger(final String name) {
-        return loggers.containsKey(name);
+        // we don't know in pax-logging... Because org.apache.logging.log4j.spi.LoggerContext.hasLogger()
+        // API may actually be bridged to Logback or Log4j1 or no backend at all.
+        // also, same "name" may be related to different loggers (associated with different bundles)
+        throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     @Override

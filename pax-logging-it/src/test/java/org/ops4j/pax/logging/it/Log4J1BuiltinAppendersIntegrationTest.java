@@ -33,6 +33,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import javax.inject.Inject;
 import javax.swing.*;
 
@@ -46,6 +47,8 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.it.support.Helpers;
+import org.ops4j.pax.logging.it.support.OnDemandLogger;
+import org.ops4j.pax.logging.it.support.OnDemandLoggerActivator;
 import org.ops4j.pax.logging.spi.PaxFilter;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 import org.ops4j.pax.tinybundles.core.TinyBundles;
@@ -97,6 +100,10 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         InputStream bundle1 = TinyBundles.bundle()
                 .set("Bundle-ManifestVersion", "2")
                 .set("Bundle-SymbolicName", "b1")
+                .set("Bundle-Activator", "org.ops4j.pax.logging.it.support.OnDemandLoggerActivator")
+                .set("Import-Package", "org.osgi.framework,org.slf4j,org.apache.logging.log4j")
+                .add(OnDemandLogger.class)
+                .add(OnDemandLoggerActivator.class)
                 .build();
         new File("target/bundles").mkdirs();
         IOUtils.copy(bundle1, new FileOutputStream("target/bundles/mdc-bundle1.jar"));
@@ -104,6 +111,10 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         InputStream bundle2 = TinyBundles.bundle()
                 .set("Bundle-ManifestVersion", "2")
                 .set("Bundle-SymbolicName", "b2")
+                .set("Bundle-Activator", "org.ops4j.pax.logging.it.support.OnDemandLoggerActivator")
+                .set("Import-Package", "org.osgi.framework,org.slf4j,org.apache.logging.log4j")
+                .add(OnDemandLogger.class)
+                .add(OnDemandLoggerActivator.class)
                 .build();
         new File("target/bundles").mkdirs();
         IOUtils.copy(bundle2, new FileOutputStream("target/bundles/mdc-bundle2.jar"));
@@ -187,6 +198,7 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void mdcSiftingAppender() throws Exception {
         File f1 = new File("target/bundles/mdc-bundle1.jar");
         File f2 = new File("target/bundles/mdc-bundle2.jar");
@@ -223,6 +235,41 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
 
         assertTrue(linesB1.stream().allMatch(l -> l.contains("{bundle.name,b1}") && l.contains("Hello from b1/")));
         assertTrue(linesB2.stream().allMatch(l -> l.contains("{bundle.name,b2}") && l.contains("Hello from b2/")));
+
+        ServiceReference<Consumer> src1 = (ServiceReference<Consumer>) context.getServiceReferences(Consumer.class.getName(), "(sn=b1)")[0];
+        ServiceReference<Consumer> src2 = (ServiceReference<Consumer>) context.getServiceReferences(Consumer.class.getName(), "(sn=b2)")[0];
+        Consumer<String> c1 = context.getService(src1);
+        Consumer<String> c2 = context.getService(src2);
+
+        c1.accept("hello through c1");
+        c2.accept("hello through c2");
+
+        linesB1 = readLines("target/logs-log4j1/" + b1.getBundleId() + "-file-appender.log");
+        linesB2 = readLines("target/logs-log4j1/" + b2.getBundleId() + "-file-appender.log");
+
+        assertTrue(true);
+        assertTrue(linesB1.stream().anyMatch(l ->
+                l.contains("org.ops4j.test/org.ops4j.pax.logging.it.support.OnDemandLogger")
+                && l.contains("bundle.name,b1")
+                && l.contains("slf4j: sn=b1, message=hello through c1"))
+        );
+        assertTrue(linesB1.stream().anyMatch(l ->
+                l.contains("org.ops4j.test/org.ops4j.pax.logging.it.support.OnDemandLogger")
+                && l.contains("bundle.name,b1")
+                && l.contains("log4j2: sn=b1, message=hello through c1"))
+        );
+        assertTrue(linesB1.stream().noneMatch(l -> l.contains("bundle.name,b2")));
+        assertTrue(linesB2.stream().anyMatch(l ->
+                l.contains("org.ops4j.test/org.ops4j.pax.logging.it.support.OnDemandLogger")
+                && l.contains("bundle.name,b2")
+                && l.contains("slf4j: sn=b2, message=hello through c2"))
+        );
+        assertTrue(linesB2.stream().anyMatch(l ->
+                l.contains("org.ops4j.test/org.ops4j.pax.logging.it.support.OnDemandLogger")
+                && l.contains("bundle.name,b2")
+                && l.contains("log4j2: sn=b2, message=hello through c2"))
+        );
+        assertTrue(linesB2.stream().noneMatch(l -> l.contains("bundle.name,b1")));
     }
 
     @Test
