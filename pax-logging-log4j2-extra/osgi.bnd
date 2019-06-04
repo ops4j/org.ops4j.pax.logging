@@ -1,0 +1,41 @@
+Fragment-Host: org.ops4j.pax.pax-logging-log4j2
+
+Export-Package: \
+ !*
+
+Import-Package: \
+ com.beust.jcommander;resolution:=optional, \
+ com.beust.jcommander.validators;resolution:=optional, \
+ com.conversantmedia.util.concurrent;resolution:=optional, \
+ com.fasterxml.jackson.annotation;resolution:=optional, \
+ com.fasterxml.jackson.core;resolution:=optional, \
+ com.fasterxml.jackson.core.type;resolution:=optional, \
+ com.fasterxml.jackson.core.util;resolution:=optional, \
+ com.fasterxml.jackson.databind;resolution:=optional, \
+ com.fasterxml.jackson.databind.annotation;resolution:=optional, \
+ com.fasterxml.jackson.databind.deser.std;resolution:=optional, \
+ com.fasterxml.jackson.databind.module;resolution:=optional, \
+ com.fasterxml.jackson.databind.node;resolution:=optional, \
+ com.fasterxml.jackson.databind.ser;resolution:=optional, \
+ com.fasterxml.jackson.databind.ser.impl;resolution:=optional, \
+ com.fasterxml.jackson.databind.ser.std;resolution:=optional, \
+ com.fasterxml.jackson.dataformat.xml;resolution:=optional, \
+ com.fasterxml.jackson.dataformat.xml.annotation;resolution:=optional, \
+ com.fasterxml.jackson.dataformat.xml.util;resolution:=optional, \
+ com.fasterxml.jackson.dataformat.yaml;resolution:=optional, \
+ com.lmax.disruptor;resolution:=optional, \
+ com.lmax.disruptor.dsl;resolution:=optional, \
+ javax.activation;resolution:= optional, \
+ javax.jms;resolution:=optional, \
+ javax.mail;resolution:=optional, \
+ javax.mail.internet;resolution:=optional, \
+ javax.mail.util;resolution:=optional, \
+ javax.persistence;resolution:=optional, \
+ org.apache.commons.compress.compressors;resolution:=optional, \
+ org.apache.commons.compress.utils;resolution:=optional, \
+ org.apache.commons.csv;resolution:=optional, \
+ org.apache.kafka.clients.producer;resolution:=optional, \
+ org.codehaus.stax2;resolution:=optional, \
+ org.fusesource.jansi;resolution:=optional, \
+ org.jctools.queues;resolution:=optional, \
+ org.zeromq;resolution:=optional
