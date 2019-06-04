@@ -118,7 +118,9 @@ public class Activator implements BundleActivator {
         avalonLogger.info("Enabling Avalon Logger API support.");
 
         // JBoss Logging
-        // PAXLOGGING-251
+        org.ops4j.pax.logging.jbosslogging.PaxLoggingLoggerProvider.setPaxLoggingManager(manager);
+        org.jboss.logging.Logger jbossLoggingLogger = org.jboss.logging.Logger.getLogger(name);
+        jbossLoggingLogger.info("Enabling JBoss Logging API support.");
 
         // Log4j1
         org.apache.log4j.Logger.configurePaxLoggingManager(manager);
@@ -173,7 +175,9 @@ public class Activator implements BundleActivator {
         avalonLogger.info("Disabling Avalon Logger API support.");
         org.ops4j.pax.logging.avalon.AvalonLogFactory.setPaxLoggingManager(null);
 
-        // JBoss Logging - PAXLOGGING-251
+        org.jboss.logging.Logger jbossLoggingLogger = org.jboss.logging.Logger.getLogger(name);
+        jbossLoggingLogger.info("Disabling JBoss Logging API support.");
+        org.ops4j.pax.logging.jbosslogging.PaxLoggingLoggerProvider.setPaxLoggingManager(null);
 
         org.apache.log4j.Logger log4j1Logger = org.apache.log4j.Logger.getLogger(name);
         log4j1Logger.info("Disabling Log4J v1 API support.");

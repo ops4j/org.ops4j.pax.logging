@@ -131,8 +131,9 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         avalonLogger.info("INFO through Avalon Logger API");
         avalonLogger.debug("DEBUG through Avalon Logger API");
 
-        // JBoss Logging
-        // PAXLOGGING-251
+        org.jboss.logging.Logger jbossLogger = org.jboss.logging.Logger.getLogger(name);
+        jbossLogger.info("INFO through JBoss Logging Logger API");
+        jbossLogger.trace("TRACE through JBoss Logging Logger API");
 
         // Knopflerfish - the bundle associated with the "logger" will be the bundle used to obtain
         // service reference - here, PaxExam-Probe
@@ -160,6 +161,8 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through JULI Logging"));
         assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through Avalon Logger API"));
         assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.Log4J2IntegrationTest - DEBUG through Avalon Logger API"));
+        assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through JBoss Logging Logger API"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through JBoss Logging Logger API"));
         assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO1 through Knopflerfish"));
         assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
         assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO2 through Knopflerfish"));

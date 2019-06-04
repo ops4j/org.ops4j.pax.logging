@@ -16,28 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ops4j.pax.logging.test.jbosslogging;
 
-import org.jboss.logging.Logger;
-import org.jboss.logging.MDC;
-import org.jboss.logging.NDC;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
-
-public class FactoryTest {
-
-    @Test
-    public void paxLoggingSpecificJBossLoggingFactory() {
-        Logger log = Logger.getLogger(this.getClass());
-        MDC.put("mdc", "value1");
-        NDC.push("value2");
-
-        log.info("Log: " + log);
-
-        // pax-logging version here
-        assertTrue(log.getClass().getName().startsWith("org.ops4j.pax.logging.jbosslogging"));
-    }
-
+File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.logging.test.jbosslogging.JBossLoggingPaxLoggingApiTest-output.txt")
+List<String> lines = surefireOutput.readLines()
+int ok = 0
+for (String l : lines) {
+  if (l.contains("[org.ops4j.pax.logging.test.jbosslogging.JBossLoggingPaxLoggingApiTest] INFO : INFO Ignored FQCN: org.jboss.logging.Logger")) {
+    ok++
+  }
+  if (l.contains("[org.ops4j.pax.logging.test.jbosslogging.JBossLoggingPaxLoggingApiTest] TRACE : TRACE Ignored FQCN: org.jboss.logging.Logger")) {
+    ok++
+  }
+  if (l.contains("[special] TRACE : TRACE Ignored FQCN: org.jboss.logging.Logger")) {
+    ok++
+  }
 }
+assert ok == 3

@@ -26,6 +26,7 @@ Private-Package: \
  org.ops4j.pax.logging.juli, \
  org.ops4j.pax.logging.log4jv2, \
  org.ops4j.pax.logging.internal, \
+ org.ops4j.pax.logging.jbosslogging, \
  org.ops4j.pax.logging.spi.support
 
 Export-Package: \

@@ -91,6 +91,9 @@
 
                 <!-- Pure Log4J2 usage -->
                 <module>src/it/log4j2</module>
+
+                <!-- Pure JBoss Logging usage -->
+                <module>src/it/jboss-logging</module>
             </modules>
         </profile>
     </profiles>

@@ -82,6 +82,8 @@ public class LogbackMDCIntegrationTest extends AbstractStdoutInterceptingIntegra
         assertThat(org.apache.log4j.MDC.get("country"), equalTo("Equestria"));
         // Log4J2
         assertThat(ThreadContext.get("country"), equalTo("Equestria"));
+        // JBoss Logging
+        assertThat(org.jboss.logging.MDC.get("country"), equalTo("Equestria"));
 
         // through PaxLoggingService.getPaxContext()
         ServiceReference<PaxLoggingService> sr = context.getServiceReference(PaxLoggingService.class);

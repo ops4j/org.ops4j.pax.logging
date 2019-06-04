@@ -18,6 +18,8 @@
 
 package org.jboss.logging;
 
+import org.ops4j.pax.logging.jbosslogging.PaxLoggingLoggerProvider;
+
 /**
  * <p>Original {@code LoggerProviders} discovers a provider using {@link ClassLoader} and {@link java.util.ServiceLoader}
  * tricks. In pax-logging we simply use static provider.
@@ -28,7 +30,7 @@ package org.jboss.logging;
  */
 final class LoggerProviders {
 
-    static final LoggerProvider PROVIDER = new Log4j2LoggerProvider();
+    static final LoggerProvider PROVIDER = new PaxLoggingLoggerProvider();
 
     private LoggerProviders() {
     }

@@ -20,24 +20,20 @@ package org.ops4j.pax.logging.test.jbosslogging;
 
 import org.jboss.logging.Logger;
 import org.jboss.logging.MDC;
-import org.jboss.logging.NDC;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-
-public class FactoryTest {
+public class JBossLoggingPaxLoggingApiTest {
 
     @Test
-    public void paxLoggingSpecificJBossLoggingFactory() {
-        Logger log = Logger.getLogger(this.getClass());
-        MDC.put("mdc", "value1");
-        NDC.push("value2");
+    public void simplestUsage() {
+        Logger log = Logger.getLogger(JBossLoggingPaxLoggingApiTest.class);
+        MDC.put("user", "me");
+        MDC.put("country", "Equestria");
 
-        log.info("Log: " + log);
+        log.info("INFO");
+        log.trace("TRACE");
 
-        // pax-logging version here
-        assertTrue(log.getClass().getName().startsWith("org.ops4j.pax.logging.jbosslogging"));
+        Logger.getLogger("special").trace("TRACE");
     }
 
 }
