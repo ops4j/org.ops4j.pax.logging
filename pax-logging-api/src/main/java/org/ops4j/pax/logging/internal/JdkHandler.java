@@ -72,7 +72,7 @@ public class JdkHandler extends Handler {
 
         Throwable throwable = record.getThrown();
         int levelInt = level.intValue();
-        if (levelInt <= Level.FINEST.intValue()) {
+        if (levelInt <= Level.FINER.intValue()) {
             logger.trace(message, throwable);
         } else if (levelInt <= Level.FINE.intValue()) {
             logger.debug(message, throwable);

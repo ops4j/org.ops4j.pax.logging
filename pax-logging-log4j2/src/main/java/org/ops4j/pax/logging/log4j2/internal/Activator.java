@@ -112,7 +112,7 @@ public class Activator implements BundleActivator {
                 if (sr != null) {
                     ConfigurationAdmin configurationAdmin = bundleContext.getService(sr);
                     if (configurationAdmin != null) {
-                        Configuration configuration = configurationAdmin.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, null);
+                        Configuration configuration = configurationAdmin.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, "?");
                         configuration.update(config);
                     }
                 }

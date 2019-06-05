@@ -87,6 +87,7 @@ public class Activator implements BundleActivator {
 
             m_JdkHandler = new JdkHandler(manager);
             rootLogger.addHandler(m_JdkHandler);
+            rootLogger.setLevel(BackendSupport.toJULLevel(levelName));
 
             java.util.logging.Logger julLogger = java.util.logging.Logger.getLogger(name);
             julLogger.info("Enabling Java Util Logging API support.");

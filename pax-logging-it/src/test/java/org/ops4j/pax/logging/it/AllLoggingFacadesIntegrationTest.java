@@ -30,6 +30,7 @@ import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
@@ -77,6 +78,9 @@ public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrat
         org.apache.logging.log4j.LogManager.getLogger(name).info("INFO using Log4Jv2");
         // 10. JUL - extra handling without a pax-logging specific facade and shadowing. Only handler redirection
         java.util.logging.Logger.getLogger(name).info("INFO using java.util.logging");
+        java.util.logging.Logger.getLogger(name).fine("FINE using java.util.logging");
+        java.util.logging.Logger.getLogger(name).finer("FINER using java.util.logging");
+        java.util.logging.Logger.getLogger(name).finest("FINEST using java.util.logging");
 
         List<String> lines = readLines();
 
@@ -90,6 +94,9 @@ public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrat
         // here, FQCN is passed, which is explicitly added to message by DefaultServiceLog
         assertTrue(lines.stream().anyMatch(l -> l.startsWith("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using Log4Jv2")));
         assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using java.util.logging"));
+        assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] DEBUG : FINE using java.util.logging"));
+        assertFalse(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] TRACE : FINER using java.util.logging"));
+        assertFalse(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] TRACE : FINEST using java.util.logging"));
     }
 
 }

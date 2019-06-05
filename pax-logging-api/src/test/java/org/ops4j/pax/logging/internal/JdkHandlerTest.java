@@ -70,7 +70,7 @@ public class JdkHandlerTest {
 
         verify(logger).trace("all", null);
         verify(logger).trace("fff", null);
-        verify(logger).debug("ff", null);
+        verify(logger).trace("ff", null);
         verify(logger).debug("f", null);
         verify(logger).inform("c", null);
         verify(logger).inform("i", null);

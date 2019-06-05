@@ -290,7 +290,7 @@ public class Helpers {
      */
     public static void updateLoggingConfig(BundleContext context, ConfigurationAdmin cm, LoggingLibrary library, String prefix, Consumer<Dictionary<String, Object>> consumer) {
         try {
-            Configuration c = cm.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, null);
+            Configuration c = cm.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, "?");
 
             final CountDownLatch latch = new CountDownLatch(1);
             EventHandler handler = event -> {
