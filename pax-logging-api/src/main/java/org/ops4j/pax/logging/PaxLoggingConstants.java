@@ -20,6 +20,14 @@ package org.ops4j.pax.logging;
 
 import java.util.logging.LogManager;
 
+/**
+ * <p>Different constants used across Pax Logging.</p>
+ * <p>Constants names use the following prefixes:<ul>
+ *     <li>{@code LOGGING_CFG_} - for system or context property names</li>
+ *     <li>{@code PID_CFG_} - for property names found in {@code org.ops4j.pax.logging} PID</li>
+ *     <li>{@code SERVICE_PROPERTY_} - for names of OSGi service properties</li>
+ * </ul></p>
+ */
 public interface PaxLoggingConstants {
 
     /**
@@ -152,5 +160,19 @@ public interface PaxLoggingConstants {
      * {@link #PID_CFG_LOG4J2_CONFIG_FILE} is used.
      */
     String PID_CFG_LOG4J2_ASYNC = "org.ops4j.pax.logging.log4j2.async";
+
+    /**
+     * {@code org.osp4j.pax.logging} PID property to specify whether to use locks during (re)configuration.
+     * By default, log operations <strong>use locks</strong> to prevent reconfiguration during actual logging. But
+     * there are special cases (see: https://ops4j1.jira.com/browse/PAXLOGGING-191) when reconfiguration may lead
+     * to calling custom appender code, which start some threads that call yet another code which call log statements.
+     * This option may be turned off (value: {@code false}) to disable locks.
+     */
+    String PID_CFG_USE_LOCKS = "org.ops4j.pax.logging.useLocks";
+
+    /**
+     * <p>System or context property to configure locking just like {@link #PID_CFG_USE_LOCKS}.</p>
+     */
+    String LOGGING_CFG_USE_LOCKS = PID_CFG_USE_LOCKS;
 
 }

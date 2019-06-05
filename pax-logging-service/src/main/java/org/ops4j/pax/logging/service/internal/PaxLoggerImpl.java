@@ -260,7 +260,7 @@ public class PaxLoggerImpl implements PaxLogger {
             put("bundle.name", m_bundle.getSymbolicName());
             put("bundle.version", m_bundle.getVersion().toString());
         }
-        m_service.getConfigLock().readLock().lock();
+        m_service.lock(false);
     }
 
     private void put(String name, Object o) {
@@ -270,7 +270,7 @@ public class PaxLoggerImpl implements PaxLogger {
     }
 
     private void clearDelegateContext() {
-        m_service.getConfigLock().readLock().unlock();
+        m_service.unlock(false);
         if (MDC.getContext() != null) {
             MDC.getContext().clear();
         }

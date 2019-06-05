@@ -252,11 +252,11 @@ public class PaxLoggerImpl implements PaxLogger {
             adapter.put("bundle.name", m_bundle.getSymbolicName());
             adapter.put("bundle.version", m_bundle.getVersion().toString());
         }
-        m_service.getConfigLock().readLock().lock();
+        m_service.lock(false);
     }
 
     private void clearDelegateContext() {
-        m_service.getConfigLock().readLock().unlock();
+        m_service.unlock(false);
         MDCAdapter adapter = MDC.getMDCAdapter();
         if (m_bundle != null && adapter != null) {
             adapter.remove("bundle.id");

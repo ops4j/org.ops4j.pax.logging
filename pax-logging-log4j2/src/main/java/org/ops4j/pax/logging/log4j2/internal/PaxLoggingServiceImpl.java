@@ -24,6 +24,8 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -49,6 +51,7 @@ import org.ops4j.pax.logging.spi.support.BackendSupport;
 import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
 import org.ops4j.pax.logging.spi.support.LogEntryImpl;
 import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
+import org.ops4j.pax.logging.spi.support.OsgiUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
@@ -76,6 +79,8 @@ public class PaxLoggingServiceImpl
     }
 
     private final BundleContext m_bundleContext;
+
+    private ReadWriteLock m_configLock;
 
     // LogReaderService registration as defined by org.osgi.service.log package
     private final LogReaderServiceImpl m_logReader;
@@ -120,6 +125,12 @@ public class PaxLoggingServiceImpl
 
         m_paxContext = new PaxContext();
 
+        String useLocks = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_USE_LOCKS);
+        if (!"false".equalsIgnoreCase(useLocks)) {
+            // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
+            m_configLock = new ReentrantReadWriteLock();
+        }
+
         configureDefaults();
     }
 
@@ -132,6 +143,38 @@ public class PaxLoggingServiceImpl
     public synchronized void shutdown() {
         m_log4jContext.stop();
         closed = true;
+    }
+
+    /**
+     * Locks the configuration if needed
+     * @param useWriteLock whether to use {@link ReadWriteLock#readLock()} ({@code false})
+     * or {@link ReadWriteLock#writeLock()} ({@code true})
+     */
+    void lock(boolean useWriteLock) {
+        ReadWriteLock lock = m_configLock;
+        if (lock != null) {
+            if (useWriteLock) {
+                lock.writeLock().lock();
+            } else {
+                lock.readLock().lock();
+            }
+        }
+    }
+
+    /**
+     * Unlocks the configuration if lock was used
+     * @param useWriteLock whether to use {@link ReadWriteLock#readLock()} ({@code false})
+     * or {@link ReadWriteLock#writeLock()} ({@code true})
+     */
+    void unlock(boolean useWriteLock) {
+        ReadWriteLock lock = m_configLock;
+        if (lock != null) {
+            if (useWriteLock) {
+                lock.writeLock().unlock();
+            } else {
+                lock.readLock().unlock();
+            }
+        }
     }
 
     // org.knopflerfish.service.log.LogService
@@ -191,6 +234,14 @@ public class PaxLoggingServiceImpl
         if (configuration == null) {
             configureDefaults();
             return;
+        }
+
+        Object useLocks = configuration.get(PaxLoggingConstants.PID_CFG_USE_LOCKS);
+        if (!"false".equalsIgnoreCase(String.valueOf(useLocks))) {
+            // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
+            m_configLock = new ReentrantReadWriteLock();
+        } else {
+            m_configLock = null;
         }
 
         Object configfile = configuration.get(PaxLoggingConstants.PID_CFG_LOG4J2_CONFIG_FILE);
@@ -320,77 +371,83 @@ public class PaxLoggingServiceImpl
             }
         }
 
-        if (m_log4jContext != null) {
-            // Log4J1: org.apache.log4j.LogManager.resetConfiguration()
-            // Logback: ch.qos.logback.classic.LoggerContext.reset()
-            // Log4J2: org.apache.logging.log4j.core.AbstractLifeCycle.stop()
-            m_log4jContext.stop();
-        }
-
-        if (m_log4jContext == null || async != m_async) {
-            m_log4jContext = async ? new AsyncLoggerContext(LOGGER_CONTEXT_NAME) : new LoggerContext(LOGGER_CONTEXT_NAME);
-            m_async = async;
-        }
-
-        ClassLoader old = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            lock(true);
 
-            if (props != null) {
-                if (props.size() == 0) {
-                    configureDefaults();
-                    return;
-                }
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                props.store(baos, null);
-                ConfigurationSource src = new ConfigurationSource(new ByteArrayInputStream(baos.toByteArray()));
-                Configuration config = new PropertiesConfigurationFactory().getConfiguration(m_log4jContext, src);
-
-                m_log4jContext.start(config);
-
-                StatusLogger.getLogger().info("Log4J2 configured using configuration from " + PaxLoggingConstants.LOGGING_CONFIGURATION_PID + " PID.");
-            } else if (file != null) {
-                // configuration using externally specified file. This is the way to make Karaf's
-                // etc/org.ops4j.pax.logging.cfg much simpler without this cumbersome properties
-                // file format.
-                // file may have been specified as system/context property "org.ops4j.pax.logging.property.file"
-                // or as single, "org.ops4j.pax.logging.log4j2.config.file" property in etc/org.ops4j.pax.logging.cfg
-                emptyConfiguration.set(false);
-
-                ConfigurationFactory factory = ConfigurationFactory.getInstance();
-                // ".json", ".jsn": org.apache.logging.log4j.core.config.json.JsonConfigurationFactory
-                // ".properties": org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory
-                // ".xml", "*": org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory
-                // ".yml", ".yaml": org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory
-                Configuration config = factory.getConfiguration(m_log4jContext, LOGGER_CONTEXT_NAME, file.toURI());
-
-                m_log4jContext.start(config);
-
-                StatusLogger.getLogger().info("Log4J2 configured using file '" + file + "'.");
-            } else {
-                // default configuration - Log4J2 specific.
-                // even if LoggerContext by default has DefaultConfiguration set, it's necessary to pass
-                // new DefaultConfiguration during start. Otherwise
-                // org.apache.logging.log4j.core.LoggerContext.reconfigure() will be called with empty
-                // org.apache.logging.log4j.core.config.properties.PropertiesConfiguration
-                m_log4jContext.start(new DefaultConfiguration());
-                m_log4jContext.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.DEBUG);
-
-                StatusLogger.getLogger().info("Log4J2 configured using default configuration.");
+            if (m_log4jContext != null) {
+                // Log4J1: org.apache.log4j.LogManager.resetConfiguration()
+                // Logback: ch.qos.logback.classic.LoggerContext.reset()
+                // Log4J2: org.apache.logging.log4j.core.AbstractLifeCycle.stop()
+                m_log4jContext.stop();
             }
-        } catch (Throwable e) {
-            StatusLogger.getLogger().error("Log4J2 configuration problem: " + e.getMessage(), e);
-            problem = e;
-        } finally {
-            Thread.currentThread().setContextClassLoader(old);
-        }
 
-        m_log4jContext.updateLoggers();
+            if (m_log4jContext == null || async != m_async) {
+                m_log4jContext = async ? new AsyncLoggerContext(LOGGER_CONTEXT_NAME) : new LoggerContext(LOGGER_CONTEXT_NAME);
+                m_async = async;
+            }
+
+            ClassLoader old = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+
+                if (props != null) {
+                    if (props.size() == 0) {
+                        configureDefaults();
+                        return;
+                    }
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    props.store(baos, null);
+                    ConfigurationSource src = new ConfigurationSource(new ByteArrayInputStream(baos.toByteArray()));
+                    Configuration config = new PropertiesConfigurationFactory().getConfiguration(m_log4jContext, src);
+
+                    m_log4jContext.start(config);
+
+                    StatusLogger.getLogger().info("Log4J2 configured using configuration from " + PaxLoggingConstants.LOGGING_CONFIGURATION_PID + " PID.");
+                } else if (file != null) {
+                    // configuration using externally specified file. This is the way to make Karaf's
+                    // etc/org.ops4j.pax.logging.cfg much simpler without this cumbersome properties
+                    // file format.
+                    // file may have been specified as system/context property "org.ops4j.pax.logging.property.file"
+                    // or as single, "org.ops4j.pax.logging.log4j2.config.file" property in etc/org.ops4j.pax.logging.cfg
+                    emptyConfiguration.set(false);
+
+                    ConfigurationFactory factory = ConfigurationFactory.getInstance();
+                    // ".json", ".jsn": org.apache.logging.log4j.core.config.json.JsonConfigurationFactory
+                    // ".properties": org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory
+                    // ".xml", "*": org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory
+                    // ".yml", ".yaml": org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory
+                    Configuration config = factory.getConfiguration(m_log4jContext, LOGGER_CONTEXT_NAME, file.toURI());
+
+                    m_log4jContext.start(config);
+
+                    StatusLogger.getLogger().info("Log4J2 configured using file '" + file + "'.");
+                } else {
+                    // default configuration - Log4J2 specific.
+                    // even if LoggerContext by default has DefaultConfiguration set, it's necessary to pass
+                    // new DefaultConfiguration during start. Otherwise
+                    // org.apache.logging.log4j.core.LoggerContext.reconfigure() will be called with empty
+                    // org.apache.logging.log4j.core.config.properties.PropertiesConfiguration
+                    m_log4jContext.start(new DefaultConfiguration());
+                    m_log4jContext.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.DEBUG);
+
+                    StatusLogger.getLogger().info("Log4J2 configured using default configuration.");
+                }
+            } catch (Throwable e) {
+                StatusLogger.getLogger().error("Log4J2 configuration problem: " + e.getMessage(), e);
+                problem = e;
+            } finally {
+                Thread.currentThread().setContextClassLoader(old);
+            }
+
+            m_log4jContext.updateLoggers();
+        } finally {
+            unlock(true);
+        }
 
         setLevelToJavaLogging();
 
-        // do it outside of the lock (if there will be lock)
+        // do it outside of the lock
         if (problem == null) {
             m_configNotifier.configurationDone();
         } else {

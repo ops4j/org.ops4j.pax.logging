@@ -303,4 +303,17 @@
         </root>
     </configuration>
 
+    <!-- test for turning on/off the locks -->
+    <configuration id="locks">
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                <layout class="ch.qos.logback.classic.layout.TTLLLayout" />
+            </encoder>
+        </appender>
+
+        <root level="debug">
+            <appender-ref ref="console" />
+        </root>
+    </configuration>
+
 </all-configurations>

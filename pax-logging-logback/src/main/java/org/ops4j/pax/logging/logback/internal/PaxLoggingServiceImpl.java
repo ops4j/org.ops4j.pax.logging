@@ -99,7 +99,7 @@ public class PaxLoggingServiceImpl
 
     private final BundleContext m_bundleContext;
 
-    private ReadWriteLock m_configLock;
+    private volatile ReadWriteLock m_configLock;
 
     // LogReaderService registration as defined by org.osgi.service.log package
     private final LogReaderServiceImpl m_logReader;
@@ -149,11 +149,16 @@ public class PaxLoggingServiceImpl
         m_configNotifier = configNotifier;
 
         m_paxContext = new PaxContext();
-        m_configLock = new ReentrantReadWriteLock();
+
+        String useLocks = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_USE_LOCKS);
+        if (!"false".equalsIgnoreCase(useLocks)) {
+            // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
+            m_configLock = new ReentrantReadWriteLock();
+        }
 
         logLog = FallbackLogFactory.createFallbackLog(bundleContext.getBundle(), "logback");
 
-        m_useStaticContext = Boolean.valueOf(bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_LOGBACK_USE_STATIC_CONTEXT));
+        m_useStaticContext = Boolean.parseBoolean(bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_LOGBACK_USE_STATIC_CONTEXT));
         if (m_useStaticContext) {
             // org.slf4j.impl.StaticLoggerBinder is included in logback-classic and private-packaged in
             // pax-logging-logback - it's not the same class as the one included in pax-logging-api
@@ -195,8 +200,36 @@ public class PaxLoggingServiceImpl
         }
     }
 
-    ReadWriteLock getConfigLock() {
-        return m_configLock;
+    /**
+     * Locks the configuration if needed
+     * @param useWriteLock whether to use {@link ReadWriteLock#readLock()} ({@code false})
+     * or {@link ReadWriteLock#writeLock()} ({@code true})
+     */
+    void lock(boolean useWriteLock) {
+        ReadWriteLock lock = m_configLock;
+        if (lock != null) {
+            if (useWriteLock) {
+                lock.writeLock().lock();
+            } else {
+                lock.readLock().lock();
+            }
+        }
+    }
+
+    /**
+     * Unlocks the configuration if lock was used
+     * @param useWriteLock whether to use {@link ReadWriteLock#readLock()} ({@code false})
+     * or {@link ReadWriteLock#writeLock()} ({@code true})
+     */
+    void unlock(boolean useWriteLock) {
+        ReadWriteLock lock = m_configLock;
+        if (lock != null) {
+            if (useWriteLock) {
+                lock.writeLock().unlock();
+            } else {
+                lock.readLock().unlock();
+            }
+        }
     }
 
     // org.knopflerfish.service.log.LogService
@@ -256,6 +289,14 @@ public class PaxLoggingServiceImpl
                 configureDefaults();
             }
             return;
+        }
+
+        Object useLocks = configuration.get(PaxLoggingConstants.PID_CFG_USE_LOCKS);
+        if (!"false".equalsIgnoreCase(String.valueOf(useLocks))) {
+            // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
+            m_configLock = new ReentrantReadWriteLock();
+        } else {
+            m_configLock = null;
         }
 
         Object configfile = configuration.get(PaxLoggingConstants.PID_CFG_LOGBACK_CONFIG_FILE);
@@ -345,7 +386,7 @@ public class PaxLoggingServiceImpl
     private void configureLogback(String configFileName) {
         m_logbackContext.getStatusManager().clear();
 
-        getConfigLock().writeLock().lock();
+        lock(true);
 
         Throwable problem = null;
 
@@ -412,7 +453,7 @@ public class PaxLoggingServiceImpl
                 problem = e;
             }
         } finally {
-            getConfigLock().writeLock().unlock();
+            unlock(true);
         }
 
         setLevelToJavaLogging();

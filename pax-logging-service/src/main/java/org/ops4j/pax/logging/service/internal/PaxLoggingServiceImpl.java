@@ -36,6 +36,7 @@ import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.spi.support.OsgiUtil;
 import org.ops4j.pax.logging.spi.support.PaxAppenderProxy;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
 import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
@@ -59,7 +60,8 @@ public class PaxLoggingServiceImpl
 
     private BundleContext m_bundleContext;
 
-    private ReadWriteLock m_configLock;
+    private volatile ReadWriteLock m_configLock;
+    private boolean locking = true;
 
     // LogReaderService registration as defined by org.osgi.service.log package
     private LogReaderServiceImpl m_logReader;
@@ -87,7 +89,12 @@ public class PaxLoggingServiceImpl
         m_eventAdmin = eventAdmin;
         m_configNotifier = configNotifier;
         m_context = new PaxContext();
-        m_configLock = new ReentrantReadWriteLock();
+
+        String useLocks = OsgiUtil.systemOrContextProperty(context, PaxLoggingConstants.LOGGING_CFG_USE_LOCKS);
+        if (!"false".equalsIgnoreCase(useLocks)) {
+            // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
+            m_configLock = new ReentrantReadWriteLock();
+        }
 
         configureDefaults();
     }
@@ -101,8 +108,36 @@ public class PaxLoggingServiceImpl
         // TODO: shouldn't we explicitly close the PaxAppenderProxy trackers? (I know they're closed anywye on bundle stop...)
     }
 
-    ReadWriteLock getConfigLock() {
-        return m_configLock;
+    /**
+     * Locks the configuration if needed
+     * @param useWriteLock whether to use {@link ReadWriteLock#readLock()} ({@code false})
+     * or {@link ReadWriteLock#writeLock()} ({@code true})
+     */
+    void lock(boolean useWriteLock) {
+        ReadWriteLock lock = m_configLock;
+        if (lock != null) {
+            if (useWriteLock) {
+                lock.writeLock().lock();
+            } else {
+                lock.readLock().lock();
+            }
+        }
+    }
+
+    /**
+     * Unlocks the configuration if lock was used
+     * @param useWriteLock whether to use {@link ReadWriteLock#readLock()} ({@code false})
+     * or {@link ReadWriteLock#writeLock()} ({@code true})
+     */
+    void unlock(boolean useWriteLock) {
+        ReadWriteLock lock = m_configLock;
+        if (lock != null) {
+            if (useWriteLock) {
+                lock.writeLock().unlock();
+            } else {
+                lock.readLock().unlock();
+            }
+        }
     }
 
     // org.ops4j.pax.logging.PaxLoggingService
@@ -168,9 +203,17 @@ public class PaxLoggingServiceImpl
             return;
         }
 
+        Object useLocks = configuration.get(PaxLoggingConstants.PID_CFG_USE_LOCKS);
+        if (!"false".equalsIgnoreCase(String.valueOf(useLocks))) {
+            // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
+            m_configLock = new ReentrantReadWriteLock();
+        } else {
+            m_configLock = null;
+        }
+
         Properties extracted = extractKeys(configuration);
 
-        getConfigLock().writeLock().lock();
+        lock(true);
 
         Exception problem = null;
 
@@ -196,7 +239,7 @@ public class PaxLoggingServiceImpl
                 problem = e;
             }
         } finally {
-            getConfigLock().writeLock().unlock();
+            unlock(true);
             Thread.currentThread().setContextClassLoader(loader);
         }
 

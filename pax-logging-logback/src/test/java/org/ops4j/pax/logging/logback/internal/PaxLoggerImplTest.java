@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -62,7 +61,6 @@ public class PaxLoggerImplTest {
         PaxLoggingServiceImpl svc = mock(PaxLoggingServiceImpl.class);
 
         when(svc.getPaxContext()).thenReturn(paxContext);
-        when(svc.getConfigLock()).thenReturn(new ReentrantReadWriteLock());
 
         Appender<ILoggingEvent> appender = mock(LogAppender.class);
         MDC.put("bundle.name", "bundle1");
