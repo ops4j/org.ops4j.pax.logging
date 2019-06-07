@@ -65,6 +65,11 @@
             <groupId>org.osgi</groupId>
             <artifactId>osgi.cmpn</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.annotation</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Logging -->
 
