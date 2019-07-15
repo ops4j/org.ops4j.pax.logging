@@ -221,7 +221,7 @@
         <version.org.apache.felix.eventadmin>1.5.0</version.org.apache.felix.eventadmin>
         <version.org.apache.felix.configadmin>1.9.14</version.org.apache.felix.configadmin>
         <version.org.apache.felix.framework>6.0.3</version.org.apache.felix.framework>
-        <version.org.apache.logging.log4j>2.11.2</version.org.apache.logging.log4j>
+        <version.org.apache.logging.log4j>2.12.0</version.org.apache.logging.log4j>
         <version.org.apache.servicemix.bundles.javax-inject>1_2</version.org.apache.servicemix.bundles.javax-inject>
         <version.org.jboss.logging>3.4.0.Final</version.org.jboss.logging>
         <version.org.knopflerfish.kf6>5.0.0</version.org.knopflerfish.kf6>
