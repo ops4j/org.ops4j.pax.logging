@@ -24,10 +24,12 @@ import java.security.PrivilegedAction;
 import ch.qos.logback.classic.Logger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxMarker;
 import org.ops4j.pax.logging.logback.internal.spi.PaxLevelForLogback;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
 import org.slf4j.MDC;
+import org.slf4j.Marker;
 import org.slf4j.spi.LocationAwareLogger;
 import org.slf4j.spi.MDCAdapter;
 
@@ -104,86 +106,200 @@ public class PaxLoggerImpl implements PaxLogger {
     }
 
     @Override
+    public boolean isTraceEnabled(PaxMarker marker) {
+        return m_delegate.isTraceEnabled(marker.slf4jMarker());
+    }
+
+    @Override
+    public boolean isDebugEnabled(PaxMarker marker) {
+        return m_delegate.isDebugEnabled(marker.slf4jMarker());
+    }
+
+    @Override
+    public boolean isInfoEnabled(PaxMarker marker) {
+        return m_delegate.isInfoEnabled(marker.slf4jMarker());
+    }
+
+    @Override
+    public boolean isWarnEnabled(PaxMarker marker) {
+        return m_delegate.isWarnEnabled(marker.slf4jMarker());
+    }
+
+    @Override
+    public boolean isErrorEnabled(PaxMarker marker) {
+        return m_delegate.isErrorEnabled(marker.slf4jMarker());
+    }
+
+    @Override
+    public boolean isFatalEnabled(PaxMarker marker) {
+        return m_delegate.isErrorEnabled(marker.slf4jMarker());
+    }
+
+    @Override
     public void trace(String message, Throwable t) {
         if (isTraceEnabled()) {
-            doLog(LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
+            doLog(null, LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
         }
     }
 
     @Override
     public void debug(String message, Throwable t) {
         if (isDebugEnabled()) {
-            doLog(LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
+            doLog(null, LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
         }
     }
 
     @Override
     public void inform(String message, Throwable t) {
         if (isInfoEnabled()) {
-            doLog(LocationAwareLogger.INFO_INT, LogService.LOG_INFO, m_fqcn, message, t);
+            doLog(null, LocationAwareLogger.INFO_INT, LogService.LOG_INFO, m_fqcn, message, t);
         }
     }
 
     @Override
     public void warn(String message, Throwable t) {
         if (isWarnEnabled()) {
-            doLog(LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, m_fqcn, message, t);
+            doLog(null, LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, m_fqcn, message, t);
         }
     }
 
     @Override
     public void error(String message, Throwable t) {
         if (isErrorEnabled()) {
-            doLog(LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
+            doLog(null, LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
         }
     }
 
     @Override
     public void fatal(String message, Throwable t) {
         if (isFatalEnabled()) {
-            doLog(LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
+            doLog(null, LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
         }
     }
 
     @Override
     public void trace(String message, Throwable t, String fqcn) {
         if (isTraceEnabled()) {
-            doLog(LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, fqcn, message, t);
+            doLog(null, LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, fqcn, message, t);
         }
     }
 
     @Override
     public void debug(String message, Throwable t, String fqcn) {
         if (isDebugEnabled()) {
-            doLog(LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, fqcn, message, t);
+            doLog(null, LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, fqcn, message, t);
         }
     }
 
     @Override
     public void inform(String message, Throwable t, String fqcn) {
         if (isInfoEnabled()) {
-            doLog(LocationAwareLogger.INFO_INT, LogService.LOG_INFO, fqcn, message, t);
+            doLog(null, LocationAwareLogger.INFO_INT, LogService.LOG_INFO, fqcn, message, t);
         }
     }
 
     @Override
     public void warn(String message, Throwable t, String fqcn) {
         if (isWarnEnabled()) {
-            doLog(LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, fqcn, message, t);
+            doLog(null, LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, fqcn, message, t);
         }
     }
 
     @Override
     public void error(String message, Throwable t, String fqcn) {
         if (isErrorEnabled()) {
-            doLog(LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
+            doLog(null, LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
         }
     }
 
     @Override
     public void fatal(String message, Throwable t, String fqcn) {
         if (isFatalEnabled()) {
-            doLog(LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
+            doLog(null, LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t) {
+        if (isTraceEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t) {
+        if (isDebugEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t) {
+        if (isInfoEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, LogService.LOG_INFO, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t) {
+        if (isWarnEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t) {
+        if (isErrorEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t) {
+        if (isFatalEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isTraceEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isDebugEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isInfoEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, LogService.LOG_INFO, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isWarnEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isErrorEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isFatalEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
         }
     }
 
@@ -205,16 +321,16 @@ public class PaxLoggerImpl implements PaxLogger {
     // private methods
 
 
-    private void doLog(final int level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+    private void doLog(final Marker marker, final int level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
         if (System.getSecurityManager() != null) {
             AccessController.doPrivileged(
                     (PrivilegedAction<Void>) () -> {
-                        doLog0(level, svcLevel, fqcn, message, t);
+                        doLog0(marker, level, svcLevel, fqcn, message, t);
                         return null;
                     }
             );
         } else {
-            doLog0(level, svcLevel, fqcn, message, t);
+            doLog0(marker, level, svcLevel, fqcn, message, t);
         }
     }
 
@@ -226,16 +342,17 @@ public class PaxLoggerImpl implements PaxLogger {
      *     <li>{@code bundle.version} - from {@link Bundle#getVersion()}</li>
      * </ul></p>
      *
+     * @param marker
      * @param level
      * @param svcLevel
      * @param fqcn
      * @param message
      * @param t
      */
-    private void doLog0(final int level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+    private void doLog0(Marker marker, final int level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
         setDelegateContext();
         try {
-            m_delegate.log(null, fqcn, level, message, null, t);
+            m_delegate.log(marker, fqcn, level, message, null, t);
         } finally {
             clearDelegateContext();
         }

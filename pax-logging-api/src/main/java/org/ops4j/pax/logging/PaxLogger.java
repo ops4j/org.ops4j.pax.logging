@@ -35,23 +35,48 @@ public interface PaxLogger {
     boolean isErrorEnabled();
     boolean isFatalEnabled();
 
-    void trace( String message, Throwable t );
-    void debug( String message, Throwable t );
-    void inform( String message, Throwable t );
-    void warn( String message, Throwable t );
-    void error( String message, Throwable t );
-    void fatal( String message, Throwable t );
+    // logging methods with marker support
+
+    boolean isTraceEnabled(PaxMarker marker);
+    boolean isDebugEnabled(PaxMarker marker);
+    boolean isInfoEnabled(PaxMarker marker);
+    boolean isWarnEnabled(PaxMarker marker);
+    boolean isErrorEnabled(PaxMarker marker);
+    boolean isFatalEnabled(PaxMarker marker);
+
+    void trace(String message, Throwable t);
+    void debug(String message, Throwable t);
+    void inform(String message, Throwable t);
+    void warn(String message, Throwable t);
+    void error(String message, Throwable t);
+    void fatal(String message, Throwable t);
 
     // logging methods accepting "fqcn" that allows backend framework to analyze stacktrace
     // when searching for actual Class/Method/File/LineNumber to log using certain
     // patterns (like %F, %L in Log4J).
 
-    void trace( String message, Throwable t, String fqcn);
-    void debug( String message, Throwable t, String fqcn);
-    void inform( String message, Throwable t, String fqcn);
-    void warn( String message, Throwable t, String fqcn);
-    void error( String message, Throwable t, String fqcn);
-    void fatal( String message, Throwable t, String fqcn);
+    void trace(String message, Throwable t, String fqcn);
+    void debug(String message, Throwable t, String fqcn);
+    void inform(String message, Throwable t, String fqcn);
+    void warn(String message, Throwable t, String fqcn);
+    void error(String message, Throwable t, String fqcn);
+    void fatal(String message, Throwable t, String fqcn);
+
+    // logging methods with marker support
+
+    void trace(PaxMarker marker, String message, Throwable t);
+    void debug(PaxMarker marker, String message, Throwable t);
+    void inform(PaxMarker marker, String message, Throwable t);
+    void warn(PaxMarker marker, String message, Throwable t);
+    void error(PaxMarker marker, String message, Throwable t);
+    void fatal(PaxMarker marker, String message, Throwable t);
+
+    void trace(PaxMarker marker, String message, Throwable t, String fqcn);
+    void debug(PaxMarker marker, String message, Throwable t, String fqcn);
+    void inform(PaxMarker marker, String message, Throwable t, String fqcn);
+    void warn(PaxMarker marker, String message, Throwable t, String fqcn);
+    void error(PaxMarker marker, String message, Throwable t, String fqcn);
+    void fatal(PaxMarker marker, String message, Throwable t, String fqcn);
 
     /**
      * <p>Returns numerical log level associated with this logger. Higher values mean more <em>important</em>

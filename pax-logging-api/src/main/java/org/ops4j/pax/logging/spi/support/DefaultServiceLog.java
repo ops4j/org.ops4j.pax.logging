@@ -21,6 +21,7 @@ import java.io.PrintStream;
 
 import org.ops4j.pax.logging.FqcnIgnoringPaxLogger;
 import org.ops4j.pax.logging.PaxContext;
+import org.ops4j.pax.logging.PaxMarker;
 import org.osgi.framework.Bundle;
 
 /**
@@ -56,66 +57,139 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
         m_categoryName = categoryName;
     }
 
+    @Override
     public boolean isTraceEnabled() {
         return threshold <= TRACE;
     }
 
+    @Override
     public boolean isDebugEnabled() {
         return threshold <= DEBUG;
     }
 
+    @Override
     public boolean isInfoEnabled() {
         return threshold <= INFO;
     }
 
+    @Override
     public boolean isWarnEnabled() {
         return threshold <= WARN;
     }
 
+    @Override
     public boolean isErrorEnabled() {
         return threshold <= ERROR;
     }
 
+    @Override
     public boolean isFatalEnabled() {
         return threshold <= FATAL;
     }
 
+    @Override
+    public boolean isTraceEnabled(PaxMarker marker) {
+        return threshold <= TRACE;
+    }
+
+    @Override
+    public boolean isDebugEnabled(PaxMarker marker) {
+        return threshold <= DEBUG;
+    }
+
+    @Override
+    public boolean isInfoEnabled(PaxMarker marker) {
+        return threshold <= INFO;
+    }
+
+    @Override
+    public boolean isWarnEnabled(PaxMarker marker) {
+        return threshold <= WARN;
+    }
+
+    @Override
+    public boolean isErrorEnabled(PaxMarker marker) {
+        return threshold <= ERROR;
+    }
+
+    @Override
+    public boolean isFatalEnabled(PaxMarker marker) {
+        return threshold <= FATAL;
+    }
+
+    @Override
     public void trace(String message, Throwable t) {
         if (isTraceEnabled()) {
             output(levels[TRACE], message, t);
         }
     }
 
+    @Override
     public void debug(String message, Throwable t) {
         if (isDebugEnabled()) {
             output(levels[DEBUG], message, t);
         }
     }
 
+    @Override
     public void inform(String message, Throwable t) {
         if (isInfoEnabled()) {
             output(levels[INFO], message, t);
         }
     }
 
+    @Override
     public void warn(String message, Throwable t) {
         if (isWarnEnabled()) {
             output(levels[WARN], message, t);
         }
     }
 
+    @Override
     public void error(String message, Throwable t) {
         if (isErrorEnabled()) {
             output(levels[ERROR], message, t);
         }
     }
 
+    @Override
     public void fatal(String message, Throwable t) {
         if (isFatalEnabled()) {
             output(levels[FATAL], message, t);
         }
     }
 
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t) {
+        trace(message, t);
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t) {
+        debug(message, t);
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t) {
+        inform(message, t);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t) {
+        warn(message, t);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t) {
+        error(message, t);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t) {
+        fatal(message, t);
+    }
+
+    @Override
     public int getLogLevel() {
         return threshold;
     }
@@ -190,6 +264,7 @@ public class DefaultServiceLog extends FqcnIgnoringPaxLogger {
         }
     }
 
+    @Override
     public PaxContext getPaxContext() {
         return m_context;
     }

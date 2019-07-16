@@ -20,6 +20,7 @@ package org.ops4j.pax.logging.internal;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.PaxMarker;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.Bundle;
 
@@ -72,6 +73,36 @@ public class TrackingLogger implements PaxLogger {
     @Override
     public boolean isFatalEnabled() {
         return m_delegate.isFatalEnabled();
+    }
+
+    @Override
+    public boolean isTraceEnabled(PaxMarker marker) {
+        return m_delegate.isTraceEnabled(marker);
+    }
+
+    @Override
+    public boolean isDebugEnabled(PaxMarker marker) {
+        return m_delegate.isDebugEnabled(marker);
+    }
+
+    @Override
+    public boolean isInfoEnabled(PaxMarker marker) {
+        return m_delegate.isInfoEnabled(marker);
+    }
+
+    @Override
+    public boolean isWarnEnabled(PaxMarker marker) {
+        return m_delegate.isWarnEnabled(marker);
+    }
+
+    @Override
+    public boolean isErrorEnabled(PaxMarker marker) {
+        return m_delegate.isErrorEnabled(marker);
+    }
+
+    @Override
+    public boolean isFatalEnabled(PaxMarker marker) {
+        return m_delegate.isFatalEnabled(marker);
     }
 
     @Override
@@ -131,6 +162,66 @@ public class TrackingLogger implements PaxLogger {
     @Override
     public void fatal(String message, Throwable t, String fqcn) {
         m_delegate.fatal(message, t, fqcn);
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t) {
+        m_delegate.trace(marker, message, t);
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t) {
+        m_delegate.debug(marker, message, t);
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t) {
+        m_delegate.inform(marker, message, t);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t) {
+        m_delegate.warn(marker, message, t);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t) {
+        m_delegate.error(marker, message, t);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t) {
+        m_delegate.fatal(marker, message, t);
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
+        m_delegate.trace(marker, message, t, fqcn);
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
+        m_delegate.debug(marker, message, t, fqcn);
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
+        m_delegate.inform(marker, message, t, fqcn);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
+        m_delegate.warn(marker, message, t, fqcn);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
+        m_delegate.error(marker, message, t, fqcn);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
+        m_delegate.fatal(marker, message, t, fqcn);
     }
 
     @Override

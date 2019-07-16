@@ -22,11 +22,13 @@ import java.security.PrivilegedAction;
 import java.util.Map;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxMarker;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
 
@@ -97,86 +99,201 @@ public class PaxLoggerImpl implements PaxLogger {
         return m_delegate.isFatalEnabled();
     }
 
-    public void trace(final String message, final Throwable t) {
+    @Override
+    public boolean isTraceEnabled(PaxMarker marker) {
+        return m_delegate.isTraceEnabled(marker.log4j2Marker());
+    }
+
+    @Override
+    public boolean isDebugEnabled(PaxMarker marker) {
+        return m_delegate.isDebugEnabled(marker.log4j2Marker());
+    }
+
+    @Override
+    public boolean isInfoEnabled(PaxMarker marker) {
+        return m_delegate.isInfoEnabled(marker.log4j2Marker());
+    }
+
+    @Override
+    public boolean isWarnEnabled(PaxMarker marker) {
+        return m_delegate.isWarnEnabled(marker.log4j2Marker());
+    }
+
+    @Override
+    public boolean isErrorEnabled(PaxMarker marker) {
+        return m_delegate.isErrorEnabled(marker.log4j2Marker());
+    }
+
+    @Override
+    public boolean isFatalEnabled(PaxMarker marker) {
+        return m_delegate.isFatalEnabled(marker.log4j2Marker());
+    }
+
+    @Override
+    public void trace(String message, Throwable t) {
         if (isTraceEnabled()) {
-            doLog(Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, t);
+            doLog(null, Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, t);
         }
     }
 
     @Override
     public void debug(String message, Throwable t) {
         if (isDebugEnabled()) {
-            doLog(Level.DEBUG, LogService.LOG_DEBUG, m_fqcn, message, t);
+            doLog(null, Level.DEBUG, LogService.LOG_DEBUG, m_fqcn, message, t);
         }
     }
 
     @Override
     public void inform(String message, Throwable t) {
         if (isInfoEnabled()) {
-            doLog(Level.INFO, LogService.LOG_INFO, m_fqcn, message, t);
+            doLog(null, Level.INFO, LogService.LOG_INFO, m_fqcn, message, t);
         }
     }
 
     @Override
     public void warn(String message, Throwable t) {
         if (isWarnEnabled()) {
-            doLog(Level.WARN, LogService.LOG_WARNING, m_fqcn, message, t);
+            doLog(null, Level.WARN, LogService.LOG_WARNING, m_fqcn, message, t);
         }
     }
 
     @Override
     public void error(String message, Throwable t) {
         if (isErrorEnabled()) {
-            doLog(Level.ERROR, LogService.LOG_ERROR, m_fqcn, message, t);
+            doLog(null, Level.ERROR, LogService.LOG_ERROR, m_fqcn, message, t);
         }
     }
 
     @Override
     public void fatal(String message, Throwable t) {
         if (isFatalEnabled()) {
-            doLog(Level.FATAL, LogService.LOG_ERROR, m_fqcn, message, t);
+            doLog(null, Level.FATAL, LogService.LOG_ERROR, m_fqcn, message, t);
         }
     }
 
     @Override
     public void trace(String message, Throwable t, String fqcn) {
         if (isTraceEnabled()) {
-            doLog(Level.TRACE, LogService.LOG_DEBUG, fqcn, message, t);
+            doLog(null, Level.TRACE, LogService.LOG_DEBUG, fqcn, message, t);
         }
     }
 
     @Override
     public void debug(String message, Throwable t, String fqcn) {
         if (isDebugEnabled()) {
-            doLog(Level.DEBUG, LogService.LOG_DEBUG, fqcn, message, t);
+            doLog(null, Level.DEBUG, LogService.LOG_DEBUG, fqcn, message, t);
         }
     }
 
     @Override
     public void inform(String message, Throwable t, String fqcn) {
         if (isInfoEnabled()) {
-            doLog(Level.INFO, LogService.LOG_INFO, fqcn, message, t);
+            doLog(null, Level.INFO, LogService.LOG_INFO, fqcn, message, t);
         }
     }
 
     @Override
     public void warn(String message, Throwable t, String fqcn) {
         if (isWarnEnabled()) {
-            doLog(Level.WARN, LogService.LOG_WARNING, fqcn, message, t);
+            doLog(null, Level.WARN, LogService.LOG_WARNING, fqcn, message, t);
         }
     }
 
     @Override
     public void error(String message, Throwable t, String fqcn) {
         if (isErrorEnabled()) {
-            doLog(Level.ERROR, LogService.LOG_ERROR, fqcn, message, t);
+            doLog(null, Level.ERROR, LogService.LOG_ERROR, fqcn, message, t);
         }
     }
 
     @Override
     public void fatal(String message, Throwable t, String fqcn) {
         if (isFatalEnabled()) {
-            doLog(Level.FATAL, LogService.LOG_ERROR, fqcn, message, t);
+            doLog(null, Level.FATAL, LogService.LOG_ERROR, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isTraceEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.TRACE, LogService.LOG_DEBUG, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isDebugEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.DEBUG, LogService.LOG_DEBUG, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isInfoEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.INFO, LogService.LOG_INFO, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isWarnEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.WARN, LogService.LOG_WARNING, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isErrorEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.ERROR, LogService.LOG_ERROR, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
+        if (isFatalEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.FATAL, LogService.LOG_ERROR, fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t) {
+        if (isTraceEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t) {
+        if (isDebugEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.DEBUG, LogService.LOG_DEBUG, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t) {
+        if (isInfoEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.INFO, LogService.LOG_INFO, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t) {
+        if (isWarnEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.WARN, LogService.LOG_WARNING, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t) {
+        if (isErrorEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.ERROR, LogService.LOG_ERROR, m_fqcn, message, t);
+        }
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t) {
+        if (isFatalEnabled(marker)) {
+            doLog(marker.log4j2Marker(), Level.FATAL, LogService.LOG_ERROR, m_fqcn, message, t);
         }
     }
 
@@ -208,32 +325,33 @@ public class PaxLoggerImpl implements PaxLogger {
 
     // private methods
 
-    private void doLog(final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+    private void doLog(final Marker marker, final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
         if (System.getSecurityManager() != null) {
             AccessController.doPrivileged(
                     (PrivilegedAction<Void>) () -> {
-                        doLog0(level, svcLevel, fqcn, message, t);
+                        doLog0(marker, level, svcLevel, fqcn, message, t);
                         return null;
                     }
             );
         } else {
-            doLog0(level, svcLevel, fqcn, message, t);
+            doLog0(marker, level, svcLevel, fqcn, message, t);
         }
     }
 
     /**
      * Most important pax-logging-service log method that bridges pax-logging-api directly into Log4J2.
+     * @param marker
      * @param level
      * @param svcLevel
      * @param fqcn
      * @param message
      * @param t
      */
-    private void doLog0(Level level, int svcLevel, final String fqcn, String message, Throwable t) {
+    private void doLog0(Marker marker, Level level, int svcLevel, String fqcn, String message, Throwable t) {
         setDelegateContext();
         try {
             Message msg = m_delegate.getMessageFactory().newMessage(message);
-            m_delegate.logMessage(fqcn, level, null, msg, t);
+            m_delegate.logMessage(fqcn, level, marker, msg, t);
         } finally {
             clearDelegateContext();
         }

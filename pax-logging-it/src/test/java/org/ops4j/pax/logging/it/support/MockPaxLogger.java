@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxMarker;
 
 public class MockPaxLogger implements PaxLogger {
 
@@ -59,6 +60,36 @@ public class MockPaxLogger implements PaxLogger {
 
     @Override
     public boolean isFatalEnabled() {
+        return true;
+    }
+
+    @Override
+    public boolean isTraceEnabled(PaxMarker marker) {
+        return true;
+    }
+
+    @Override
+    public boolean isDebugEnabled(PaxMarker marker) {
+        return true;
+    }
+
+    @Override
+    public boolean isInfoEnabled(PaxMarker marker) {
+        return true;
+    }
+
+    @Override
+    public boolean isWarnEnabled(PaxMarker marker) {
+        return true;
+    }
+
+    @Override
+    public boolean isErrorEnabled(PaxMarker marker) {
+        return true;
+    }
+
+    @Override
+    public boolean isFatalEnabled(PaxMarker marker) {
         return true;
     }
 
@@ -119,6 +150,66 @@ public class MockPaxLogger implements PaxLogger {
 
     @Override
     public void fatal(String message, Throwable t, String fqcn) {
+
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t) {
+
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t) {
+
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t) {
+
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t) {
+
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t) {
+
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t) {
+
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
+
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
+
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
+
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
+
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
+
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
 
     }
 

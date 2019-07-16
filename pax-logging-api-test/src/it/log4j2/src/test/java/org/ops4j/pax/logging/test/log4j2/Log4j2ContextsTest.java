@@ -47,7 +47,7 @@ public class Log4j2ContextsTest {
         AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
                 .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
         appenderBuilder.add(builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "%d {%t} %c (%X) %-5level: %msg%n%throwable"));
+                .addAttribute("pattern", "%d {%t} %c (%X) %level (%marker | %markerSimpleName): %msg%n%throwable"));
         builder.add(appenderBuilder);
 
         builder.add(builder.newRootLogger(Level.DEBUG)

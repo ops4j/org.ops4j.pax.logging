@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 public class LoggingWithoutBackendTest {
 
@@ -35,6 +37,20 @@ public class LoggingWithoutBackendTest {
         DefaultServiceLog.setLogLevel("ERROR");
         LOG.trace("trace message 2");
         LOG.error("error message 2");
+    }
+
+    @Test
+    public void logWithMarkers() {
+        Marker m = MarkerFactory.getMarker("m1");
+
+        DefaultServiceLog.setLogLevel("TRACE");
+        LOG.trace(m, "trace message 1");
+        LOG.error(m, "error message 1");
+        LOG.isTraceEnabled();
+        LOG.isTraceEnabled(m);
+        DefaultServiceLog.setLogLevel("ERROR");
+        LOG.trace(m, "trace message 2");
+        LOG.error(m, "error message 2");
     }
 
 }

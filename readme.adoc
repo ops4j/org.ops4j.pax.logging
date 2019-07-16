@@ -14,16 +14,16 @@ Logging APIs (or _Facades_) matching the above distinction include:
 
 Logging implementations always provide their own _APIs_ and can be used without any of the above facades. These include:
 
-* https://logging.apache.org/log4j/1.2/[Apache Log4j]
-* https://logging.apache.org/log4j/2.x/[Apache Log4j2]
+* https://logging.apache.org/log4j/1.2/[Apache Log4J]
+* https://logging.apache.org/log4j/2.x/[Apache Log4J2]
 * https://logback.qos.ch/[Logback]
 
 However usage of Logback _without_ SLF4J is very rare and won't be implemented in pax-logging.
 
 And the above three (with their specific configuration file syntax) are supported by (respectively):
 
-* pax-logging-service (log4j1)
-* pax-logging-log4j2 (log4j2)
+* pax-logging-service (log4J1)
+* pax-logging-log4j2 (log4J2)
 * pax-logging-logback (logoback)
 
 `pax-logging-service` is not called `pax-logging-log4j1` due to backward compatibility.
@@ -41,7 +41,7 @@ The history of `org.osgi.service.log` package versions is:
 
 pax-logging-api uses version `1.3` from OSGi Compendium R6.
 
-Each class that's an entry point to specific Logging framework (like `org.slf4j.LoggerFactory`) interacts with pax-logging using `org.ops4j.pax.logging.PaxLoggingManager`. This _manager_ tracks instances of framework-specific `org.ops4j.pax.logging.PaxLoggingService` services that eventually delegate to particular framework (like Log4j2).
+Each class that's an entry point to specific Logging framework (like `org.slf4j.LoggerFactory`) interacts with pax-logging using `org.ops4j.pax.logging.PaxLoggingManager`. This _manager_ tracks instances of framework-specific `org.ops4j.pax.logging.PaxLoggingService` services that eventually delegate to particular framework (like Log4J2).
 
 This indirection allows to plug-in OSGi specific mechanism (like replacing `org.ops4j.pax.logging.PaxLoggingService` implementation at runtime) without refreshing (in OSGi terms) pax-logging-api bundle.
 
@@ -251,6 +251,23 @@ Notes and confusing parts:
 * Mapping of java.util.logging levels to more popular level names is implemented in `org.ops4j.pax.logging.spi.support.BackendSupport.toJULLevel()`
 * `OFF` and `ALL` special levels have to be treated carefully by pax-logging because the usage of numerical values is totally unintuitive.
 
+=== Markers
+
+_Markers_ allow to pass/associate additional, dynamic information with logging operation itself. Just as logger name (category) and level are static aspects of the logger itself, _marker_ is associated with single logging invocation (thus effectively with _logging event_). Single logger may be used to log message with or without marker and it's up to specific implementation (Logback, Log4J2) to handle the marker accordingly.
+
+For example, Log4J1 doesn't support markers, so slf4j-log4j12 bridges to Log4J1 using `org.slf4j.helpers.MarkerIgnoringBase` abstract base class which simply ignores markers. Logback and Log4J2 implement _full_ `org.slf4j.spi.LocationAwareLogger` with marker support.
+
+Markers are used usually by implementation-specific filters and appenders:
+
+* filters may be configured to restrict logging statements to ones using (or not using) particular marker
+* some appenders may simply do not do anything if specific marker is (or is not) present (for example that's the case with `ch.qos.logback.classic.boolex.OnMarkerEvaluator` that may be attached to `ch.qos.logback.classic.net.SMTPAppender`)
+
+Finally, a marker may have parent (or child) marker(s) associated - making them something slightly more complex than single _name_.
+
+In Pax Logging, `org.ops4j.pax.logging.PaxLogger` interface didn't contain methods accepting markers. https://ops4j1.jira.com/browse/PAXLOGGING-160[PAXLOGGING-160] passed _marker_ as String attribute through thread-bound `org.ops4j.pax.logging.PaxContext`. https://ops4j1.jira.com/browse/PAXLOGGING-259[PAXLOGGING-259] adds such methods to this interface.
+
+Remember - in Pax Logging, it's possible to use for example Log4J2 _API_ to log information that's effectively handled by Log4J1, so despite the API being aware of markers, they may not be used correctly by actual logging implementation. As consequence, `isXXXEnabled(..., marker, ...)` methods may not be handled early in the process of logging.
+
 == SLF4J
 
 `slf4j-api-1.7.26-sources.jar` contains more sources than `slf4j-api-1.7.26.jar` has classes - in particular, `org.slf4j.impl` package is removed from the jar and the responsibility to provide:
@@ -302,7 +319,7 @@ To achieve _factory method_ approach, pax-logging-api exports `org.ops4j.pax.log
 
 JBoss started to use dedicated logging _bridge_ (facade) with http://docs.jboss.org/hibernate/orm/4.3/topical/html/logging/Logging.html[Hibernate 4.0]. Similarly to e.g., Commons Logging, actual logging framework is discovered at runtime.
 
-JBoss Logging can delegate to either concrete logging implementation (like Log4j1, Log4j2) or another logging facade (like SLF4J or Commons Logging). It uses discovery (ClassLoader + ServiceLoader) mechanism to find the framework to delegate to.
+JBoss Logging can delegate to either concrete logging implementation (like Log4J1, Log4J2) or another logging facade (like SLF4J or Commons Logging). It uses discovery (ClassLoader + ServiceLoader) mechanism to find the framework to delegate to.
 
 Originally, `org.jboss.logging.provider` property may be set to one of these values:
 
@@ -332,7 +349,7 @@ What's interesting here is that there's no need to provide special bridge to pax
 
 == Log4j
 
-Ah, the grandfather of all configurable Logging frameworks. Created when there was no logging bridges/facades around. Actually first facades (Commons Logging) was created to bridge common logging API to one of different logging frameworks (back then, it was only Log4j1 and Java Util Logging (JUL) from JDK1.4).
+Ah, the grandfather of all configurable Logging frameworks. Created when there was no logging bridges/facades around. Actually first facades (Commons Logging) was created to bridge common logging API to one of different logging frameworks (back then, it was only Log4J1 and Java Util Logging (JUL) from JDK1.4).
 
 Because its origins are in pre-logging bridge times, Log4J1's API was used directly by very large amount of code. That's why pax-logging fully supports its native API.
 
@@ -634,9 +651,9 @@ That's entirely pax-logging-service private package with `ZipRollingFileAppender
 
 === Location Info
 
-When Log4j1 is used with pattern layout that deals with class/method names and/or file names and line numbers, there's a need to analyze stack trace to get this info.
+When Log4J1 is used with pattern layout that deals with class/method names and/or file names and line numbers, there's a need to analyze stack trace to get this info.
 
-When log4j1 is called normally, without ANY facade (and outside of pax-logging), the relevant stack trace fragment is:
+When log4J1 is called normally, without ANY facade (and outside of pax-logging), the relevant stack trace fragment is:
 
 [listing,options=nowrap]
 ----
@@ -661,7 +678,7 @@ When log4j1 is called normally, without ANY facade (and outside of pax-logging),
 The discovered class name shuold be `org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest`.
 What log4j ensures to make it work is passing `org.apache.log4j.Category.FQCN` (or `org.apache.log4j.Logger.FQCN`) value down through `org.apache.log4j.Category.forcedLog` method. Then the last stack trace element before `FQCN` is used to collection location info.
 
-When Log4j1 is used through SLF4J, `org.slf4j.impl.Log4jLoggerAdapter.FQCN` is used to pass through `org.apache.log4j.Category.log()` and `org.apache.log4j.Category.callAppenders()`.
+When Log4J1 is used through SLF4J, `org.slf4j.impl.Log4jLoggerAdapter.FQCN` is used to pass through `org.apache.log4j.Category.log()` and `org.apache.log4j.Category.callAppenders()`.
 
 With pax-logging, the stack trace is a bit more complex:
 [listing,options=nowrap]
@@ -808,7 +825,7 @@ These methods can be groupped into:
 * factory methods used to obtain a _logger_ (which is of the same instance `org.apache.log4j.Logger`): `getLogger`, `getInstance`, `getRootLogger`, ...
 * logging methods used to log messages: `info`, `debug`, `warn`, ... (with different parameter list)
 * logging threshold methods: `isInfoEnabled`, `isDebugEnabled`, ...
-* methods related to appenders: `addAppender`, `isAttached`, ... - these methods allow (in original usage) to attach appenders to loggers dynamically. In OSGi it doesn't make sense, because Log4J1 *API* may be used to log messages which are eventually handled by Logback or Log4j2 backend (or even `DefaultServiceLog` if pax-logging backend is not (yet) installed)
+* methods related to appenders: `addAppender`, `isAttached`, ... - these methods allow (in original usage) to attach appenders to loggers dynamically. In OSGi it doesn't make sense, because Log4J1 *API* may be used to log messages which are eventually handled by Logback or Log4J2 backend (or even `DefaultServiceLog` if pax-logging backend is not (yet) installed)
 * methods related to logger configuration: `getAddittivity`, `getParent`, `setLevel`, ...
 * meta methods related to _logging repository_: `getCurrentCategories`, `getHierarchy`, `getLoggerRepository`, `shutdown`, ... - these methods are generally throwing `UnsupportedOperationException` in pax-logging-api.
 
@@ -840,13 +857,13 @@ There are several additional JARs we Private-Package in pax-logging-logback:
 
 After private-packaging the above, I've adjusted the generated `Import-Package` header providing explicit version ranges for Groovy and Jackson and making some imports optional.
 
-== Log4j2
+== Log4J2
 
-After huge (in my humble, subjective opinion) success of Logback, Log4j2 was created as modernized version of original Log4j project with full awareness of logging bridges/facades and weird properties file syntax.
+After huge (in my humble, subjective opinion) success of Logback, Log4J2 was created as modernized version of original Log4j project with full awareness of logging bridges/facades and weird properties file syntax.
 
-pax-logging provides dedicated implementation of `org.ops4j.pax.logging.PaxLoggingService` that delegates to Log4j2.
+pax-logging provides dedicated implementation of `org.ops4j.pax.logging.PaxLoggingService` that delegates to Log4J2.
 
-Again, Log4j2 itself may be used without bridge/facade and (differently than with Logback) pax-logging fully supports its native API.
+Again, Log4J2 itself may be used without bridge/facade and (differently than with Logback) pax-logging fully supports its native API.
 
 Here's a list of all `org.apache.logging.log4j` artifacts I found in version 2.11.2:
 

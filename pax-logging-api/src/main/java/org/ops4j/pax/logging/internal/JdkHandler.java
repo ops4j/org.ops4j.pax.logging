@@ -24,7 +24,6 @@ import java.util.logging.SimpleFormatter;
 
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.osgi.framework.Bundle;
 
 /**
  * <p>JUL {@link Handler} that bridges {@link LogRecord log records} to Pax Logging loggers.</p>

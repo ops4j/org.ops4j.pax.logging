@@ -21,6 +21,8 @@ package org.ops4j.pax.logging.test.log4j2;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -46,7 +48,7 @@ public class Log4j2NativeApiTest {
         AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
                 .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
         appenderBuilder.add(builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "%d {%t} %c (%X) %-5level: %msg%n%throwable"));
+                .addAttribute("pattern", "%d {%t} %c (%X) %level (%marker | %markerSimpleName): %msg%n%throwable"));
         builder.add(appenderBuilder);
 
         builder.add(builder.newRootLogger(Level.DEBUG)
@@ -81,6 +83,19 @@ public class Log4j2NativeApiTest {
 
         ThreadContext.put("country", "Equestria");
         log.info("mdc - INFO");
+        ThreadContext.clearAll();
+    }
+
+    @Test
+    public void markers() {
+        // Loggers are created by calling LogManager.getLogger. The Logger itself performs no direct actions.
+        // It simply has a name and is associated with a LoggerConfig
+
+        Logger log = LogManager.getLogger(Log4j2NativeApiTest.class);
+
+        Marker m1 = MarkerManager.getMarker("m1");
+        m1.addParents(MarkerManager.getMarker("p1"), MarkerManager.getMarker("p2"));
+        log.info(m1, "markers - INFO");
     }
 
     @Test

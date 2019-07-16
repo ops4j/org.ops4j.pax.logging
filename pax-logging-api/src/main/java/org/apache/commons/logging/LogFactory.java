@@ -26,8 +26,8 @@ package org.apache.commons.logging;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
-import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.ops4j.pax.logging.jcl.JclLogger;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
 
 /**
