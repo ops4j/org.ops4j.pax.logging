@@ -26,28 +26,64 @@ public abstract class FqcnIgnoringPaxLogger implements PaxLogger {
         return message + " Ignored FQCN: " + fqcn;
     }
 
+    @Override
     public void trace(String message, Throwable t, String fqcn) {
         trace(appendToMessage(message, fqcn), t);
     }
 
+    @Override
     public void debug(String message, Throwable t, String fqcn) {
         debug(appendToMessage(message, fqcn), t);
     }
 
+    @Override
     public void inform(String message, Throwable t, String fqcn) {
         inform(appendToMessage(message, fqcn), t);
     }
 
+    @Override
     public void warn(String message, Throwable t, String fqcn) {
         warn(appendToMessage(message, fqcn), t);
     }
 
+    @Override
     public void error(String message, Throwable t, String fqcn) {
         error(appendToMessage(message, fqcn), t);
     }
 
+    @Override
     public void fatal(String message, Throwable t, String fqcn) {
         fatal(appendToMessage(message, fqcn), t);
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
+        trace(message, t, fqcn);
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
+        debug(message, t, fqcn);
+    }
+
+    @Override
+    public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
+        inform(message, t, fqcn);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
+        warn(message, t, fqcn);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
+        error(message, t, fqcn);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
+        fatal(message, t, fqcn);
     }
 
 }

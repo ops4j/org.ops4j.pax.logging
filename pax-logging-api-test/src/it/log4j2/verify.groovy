@@ -21,17 +21,20 @@ File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.l
 List<String> lines = surefireOutput.readLines()
 int ok = 0
 for (String l : lines) {
-  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({}) INFO : simplestUsage - INFO1")) {
+  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({}) INFO ( | ): simplestUsage - INFO1")) {
     ok++
   }
-  if (l.contains("  ({}) INFO : simplestUsage - INFO2")) {
+  if (l.contains("  ({}) INFO ( | ): simplestUsage - INFO2")) {
     ok++
   }
-  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({}) INFO : simplestUsage - INFO3")) {
+  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({}) INFO ( | ): simplestUsage - INFO3")) {
     ok++
   }
-  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({country=Equestria}) INFO : mdc - INFO")) {
+  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({country=Equestria}) INFO ( | ): mdc - INFO")) {
+    ok++
+  }
+  if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({}) INFO (m1[ p1, p2 ] | m1): markers - INFO")) {
     ok++
   }
 }
-assert ok == 4
+assert ok == 5

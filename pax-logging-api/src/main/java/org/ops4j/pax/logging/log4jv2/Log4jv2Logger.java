@@ -25,6 +25,7 @@ import org.apache.logging.log4j.spi.AbstractLogger;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
+import org.ops4j.pax.logging.PaxMarker;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
 
@@ -55,99 +56,131 @@ public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAw
 
     @Override
     public boolean isEnabled(Level level, Marker marker, Message message, Throwable t) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, Object message, Throwable t) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Throwable t) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object... params) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, CharSequence message, Throwable t) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public boolean isEnabled(Level level, Marker marker, String message, Object p0, Object p1, Object p2, Object p3, Object p4, Object p5, Object p6, Object p7, Object p8, Object p9) {
-        return getLevel().intLevel() >= level.intLevel();
+        boolean mf = marker == null || markerDecision(level, marker);
+        return getLevel().intLevel() >= level.intLevel() && mf;
     }
 
     @Override
     public void logMessage(String fqcn, Level level, Marker marker, Message message, Throwable t) {
-        // TODO: support marker
-        if (level.intLevel() >= Level.TRACE.intLevel()) {
-            m_delegate.trace(message.getFormattedMessage(), t, fqcn);
-        } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
-            m_delegate.debug(message.getFormattedMessage(), t, fqcn);
-        } else if (level.intLevel() >= Level.INFO.intLevel()) {
-            m_delegate.inform(message.getFormattedMessage(), t, fqcn);
-        } else if (level.intLevel() >= Level.WARN.intLevel()) {
-            m_delegate.warn(message.getFormattedMessage(), t, fqcn);
-        } else if (level.intLevel() >= Level.ERROR.intLevel()) {
-            m_delegate.error(message.getFormattedMessage(), t, fqcn);
-        } else if (level.intLevel() >= Level.FATAL.intLevel()) {
-            m_delegate.fatal(message.getFormattedMessage(), t, fqcn);
+        if (marker != null) {
+            PaxMarker paxMarker = new PaxMarker(marker);
+            if (level.intLevel() >= Level.TRACE.intLevel()) {
+                m_delegate.trace(paxMarker, message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
+                m_delegate.debug(paxMarker, message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.INFO.intLevel()) {
+                m_delegate.inform(paxMarker, message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.WARN.intLevel()) {
+                m_delegate.warn(paxMarker, message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.ERROR.intLevel()) {
+                m_delegate.error(paxMarker, message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.FATAL.intLevel()) {
+                m_delegate.fatal(paxMarker, message.getFormattedMessage(), t, fqcn);
+            }
+        } else {
+            if (level.intLevel() >= Level.TRACE.intLevel()) {
+                m_delegate.trace(message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
+                m_delegate.debug(message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.INFO.intLevel()) {
+                m_delegate.inform(message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.WARN.intLevel()) {
+                m_delegate.warn(message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.ERROR.intLevel()) {
+                m_delegate.error(message.getFormattedMessage(), t, fqcn);
+            } else if (level.intLevel() >= Level.FATAL.intLevel()) {
+                m_delegate.fatal(message.getFormattedMessage(), t, fqcn);
+            }
         }
     }
 
@@ -167,6 +200,24 @@ public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAw
             default:
                 return Level.OFF;
         }
+    }
+
+    private boolean markerDecision(Level level, Marker marker) {
+        PaxMarker m = new PaxMarker(marker);
+        if (level.intLevel() >= Level.TRACE.intLevel()) {
+            return m_delegate.isTraceEnabled(m);
+        } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
+            return m_delegate.isDebugEnabled(m);
+        } else if (level.intLevel() >= Level.INFO.intLevel()) {
+            return m_delegate.isInfoEnabled(m);
+        } else if (level.intLevel() >= Level.WARN.intLevel()) {
+            return m_delegate.isWarnEnabled(m);
+        } else if (level.intLevel() >= Level.ERROR.intLevel()) {
+            return m_delegate.isErrorEnabled(m);
+        } else if (level.intLevel() >= Level.FATAL.intLevel()) {
+            return m_delegate.isFatalEnabled(m);
+        }
+        return false;
     }
 
 }

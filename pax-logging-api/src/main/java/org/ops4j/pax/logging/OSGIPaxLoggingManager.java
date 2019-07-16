@@ -20,8 +20,8 @@ package org.ops4j.pax.logging;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ops4j.pax.logging.spi.support.BundleHelper;
 import org.ops4j.pax.logging.internal.TrackingLogger;
+import org.ops4j.pax.logging.spi.support.BundleHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

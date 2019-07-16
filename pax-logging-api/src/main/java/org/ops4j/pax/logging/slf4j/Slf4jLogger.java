@@ -17,16 +17,17 @@
  */
 package org.ops4j.pax.logging.slf4j;
 
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
+import org.ops4j.pax.logging.PaxMarker;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
-import org.slf4j.spi.LocationAwareLogger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
-import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.PaxLoggingManager;
+import org.slf4j.spi.LocationAwareLogger;
 
 /**
  * <p>pax-logging specific {@link org.slf4j.Logger} that delegates to {@link PaxLogger} that is obtained from
@@ -162,7 +163,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public boolean isTraceEnabled(Marker marker) {
-        return m_delegate.isTraceEnabled();
+        return m_delegate.isTraceEnabled(new PaxMarker(marker));
     }
 
     /**
@@ -173,10 +174,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void trace(Marker marker, String msg) {
-        if (m_delegate.isTraceEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.trace(msg, null);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isTraceEnabled(m)) {
+                m_delegate.trace(m, msg, null);
+            }
+        } else {
+            if (m_delegate.isTraceEnabled()) {
+                m_delegate.trace(msg, null);
+            }
         }
     }
 
@@ -190,11 +196,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void trace(Marker marker, String format, Object arg) {
-        if (m_delegate.isTraceEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg);
-            setMDCMarker(marker);
-            m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isTraceEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.trace(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isTraceEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -210,11 +222,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
-        if (m_delegate.isTraceEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
-            setMDCMarker(marker);
-            m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isTraceEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.trace(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isTraceEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -229,11 +247,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void trace(Marker marker, String format, Object[] argArray) {
-        if (m_delegate.isTraceEnabled()) {
-            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
-            setMDCMarker(marker);
-            m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isTraceEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.trace(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isTraceEnabled()) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.trace(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -247,10 +271,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
-        if (m_delegate.isTraceEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.trace(msg, t);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isTraceEnabled(m)) {
+                m_delegate.trace(m, msg, t);
+            }
+        } else {
+            if (m_delegate.isTraceEnabled()) {
+                m_delegate.trace(msg, t);
+            }
         }
     }
 
@@ -350,7 +379,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public boolean isDebugEnabled(Marker marker) {
-        return m_delegate.isDebugEnabled();
+        return m_delegate.isDebugEnabled(new PaxMarker(marker));
     }
 
     /**
@@ -361,10 +390,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void debug(Marker marker, String msg) {
-        if (m_delegate.isDebugEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.debug(msg, null);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isDebugEnabled(m)) {
+                m_delegate.debug(m, msg, null);
+            }
+        } else {
+            if (m_delegate.isDebugEnabled()) {
+                m_delegate.debug(msg, null);
+            }
         }
     }
 
@@ -378,11 +412,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void debug(Marker marker, String format, Object arg) {
-        if (m_delegate.isDebugEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg);
-            setMDCMarker(marker);
-            m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isDebugEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.debug(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isDebugEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -398,11 +438,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void debug(Marker marker, String format, Object arg1, Object arg2) {
-        if (m_delegate.isDebugEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
-            setMDCMarker(marker);
-            m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isDebugEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.debug(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isDebugEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -417,11 +463,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void debug(Marker marker, String format, Object[] argArray) {
-        if (m_delegate.isDebugEnabled()) {
-            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
-            setMDCMarker(marker);
-            m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isDebugEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.debug(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isDebugEnabled()) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.debug(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -435,10 +487,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void debug(Marker marker, String msg, Throwable t) {
-        if (m_delegate.isDebugEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.debug(msg, t);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isDebugEnabled(m)) {
+                m_delegate.debug(m, msg, t);
+            }
+        } else {
+            if (m_delegate.isDebugEnabled()) {
+                m_delegate.debug(msg, t);
+            }
         }
     }
 
@@ -538,7 +595,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public boolean isInfoEnabled(Marker marker) {
-        return m_delegate.isInfoEnabled();
+        return m_delegate.isInfoEnabled(new PaxMarker(marker));
     }
 
     /**
@@ -549,10 +606,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void info(Marker marker, String msg) {
-        if (m_delegate.isInfoEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.inform(msg, null);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isInfoEnabled(m)) {
+                m_delegate.inform(m, msg, null);
+            }
+        } else {
+            if (m_delegate.isInfoEnabled()) {
+                m_delegate.inform(msg, null);
+            }
         }
     }
 
@@ -566,11 +628,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void info(Marker marker, String format, Object arg) {
-        if (m_delegate.isInfoEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg);
-            setMDCMarker(marker);
-            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isInfoEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.inform(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isInfoEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -586,11 +654,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2) {
-        if (m_delegate.isInfoEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
-            setMDCMarker(marker);
-            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isInfoEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.inform(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isInfoEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -605,11 +679,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void info(Marker marker, String format, Object[] argArray) {
-        if (m_delegate.isInfoEnabled()) {
-            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
-            setMDCMarker(marker);
-            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isInfoEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.inform(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isInfoEnabled()) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -623,10 +703,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void info(Marker marker, String msg, Throwable t) {
-        if (m_delegate.isInfoEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.inform(msg, t);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isInfoEnabled(m)) {
+                m_delegate.inform(m, msg, t);
+            }
+        } else {
+            if (m_delegate.isInfoEnabled()) {
+                m_delegate.inform(msg, t);
+            }
         }
     }
 
@@ -726,7 +811,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public boolean isWarnEnabled(Marker marker) {
-        return m_delegate.isWarnEnabled();
+        return m_delegate.isWarnEnabled(new PaxMarker(marker));
     }
 
     /**
@@ -737,10 +822,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void warn(Marker marker, String msg) {
-        if (m_delegate.isWarnEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.warn(msg, null);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isWarnEnabled(m)) {
+                m_delegate.warn(m, msg, null);
+            }
+        } else {
+            if (m_delegate.isWarnEnabled()) {
+                m_delegate.warn(msg, null);
+            }
         }
     }
 
@@ -754,11 +844,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void warn(Marker marker, String format, Object arg) {
-        if (m_delegate.isWarnEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg);
-            setMDCMarker(marker);
-            m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isWarnEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.warn(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isWarnEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -774,11 +870,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2) {
-        if (m_delegate.isWarnEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
-            setMDCMarker(marker);
-            m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isWarnEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.warn(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isWarnEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -793,11 +895,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void warn(Marker marker, String format, Object[] argArray) {
-        if (m_delegate.isWarnEnabled()) {
-            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
-            setMDCMarker(marker);
-            m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isWarnEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.warn(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isWarnEnabled()) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.warn(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -811,10 +919,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void warn(Marker marker, String msg, Throwable t) {
-        if (m_delegate.isWarnEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.warn(msg, t);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isWarnEnabled(m)) {
+                m_delegate.warn(m, msg, t);
+            }
+        } else {
+            if (m_delegate.isWarnEnabled()) {
+                m_delegate.warn(msg, t);
+            }
         }
     }
 
@@ -914,7 +1027,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public boolean isErrorEnabled(Marker marker) {
-        return m_delegate.isErrorEnabled();
+        return m_delegate.isErrorEnabled(new PaxMarker(marker));
     }
 
     /**
@@ -925,10 +1038,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void error(Marker marker, String msg) {
-        if (m_delegate.isErrorEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.error(msg, null);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isErrorEnabled(m)) {
+                m_delegate.error(m, msg, null);
+            }
+        } else {
+            if (m_delegate.isErrorEnabled()) {
+                m_delegate.error(msg, null);
+            }
         }
     }
 
@@ -942,11 +1060,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void error(Marker marker, String format, Object arg) {
-        if (m_delegate.isErrorEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg);
-            setMDCMarker(marker);
-            m_delegate.error(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isErrorEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.error(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isErrorEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg);
+                m_delegate.error(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -962,11 +1086,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2) {
-        if (m_delegate.isErrorEnabled()) {
-            FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
-            setMDCMarker(marker);
-            m_delegate.error(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isErrorEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.error(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isErrorEnabled()) {
+                FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
+                m_delegate.error(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -981,11 +1111,17 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void error(Marker marker, String format, Object[] argArray) {
-        if (m_delegate.isErrorEnabled()) {
-            FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
-            setMDCMarker(marker);
-            m_delegate.error(tuple.getMessage(), tuple.getThrowable());
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isErrorEnabled(m)) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.error(m, tuple.getMessage(), tuple.getThrowable());
+            }
+        } else {
+            if (m_delegate.isErrorEnabled()) {
+                FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
+                m_delegate.error(tuple.getMessage(), tuple.getThrowable());
+            }
         }
     }
 
@@ -1000,10 +1136,15 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void error(Marker marker, String msg, Throwable t) {
-        if (m_delegate.isErrorEnabled()) {
-            setMDCMarker(marker);
-            m_delegate.error(msg, t);
-            resetMDCMarker();
+        if (marker != null) {
+            PaxMarker m = new PaxMarker(marker);
+            if (m_delegate.isErrorEnabled(m)) {
+                m_delegate.error(m, msg, t);
+            }
+        } else {
+            if (m_delegate.isErrorEnabled()) {
+                m_delegate.error(msg, t);
+            }
         }
     }
 
@@ -1021,70 +1162,64 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void log(Marker marker, String fqcn, int level, String message, Object[] argArray, Throwable t) {
-        setMDCMarker(marker);
+        PaxMarker paxMarker = null;
+        if (marker != null) {
+            paxMarker = new PaxMarker(marker);
+        }
         switch (level) {
             case (TRACE_INT):
                 if (m_delegate.isTraceEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
-                    m_delegate.trace(tuple.getMessage(), t, fqcn);
+                    if (paxMarker != null) {
+                        m_delegate.trace(paxMarker, tuple.getMessage(), t, fqcn);
+                    } else {
+                        m_delegate.trace(tuple.getMessage(), t, fqcn);
+                    }
                 }
                 break;
             case (DEBUG_INT):
                 if (m_delegate.isDebugEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
-                    m_delegate.debug(tuple.getMessage(), t, fqcn);
+                    if (paxMarker != null) {
+                        m_delegate.debug(paxMarker, tuple.getMessage(), t, fqcn);
+                    } else {
+                        m_delegate.debug(tuple.getMessage(), t, fqcn);
+                    }
                 }
                 break;
             case (INFO_INT):
                 if (m_delegate.isInfoEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
-                    m_delegate.inform(tuple.getMessage(), t, fqcn);
+                    if (paxMarker != null) {
+                        m_delegate.inform(paxMarker, tuple.getMessage(), t, fqcn);
+                    } else {
+                        m_delegate.inform(tuple.getMessage(), t, fqcn);
+                    }
                 }
                 break;
             case (WARN_INT):
                 if (m_delegate.isWarnEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
-                    m_delegate.warn(tuple.getMessage(), t, fqcn);
+                    if (paxMarker != null) {
+                        m_delegate.warn(paxMarker, tuple.getMessage(), t, fqcn);
+                    } else {
+                        m_delegate.warn(tuple.getMessage(), t, fqcn);
+                    }
                 }
                 break;
             case (ERROR_INT):
                 if (m_delegate.isErrorEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
-                    m_delegate.error(tuple.getMessage(), t, fqcn);
+                    if (paxMarker != null) {
+                        m_delegate.error(paxMarker, tuple.getMessage(), t, fqcn);
+                    } else {
+                        m_delegate.error(tuple.getMessage(), t, fqcn);
+                    }
                 }
                 break;
             default:
                 break;
         }
-        resetMDCMarker();
-    }
-
-    /**
-     * Resets MDC Attribute for SLF4J Marker support. If MDC Attribute would not
-     * be reseted the marker would also be applied to all following log messages
-     * within the same thread context.
-     */
-    private void resetMDCMarker() {
-        m_delegate.getPaxContext().remove(SLF4J_MARKER_MDC_ATTRIBUTE);
-    }
-
-    private void setMDCMarker(Marker marker) {
-        if (marker != null) {
-            m_delegate.getPaxContext().put(SLF4J_MARKER_MDC_ATTRIBUTE, marker.getName());
-            m_delegate.getPaxContext().put(SLF4J_MARKER_MDC_ATTRIBUTE, getMarkerName(marker));
-        }
-    }
-
-    public static String getMarkerName(Marker marker) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(marker.getName());
-        if (marker.hasReferences()) {
-            // follow only first reference. Multiple references will be ignored.
-            Marker reference = marker.iterator().next();
-            sb.append(".");
-            sb.append(getMarkerName(reference));
-        }
-        return sb.toString();
     }
 
 }

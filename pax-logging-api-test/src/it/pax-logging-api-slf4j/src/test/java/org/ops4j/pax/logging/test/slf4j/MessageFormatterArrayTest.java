@@ -23,6 +23,7 @@ import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.PaxMarker;
 import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
@@ -82,76 +83,184 @@ public class MessageFormatterArrayTest {
 
     public class TestLogger implements PaxLogger {
 
+        @Override
         public boolean isTraceEnabled() {
             return true;
         }
 
+        @Override
         public boolean isDebugEnabled() {
             return true;
         }
 
+        @Override
         public boolean isWarnEnabled() {
             return true;
         }
 
+        @Override
         public boolean isInfoEnabled() {
             return true;
         }
 
+        @Override
         public boolean isErrorEnabled() {
             return true;
         }
 
+        @Override
         public boolean isFatalEnabled() {
             return true;
         }
 
+        @Override
+        public boolean isTraceEnabled(PaxMarker marker) {
+            return true;
+        }
+
+        @Override
+        public boolean isDebugEnabled(PaxMarker marker) {
+            return true;
+        }
+
+        @Override
+        public boolean isWarnEnabled(PaxMarker marker) {
+            return true;
+        }
+
+        @Override
+        public boolean isInfoEnabled(PaxMarker marker) {
+            return true;
+        }
+
+        @Override
+        public boolean isErrorEnabled(PaxMarker marker) {
+            return true;
+        }
+
+        @Override
+        public boolean isFatalEnabled(PaxMarker marker) {
+            return true;
+        }
+
+        @Override
         public void trace(String message, Throwable t) {
             output = "trace:" + message;
         }
 
+        @Override
         public void debug(String message, Throwable t) {
             output = "debug:" + message;
         }
 
+        @Override
         public void inform(String message, Throwable t) {
             output = "info:" + message;
         }
 
+        @Override
         public void warn(String message, Throwable t) {
             output = "warning:" + message;
         }
 
+        @Override
         public void error(String message, Throwable t) {
             output = "error:" + message;
         }
 
+        @Override
         public void fatal(String message, Throwable t) {
             output = message;
         }
 
+        @Override
         public void trace(String message, Throwable t, String fqcn) {
             trace(message, t);
         }
 
+        @Override
         public void debug(String message, Throwable t, String fqcn) {
-            trace(message, t);
+            debug(message, t);
         }
 
+        @Override
         public void inform(String message, Throwable t, String fqcn) {
-            trace(message, t);
+            inform(message, t);
         }
 
+        @Override
         public void warn(String message, Throwable t, String fqcn) {
-            trace(message, t);
+            warn(message, t);
         }
 
+        @Override
         public void error(String message, Throwable t, String fqcn) {
+            error(message, t);
+        }
+
+        @Override
+        public void fatal(String message, Throwable t, String fqcn) {
+            fatal(message, t);
+        }
+
+        @Override
+        public void trace(PaxMarker marker, String message, Throwable t) {
             trace(message, t);
         }
 
-        public void fatal(String message, Throwable t, String fqcn) {
+        @Override
+        public void debug(PaxMarker marker, String message, Throwable t) {
+            debug(message, t);
+        }
+
+        @Override
+        public void inform(PaxMarker marker, String message, Throwable t) {
+            inform(message, t);
+        }
+
+        @Override
+        public void warn(PaxMarker marker, String message, Throwable t) {
+            warn(message, t);
+        }
+
+        @Override
+        public void error(PaxMarker marker, String message, Throwable t) {
+            error(message, t);
+        }
+
+        @Override
+        public void fatal(PaxMarker marker, String message, Throwable t) {
+            fatal(message, t);
+        }
+
+        @Override
+        public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
             trace(message, t);
+        }
+
+        @Override
+        public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
+            debug(message, t);
+        }
+
+        @Override
+        public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
+            inform(message, t);
+        }
+
+        @Override
+        public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
+            warn(message, t);
+        }
+
+        @Override
+        public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
+            error(message, t);
+        }
+
+        @Override
+        public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
+            fatal(message, t);
         }
 
         public int getLogLevel() {
