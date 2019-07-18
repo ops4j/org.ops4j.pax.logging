@@ -101,6 +101,7 @@
                                         <include>etc/jre.properties</include>
                                         <include>etc/system.properties</include>
                                         <include>lib/boot/*</include>
+                                        <include>lib/endorsed/*locator*</include>
                                     </includes>
                                 </resource>
                             </resources>
