@@ -218,7 +218,9 @@
         <version.commons-logging>1.2</version.commons-logging>
         <version.junit>4.12</version.junit>
         <version.log4j>1.2.17</version.log4j>
+        <version.org.apache.karaf>4.2.6</version.org.apache.karaf>
         <version.org.apache.felix.eventadmin>1.5.0</version.org.apache.felix.eventadmin>
+        <version.org.apache.felix.fileinstall>3.6.4</version.org.apache.felix.fileinstall>
         <version.org.apache.felix.configadmin>1.9.14</version.org.apache.felix.configadmin>
         <version.org.apache.felix.framework>6.0.3</version.org.apache.felix.framework>
         <version.org.apache.logging.log4j>2.12.0</version.org.apache.logging.log4j>
@@ -234,6 +236,7 @@
         <!-- versions of Maven plugins -->
 
         <!-- Maven plugins from org.apache.maven.plugins (and their dependencies) -->
+        <plugin.maven-antrun-plugin>1.8</plugin.maven-antrun-plugin>
         <plugin.maven-assembly-plugin>3.1.1</plugin.maven-assembly-plugin>
         <plugin.maven-checkstyle-plugin>3.0.0</plugin.maven-checkstyle-plugin>
         <plugin.dependency.com.puppycrawl.tools.checkstyle>8.19</plugin.dependency.com.puppycrawl.tools.checkstyle>
@@ -261,7 +264,7 @@
         <!-- Other Maven plugins (and their dependencies) -->
 <!--        <plugin.apache.apache-rat-plugin>0.13</plugin.apache.apache-rat-plugin>-->
         <plugin.felix.maven-bundle-plugin>4.2.0</plugin.felix.maven-bundle-plugin>
-<!--        <plugin.mojo.build-helper-maven-plugin>3.0.0</plugin.mojo.build-helper-maven-plugin>-->
+        <plugin.mojo.build-helper-maven-plugin>3.0.0</plugin.mojo.build-helper-maven-plugin>
         <plugin.mycila.license-maven-plugin>3.0</plugin.mycila.license-maven-plugin>
         <plugin.servicemix.depends-maven-plugin>1.4.0</plugin.servicemix.depends-maven-plugin>
 <!--        <plugin.sonatype.nexus-staging-maven-plugin>1.6.8</plugin.sonatype.nexus-staging-maven-plugin>-->
@@ -357,6 +360,11 @@
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>${plugin.maven-antrun-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>${plugin.maven-assembly-plugin}</version>
                 </plugin>
@@ -414,12 +422,28 @@
                     </dependencies>
                 </plugin>
 
+                <!-- Karaf plugins -->
+
+                <plugin>
+                    <groupId>org.apache.karaf.tooling</groupId>
+                    <artifactId>karaf-maven-plugin</artifactId>
+                    <version>${version.org.apache.karaf}</version>
+                </plugin>
+
                 <!-- ServiceMix plugins -->
 
                 <plugin>
                     <groupId>org.apache.servicemix.tooling</groupId>
                     <artifactId>depends-maven-plugin</artifactId>
                     <version>${plugin.servicemix.depends-maven-plugin}</version>
+                </plugin>
+
+                <!-- MojoHaus plugins -->
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${plugin.mojo.build-helper-maven-plugin}</version>
                 </plugin>
 
                 <!-- Other -->
@@ -555,6 +579,24 @@
                 <artifactId>pax-logging-sample-fragment-log4j2</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging.karaf</groupId>
+                <artifactId>karaf-base</artifactId>
+                <type>kar</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging.karaf</groupId>
+                <artifactId>karaf-distribution</artifactId>
+                <type>zip</type>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ops4j.pax.logging.karaf</groupId>
+                <artifactId>karaf-base-logger</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- OPS4J dependencies -->
 
@@ -571,6 +613,11 @@
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-container-native</artifactId>
+                <version>${version.org.ops4j.pax.exam}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-container-karaf</artifactId>
                 <version>${version.org.ops4j.pax.exam}</version>
             </dependency>
             <dependency>
@@ -775,6 +822,19 @@
                 <version>${version.org.apache.servicemix.bundles.javax-inject}</version>
             </dependency>
 
+            <!-- Karaf -->
+
+            <dependency>
+                <groupId>org.apache.karaf.features</groupId>
+                <artifactId>base</artifactId>
+                <version>${version.org.apache.karaf}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.karaf.features</groupId>
+                <artifactId>org.apache.karaf.features.core</artifactId>
+                <version>${version.org.apache.karaf}</version>
+            </dependency>
+
             <!-- Other -->
 
             <dependency>
@@ -830,6 +890,7 @@
         <module>pax-logging-log4j2-extra</module>
         <module>pax-logging-logback</module>
         <module>pax-logging-it</module>
+        <module>pax-logging-it-karaf</module>
         <module>pax-logging-samples</module>
     </modules>
 
