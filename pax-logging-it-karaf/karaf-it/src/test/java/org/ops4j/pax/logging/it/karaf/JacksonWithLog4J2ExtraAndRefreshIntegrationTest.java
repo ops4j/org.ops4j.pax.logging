@@ -47,10 +47,6 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFilePut;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.replaceConfigurationFile;
 
-/**
- * Clean test without any pax-logging bundles. Just simplest showcase of what's needed to run
- * manually controlled pax-exam test with Karaf.
- */
 @RunWith(PaxExam.class)
 public class JacksonWithLog4J2ExtraAndRefreshIntegrationTest extends AbstractControlledIntegrationTestBase {
 

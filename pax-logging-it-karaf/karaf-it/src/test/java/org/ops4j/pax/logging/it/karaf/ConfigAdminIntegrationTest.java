@@ -41,10 +41,6 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
-/**
- * Clean test without any pax-logging bundles. Just simplest showcase of what's needed to run
- * manually controlled pax-exam test with Karaf.
- */
 @RunWith(PaxExam.class)
 public class ConfigAdminIntegrationTest extends AbstractControlledIntegrationTestBase {
 
