@@ -1006,3 +1006,69 @@ Plugin types of components inside "root" component may be one of:
 * "CustomLevels"
 
 But generally, plugin _type_ is a key for org.apache.logging.log4j.core.config.plugins.util.PluginManager.plugins map which maps names to `org.apache.logging.log4j.core.config.plugins.util.PluginType`
+
+== Testing in Karaf
+
+That's tricky problem. If we want to use Pax Exam and test Pax Logging under Karaf with Maven we have to consider:
+
+* Maven runs maven-surefire|failsafe-plugin test in separate JVM (by default)
+* When using `pax-exam-container-karaf`, 3rd JVM process is launched
+* We can't use normal Karaf (even minimal one) because it uses fixed pax-logging version for bundles started from `etc/startup.properties`
+* So we have to prepare custom Karaf distribution, where initial (startup) bundles are the ones from current Pax Logging version (the one being tested)
+
+Then, taking into account the logging process itself:
+
+* We want logging statement issued by pax-exam itself to be handled properly (before launching Karaf) - ideally using `src/test/resources/log4j2-test.properties`
+* Thus `test` classpath has to contain `org.slf4j:slf4j-api` and `org.apache.logging.log4j:log4j-slf4j-impl`
+* Karaf has to start without any `org.ops4j.pax.logging` PID configured, but we want logging statements to be handled properly even if invoked from pax-logging-api bundle activator
+* Thus proper _default service log_ has to be configured in `etc/config.properties`
+* Remember that maven-surefire|failsafe-plugin can be configured with `<redirectTestOutputToFile>`
+
+Summarizing (for `pax-logging-it-karaf/karaf-it`):
+
+* there's `src/test/resources/log4j2-test.properties` with `Console` and `RollingFile` appenders. Both will start and end logging with these:
+[listing,options=nowrap]
+----
+EXAM> 12:22:55.205 [main] INFO  (DefaultExamSystem.java:127) org.ops4j.pax.exam.spi.DefaultExamSystem - Pax Exam System (Version: 4.13.1) created.
+...
+EXAM> 12:22:59.423 [main] INFO  (ReactorManager.java:444) org.ops4j.pax.exam.spi.reactors.ReactorManager - suite finished
+----
+* for `RollingFile` appender, the output will go to `pax-logging-it-karaf/karaf-it/target/logs/pax-exam-test.log` (as configured in `src/test/resources/log4j2-test.properties`)
+* for `Console` appender, the output will go to:
+** stdout, if maven-failsafe-plugin is configured with `<redirectTestOutputToFile>false</redirectTestOutputToFile>`
+** `pax-logging-it-karaf/karaf-it/target/failsafe-reports/org.ops4j.pax.logging.it.karaf.CleanIntegrationTest-output.txt` if maven-failsafe-plugin is configured with `<redirectTestOutputToFile>true</redirectTestOutputToFile>`
+* When Karaf starts, before `pax-logging-api` is **resolved** (it doesn't have to be started/active to provide the exported classes!) each _early_ bundle (like fileinstall or configadmin) has to dynamically deal with logging. Such bundles usually don't use e.g., SLF4J API. For example, configadmin uses `org.apache.felix.cm.impl.Log` and fileinstall uses `org.apache.felix.fileinstall.internal.Util.Logger` (and subclasses). If a bundle uses e.g., SLF4J API, pax-logging-api **has to** be resolved.
+* When a bundle (I created special `org.ops4j.pax.logging.karaf:karaf-base-logger`) uses e.g., SLF4J API (imports `org.slf4j` package), but pax-logging-api bundle is not yet started, console based `org.ops4j.pax.logging.spi.support.DefaultServiceLog` is used internally. Even if `org.ops4j.pax.logging.spi.support.FileServiceLog` could be used as indicated by `etc/config.properties`, it's not used when pax-logging-api is stopped (because I implemented special synchronization of file-backend for such fallback logger).
+** then such bundle (e.g., in `org.ops4j.pax.logging.karaf.base.Activator.start()`) simply writes to stdout using `DefaultServiceLog`. This is printed to stdout (if maven-failsafe-plugin is told so) (with layout hardcoded in `DefaultServiceLog`):
+[listing,options=nowrap]
+----
+org.ops4j.pax.logging.karaf.base-logger [org.ops4j.pax.logging.karaf.base.Activator] INFO : Starting before pax-logging-api
+----
+* Then pax-logging-api starts and in its activator again calls logging methods through various logging APIs (managed by itself). Now, because this bundle is already starting, `FileServiceLog` may be used (as indicated by `etc/config.properties` - configured using `editConfigurationFilePut("etc/custom.properties", "org.ops4j.pax.logging.useFileLogFallback", fileName)` in Pax Exam configuration). This is printed to `pax-logging-it-karaf/karaf-it/target/logs-default/CleanIntegrationTest.log`:
+[listing,options=nowrap]
+----
+org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.internal.Activator] INFO : Enabling Java Util Logging API support.
+org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.internal.Activator] INFO : Enabling SLF4J API support.
+...
+org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.internal.Activator] INFO : Disabling Log4J v2 API support. Ignored FQCN: org.apache.logging.log4j.spi.AbstractLogger
+org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.internal.Activator] INFO : Disabling Java Util Logging API support.
+----
+* Then pax-logging-log4j2 starts, finds there's no `org.ops4j.pax.logging` PID so defaults are used (in this particular case from `org.apache.logging.log4j.core.config.AbstractConfiguration.setToDefault()`). The pattern is `org.apache.logging.log4j.core.config.DefaultConfiguration.DEFAULT_PATTERN` and no file appender is configured, so this is printed to stdout (if maven-failsafe-plugin is told so):
+[listing,options=nowrap]
+----
+13:23:05.344 [FelixStartLevel] DEBUG org.apache.felix.configadmin - Registering service [org.osgi.service.log.LogService, org.knopflerfish.service.log.LogService, org.ops4j.pax.logging.PaxLoggingService, org.osgi.service.cm.ManagedService, id=15, bundle=7/mvn:org.ops4j.pax.logging/pax-logging-log4j2/1.11.0-SNAPSHOT]
+13:23:05.353 [FelixStartLevel] DEBUG org.apache.felix.configadmin - Scheduling task ManagedService Update: pid=[org.ops4j.pax.logging]
+13:23:05.358 [FelixStartLevel] DEBUG org.apache.felix.configadmin - [ManagedService Update: pid=[org.ops4j.pax.logging]] scheduled
+13:23:05.544 [CM Configuration Updater (Update: pid=org.apache.karaf.features)] DEBUG org.apache.felix.configadmin - Running task Update: pid=org.apache.karaf.features
+...
+13:23:06.664 [BundleWatcher: 1] DEBUG org.ops4j.pax.exam.raw.extender.intern.Probe - Registering Service: org.ops4j.pax.exam.ProbeInvoker with Probe-Signature="PaxExam-3be14d5b-583b-4688-ae78-9f8c1c2ef280" and expression="org.ops4j.pax.logging.it.karaf.CleanIntegrationTest;justRun"
+13:23:06.786 [RMI TCP Connection(1)-127.0.0.1] INFO  org.ops4j.pax.exam.invoker.junit.internal.ContainerTestRunner - running justRun in reactor
+13:23:06.789 [RMI TCP Connection(1)-127.0.0.1] INFO  org.ops4j.pax.logging.it.karaf.AbstractControlledIntegrationTestBase - ========== Running org.ops4j.pax.logging.it.karaf.CleanIntegrationTest.justRun() ==========
+13:23:06.790 [RMI TCP Connection(1)-127.0.0.1] INFO  org.ops4j.pax.logging.it.karaf.CleanIntegrationTest - #0: org.apache.felix.framework (System Bundle)
+13:23:06.790 [RMI TCP Connection(1)-127.0.0.1] INFO  org.ops4j.pax.logging.it.karaf.CleanIntegrationTest - #1: org.ops4j.pax.logging.karaf.base-logger (mvn:org.ops4j.pax.logging.karaf/karaf-base-logger/1.11.0-SNAPSHOT)
+...
+13:23:06.815 [FelixStartLevel] DEBUG org.ops4j.pax.swissbox.extender.BundleWatcher - Releasing bundle [org.apache.geronimo.specs.geronimo-atinject_1.0_spec]
+13:23:06.825 [FelixStartLevel] DEBUG org.apache.felix.configadmin - Unregistering service [org.osgi.service.cm.ManagedService, id=28, bundle=8/mvn:org.apache.karaf.features/org.apache.karaf.features.core/4.2.6]
+org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.karaf.base.Activator] INFO : Stopping after pax-logging-api
+----
+* The above listing contains entries from logging invocations made inside `@Test` methods using SLF4J API.
