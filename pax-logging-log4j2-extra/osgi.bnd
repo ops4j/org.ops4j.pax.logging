@@ -1,4 +1,4 @@
-Fragment-Host: org.ops4j.pax.pax-logging-log4j2
+Fragment-Host: org.ops4j.pax.logging.pax-logging-log4j2
 
 Export-Package: \
  !*
