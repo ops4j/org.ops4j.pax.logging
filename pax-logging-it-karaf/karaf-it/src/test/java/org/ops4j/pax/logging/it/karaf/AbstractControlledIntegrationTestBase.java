@@ -31,6 +31,7 @@ import org.ops4j.pax.exam.ProbeBuilder;
 import org.ops4j.pax.exam.TestProbeBuilder;
 import org.ops4j.pax.exam.karaf.options.DoNotModifyLogOption;
 import org.ops4j.pax.exam.options.MavenArtifactUrlReference;
+import org.ops4j.pax.exam.options.extra.VMOption;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.BundleContext;
@@ -48,6 +49,8 @@ import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.maven;
 import static org.ops4j.pax.exam.CoreOptions.systemTimeout;
 import static org.ops4j.pax.exam.CoreOptions.url;
+import static org.ops4j.pax.exam.OptionUtils.combine;
+import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.configureConsole;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConfiguration;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFilePut;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
@@ -99,8 +102,17 @@ public class AbstractControlledIntegrationTestBase {
                 .type("zip")
                 .versionAsInProject();
 
+        Option[] jdkSpecificOptions = new Option[0];
+        if (javaMajorVersion() >= 9) {
+            jdkSpecificOptions = new Option[] {
+                new VMOption("-classpath"),
+                new VMOption("lib/jdk9plus/*" + File.pathSeparator + "lib/boot/*")
+            };
+        }
+
         Option[] options = new Option[] {
                 // basic options
+                bootDelegationPackage("javax.xml.*"),
                 bootDelegationPackage("sun.*"),
                 bootDelegationPackage("com.sun.*"),
 
@@ -125,6 +137,11 @@ public class AbstractControlledIntegrationTestBase {
                 editConfigurationFilePut("etc/custom.properties", "org.ops4j.pax.logging.service.frameworkEventsLogLevel", "DISABLED"),
                 editConfigurationFilePut("etc/custom.properties", "org.ops4j.pax.logging.useFileLogFallback", fileName),
 
+                editConfigurationFilePut("etc/branding.properties", "welcome", ""), // No welcome banner
+                editConfigurationFilePut("etc/branding-ssh.properties", "welcome", ""),
+                configureConsole().ignoreRemoteShell(),
+                configureConsole().ignoreLocalConsole(),
+
                 // added implicitly by pax-exam, if pax.exam.system=test
                 // these resources are provided inside org.ops4j.pax.exam:pax-exam-link-mvn jar
                 // for example, "link:classpath:META-INF/links/org.ops4j.base.link" = "mvn:org.ops4j.base/ops4j-base/1.5.0"
@@ -140,7 +157,7 @@ public class AbstractControlledIntegrationTestBase {
 
                 junitBundles(),
         };
-        return options;
+        return combine(jdkSpecificOptions, options);
     }
 
     /**
@@ -152,6 +169,15 @@ public class AbstractControlledIntegrationTestBase {
     public TestProbeBuilder probeBuilder(TestProbeBuilder builder) {
         builder.setHeader(Constants.BUNDLE_SYMBOLICNAME, PROBE_SYMBOLIC_NAME);
         return builder;
+    }
+
+    private int javaMajorVersion() {
+        String v = System.getProperty("java.specification.version");
+        if (v.contains(".")) {
+            // before Java 9
+            v = v.split("\\.")[1];
+        }
+        return Integer.parseInt(v);
     }
 
 }
