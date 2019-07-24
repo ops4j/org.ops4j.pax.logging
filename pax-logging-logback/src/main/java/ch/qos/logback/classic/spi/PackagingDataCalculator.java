@@ -104,7 +104,7 @@ public class PackagingDataCalculator {
 
         int missfireCount = 0;
         for (int i = 0; i < commonFrames; i++) {
-            Class callerClass = null;
+            Class<?> callerClass = null;
             if (GET_CALLER_CLASS_METHOD_AVAILABLE) {
                 //callerClass = Reflection.getCallerClass(localFirstCommon + i - missfireCount + 1);
             }
@@ -137,7 +137,7 @@ public class PackagingDataCalculator {
         }
     }
 
-    private ClassPackagingData calculateByExactType(Class type) {
+    private ClassPackagingData calculateByExactType(Class<?> type) {
         String className = type.getName();
         ClassPackagingData cpd = cache.get(className);
         if (cpd != null) {
@@ -152,11 +152,11 @@ public class PackagingDataCalculator {
         if (cpd != null) {
             return cpd;
         }
-        Class type = bestEffortLoadClass(lastExactClassLoader, className);
+        Class<?> type = bestEffortLoadClass(lastExactClassLoader, className);
         return makePackagingFromType(type, className);
     }
 
-    private ClassPackagingData makePackagingFromType(Class type, String className) {
+    private ClassPackagingData makePackagingFromType(Class<?> type, String className) {
         ClassPackagingData cpd = null;
         if (type != null) {
             for (PackagingDataStrategy strategy : dataStrategies) {
@@ -174,7 +174,7 @@ public class PackagingDataCalculator {
         return cpd;
     }
 
-    private Class loadClass(ClassLoader cl, String className) {
+    private Class<?> loadClass(ClassLoader cl, String className) {
         if (cl == null) {
             return null;
         }
@@ -196,8 +196,8 @@ public class PackagingDataCalculator {
      * @param className
      * @return
      */
-    private Class bestEffortLoadClass(ClassLoader lastGuaranteedClassLoader, String className) {
-        Class result = loadClass(lastGuaranteedClassLoader, className);
+    private Class<?> bestEffortLoadClass(ClassLoader lastGuaranteedClassLoader, String className) {
+        Class<?> result = loadClass(lastGuaranteedClassLoader, className);
         if (result != null) {
             return result;
         }
@@ -222,17 +222,17 @@ public class PackagingDataCalculator {
     }
 
     public interface PackagingDataStrategy {
-        ClassPackagingData makePackagingFromType(Class type, String className);
+        ClassPackagingData makePackagingFromType(Class<?> type, String className);
     }
 
     private static final class DefaultPackagingDataStrategy implements PackagingDataStrategy {
-        public ClassPackagingData makePackagingFromType(Class type, String className) {
+        public ClassPackagingData makePackagingFromType(Class<?> type, String className) {
             String version = getImplementationVersion(type);
             String codeLocation = getCodeLocation(type);
             return new ClassPackagingData(codeLocation, version);
         }
 
-        private static String getImplementationVersion(Class type) {
+        private static String getImplementationVersion(Class<?> type) {
             if (type == null) {
                 return "na";
             }
@@ -248,7 +248,7 @@ public class PackagingDataCalculator {
             return "na";
         }
 
-        private String getCodeLocation(Class type) {
+        private String getCodeLocation(Class<?> type) {
             try {
                 if (type != null) {
                     // file:/C:/java/maven-2.0.8/repo/com/icegreen/greenmail/1.3/greenmail-1.3.jar
@@ -289,7 +289,7 @@ public class PackagingDataCalculator {
     }
 
     private static final class OsgiPackagingDataStrategy implements PackagingDataStrategy {
-        public ClassPackagingData makePackagingFromType(Class type, String className) {
+        public ClassPackagingData makePackagingFromType(Class<?> type, String className) {
             try {
                 org.osgi.framework.Bundle bundle = org.osgi.framework.FrameworkUtil.getBundle(type);
                 if (bundle != null) {
