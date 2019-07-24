@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import sun.reflect.Reflection;
+//import sun.reflect.Reflection;
 
 // import java.security.AccessControlException; import java.security.AccessController;import java.security.PrivilegedAction;
 /**
@@ -53,8 +53,8 @@ public class PackagingDataCalculator {
         // sun.reflect.Reflection class. However, this class will *not compile*
         // on JDKs lacking sun.reflect.Reflection.
         try {
-            Reflection.getCallerClass(2);
-            GET_CALLER_CLASS_METHOD_AVAILABLE = true;
+            //Reflection.getCallerClass(2);
+            //GET_CALLER_CLASS_METHOD_AVAILABLE = true;
         } catch (NoClassDefFoundError e) {
         } catch (NoSuchMethodError e) {
         } catch (UnsupportedOperationException e) {
@@ -94,9 +94,9 @@ public class PackagingDataCalculator {
         // in the initial part of this method we populate package information for
         // common stack frames
         final Throwable t = new Throwable("local stack reference");
-        final StackTraceElement[] localteSTEArray = t.getStackTrace();
-        final int commonFrames = STEUtil.findNumberOfCommonFrames(localteSTEArray, stepArray);
-        final int localFirstCommon = localteSTEArray.length - commonFrames;
+        final StackTraceElement[] locateSTEArray = t.getStackTrace();
+        final int commonFrames = STEUtil.findNumberOfCommonFrames(locateSTEArray, stepArray);
+        final int localFirstCommon = locateSTEArray.length - commonFrames;
         final int stepFirstCommon = stepArray.length - commonFrames;
 
         ClassLoader lastExactClassLoader = null;
@@ -106,7 +106,7 @@ public class PackagingDataCalculator {
         for (int i = 0; i < commonFrames; i++) {
             Class callerClass = null;
             if (GET_CALLER_CLASS_METHOD_AVAILABLE) {
-                callerClass = Reflection.getCallerClass(localFirstCommon + i - missfireCount + 1);
+                //callerClass = Reflection.getCallerClass(localFirstCommon + i - missfireCount + 1);
             }
             StackTraceElementProxy step = stepArray[stepFirstCommon + i];
             String stepClassname = step.ste.getClassName();
