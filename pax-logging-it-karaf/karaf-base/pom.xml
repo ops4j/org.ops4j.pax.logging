@@ -102,6 +102,7 @@
                                         <include>etc/system.properties</include>
                                         <include>lib/boot/*</include>
                                         <include>lib/endorsed/*locator*</include>
+                                        <include>lib/jdk9plus/*.jar</include>
                                     </includes>
                                 </resource>
                             </resources>
