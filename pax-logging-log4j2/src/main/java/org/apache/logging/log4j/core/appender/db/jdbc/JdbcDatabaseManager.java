@@ -565,7 +565,7 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
                 // Database connection has likely gone stale.
                 final Throwable cause = e.getCause();
                 final Throwable actual = cause == null ? e : cause;
-                logger().debug("{} committing and closing connection: {}", actual, actual.getClass().getSimpleName(),
+                logger().debug("{} committing and closing connection: {}: {}", actual, actual.getClass().getSimpleName(),
                         e.toString(), e);
             }
         }
@@ -578,6 +578,10 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
     private void connectAndPrepare() throws SQLException {
         logger().debug("Acquiring JDBC connection from {}", this.getConnectionSource());
         this.connection = getConnectionSource().getConnection();
+        if (this.connection == null) {
+            logger().debug("Connection not available from {}", this.getConnectionSource());
+            return;
+        }
         logger().debug("Acquired JDBC connection {}", this.connection);
         logger().debug("Getting connection metadata {}", this.connection);
         final DatabaseMetaData databaseMetaData = this.connection.getMetaData();
@@ -767,8 +771,8 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
         StringReader reader = null;
         try {
 			if (!this.isRunning() || isClosed(this.connection) || isClosed(this.statement)) {
-				throw new AppenderLoggingException(
-						"Cannot write logging event; JDBC manager not connected to the database.");
+				logger().debug("Cannot write logging event; JDBC manager not connected to the database.");
+				return;
 			}
             // Clear in case there are leftovers.
             statement.clearParameters();
