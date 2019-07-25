@@ -289,11 +289,15 @@ public class Helpers {
      * @param prefix
      */
     public static void updateLoggingConfig(BundleContext context, ConfigurationAdmin cm, LoggingLibrary library, String prefix, Consumer<Dictionary<String, Object>> consumer) {
+        final Throwable[] pt = new Throwable[1];
         try {
             Configuration c = cm.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, "?");
 
             final CountDownLatch latch = new CountDownLatch(1);
             EventHandler handler = event -> {
+                if (event.containsProperty("exception")) {
+                    pt[0] = (Throwable) event.getProperty("exception");
+                }
                 latch.countDown();
             };
             Dictionary<String, Object> props = new Hashtable<>();
@@ -311,6 +315,10 @@ public class Helpers {
             assertTrue(latch.await(5, TimeUnit.SECONDS));
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+
+        if (pt[0] != null) {
+            throw new RuntimeException("Configuration problem", pt[0]);
         }
     }
 
