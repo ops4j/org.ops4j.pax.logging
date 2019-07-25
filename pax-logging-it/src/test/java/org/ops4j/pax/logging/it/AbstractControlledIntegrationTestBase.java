@@ -154,7 +154,9 @@ public class AbstractControlledIntegrationTestBase {
                 frameworkProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL).value("DISABLED"),
                 // default log will be written to file which we can safely read without failsafe-maven-plugin
                 // synchronization problems
-                frameworkProperty(PaxLoggingConstants.LOGGING_CFG_USE_FILE_FALLBACK_LOGGER).value(fileName)
+                frameworkProperty(PaxLoggingConstants.LOGGING_CFG_USE_FILE_FALLBACK_LOGGER).value(fileName),
+                // treat configuration errors in log4j as exceptions to catch them through EventAdmin
+                frameworkProperty(PaxLoggingConstants.LOGGING_CFG_LOG4J2_ERRORS_AS_EXCEPTION).value("true")
         };
     }
 

@@ -214,6 +214,7 @@
         <version.ch.qos.logback>1.2.3</version.ch.qos.logback>
         <version.ch.qos.logback.contrib>0.1.5</version.ch.qos.logback.contrib>
         <version.com.fasterxml.jackson>2.9.9</version.com.fasterxml.jackson>
+        <version.com.h2database>1.4.199</version.com.h2database>
         <version.commons-io>2.6</version.commons-io>
         <version.commons-logging>1.2</version.commons-logging>
         <version.junit>4.12</version.junit>
@@ -581,6 +582,11 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-sample-fragment-log4j2-h2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.ops4j.pax.logging.karaf</groupId>
                 <artifactId>karaf-base</artifactId>
                 <type>kar</type>
@@ -878,6 +884,12 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${version.com.fasterxml.jackson}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${version.com.h2database}</version>
             </dependency>
 
             <!-- Testing -->

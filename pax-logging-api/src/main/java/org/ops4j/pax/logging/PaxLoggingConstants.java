@@ -145,6 +145,13 @@ public interface PaxLoggingConstants {
     String LOGGING_CFG_PROPERTY_FILE = "org.ops4j.pax.logging.property.file";
 
     /**
+     * <p>System or context property that can indicate whether to throw exceptions from log4j2 configuration
+     * methods when ERROR occurs. Normally ERRORs are only printed to org.apache.logging.log4j.status.StatusLogger
+     * so by default this value is {@code false}.</p>
+     */
+    String LOGGING_CFG_LOG4J2_ERRORS_AS_EXCEPTION = "org.ops4j.pax.logging.log4j2.errorsAsExceptions";
+
+    /**
      * {@code org.osp4j.pax.logging} PID property to specify XML file with Logback configuration
      */
     String PID_CFG_LOGBACK_CONFIG_FILE = "org.ops4j.pax.logging.logback.config.file";

@@ -38,6 +38,7 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.plugins.util.PluginManager;
 import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory;
+import org.apache.logging.log4j.status.StatusData;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.knopflerfish.service.log.LogService;
@@ -65,10 +66,6 @@ public class PaxLoggingServiceImpl
         implements PaxLoggingService, LogService, ManagedService, ServiceFactory {
 
     private static final String LOGGER_CONTEXT_NAME = "pax-logging";
-
-                    // see org.apache.logging.log4j.core.config.properties.PropertiesConfigurationBuilder.createLogger()
-                    private static final String LOG4J2_ROOT_LOGGER_LEVEL_PROPERTY = "log4j2.rootLogger.level";
-                    private static final String LOG4J2_LOGGER_PROPERTY_PREFIX = "log4j2.logger.";
 
     static {
 //        PluginManager.addPackage("org.apache.logging.log4j.core");
@@ -107,6 +104,8 @@ public class PaxLoggingServiceImpl
 
     private volatile boolean closed;
 
+    private volatile boolean errorsAsException = false;
+
     private final String fqcn = getClass().getName();
 
     private boolean m_async;
@@ -131,6 +130,11 @@ public class PaxLoggingServiceImpl
             m_configLock = new ReentrantReadWriteLock();
         }
 
+        String errorsAsExceptionValue = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_LOG4J2_ERRORS_AS_EXCEPTION);
+        if ("true".equalsIgnoreCase(errorsAsExceptionValue)) {
+            errorsAsException = true;
+        }
+
         configureDefaults();
     }
 
@@ -141,6 +145,7 @@ public class PaxLoggingServiceImpl
      * used just before disposing of the service instance.
      */
     public synchronized void shutdown() {
+        StatusLogger.getLogger().reset();
         m_log4jContext.stop();
         closed = true;
     }
@@ -432,6 +437,16 @@ public class PaxLoggingServiceImpl
                     m_log4jContext.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.DEBUG);
 
                     StatusLogger.getLogger().info("Log4J2 configured using default configuration.");
+                }
+
+                if (errorsAsException) {
+                    // in addition to printing (which happens automatically), throw excception if there's some
+                    // ERROR inside StatusData
+                    for (StatusData sd : StatusLogger.getLogger().getStatusData()) {
+                        if (sd.getLevel().isMoreSpecificThan(Level.ERROR) && sd.getThrowable() != null) {
+                            throw sd.getThrowable();
+                        }
+                    }
                 }
             } catch (Throwable e) {
                 StatusLogger.getLogger().error("Log4J2 configuration problem: " + e.getMessage(), e);

@@ -24,44 +24,46 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.ops4j.pax</groupId>
-        <artifactId>logging</artifactId>
+        <groupId>org.ops4j.pax.logging</groupId>
+        <artifactId>pax-logging-samples</artifactId>
         <version>1.11.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.ops4j.pax.logging</groupId>
-    <artifactId>pax-logging-samples</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>pax-logging-sample-fragment-log4j2-h2</artifactId>
+    <packaging>bundle</packaging>
 
-    <name>OPS4J Pax Logging - Samples (Build POM)</name>
+    <name>OPS4J Pax Logging - Samples - Fragment for Log4J2/H2</name>
 
-    <modules>
-<!--        <module>config</module>-->
-<!--        <module>logger</module>-->
-        <module>fragment</module>
-        <module>fragment-logback</module>
-        <module>fragment-log4j2</module>
-        <module>fragment-log4j2-h2</module>
-<!--        <module>dynamic</module>-->
-<!--        <module>perfs</module>-->
-    </modules>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>
+                            org.h2
+                        </Import-Package>
+                        <Fragment-Host>org.ops4j.pax.logging.pax-logging-log4j2</Fragment-Host>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <dependencies>
+
+        <!-- pax-logging own artifacts -->
+
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-log4j2</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
 
 </project>
