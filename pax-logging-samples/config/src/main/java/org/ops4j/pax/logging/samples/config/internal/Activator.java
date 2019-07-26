@@ -19,7 +19,7 @@ package org.ops4j.pax.logging.samples.config.internal;
 
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.Properties;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;

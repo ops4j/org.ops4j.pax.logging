@@ -21,7 +21,6 @@ package org.ops4j.pax.logging.test.jbosslogging;
 import org.jboss.logging.Logger;
 import org.jboss.logging.MDC;
 import org.jboss.logging.NDC;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

@@ -15,12 +15,12 @@
  */
 package org.apache.log4j;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.log4j.helpers.PatternConverter;
 import org.apache.log4j.helpers.PatternParser;
 import org.apache.log4j.spi.LoggingEvent;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A PatternLayout that allows you to trim and sanitize a logging event

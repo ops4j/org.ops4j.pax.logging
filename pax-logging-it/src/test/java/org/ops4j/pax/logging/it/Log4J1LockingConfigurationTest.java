@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Consumer;
-
 import javax.inject.Inject;
 
 import org.junit.Test;

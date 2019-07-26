@@ -23,8 +23,6 @@ import org.junit.Test;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.ops4j.pax.logging.spi.support.FrameworkHandler;
-import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
