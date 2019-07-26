@@ -34,7 +34,6 @@ Export-Package: \
 
 # Slf4J packages are explicitly marked as being imported from pax-logging-api
 Import-Package: \
- sun.*;resolution:=optional, \
  javax.jms;resolution:=optional, \
  javax.mail;resolution:=optional, \
  javax.mail.internet;resolution:=optional, \

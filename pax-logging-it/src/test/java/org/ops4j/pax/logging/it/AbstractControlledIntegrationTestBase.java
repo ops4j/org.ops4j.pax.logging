@@ -100,7 +100,6 @@ public class AbstractControlledIntegrationTestBase {
 
         Option[] options = new Option[] {
                 // basic options
-                bootDelegationPackage("sun.*"),
                 bootDelegationPackage("com.sun.*"),
 
                 frameworkStartLevel(START_LEVEL_TEST_BUNDLE),

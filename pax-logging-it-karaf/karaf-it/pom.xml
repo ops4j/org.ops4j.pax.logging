@@ -111,12 +111,6 @@
             <groupId>org.ops4j.pax.logging.karaf</groupId>
             <artifactId>karaf-distribution</artifactId>
             <type>zip</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.karaf</groupId>
-                    <artifactId>org.apache.karaf.client</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- OPS4J dependencies -->
@@ -130,12 +124,6 @@
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-junit4</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>biz.aQute.bnd</groupId>
-                    <artifactId>bndlib</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
