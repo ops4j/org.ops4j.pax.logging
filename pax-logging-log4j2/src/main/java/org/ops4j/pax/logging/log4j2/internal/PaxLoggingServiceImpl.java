@@ -434,7 +434,11 @@ public class PaxLoggingServiceImpl
                     // org.apache.logging.log4j.core.LoggerContext.reconfigure() will be called with empty
                     // org.apache.logging.log4j.core.config.properties.PropertiesConfiguration
                     m_log4jContext.start(new DefaultConfiguration());
-                    m_log4jContext.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(Level.DEBUG);
+
+                    String level = BackendSupport.convertLogServiceLevel(m_logLevel);
+                    Level l = Level.getLevel(level);
+
+                    m_log4jContext.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(l);
 
                     StatusLogger.getLogger().info("Log4J2 configured using default configuration.");
                 }
