@@ -81,7 +81,12 @@ public class JBossLoggingLogger extends Logger implements PaxLoggingManagerAware
 
     @Override
     protected void doLogf(Level level, String loggerClassName, String format, Object[] parameters, Throwable thrown) {
-        doLog(level, loggerClassName, format, parameters, thrown);
+        if (parameters == null || parameters.length == 0) {
+            doLog(level, loggerClassName, format, parameters, thrown);
+        } else {
+            String message = String.format(String.valueOf(format), parameters);
+            doLog(level, loggerClassName, message, null, thrown);
+        }
     }
 
     @Override
