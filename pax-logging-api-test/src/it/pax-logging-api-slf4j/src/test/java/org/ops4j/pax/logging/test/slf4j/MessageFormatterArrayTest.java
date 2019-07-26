@@ -17,19 +17,19 @@
  */
 package org.ops4j.pax.logging.test.slf4j;
 
+import java.lang.reflect.Field;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.ops4j.pax.logging.PaxContext;
-import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.PaxMarker;
 import org.ops4j.pax.logging.slf4j.Slf4jLoggerFactory;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
 

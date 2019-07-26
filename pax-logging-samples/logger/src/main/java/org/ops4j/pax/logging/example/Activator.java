@@ -25,10 +25,10 @@ import org.mortbay.http.HttpListener;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.SocketListener;
 import org.mortbay.util.InetAddrPort;
+import org.ops4j.pax.logging.avalon.AvalonLogFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.LoggerFactory;
-import org.ops4j.pax.logging.avalon.AvalonLogFactory;
 
 /**
  * This Activator starts up the Jetty server and enables port 8080, which serves a Hello,World message.

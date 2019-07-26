@@ -19,16 +19,6 @@
 
 package org.apache.log4j.config;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Priority;
-import org.apache.log4j.helpers.LogLog;
-import org.apache.log4j.helpers.OptionConverter;
-import org.apache.log4j.spi.OptionFactory;
-import org.apache.log4j.spi.OptionHandler;
-import org.apache.log4j.spi.ErrorHandler;
-
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -38,6 +28,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Properties;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Priority;
+import org.apache.log4j.helpers.LogLog;
+import org.apache.log4j.helpers.OptionConverter;
+import org.apache.log4j.spi.ErrorHandler;
+import org.apache.log4j.spi.OptionFactory;
+import org.apache.log4j.spi.OptionHandler;
 
 /**
    General purpose Object property setter. Clients repeatedly invokes

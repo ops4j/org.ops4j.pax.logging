@@ -24,7 +24,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import javax.inject.Inject;
 
 import org.junit.Test;
