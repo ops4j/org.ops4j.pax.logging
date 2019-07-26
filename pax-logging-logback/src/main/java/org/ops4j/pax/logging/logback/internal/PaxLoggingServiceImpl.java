@@ -419,6 +419,12 @@ public class PaxLoggingServiceImpl
                     configurator.setContext(m_logbackContext);
                     configurator.configure(m_logbackContext);
 
+                    String level = BackendSupport.convertLogServiceLevel(m_logLevel);
+                    Level l = Level.toLevel(level);
+
+                    Logger rootLogger = m_logbackContext.getLogger(Logger.ROOT_LOGGER_NAME);
+                    rootLogger.setLevel(l);
+
                     InfoStatus info = new InfoStatus("Logback configured using default configuration.", this);
                     m_logbackContext.getStatusManager().add(info);
                 } else {
