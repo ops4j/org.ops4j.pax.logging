@@ -620,6 +620,12 @@
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-junit4</artifactId>
                 <version>${version.org.ops4j.pax.exam}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>biz.aQute.bnd</groupId>
+                        <artifactId>bndlib</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
@@ -640,6 +646,12 @@
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-link-mvn</artifactId>
                 <version>${version.org.ops4j.pax.exam}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>jcl-over-slf4j</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
@@ -772,6 +784,11 @@
                 <artifactId>slf4j-jcl</artifactId>
                 <version>${version.org.slf4j}</version>
             </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${version.org.slf4j}</version>
+            </dependency>
 
             <dependency>
                 <groupId>commons-logging</groupId>
@@ -886,11 +903,23 @@
                 <groupId>org.apache.karaf.features</groupId>
                 <artifactId>base</artifactId>
                 <version>${version.org.apache.karaf}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.karaf.features</groupId>
                 <artifactId>org.apache.karaf.features.core</artifactId>
                 <version>${version.org.apache.karaf}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Other -->
