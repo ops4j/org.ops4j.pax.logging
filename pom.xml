@@ -975,7 +975,6 @@
     </repositories>
 
     <modules>
-        <module>pax-logging-report</module>
         <module>pax-logging-api</module>
         <module>pax-logging-api-test</module>
         <module>pax-logging-service</module>
@@ -1072,6 +1071,13 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <profile>
+            <id>report</id>
+            <modules>
+                <module>pax-logging-report</module>
+            </modules>
         </profile>
 
     </profiles>
