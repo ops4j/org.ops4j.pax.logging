@@ -35,7 +35,7 @@ import org.apache.logging.log4j.util.StringMap;
  * Garbage-free LogEventFactory that reuses a single mutable log event.
  * @since 2.6
  */
-public class ReusableLogEventFactory implements LogEventFactory {
+public class ReusableLogEventFactory implements LogEventFactory, LocationAwareLogEventFactory {
     private static final ThreadNameCachingStrategy THREAD_NAME_CACHING_STRATEGY = ThreadNameCachingStrategy.create();
     private static final Clock CLOCK = ClockFactory.getClock();
 
@@ -56,7 +56,27 @@ public class ReusableLogEventFactory implements LogEventFactory {
      */
     @Override
     public LogEvent createEvent(final String loggerName, final Marker marker,
-                                final String fqcn, final Level level, final Message message,
+        final String fqcn, final Level level, final Message message,
+        final List<Property> properties, final Throwable t) {
+        return createEvent(loggerName, marker, fqcn, null, level, message, properties, t);
+    }
+
+    /**
+     * Creates a log event.
+     *
+     * @param loggerName The name of the Logger.
+     * @param marker An optional Marker.
+     * @param fqcn The fully qualified class name of the caller.
+     * @param location The location of the caller.
+     * @param level The event Level.
+     * @param message The Message.
+     * @param properties Properties to be added to the log event.
+     * @param t An optional Throwable.
+     * @return The LogEvent.
+     */
+    @Override
+    public LogEvent createEvent(final String loggerName, final Marker marker, final String fqcn,
+                                final StackTraceElement location, final Level level, final Message message,
                                 final List<Property> properties, final Throwable t) {
         WeakReference<MutableLogEvent> refResult = mutableLogEventThreadLocal.get();
         MutableLogEvent result = refResult == null ? null : refResult.get();
@@ -83,6 +103,7 @@ public class ReusableLogEventFactory implements LogEventFactory {
         result.setMessage(message);
         result.initTime(CLOCK, Log4jLogEvent.getNanoClock());
         result.setThrown(t);
+        result.setSource(location);
         result.setContextData(injector.injectContextData(properties, (StringMap) result.getContextData()));
         result.setContextStack(ThreadContext.getDepth() == 0 ? ThreadContext.EMPTY_STACK : ThreadContext.cloneStack());// mutable copy
 

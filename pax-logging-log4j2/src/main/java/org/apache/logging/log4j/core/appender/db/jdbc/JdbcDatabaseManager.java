@@ -25,6 +25,7 @@ import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLTransactionRollbackException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -114,39 +115,39 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
             appendColumnNames("INSERT", data, sb);
             sb.append(") values (");
             int i = 1;
-			if (data.columnMappings != null) {
-				for (final ColumnMapping mapping : data.columnMappings) {
-					final String mappingName = mapping.getName();
-					if (Strings.isNotEmpty(mapping.getLiteralValue())) {
-						logger().trace("Adding INSERT VALUES literal for ColumnMapping[{}]: {}={} ", i, mappingName,
-								mapping.getLiteralValue());
-						sb.append(mapping.getLiteralValue());
-					} else if (Strings.isNotEmpty(mapping.getParameter())) {
-						logger().trace("Adding INSERT VALUES parameter for ColumnMapping[{}]: {}={} ", i, mappingName,
-								mapping.getParameter());
-						sb.append(mapping.getParameter());
-					} else {
-						logger().trace("Adding INSERT VALUES parameter marker for ColumnMapping[{}]: {}={} ", i,
-								mappingName, PARAMETER_MARKER);
-						sb.append(PARAMETER_MARKER);
-					}
-					sb.append(',');
-					i++;
-				}
-			}
-			final int columnConfigsLen = data.columnConfigs == null ? 0 : data.columnConfigs.length;
-			final List<ColumnConfig> columnConfigs = new ArrayList<>(columnConfigsLen);
-			if (data.columnConfigs != null) {
-				for (final ColumnConfig config : data.columnConfigs) {
-					if (Strings.isNotEmpty(config.getLiteralValue())) {
-						sb.append(config.getLiteralValue());
-					} else {
-						sb.append(PARAMETER_MARKER);
-						columnConfigs.add(config);
-					}
-					sb.append(',');
-				}
-			}
+            if (data.columnMappings != null) {
+                for (final ColumnMapping mapping : data.columnMappings) {
+                    final String mappingName = mapping.getName();
+                    if (Strings.isNotEmpty(mapping.getLiteralValue())) {
+                        logger().trace("Adding INSERT VALUES literal for ColumnMapping[{}]: {}={} ", i, mappingName,
+                                mapping.getLiteralValue());
+                        sb.append(mapping.getLiteralValue());
+                    } else if (Strings.isNotEmpty(mapping.getParameter())) {
+                        logger().trace("Adding INSERT VALUES parameter for ColumnMapping[{}]: {}={} ", i, mappingName,
+                                mapping.getParameter());
+                        sb.append(mapping.getParameter());
+                    } else {
+                        logger().trace("Adding INSERT VALUES parameter marker for ColumnMapping[{}]: {}={} ", i,
+                                mappingName, PARAMETER_MARKER);
+                        sb.append(PARAMETER_MARKER);
+                    }
+                    sb.append(',');
+                    i++;
+                }
+            }
+            final int columnConfigsLen = data.columnConfigs == null ? 0 : data.columnConfigs.length;
+            final List<ColumnConfig> columnConfigs = new ArrayList<>(columnConfigsLen);
+            if (data.columnConfigs != null) {
+                for (final ColumnConfig config : data.columnConfigs) {
+                    if (Strings.isNotEmpty(config.getLiteralValue())) {
+                        sb.append(config.getLiteralValue());
+                    } else {
+                        sb.append(PARAMETER_MARKER);
+                        columnConfigs.add(config);
+                    }
+                    sb.append(',');
+                }
+            }
             // at least one of those arrays is guaranteed to be non-empty
             sb.setCharAt(sb.length() - 1, ')');
             final String sqlStatement = sb.toString();
@@ -200,6 +201,11 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
 
         public void shutdown() {
             shutdown = true;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Reconnector [latch=%s, shutdown=%s]", latch, shutdown);
         }
 
     }
@@ -340,31 +346,31 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
     /**
      * Appends column names to the given buffer in the format {@code "A,B,C"}.
      */
-	private static void appendColumnNames(final String sqlVerb, final FactoryData data, final StringBuilder sb) {
-		// so this gets a little more complicated now that there are two ways to
-		// configure column mappings, but
-		// both mappings follow the same exact pattern for the prepared statement
-		int i = 1;
-		final String messagePattern = "Appending {} {}[{}]: {}={} ";
-		if (data.columnMappings != null) {
-			for (final ColumnMapping colMapping : data.columnMappings) {
-				final String columnName = colMapping.getName();
-				appendColumnName(i, columnName, sb);
-				logger().trace(messagePattern, sqlVerb, colMapping.getClass().getSimpleName(), i, columnName,
-						colMapping);
-				i++;
-			}
-			if (data.columnConfigs != null) {
-				for (final ColumnConfig colConfig : data.columnConfigs) {
-					final String columnName = colConfig.getColumnName();
-					appendColumnName(i, columnName, sb);
-					logger().trace(messagePattern, sqlVerb, colConfig.getClass().getSimpleName(), i, columnName,
-							colConfig);
-					i++;
-				}
-			}
-		}
-	}
+    private static void appendColumnNames(final String sqlVerb, final FactoryData data, final StringBuilder sb) {
+        // so this gets a little more complicated now that there are two ways to
+        // configure column mappings, but
+        // both mappings follow the same exact pattern for the prepared statement
+        int i = 1;
+        final String messagePattern = "Appending {} {}[{}]: {}={} ";
+        if (data.columnMappings != null) {
+            for (final ColumnMapping colMapping : data.columnMappings) {
+                final String columnName = colMapping.getName();
+                appendColumnName(i, columnName, sb);
+                logger().trace(messagePattern, sqlVerb, colMapping.getClass().getSimpleName(), i, columnName,
+                        colMapping);
+                i++;
+            }
+            if (data.columnConfigs != null) {
+                for (final ColumnConfig colConfig : data.columnConfigs) {
+                    final String columnName = colConfig.getColumnName();
+                    appendColumnName(i, columnName, sb);
+                    logger().trace(messagePattern, sqlVerb, colConfig.getClass().getSimpleName(), i, columnName,
+                            colConfig);
+                    i++;
+                }
+            }
+        }
+    }
 
     private static JdbcDatabaseManagerFactory getFactory() {
         return INSTANCE;
@@ -499,19 +505,19 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
                 reconnector.latch();
                 if (connection == null) {
                     throw new AppenderLoggingException(
-                            "Error writing to JDBC Manager '" + getName() + "': JDBC connection not available.");
+                            "Error writing to JDBC Manager '%s': JDBC connection not available [%s]", getName(), fieldsToString());
                 }
                 if (statement == null) {
                     throw new AppenderLoggingException(
-                            "Error writing to JDBC Manager '" + getName() + "': JDBC statement not available.");
+                            "Error writing to JDBC Manager '%s': JDBC statement not available [%s].", getName(), connection, fieldsToString());
                 }
             }
         }
     }
 
     protected void closeResources(final boolean logExceptions) {
-    	final PreparedStatement tempPreparedStatement = this.statement;
-    	this.statement = null;
+        final PreparedStatement tempPreparedStatement = this.statement;
+        this.statement = null;
         try {
             // Closing a statement returns it to the pool when using Apache Commons DBCP.
             // Closing an already closed statement has no effect.
@@ -540,16 +546,23 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
         final boolean closed = true;
         try {
             if (this.connection != null && !this.connection.isClosed()) {
-                if (this.isBatchSupported && this.statement != null) {
+                if (isBuffered() && this.isBatchSupported && this.statement != null) {
                     logger().debug("Executing batch PreparedStatement {}", this.statement);
-                    final int[] result = this.statement.executeBatch();
+                    int[] result;
+                    try {
+                        result = this.statement.executeBatch();
+                    } catch (SQLTransactionRollbackException e) {
+                        logger().debug("{} executing batch PreparedStatement {}, retrying.", e, this.statement);
+                        result = this.statement.executeBatch();
+                    }
                     logger().debug("Batch result: {}", Arrays.toString(result));
                 }
                 logger().debug("Committing Connection {}", this.connection);
                 this.connection.commit();
             }
         } catch (final SQLException e) {
-            throw new DbAppenderLoggingException("Failed to commit transaction logging event or flushing buffer.", e);
+            throw new DbAppenderLoggingException(e, "Failed to commit transaction logging event or flushing buffer [%s]",
+                    fieldsToString());
         } finally {
             closeResources(true);
         }
@@ -625,6 +638,13 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
         return sb.toString();
     }
 
+    private String fieldsToString() {
+        return String.format(
+                "columnConfigs=%s, sqlStatement=%s, factoryData=%s, connection=%s, statement=%s, reconnector=%s, isBatchSupported=%s, columnMetaData=%s",
+                columnConfigs, sqlStatement, factoryData, connection, statement, reconnector, isBatchSupported,
+                columnMetaData);
+    }
+
     public ConnectionSource getConnectionSource() {
         return factoryData.connectionSource;
     }
@@ -661,27 +681,27 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
         }
     }
 
-	/**
-	 * Checks if a statement is closed. A null statement is considered closed.
-	 *
-	 * @param statement The statement to check.
-	 * @return true if a statement is closed, false if null.
-	 * @throws SQLException if a database access error occurs
-	 */
-	private boolean isClosed(final Statement statement) throws SQLException {
-		return statement == null || statement.isClosed();
-	}
+    /**
+     * Checks if a statement is closed. A null statement is considered closed.
+     *
+     * @param statement The statement to check.
+     * @return true if a statement is closed, false if null.
+     * @throws SQLException if a database access error occurs
+     */
+    private boolean isClosed(final Statement statement) throws SQLException {
+        return statement == null || statement.isClosed();
+    }
 
-	/**
-	 * Checks if a connection is closed. A null connection is considered closed.
-	 *
-	 * @param connection The connection to check.
-	 * @return true if a connection is closed, false if null.
-	 * @throws SQLException if a database access error occurs
-	 */
-	private boolean isClosed(final Connection connection) throws SQLException {
-		return connection == null || connection.isClosed();
-	}
+    /**
+     * Checks if a connection is closed. A null connection is considered closed.
+     *
+     * @param connection The connection to check.
+     * @return true if a connection is closed, false if null.
+     * @throws SQLException if a database access error occurs
+     */
+    private boolean isClosed(final Connection connection) throws SQLException {
+        return connection == null || connection.isClosed();
+    }
 
     private void reconnectOn(final Exception exception) {
         if (!factoryData.retry) {
@@ -697,35 +717,35 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
                 reconnector.start();
                 reconnector.latch();
                 if (connection == null || statement == null) {
-                    throw new AppenderLoggingException(
-                            String.format("Error sending to %s for %s", getName(), factoryData), exception);
+                    throw new AppenderLoggingException(exception, "Error sending to %s for %s [%s]", getName(),
+                            factoryData, fieldsToString());
                 }
             }
         }
     }
 
-	private void setFields(final MapMessage<?, ?> mapMessage) throws SQLException {
-		final IndexedReadOnlyStringMap map = mapMessage.getIndexedReadOnlyStringMap();
-		final String simpleName = statement.getClass().getName();
-		int j = 1; // JDBC indices start at 1
-		if (this.factoryData.columnMappings != null) {
-			for (final ColumnMapping mapping : this.factoryData.columnMappings) {
-				if (mapping.getLiteralValue() == null) {
-					final String source = mapping.getSource();
-					final String key = Strings.isEmpty(source) ? mapping.getName() : source;
-					final Object value = map.getValue(key);
-					if (logger().isTraceEnabled()) {
-						final String valueStr = value instanceof String ? "\"" + value + "\""
-								: Objects.toString(value, null);
-						logger().trace("{} setObject({}, {}) for key '{}' and mapping '{}'", simpleName, j, valueStr,
-								key, mapping.getName());
-					}
-					setStatementObject(j, mapping.getNameKey(), value);
-					j++;
-				}
-			}
-		}
-	}
+    private void setFields(final MapMessage<?, ?> mapMessage) throws SQLException {
+        final IndexedReadOnlyStringMap map = mapMessage.getIndexedReadOnlyStringMap();
+        final String simpleName = statement.getClass().getName();
+        int j = 1; // JDBC indices start at 1
+        if (this.factoryData.columnMappings != null) {
+            for (final ColumnMapping mapping : this.factoryData.columnMappings) {
+                if (mapping.getLiteralValue() == null) {
+                    final String source = mapping.getSource();
+                    final String key = Strings.isEmpty(source) ? mapping.getName() : source;
+                    final Object value = map.getValue(key);
+                    if (logger().isTraceEnabled()) {
+                        final String valueStr = value instanceof String ? "\"" + value + "\""
+                                : Objects.toString(value, null);
+                        logger().trace("{} setObject({}, {}) for key '{}' and mapping '{}'", simpleName, j, valueStr,
+                                key, mapping.getName());
+                    }
+                    setStatementObject(j, mapping.getNameKey(), value);
+                    j++;
+                }
+            }
+        }
+    }
 
     /**
      * Sets the given Object in the prepared statement. The value is truncated if needed.
@@ -760,7 +780,8 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
                     value = resultSetColumnMetaData.truncate(value.toString());
                 }
             } else {
-                logger().error("Missing ResultSetColumnMetaData for {}", nameKey);
+                logger().error("Missing ResultSetColumnMetaData for {}, connection={}, statement={}", nameKey,
+                        connection, statement);
             }
         }
         return value;
@@ -770,48 +791,49 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
     protected void writeInternal(final LogEvent event, final Serializable serializable) {
         StringReader reader = null;
         try {
-			if (!this.isRunning() || isClosed(this.connection) || isClosed(this.statement)) {
-				logger().debug("Cannot write logging event; JDBC manager not connected to the database.");
-				return;
-			}
+            if (!this.isRunning() || isClosed(this.connection) || isClosed(this.statement)) {
+                logger().debug("Cannot write logging event; JDBC manager not connected to the database, running={}, [{}]).",
+                        isRunning(), fieldsToString());
+                return;
+            }
             // Clear in case there are leftovers.
             statement.clearParameters();
             if (serializable instanceof MapMessage) {
                 setFields((MapMessage<?, ?>) serializable);
             }
             int j = 1; // JDBC indices start at 1
-			if (this.factoryData.columnMappings != null) {
-				for (final ColumnMapping mapping : this.factoryData.columnMappings) {
-					if (ThreadContextMap.class.isAssignableFrom(mapping.getType())
-							|| ReadOnlyStringMap.class.isAssignableFrom(mapping.getType())) {
-						this.statement.setObject(j++, event.getContextData().toMap());
-					} else if (ThreadContextStack.class.isAssignableFrom(mapping.getType())) {
-						this.statement.setObject(j++, event.getContextStack().asList());
-					} else if (Date.class.isAssignableFrom(mapping.getType())) {
-						this.statement.setObject(j++, DateTypeConverter.fromMillis(event.getTimeMillis(),
-								mapping.getType().asSubclass(Date.class)));
-					} else {
-						final StringLayout layout = mapping.getLayout();
-						if (layout != null) {
-							if (Clob.class.isAssignableFrom(mapping.getType())) {
-								this.statement.setClob(j++, new StringReader(layout.toSerializable(event)));
-							} else if (NClob.class.isAssignableFrom(mapping.getType())) {
-								this.statement.setNClob(j++, new StringReader(layout.toSerializable(event)));
-							} else {
-								final Object value = TypeConverters.convert(layout.toSerializable(event),
-										mapping.getType(), null);
-								if (value == null) {
-									// TODO We might need to always initialize the columnMetaData to specify the
-									// type.
-									this.statement.setNull(j++, Types.NULL);
-								} else {
-									setStatementObject(j++, mapping.getNameKey(), value);
-								}
-							}
-						}
-					}
-				}
-			}
+            if (this.factoryData.columnMappings != null) {
+                for (final ColumnMapping mapping : this.factoryData.columnMappings) {
+                    if (ThreadContextMap.class.isAssignableFrom(mapping.getType())
+                            || ReadOnlyStringMap.class.isAssignableFrom(mapping.getType())) {
+                        this.statement.setObject(j++, event.getContextData().toMap());
+                    } else if (ThreadContextStack.class.isAssignableFrom(mapping.getType())) {
+                        this.statement.setObject(j++, event.getContextStack().asList());
+                    } else if (Date.class.isAssignableFrom(mapping.getType())) {
+                        this.statement.setObject(j++, DateTypeConverter.fromMillis(event.getTimeMillis(),
+                                mapping.getType().asSubclass(Date.class)));
+                    } else {
+                        final StringLayout layout = mapping.getLayout();
+                        if (layout != null) {
+                            if (Clob.class.isAssignableFrom(mapping.getType())) {
+                                this.statement.setClob(j++, new StringReader(layout.toSerializable(event)));
+                            } else if (NClob.class.isAssignableFrom(mapping.getType())) {
+                                this.statement.setNClob(j++, new StringReader(layout.toSerializable(event)));
+                            } else {
+                                final Object value = TypeConverters.convert(layout.toSerializable(event),
+                                        mapping.getType(), null);
+                                if (value == null) {
+                                    // TODO We might need to always initialize the columnMetaData to specify the
+                                    // type.
+                                    this.statement.setNull(j++, Types.NULL);
+                                } else {
+                                    setStatementObject(j++, mapping.getNameKey(), value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             for (final ColumnConfig column : this.columnConfigs) {
                 if (column.isEventTimestamp()) {
                     this.statement.setTimestamp(j++, new Timestamp(event.getTimeMillis()));
@@ -831,22 +853,22 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
                 }
             }
 
-            if (this.isBatchSupported) {
+            if (isBuffered() && this.isBatchSupported) {
                 this.statement.addBatch();
             } else if (this.statement.executeUpdate() == 0) {
                 throw new AppenderLoggingException(
-                        "No records inserted in database table for log event in JDBC manager.");
+                        "No records inserted in database table for log event in JDBC manager [%s].", fieldsToString());
             }
         } catch (final SQLException e) {
-            throw new DbAppenderLoggingException(
-                    "Failed to insert record for log event in JDBC manager: " + e.getMessage(), e);
+            throw new DbAppenderLoggingException(e, "Failed to insert record for log event in JDBC manager: %s [%s]", e,
+                    fieldsToString());
         } finally {
             // Release ASAP
             try {
-            	// statement can be null when a AppenderLoggingException is thrown at the start of this method
-            	if (statement != null) {
-            		statement.clearParameters();
-            	}
+                // statement can be null when a AppenderLoggingException is thrown at the start of this method
+                if (statement != null) {
+                    statement.clearParameters();
+                }
             } catch (final SQLException e) {
                 // Ignore
             }
