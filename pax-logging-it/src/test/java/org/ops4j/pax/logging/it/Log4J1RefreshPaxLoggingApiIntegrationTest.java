@@ -103,7 +103,7 @@ public class Log4J1RefreshPaxLoggingApiIntegrationTest extends AbstractStdoutInt
         Logger log1 = LoggerFactory.getLogger(this.getClass());
         log1.info("After refreshing pax-logging-api (log1)");
 
-        // old reference using old pax-logging-service, which was refreshed too!
+        // old reference using old pax-logging-log4j1, which was refreshed too!
         osgiLog.log(LogService.LOG_INFO, "After refreshing pax-logging-api");
 
         try {
@@ -122,7 +122,7 @@ public class Log4J1RefreshPaxLoggingApiIntegrationTest extends AbstractStdoutInt
         Object service = newContext.getService(ref);
         Class<?> logServiceClass = ourBundle.loadClass("org.osgi.service.log.LogService");
         Method m = logServiceClass.getDeclaredMethod("log", Integer.TYPE, String.class);
-        m.invoke(service, LogService.LOG_INFO, "After refreshing pax-logging-service (log service new ref)");
+        m.invoke(service, LogService.LOG_INFO, "After refreshing pax-logging-log4j1 (log service new ref)");
 
         // access through old linked classes
         Logger log2 = LoggerFactory.getLogger(this.getClass());
@@ -140,11 +140,11 @@ public class Log4J1RefreshPaxLoggingApiIntegrationTest extends AbstractStdoutInt
 
         assertTrue("line from TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RefreshPaxLoggingApiIntegrationTest - Before refreshing pax-logging-api"));
         assertTrue("line from TTCCLayout", lines.contains("[main] INFO PaxExam-Probe - Before refreshing pax-logging-api"));
-        assertTrue("Cascade refresh", lines.contains("org.ops4j.pax.logging.pax-logging-service [log4j] DEBUG : Finished configuring."));
+        assertTrue("Cascade refresh", lines.contains("org.ops4j.pax.logging.pax-logging-log4j1 [log4j] DEBUG : Finished configuring."));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api"));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api (log1)"));
-        assertTrue("old reference", lines.contains("org.ops4j.pax.logging.pax-logging-service [log4j] WARN : No appenders could be found for logger (PaxExam-Probe)."));
-        assertTrue("new reference", lines.contains("[main] INFO PaxExam-Probe - After refreshing pax-logging-service (log service new ref)"));
+        assertTrue("old reference", lines.contains("org.ops4j.pax.logging.pax-logging-log4j1 [log4j] WARN : No appenders could be found for logger (PaxExam-Probe)."));
+        assertTrue("new reference", lines.contains("[main] INFO PaxExam-Probe - After refreshing pax-logging-log4j1 (log service new ref)"));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api (log2)"));
         assertTrue("TTCCLayout because new class", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RefreshPaxLoggingApiIntegrationTest - After refreshing pax-logging-api (log3)"));
     }

@@ -112,7 +112,7 @@ public class Log4J1LockingConfigurationTest extends AbstractStdoutInterceptingIn
 
         @Override
         public void accept(Field f) {
-            if (f.getType().getName().equals("org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl")) {
+            if (f.getType().getName().equals("org.ops4j.pax.logging.log4j1.internal.PaxLoggingServiceImpl")) {
                 f.setAccessible(true);
                 try {
                     paxLoggingServiceImpl[0] = f.get(paxLogging);

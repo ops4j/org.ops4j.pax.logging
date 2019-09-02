@@ -77,63 +77,63 @@ public class Log4J1RestartPaxLoggingServiceIntegrationTest extends AbstractStdou
         Bundle paxLoggingService = Helpers.paxLoggingService(context);
 
         // TTCCLayout - everything's working
-        log.info("Before restarting pax-logging-service");
+        log.info("Before restarting pax-logging-log4j1");
         // TTCCLayout - everything's working
-        osgiLog.log(LogService.LOG_INFO, "Before restarting pax-logging-service");
+        osgiLog.log(LogService.LOG_INFO, "Before restarting pax-logging-log4j1");
 
         paxLoggingService.stop(Bundle.STOP_TRANSIENT);
 
         // goes to System.out-based default/fallback logger because logger has delegate replaced using
         // pax-logging-api mechanisms
-        log.info("When pax-logging-service is stopped");
+        log.info("When pax-logging-log4j1 is stopped");
 
         // to file, but with
-        // "org.ops4j.pax.logging.pax-logging-service [log4j] WARN : No appenders could be found for logger (PaxExam-Probe)."
+        // "org.ops4j.pax.logging.pax-logging-log4j1 [log4j] WARN : No appenders could be found for logger (PaxExam-Probe)."
         // message, because LogService is obtained earlier is still delegating directly to Log4J1
         // which is not unconfigured
-        osgiLog.log(LogService.LOG_INFO, "When pax-logging-service is stopped (log service)");
+        osgiLog.log(LogService.LOG_INFO, "When pax-logging-log4j1 is stopped (log service)");
 
         // LogService is no longer available
         assertNull(context.getServiceReference(LogService.class));
 
         // This logger was already cached by pax-logging-api, so no changes
         Logger log1 = LoggerFactory.getLogger(this.getClass());
-        log1.info("When pax-logging-service is stopped (log1)");
+        log1.info("When pax-logging-log4j1 is stopped (log1)");
 
         // Logger that wasn't cached - but normally delegating to DefaultServiceLog
         Logger log2 = LoggerFactory.getLogger(this.getClass().getName() + "Ex");
-        log2.info("When pax-logging-service is stopped (log2)");
+        log2.info("When pax-logging-log4j1 is stopped (log2)");
 
         paxLoggingService.start(Bundle.START_TRANSIENT);
 
         // These loggers immediately switched to delegate to Log4J1, because pax-logging-api
-        // detected registration of pax-logging-service based PaxLoggingService
-        log.info("After restarting pax-logging-service");
-        log1.info("After restarting pax-logging-service (log1)");
+        // detected registration of pax-logging-log4j1 based PaxLoggingService
+        log.info("After restarting pax-logging-log4j1");
+        log1.info("After restarting pax-logging-log4j1 (log1)");
         // old reference, but switched to reconfigured Log4J1
-        osgiLog.log(LogService.LOG_INFO, "After restarting pax-logging-service (log service old ref)");
+        osgiLog.log(LogService.LOG_INFO, "After restarting pax-logging-log4j1 (log service old ref)");
 
         ServiceReference<LogService> ref = context.getServiceReference(LogService.class);
         assertNotNull(ref);
-        context.getService(ref).log(LogService.LOG_INFO, "After restarting pax-logging-service (log service new ref)");
+        context.getService(ref).log(LogService.LOG_INFO, "After restarting pax-logging-log4j1 (log service new ref)");
 
         Logger log3 = LoggerFactory.getLogger(this.getClass());
-        log3.info("After restarting pax-logging-service (log3)");
+        log3.info("After restarting pax-logging-log4j1 (log3)");
 
         List<String> lines = readLines();
 
-        assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest - Before restarting pax-logging-service"));
-        assertTrue("TTCCLayout", lines.contains("[main] INFO PaxExam-Probe - Before restarting pax-logging-service"));
-        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest] INFO : When pax-logging-service is stopped"));
-        assertFalse("old LogService reference should not work", lines.stream().anyMatch(l -> l.contains("When pax-logging-service is stopped (log service)")));
-        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest] INFO : When pax-logging-service is stopped (log1)"));
-        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTestEx] INFO : When pax-logging-service is stopped (log2)"));
-        assertTrue("Reconfiguration", lines.contains("org.ops4j.pax.logging.pax-logging-service [log4j] DEBUG : Finished configuring."));
-        assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest - After restarting pax-logging-service"));
-        assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest - After restarting pax-logging-service (log1)"));
-        assertTrue("TTCCLayout", lines.contains("[main] INFO PaxExam-Probe - After restarting pax-logging-service (log service old ref)"));
-        assertTrue("TTCCLayout", lines.contains("[main] INFO PaxExam-Probe - After restarting pax-logging-service (log service new ref)"));
-        assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest - After restarting pax-logging-service (log3)"));
+        assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest - Before restarting pax-logging-log4j1"));
+        assertTrue("TTCCLayout", lines.contains("[main] INFO PaxExam-Probe - Before restarting pax-logging-log4j1"));
+        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest] INFO : When pax-logging-log4j1 is stopped"));
+        assertFalse("old LogService reference should not work", lines.stream().anyMatch(l -> l.contains("When pax-logging-log4j1 is stopped (log service)")));
+        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest] INFO : When pax-logging-log4j1 is stopped (log1)"));
+        assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTestEx] INFO : When pax-logging-log4j1 is stopped (log2)"));
+        assertTrue("Reconfiguration", lines.contains("org.ops4j.pax.logging.pax-logging-log4j1 [log4j] DEBUG : Finished configuring."));
+        assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest - After restarting pax-logging-log4j1"));
+        assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest - After restarting pax-logging-log4j1 (log1)"));
+        assertTrue("TTCCLayout", lines.contains("[main] INFO PaxExam-Probe - After restarting pax-logging-log4j1 (log service old ref)"));
+        assertTrue("TTCCLayout", lines.contains("[main] INFO PaxExam-Probe - After restarting pax-logging-log4j1 (log service new ref)"));
+        assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RestartPaxLoggingServiceIntegrationTest - After restarting pax-logging-log4j1 (log3)"));
     }
 
 }

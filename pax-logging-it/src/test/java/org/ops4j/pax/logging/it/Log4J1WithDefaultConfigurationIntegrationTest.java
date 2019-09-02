@@ -59,8 +59,8 @@ public class Log4J1WithDefaultConfigurationIntegrationTest extends AbstractContr
         assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j] DEBUG : LogLog debug"));
         assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j] WARN : LogLog warn"));
         assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j] ERROR : LogLog error"));
-        // here, LogLog was used internally by pax-logging-service, so the bundle in log record is pax-logging-service
-        assertTrue(lines.stream().anyMatch(l -> l.startsWith("org.ops4j.pax.logging.pax-logging-service [log4j] DEBUG : Trying to find [log4j.xml] using org.ops4j.pax.logging.pax-logging-service")));
+        // here, LogLog was used internally by pax-logging-log4j1, so the bundle in log record is pax-logging-log4j1
+        assertTrue(lines.stream().anyMatch(l -> l.startsWith("org.ops4j.pax.logging.pax-logging-log4j1 [log4j] DEBUG : Trying to find [log4j.xml] using org.ops4j.pax.logging.pax-logging-log4j1")));
     }
 
 }

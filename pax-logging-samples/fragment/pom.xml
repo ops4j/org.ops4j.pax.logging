@@ -51,7 +51,7 @@
                     <instructions>
                         <Import-Package />
                         <!-- the host bundle for this fragment bundle to attach to -->
-                        <Fragment-Host>org.ops4j.pax.logging.pax-logging-service</Fragment-Host>
+                        <Fragment-Host>org.ops4j.pax.logging.pax-logging-log4j1</Fragment-Host>
                     </instructions>
                 </configuration>
             </plugin>
@@ -64,7 +64,7 @@
 
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId>
+            <artifactId>pax-logging-log4j1</artifactId>
             <scope>provided</scope>
         </dependency>
 

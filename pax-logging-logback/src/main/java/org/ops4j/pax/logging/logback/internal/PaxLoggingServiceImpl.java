@@ -130,7 +130,7 @@ public class PaxLoggingServiceImpl
     // configuration
     private AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
 
-    // pax-logging-service uses org.apache.log4j.helpers.LogLog, here we'll directly use fallback logger
+    // pax-logging-log4j1 uses org.apache.log4j.helpers.LogLog, here we'll directly use fallback logger
     private final PaxLogger logLog;
 
     private final String fqcn = getClass().getName();
@@ -189,7 +189,7 @@ public class PaxLoggingServiceImpl
         if (!m_useStaticContext) {
             m_logbackContext.stop();
         } else {
-            // static context should be reset just like pax-logging-service
+            // static context should be reset just like pax-logging-log4j1
             // calls static org.apache.log4j.LogManager.resetConfiguration()
             m_logbackContext.reset();
 
@@ -403,7 +403,7 @@ public class PaxLoggingServiceImpl
                 return;
             }
 
-            // pax-logging-service calls org.apache.log4j.LogManager.resetConfiguration() which
+            // pax-logging-log4j1 calls org.apache.log4j.LogManager.resetConfiguration() which
             // cleans appenders, but preserves loggers. Fortunately logback has equivalent
             // ch.qos.logback.classic.LoggerContext.reset()
             m_logbackContext.reset();

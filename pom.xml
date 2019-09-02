@@ -560,7 +560,7 @@
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
-                <artifactId>pax-logging-service</artifactId>
+                <artifactId>pax-logging-log4j1</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -968,7 +968,7 @@
     <modules>
         <module>pax-logging-api</module>
         <module>pax-logging-api-test</module>
-        <module>pax-logging-service</module>
+        <module>pax-logging-log4j1</module>
         <module>pax-logging-log4j2</module>
         <module>pax-logging-log4j2-extra</module>
         <module>pax-logging-logback</module>

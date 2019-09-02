@@ -87,7 +87,7 @@ public class Log4J2RestartPaxLoggingApiIntegrationTest extends AbstractStdoutInt
         log1.info("When pax-logging-api is stopped (log1)");
 
         // when pax-logging-api bundle is started, OSGIPaxLoggingManager immediately tracks PaxLoggingService
-        // registered by pax-logging-service, so it immediately starts printing through Log4J1
+        // registered by pax-logging-log4j1, so it immediately starts printing through Log4J1
         paxLoggingApi.start(Bundle.START_TRANSIENT);
 
         // but logging through logger obtained from previous life of pax-logging-api will never get connected

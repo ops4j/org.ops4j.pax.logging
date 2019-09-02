@@ -62,7 +62,7 @@
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <runOrder>alphabetical</runOrder>
                     <!--
-                        be careful to not load pax-logging-service and pax-logging-api through system class loader.
+                        be careful to not load pax-logging-log4j1 and pax-logging-api through system class loader.
                         failsafe has to isolate running OSGi framework from these jars
                     -->
                     <classpathDependencyScopeExclude>runtime</classpathDependencyScopeExclude>

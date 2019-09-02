@@ -43,9 +43,9 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
  * <p>Testing appenders of classes included in log4j:log4j and log4j:apache-log4j-extras - possibly optimized
- * in pax-logging-service Private-Packaged versions of the above.</p>
+ * in pax-logging-log4j1 Private-Packaged versions of the above.</p>
  * <p>Each {@code @Test} method generally changes configuration, waits for event admin notification and tests
- * the situation. There's no need to restart pax-logging-service after hijacking stdout, so {@link #hijackStdout()}
+ * the situation. There's no need to restart pax-logging-log4j1 after hijacking stdout, so {@link #hijackStdout()}
  * is not overriden here.</p>
  */
 @RunWith(PaxExam.class)

@@ -67,7 +67,7 @@ public class Helpers {
 
     public static Bundle paxLoggingService(BundleContext context) {
         Optional<Bundle> paxLoggingService = Arrays.stream(context.getBundles())
-                .filter(b -> "org.ops4j.pax.logging.pax-logging-service".equals(b.getSymbolicName()))
+                .filter(b -> "org.ops4j.pax.logging.pax-logging-log4j1".equals(b.getSymbolicName()))
                 .findFirst();
         return paxLoggingService.orElse(null);
     }
@@ -95,7 +95,7 @@ public class Helpers {
     }
 
     public static void restartPaxLoggingService(BundleContext context, boolean await) {
-        // restart pax-logging-service to pick up replaced stdout
+        // restart pax-logging-log4j1 to pick up replaced stdout
         // awaits for signal indicating successfull (re)configuration
         Bundle paxLoggingService = paxLoggingService(context);
         if (paxLoggingService != null) {

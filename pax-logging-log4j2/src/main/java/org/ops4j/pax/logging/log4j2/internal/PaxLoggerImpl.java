@@ -339,7 +339,7 @@ public class PaxLoggerImpl implements PaxLogger {
     }
 
     /**
-     * Most important pax-logging-service log method that bridges pax-logging-api directly into Log4J2.
+     * Most important pax-logging-log4j1 log method that bridges pax-logging-api directly into Log4J2.
      * @param marker
      * @param level
      * @param svcLevel

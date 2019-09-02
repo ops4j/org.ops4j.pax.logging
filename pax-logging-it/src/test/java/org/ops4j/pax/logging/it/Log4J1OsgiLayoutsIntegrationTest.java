@@ -60,7 +60,7 @@ public class Log4J1OsgiLayoutsIntegrationTest extends AbstractStdoutIntercepting
                 configAdmin(),
                 eventAdmin(),
 
-                // fragment for pax-logging-service, so we can directly use classes from this bundle as
+                // fragment for pax-logging-log4j1, so we can directly use classes from this bundle as
                 // appenders
                 mavenBundle("org.ops4j.pax.logging", "pax-logging-sample-fragment").versionAsInProject().noStart()
         );
