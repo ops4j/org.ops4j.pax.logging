@@ -32,7 +32,6 @@ import org.apache.log4j.NDC;
 import org.apache.log4j.helpers.Loader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.knopflerfish.service.log.LogRef;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -58,9 +57,6 @@ public class Log4J1IntegrationTest extends AbstractStdoutInterceptingIntegration
 
     @Inject
     private org.osgi.service.log.LogService osgiLogService;
-
-    @Inject
-    private org.knopflerfish.service.log.LogService fishLogService;
 
     @Override
     public void hijackStdout() throws BundleException {
@@ -187,10 +183,10 @@ public class Log4J1IntegrationTest extends AbstractStdoutInterceptingIntegration
         assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.Log4J1IntegrationTest - DEBUG through Avalon Logger API"));
         assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1IntegrationTest - INFO through JBoss Logging Logger API"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J1IntegrationTest - TRACE through JBoss Logging Logger API"));
-        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO1 through Knopflerfish"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
-        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO2 through Knopflerfish"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO1 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO2 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
         assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1IntegrationTest - INFO through Log4J v2 API"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J1IntegrationTest - TRACE through Log4J v2 API"));
     }

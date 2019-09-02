@@ -40,7 +40,6 @@ public interface PaxLoggingConstants {
      */
     String[] LOGGING_LOGSERVICE_NAMES = {
             org.osgi.service.log.LogService.class.getName(),
-            org.knopflerfish.service.log.LogService.class.getName(),
             PaxLoggingService.class.getName(),
             "org.osgi.service.cm.ManagedService"
     };

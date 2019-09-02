@@ -24,13 +24,6 @@ Jakarta Commons Logging API
     The very commonly used Jakarta Commons Logging API is fully 
     supported, as is described {{{avalon.html}here}}
 
-Knopflerfish Log
-
-    Knopflerfish extends the standard OSGi Log Service, by making the
-    discovery process simpler. Pax Logging API copies the Knopflerfish
-    Log classes "as-is" for convenience. Usage is found on this
-    {{{kflog.html}page}}.
-
 JDK java.util.logging API
 
     The JDK logging package is also fully supported, and how to use that

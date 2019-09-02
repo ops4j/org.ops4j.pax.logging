@@ -63,7 +63,6 @@ Import-Package: \
  org.apache.logging.log4j.status; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j.util; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
- org.knopflerfish.service.log; provider="paxlogging"; version="[1.1.0,2.0.0)", \
  org.ops4j.pax.logging.spi; version="[2.0,3.0)", \
  org.ops4j.pax.logging; version="[2.0,3.0)", \
  org.osgi.framework; version="[1.0.0,2.0.0)", \
@@ -78,6 +77,5 @@ Import-Package: \
 
 Provide-Capability: \
  osgi.service;effective:=active;objectClass=org.osgi.service.log.LogService,\
- osgi.service;effective:=active;objectClass=org.knopflerfish.service.log.LogService,\
  osgi.service;effective:=active;objectClass=org.ops4j.pax.logging.PaxLoggingService,\
  osgi.service;effective:=active;objectClass=org.osgi.service.cm.ManagedService

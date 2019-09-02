@@ -247,12 +247,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.knopflerfish.kf6</groupId>
-            <artifactId>log-API</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- ServiceMIX -->
 
         <dependency>

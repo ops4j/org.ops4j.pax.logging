@@ -47,10 +47,6 @@ public class Log4J2LocationInfoIntegrationTest extends AbstractStdoutInterceptin
     @Inject
     private ConfigurationAdmin cm;
 
-
-    @Inject
-    private org.knopflerfish.service.log.LogService fishLogService;
-
     @Configuration
     public Option[] configure() throws IOException {
         return combine(
@@ -108,7 +104,7 @@ public class Log4J2LocationInfoIntegrationTest extends AbstractStdoutInterceptin
         assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J2LocationInfoIntegrationTest | locationInfo | Log4J2LocationInfoIntegrationTest.java | 81 : [INFO] INFO using Juli Logging"));
         assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J2LocationInfoIntegrationTest | locationInfo | Log4J2LocationInfoIntegrationTest.java | 83 : [INFO] INFO using Avalon Logging"));
         assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J2LocationInfoIntegrationTest | locationInfo | Log4J2LocationInfoIntegrationTest.java | 85 : [INFO] INFO using JBoss Logging"));
-        assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J2LocationInfoIntegrationTest | locationInfo | Log4J2LocationInfoIntegrationTest.java | 87 : [INFO] INFO using Knopflerfish"));
+        !!assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J2LocationInfoIntegrationTest | locationInfo | Log4J2LocationInfoIntegrationTest.java | 87 : [INFO] INFO using Knopflerfish"));
         assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J2LocationInfoIntegrationTest | locationInfo | Log4J2LocationInfoIntegrationTest.java | 89 : [INFO] INFO using Log4Jv1"));
         // logback is skipped
         assertTrue(lines.contains("org.ops4j.pax.logging.it.Log4J2LocationInfoIntegrationTest | locationInfo | Log4J2LocationInfoIntegrationTest.java | 93 : [INFO] INFO using Log4Jv2"));

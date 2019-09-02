@@ -59,8 +59,6 @@ Export-Package: \
  org.ops4j.pax.logging.avalon; version=${pom.version}; provider=paxlogging, \
  org.jboss.logging; version=3.4.0.Final;-split-package:=merge-first; provider=paxlogging, \
  org.jboss.logging; version=3.3.0.Final;-split-package:=merge-first; provider=paxlogging, \
- org.knopflerfish.service.log; version=1.2.0; provider=paxlogging, \
- org.knopflerfish.service.log; version=1.1.0; provider=paxlogging, \
  org.apache.log4j;-split-package:=merge-first; version=${version.log4j}; provider=paxlogging, \
  org.apache.log4j.config;-split-package:=merge-first; version=${version.log4j}; provider=paxlogging, \
  org.apache.log4j.helpers;-split-package:=merge-first; version=${version.log4j}; provider=paxlogging, \

@@ -34,7 +34,5 @@ Main Features
 
     * SLF4J API support.
 
-    * Knopflerfish Log service support.
-
     * Tomcat JULI Logging API support.
     

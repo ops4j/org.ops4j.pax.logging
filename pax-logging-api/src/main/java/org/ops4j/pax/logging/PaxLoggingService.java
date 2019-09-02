@@ -17,7 +17,6 @@
  */
 package org.ops4j.pax.logging;
 
-import org.knopflerfish.service.log.LogService;
 import org.osgi.framework.Bundle;
 
 /**
@@ -41,7 +40,6 @@ public interface PaxLoggingService extends LogService {
     /**
      * <p>Returns log level (actually, a threahold) associated with entire logging service. Usually individual
      * loggers may have different levels specified.</p>
-     * <p>This method is specified in Knopflerfish extension to original {@link org.osgi.service.log.LogService}</p>
      * @return
      */
     int getLogLevel();

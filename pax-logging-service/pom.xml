@@ -182,11 +182,6 @@
         <!-- Logging -->
 
         <dependency>
-            <groupId>org.knopflerfish.kf6</groupId>
-            <artifactId>log-API</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
         </dependency>

@@ -41,7 +41,6 @@ import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFa
 import org.apache.logging.log4j.status.StatusData;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PropertiesUtil;
-import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
@@ -63,7 +62,7 @@ import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
 
 public class PaxLoggingServiceImpl
-        implements PaxLoggingService, LogService, ManagedService, ServiceFactory {
+        implements PaxLoggingService, ManagedService, ServiceFactory {
 
     private static final String LOGGER_CONTEXT_NAME = "pax-logging";
 
@@ -181,8 +180,6 @@ public class PaxLoggingServiceImpl
             }
         }
     }
-
-    // org.knopflerfish.service.log.LogService
 
     @Override
     public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
@@ -527,7 +524,7 @@ public class PaxLoggingServiceImpl
     @Override
     public Object getService(final Bundle bundle, ServiceRegistration registration) {
         class ManagedPaxLoggingService
-                implements PaxLoggingService, LogService, ManagedService {
+                implements PaxLoggingService, ManagedService {
 
             private final String FQCN = ManagedPaxLoggingService.class.getName();
 

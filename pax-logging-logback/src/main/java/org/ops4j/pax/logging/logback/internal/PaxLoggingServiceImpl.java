@@ -38,7 +38,6 @@ import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.status.Status;
 import ch.qos.logback.core.status.StatusManager;
 import ch.qos.logback.core.status.WarnStatus;
-import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
@@ -92,7 +91,7 @@ import org.slf4j.impl.StaticLoggerBinder;
  * @author Chris Dolan
  */
 public class PaxLoggingServiceImpl
-        implements PaxLoggingService, LogService, ManagedService, ServiceFactory { // if you add an interface here, add it to the ManagedService below too
+        implements PaxLoggingService, ManagedService, ServiceFactory { // if you add an interface here, add it to the ManagedService below too
 
     // pax-logging-logback-only key to find BundleContext
     public static final String LOGGER_CONTEXT_BUNDLECONTEXT_KEY = "org.ops4j.pax.logging.logback.bundlecontext";
@@ -231,8 +230,6 @@ public class PaxLoggingServiceImpl
             }
         }
     }
-
-    // org.knopflerfish.service.log.LogService
 
     @Override
     public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
@@ -578,7 +575,7 @@ public class PaxLoggingServiceImpl
     @Override
     public Object getService(final Bundle bundle, ServiceRegistration registration) {
         class ManagedPaxLoggingService
-                implements PaxLoggingService, LogService, ManagedService {
+                implements PaxLoggingService, ManagedService {
 
             private final String FQCN = ManagedPaxLoggingService.class.getName();
 

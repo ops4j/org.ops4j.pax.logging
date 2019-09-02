@@ -38,7 +38,7 @@
 
     <description>
         Pax Logging API Library is a collection of logging APIs from different libraries/facades.
-        It supports SLF4J, Commons Logging, JULI Logging, Log4J1 API, Log4J2 API, JBoss Logging, Avalong and Knopflerfish APIs.
+        It supports SLF4J, Commons Logging, JULI Logging, Log4J1 API, Log4J2 API, JBoss Logging and Avalon APIs.
         Additionally, Pax Logging specific library is available as backend implementation with its specific configuration mechanisms,
         but it's not required.
     </description>
@@ -100,12 +100,6 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.knopflerfish.kf6</groupId>
-            <artifactId>log-API</artifactId>
             <scope>provided</scope>
         </dependency>
 

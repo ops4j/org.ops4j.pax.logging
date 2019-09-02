@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.knopflerfish.service.log.LogRef;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -141,10 +140,10 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         lr.info("INFO1 through Knopflerfish");
         lr.debug("DEBUG1 through Knopflerfish");
 
-        ServiceReference<org.knopflerfish.service.log.LogService> sr = context.getServiceReference(org.knopflerfish.service.log.LogService.class);
-        org.knopflerfish.service.log.LogService fishLogService = context.getService(sr);
-        fishLogService.log(LogService.LOG_INFO, "INFO2 through Knopflerfish");
-        fishLogService.log(LogService.LOG_DEBUG, "DEBUG2 through Knopflerfish");
+        !!ServiceReference<org.knopflerfish.service.log.LogService> sr = context.getServiceReference(org.knopflerfish.service.log.LogService.class);
+        !!org.knopflerfish.service.log.LogService fishLogService = context.getService(sr);
+        !!fishLogService.log(LogService.LOG_INFO, "INFO2 through Knopflerfish");
+        !!fishLogService.log(LogService.LOG_DEBUG, "DEBUG2 through Knopflerfish");
 
         org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(name);
         log4j2Logger.info("INFO through Log4J v2 API");
@@ -163,10 +162,10 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.Log4J2IntegrationTest - DEBUG through Avalon Logger API"));
         assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through JBoss Logging Logger API"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through JBoss Logging Logger API"));
-        assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO1 through Knopflerfish"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
-        assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO2 through Knopflerfish"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO1 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO2 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
         assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through Log4J v2 API"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through Log4J v2 API"));
     }

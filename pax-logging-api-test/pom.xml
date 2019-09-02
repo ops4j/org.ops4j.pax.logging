@@ -70,7 +70,6 @@
                 <module>src/it/pax-logging-api-juli</module>
                 <module>src/it/pax-logging-api-avalon</module>
                 <module>src/it/pax-logging-api-jboss-logging</module>
-                <module>src/it/pax-logging-api-knopflerfish</module>
                 <module>src/it/pax-logging-api-log4j1</module>
                 <module>src/it/pax-logging-api-log4j2</module>
 

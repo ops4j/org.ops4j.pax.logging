@@ -25,7 +25,6 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.knopflerfish.service.log.LogRef;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -51,9 +50,6 @@ public class LogbackIntegrationTest extends AbstractStdoutInterceptingIntegratio
 
     @Inject
     private LogService osgiLogService;
-
-    @Inject
-    private org.knopflerfish.service.log.LogService fishLogService;
 
     @Override
     public void hijackStdout() throws BundleException {
@@ -181,10 +177,10 @@ public class LogbackIntegrationTest extends AbstractStdoutInterceptingIntegratio
         assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.LogbackIntegrationTest - DEBUG through Avalon Logger API"));
         assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - INFO through JBoss Logging Logger API"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest - TRACE through JBoss Logging Logger API"));
-        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO1 through Knopflerfish"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
-        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO2 through Knopflerfish"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO1 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO2 through Knopflerfish"));
+        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
         assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - INFO through Log4J v2 API"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest - TRACE through Log4J v2 API"));
     }

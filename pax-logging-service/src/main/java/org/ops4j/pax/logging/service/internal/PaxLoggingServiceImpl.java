@@ -30,7 +30,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PaxLoggingConfigurator;
 import org.apache.log4j.helpers.LogLog;
-import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
@@ -56,7 +55,7 @@ import org.osgi.service.log.LogEntry;
  * bundle will get own instance of this service.
  */
 public class PaxLoggingServiceImpl
-        implements PaxLoggingService, LogService, ManagedService, ServiceFactory {
+        implements PaxLoggingService, ManagedService, ServiceFactory {
 
     private BundleContext m_bundleContext;
 
@@ -156,8 +155,6 @@ public class PaxLoggingServiceImpl
         }
         return new PaxLoggerImpl(bundle, log4jLogger, fqcn, this);
     }
-
-    // org.knopflerfish.service.log.LogService
 
     @Override
     public int getLogLevel() {
@@ -395,7 +392,7 @@ public class PaxLoggingServiceImpl
     @Override
     public Object getService(final Bundle bundle, ServiceRegistration registration) {
         class ManagedPaxLoggingService
-                implements PaxLoggingService, LogService, ManagedService {
+                implements PaxLoggingService, ManagedService {
 
             private final String FQCN = ManagedPaxLoggingService.class.getName();
 

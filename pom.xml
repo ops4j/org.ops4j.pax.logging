@@ -231,7 +231,6 @@
         <version.org.apache.logging.log4j>2.12.1</version.org.apache.logging.log4j>
         <version.org.apache.servicemix.bundles.javax-inject>1_2</version.org.apache.servicemix.bundles.javax-inject>
         <version.org.jboss.logging>3.4.0.Final</version.org.jboss.logging>
-        <version.org.knopflerfish.kf6>5.0.0</version.org.knopflerfish.kf6>
         <version.org.mockito>2.27.0</version.org.mockito>
         <version.org.ops4j.pax.exam>4.13.1</version.org.ops4j.pax.exam>
         <version.org.ops4j.pax.swissbox>1.8.3</version.org.ops4j.pax.swissbox>
@@ -826,12 +825,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.knopflerfish.kf6</groupId>
-                <artifactId>log-API</artifactId>
-                <version>${version.org.knopflerfish.kf6}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
                 <version>${version.log4j}</version>
@@ -971,13 +964,6 @@
 
         </dependencies>
     </dependencyManagement>
-
-    <repositories>
-        <repository>
-            <id>knopflerfish</id>
-            <url>http://resources.knopflerfish.org/repo/maven2/release</url>
-        </repository>
-    </repositories>
 
     <modules>
         <module>pax-logging-api</module>

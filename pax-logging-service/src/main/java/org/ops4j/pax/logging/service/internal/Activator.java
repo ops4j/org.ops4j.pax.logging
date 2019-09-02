@@ -47,7 +47,7 @@ import org.osgi.service.log.LogService;
 /**
  * <p>Activator for one of different <em>backends</em> supporting pax-logging-api multi-facade.</p>
  * <p>The most important tasks are:<ul>
- *     <li>register {@link LogService}/{@link org.knopflerfish.service.log.LogService}/{@link PaxLoggingService}
+ *     <li>register {@link LogService}/{@link PaxLoggingService}
  *     service specific to Log4J1</li>
  *     <li>register {@link ManagedService} to track {@code org.ops4j.pax.logging} PID</li>
  * </ul></p>

@@ -334,19 +334,6 @@ Then discovery checks ServiceLoader for `org.jboss.logging.Provider` provider (`
 pax-logging API doesn't yet delegate JBoss Logging API to pax-logging OSGi manager.
 https://ops4j1.jira.com/browse/PAXLOGGING-251[PAXLOGGING-251] tracks this issue.
 
-== Knopflerfish
-
-https://www.knopflerfish.org/archive.html[This page] shows Knopflerfish releases groupped by OSGi release version.
-
-Knopflerfish 6 matches OSGi R6 and `org.osgi.service.log` version `1.3`.
-
-Knopflerfish is not yet another Logging facade/bridge. It's fully-fledged OSGi framework while specifically `org.knopflerfish.kf6:log-API` JAR provides specific package `org.knopflerfish.service.log`, where `org.knopflerfish.service.log.LogService` is an extension of standard `org.osgi.service.log.LogService` OSGi service.
-
-What's interesting here is that there's no need to provide special bridge to pax-logging delegation mechanism.
-`org.ops4j.pax.logging.PaxLoggingService` already extends `org.knopflerfish.service.log.LogService`.
-
-`org.knopflerfish.service.log` provides nice utility `org.knopflerfish.service.log.LogRef` which is effectively a `org.osgi.util.tracker.ServiceTracker` that makes it easier to deal with OSGi LogService.
-
 == Log4j
 
 Ah, the grandfather of all configurable Logging frameworks. Created when there was no logging bridges/facades around. Actually first facades (Commons Logging) was created to bridge common logging API to one of different logging frameworks (back then, it was only Log4J1 and Java Util Logging (JUL) from JDK1.4).
