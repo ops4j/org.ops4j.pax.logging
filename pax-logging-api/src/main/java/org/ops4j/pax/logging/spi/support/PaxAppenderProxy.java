@@ -62,7 +62,7 @@ public class PaxAppenderProxy extends ServiceTracker<PaxAppender, PaxAppender> i
             count = getTrackingCount();
             appenders = getServices(new PaxAppender[0]);
         }
-        if (appenders != null) {
+        if (appenders != null && appenders.length > 0) {
             // Bug in Karaf, as it expects the source to be available
             event.getLocationInformation();
             for (PaxAppender appender : appenders) {
