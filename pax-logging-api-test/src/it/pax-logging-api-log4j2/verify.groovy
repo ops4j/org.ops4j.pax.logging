@@ -21,13 +21,13 @@ File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.l
 List<String> lines = surefireOutput.readLines()
 int ok = 0
 for (String l : lines) {
-  if (l.contains("[org.ops4j.pax.logging.test.log4j2.Log4j2PaxLoggingApiTest] INFO : INFO Ignored FQCN: org.apache.logging.log4j.spi.AbstractLogger")) {
+  if (l.contains("[org.ops4j.pax.logging.test.log4j2.Log4j2PaxLoggingApiTest] INFO : INFO")) {
     ok++
   }
-  if (l.contains("[org.ops4j.pax.logging.test.log4j2.Log4j2PaxLoggingApiTest] TRACE : TRACE Ignored FQCN: org.apache.logging.log4j.spi.AbstractLogger")) {
+  if (l.contains("[org.ops4j.pax.logging.test.log4j2.Log4j2PaxLoggingApiTest] TRACE : TRACE")) {
     ok++
   }
-  if (l.contains("[special] TRACE : TRACE Ignored FQCN: org.apache.logging.log4j.spi.AbstractLogger")) {
+  if (l.contains("[special] TRACE : TRACE")) {
     ok++
   }
 }

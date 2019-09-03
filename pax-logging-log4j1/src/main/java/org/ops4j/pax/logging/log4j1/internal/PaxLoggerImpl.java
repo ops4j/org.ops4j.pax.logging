@@ -59,6 +59,7 @@ public class PaxLoggerImpl implements PaxLogger {
      * @param delegate The Log4J delegate to receive the log message.
      * @param fqcn     The fully qualified classname of the client owning this logger.
      * @param service  The service to be used to handle the logging events.
+     * @param printfFormatting Whether to use printf or Slf4J formatting
      */
     PaxLoggerImpl(Bundle bundle, Logger delegate, String fqcn, PaxLoggingServiceImpl service, boolean printfFormatting) {
         m_delegate = delegate;
@@ -143,7 +144,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void trace(String format, Object arg) {
         if (isTraceEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg);
             doLog(Level.TRACE, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -151,7 +152,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void trace(String format, Object arg1, Object arg2) {
         if (isTraceEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg1, arg2);
             doLog(Level.TRACE, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -159,7 +160,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void trace(String format, Object... arguments) {
         if (isTraceEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arguments);
             doLog(Level.TRACE, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -206,7 +207,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void debug(String format, Object arg) {
         if (isDebugEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg);
             doLog(Level.DEBUG, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -214,7 +215,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void debug(String format, Object arg1, Object arg2) {
         if (isDebugEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg1, arg2);
             doLog(Level.DEBUG, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -222,7 +223,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void debug(String format, Object... arguments) {
         if (isDebugEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arguments);
             doLog(Level.DEBUG, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -269,7 +270,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void info(String format, Object arg) {
         if (isInfoEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg);
             doLog(Level.INFO, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -277,7 +278,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void info(String format, Object arg1, Object arg2) {
         if (isInfoEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg1, arg2);
             doLog(Level.INFO, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -285,7 +286,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void info(String format, Object... arguments) {
         if (isInfoEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arguments);
             doLog(Level.INFO, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -332,7 +333,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void warn(String format, Object arg) {
         if (isWarnEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg);
             doLog(Level.WARN, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -340,7 +341,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void warn(String format, Object arg1, Object arg2) {
         if (isWarnEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg1, arg2);
             doLog(Level.WARN, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -348,7 +349,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void warn(String format, Object... arguments) {
         if (isWarnEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arguments);
             doLog(Level.WARN, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -395,7 +396,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void error(String format, Object arg) {
         if (isErrorEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg);
             doLog(Level.ERROR, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -403,7 +404,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void error(String format, Object arg1, Object arg2) {
         if (isErrorEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg1, arg2);
             doLog(Level.ERROR, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -411,7 +412,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void error(String format, Object... arguments) {
         if (isErrorEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arguments);
             doLog(Level.ERROR, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -458,7 +459,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void fatal(String format, Object arg) {
         if (isFatalEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg);
             doLog(Level.FATAL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -466,7 +467,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void fatal(String format, Object arg1, Object arg2) {
         if (isFatalEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg1, arg2);
             doLog(Level.FATAL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -474,7 +475,7 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void fatal(String format, Object... arguments) {
         if (isFatalEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arguments);
             doLog(Level.FATAL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
@@ -518,19 +519,19 @@ public class PaxLoggerImpl implements PaxLogger {
 
     @Override
     public void audit(String format, Object arg) {
-        FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+        FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg);
         doLog(AuditLevel.AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
     }
 
     @Override
     public void audit(String format, Object arg1, Object arg2) {
-        FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+        FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arg1, arg2);
         doLog(AuditLevel.AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
     }
 
     @Override
     public void audit(String format, Object... arguments) {
-        FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+        FormattingTriple ft = FormattingTriple.resolve(format, m_printfFormatting, arguments);
         doLog(AuditLevel.AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
     }
 
@@ -562,6 +563,150 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public <E extends Exception> void audit(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
         audit(consumer);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, String message) {
+        if (isTraceEnabled()) {
+            doLog(Level.TRACE, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqdebug(String fqcn, String message) {
+        if (isDebugEnabled()) {
+            doLog(Level.DEBUG, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqinfo(String fqcn, String message) {
+        if (isInfoEnabled()) {
+            doLog(Level.INFO, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqwarn(String fqcn, String message) {
+        if (isWarnEnabled()) {
+            doLog(Level.WARN, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqerror(String fqcn, String message) {
+        if (isErrorEnabled()) {
+            doLog(Level.ERROR, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqfatal(String fqcn, String message) {
+        if (isFatalEnabled()) {
+            doLog(Level.FATAL, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqtrace(String fqcn, PaxMarker marker, String message) {
+        fqtrace(fqcn, message);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, PaxMarker marker, String message) {
+        fqdebug(fqcn, message);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, PaxMarker marker, String message) {
+        fqinfo(fqcn, message);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, PaxMarker marker, String message) {
+        fqwarn(fqcn, message);
+    }
+
+    @Override
+    public void fqerror(String fqcn, PaxMarker marker, String message) {
+        fqerror(fqcn, message);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, PaxMarker marker, String message) {
+        fqfatal(fqcn, message);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, String message, Throwable t) {
+        if (isTraceEnabled()) {
+            doLog(Level.TRACE, fqcn, message, t, null);
+        }
+    }
+
+    @Override
+    public void fqdebug(String fqcn, String message, Throwable t) {
+        if (isDebugEnabled()) {
+            doLog(Level.DEBUG, fqcn, message, t, null);
+        }
+    }
+
+    @Override
+    public void fqinfo(String fqcn, String message, Throwable t) {
+        if (isInfoEnabled()) {
+            doLog(Level.INFO, fqcn, message, t, null);
+        }
+    }
+
+    @Override
+    public void fqwarn(String fqcn, String message, Throwable t) {
+        if (isWarnEnabled()) {
+            doLog(Level.WARN, fqcn, message, t, null);
+        }
+    }
+
+    @Override
+    public void fqerror(String fqcn, String message, Throwable t) {
+        if (isErrorEnabled()) {
+            doLog(Level.ERROR, fqcn, message, t, null);
+        }
+    }
+
+    @Override
+    public void fqfatal(String fqcn, String message, Throwable t) {
+        if (isFatalEnabled()) {
+            doLog(Level.FATAL, fqcn, message, t, null);
+        }
+    }
+
+    @Override
+    public void fqtrace(String fqcn, PaxMarker marker, String message, Throwable t) {
+        fqtrace(fqcn, message, t);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, PaxMarker marker, String message, Throwable t) {
+        fqdebug(fqcn, message, t);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, PaxMarker marker, String message, Throwable t) {
+        fqinfo(fqcn, message, t);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, PaxMarker marker, String message, Throwable t) {
+        fqwarn(fqcn, message, t);
+    }
+
+    @Override
+    public void fqerror(String fqcn, PaxMarker marker, String message, Throwable t) {
+        fqerror(fqcn, message, t);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, PaxMarker marker, String message, Throwable t) {
+        fqfatal(fqcn, message, t);
     }
 
     @Override

@@ -34,21 +34,21 @@ public class FormattingTripleTest {
 
     @Test
     public void noArguments() {
-        FormattingTriple ft = FormattingTriple.forArguments("Hello!", false);
+        FormattingTriple ft = FormattingTriple.resolve("Hello!", false);
         assertThat(ft.getMessage(), equalTo("Hello!"));
-        ft = FormattingTriple.forArguments("Hello!", true);
+        ft = FormattingTriple.resolve("Hello!", true);
         assertThat(ft.getMessage(), equalTo("Hello!"));
-        ft = FormattingTriple.forArguments("Hello!", true, new Throwable());
-        assertThat(ft.getMessage(), equalTo("Hello!"));
-        assertNotNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello!", false, mock(ServiceReference.class));
-        assertThat(ft.getMessage(), equalTo("Hello!"));
-        assertNotNull(ft.getServiceReference());
-        ft = FormattingTriple.forArguments("Hello!", false, new Throwable(), mock(ServiceReference.class));
+        ft = FormattingTriple.resolve("Hello!", true, new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello!"));
         assertNotNull(ft.getThrowable());
+        ft = FormattingTriple.resolve("Hello!", false, mock(ServiceReference.class));
+        assertThat(ft.getMessage(), equalTo("Hello!"));
         assertNotNull(ft.getServiceReference());
-        ft = FormattingTriple.forArguments("Hello!", false, mock(ServiceReference.class), new Throwable());
+        ft = FormattingTriple.resolve("Hello!", false, new Throwable(), mock(ServiceReference.class));
+        assertThat(ft.getMessage(), equalTo("Hello!"));
+        assertNotNull(ft.getThrowable());
+        assertNotNull(ft.getServiceReference());
+        ft = FormattingTriple.resolve("Hello!", false, mock(ServiceReference.class), new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello!"));
         assertNotNull(ft.getThrowable());
         assertNotNull(ft.getServiceReference());
@@ -56,64 +56,64 @@ public class FormattingTripleTest {
 
     @Test
     public void oneFormattingArgument() {
-        FormattingTriple ft = FormattingTriple.forArguments("Hello {}", false, "world");
+        FormattingTriple ft = FormattingTriple.resolve("Hello {}", false, "world");
         assertThat(ft.getMessage(), equalTo("Hello world"));
-        ft = FormattingTriple.forArguments("Hello {}", true, "world");
+        ft = FormattingTriple.resolve("Hello {}", true, "world");
         assertThat(ft.getMessage(), equalTo("Hello {}"));
-        ft = FormattingTriple.forArguments("Hello %s", true, "world");
+        ft = FormattingTriple.resolve("Hello %s", true, "world");
         assertThat(ft.getMessage(), equalTo("Hello world"));
-        ft = FormattingTriple.forArguments("Hello %s", false, "world");
+        ft = FormattingTriple.resolve("Hello %s", false, "world");
         assertThat(ft.getMessage(), equalTo("Hello %s"));
     }
 
     @Test
     public void oneNonFormattingArgument() {
-        FormattingTriple ft = FormattingTriple.forArguments("Hello {}", false, new Throwable());
+        FormattingTriple ft = FormattingTriple.resolve("Hello {}", false, new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello {}"));
         assertNotNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello {}", true, new Throwable());
+        ft = FormattingTriple.resolve("Hello {}", true, new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello {}"));
         assertNotNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello %s", true, new Throwable());
+        ft = FormattingTriple.resolve("Hello %s", true, new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello %s"));
         assertNotNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello %s", false, new Throwable());
+        ft = FormattingTriple.resolve("Hello %s", false, new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello %s"));
         assertNotNull(ft.getThrowable());
     }
 
     @Test
     public void oneDifferentNonFormattingArgument() {
-        FormattingTriple ft = FormattingTriple.forArguments("Hello {}", false, mock(ServiceReference.class));
+        FormattingTriple ft = FormattingTriple.resolve("Hello {}", false, mock(ServiceReference.class));
         assertThat(ft.getMessage(), equalTo("Hello {}"));
         assertNotNull(ft.getServiceReference());
-        ft = FormattingTriple.forArguments("Hello {}", true, mock(ServiceReference.class));
+        ft = FormattingTriple.resolve("Hello {}", true, mock(ServiceReference.class));
         assertThat(ft.getMessage(), equalTo("Hello {}"));
         assertNotNull(ft.getServiceReference());
-        ft = FormattingTriple.forArguments("Hello %s", true, mock(ServiceReference.class));
+        ft = FormattingTriple.resolve("Hello %s", true, mock(ServiceReference.class));
         assertThat(ft.getMessage(), equalTo("Hello %s"));
         assertNotNull(ft.getServiceReference());
-        ft = FormattingTriple.forArguments("Hello %s", false, mock(ServiceReference.class));
+        ft = FormattingTriple.resolve("Hello %s", false, mock(ServiceReference.class));
         assertThat(ft.getMessage(), equalTo("Hello %s"));
         assertNotNull(ft.getServiceReference());
     }
 
     @Test
     public void twoNonFormattingArguments() {
-        FormattingTriple ft = FormattingTriple.forArguments("Hello {}", false, new Throwable(), mock(ServiceReference.class));
+        FormattingTriple ft = FormattingTriple.resolve("Hello {}", false, new Throwable(), mock(ServiceReference.class));
         assertThat(ft.getMessage(), equalTo("Hello {}"));
         assertNotNull(ft.getThrowable());
         assertNotNull(ft.getServiceReference());
-        ft = FormattingTriple.forArguments("Hello {}", true, new Throwable(), mock(ServiceReference.class));
+        ft = FormattingTriple.resolve("Hello {}", true, new Throwable(), mock(ServiceReference.class));
         assertThat(ft.getMessage(), equalTo("Hello {}"));
         assertNotNull(ft.getThrowable());
         assertNotNull(ft.getServiceReference());
         try {
-            FormattingTriple.forArguments("Hello %s", true, new Throwable(), mock(ServiceReference.class));
+            FormattingTriple.resolve("Hello %s", true, new Throwable(), mock(ServiceReference.class));
             fail("Should throw MissingFormatArgumentException");
         } catch (MissingFormatArgumentException expected) {
         }
-        ft = FormattingTriple.forArguments("Hello %s", false, new Throwable(), mock(ServiceReference.class));
+        ft = FormattingTriple.resolve("Hello %s", false, new Throwable(), mock(ServiceReference.class));
         assertThat(ft.getMessage(), equalTo("Hello %s"));
         assertNotNull(ft.getThrowable());
         assertNotNull(ft.getServiceReference());
@@ -121,20 +121,20 @@ public class FormattingTripleTest {
 
     @Test
     public void twoDifferentNonFormattingArguments() {
-        FormattingTriple ft = FormattingTriple.forArguments("Hello {}", false, mock(ServiceReference.class), new Throwable());
+        FormattingTriple ft = FormattingTriple.resolve("Hello {}", false, mock(ServiceReference.class), new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello {}"));
         assertNotNull(ft.getThrowable());
         assertNotNull(ft.getServiceReference());
-        ft = FormattingTriple.forArguments("Hello {}", true, mock(ServiceReference.class), new Throwable());
+        ft = FormattingTriple.resolve("Hello {}", true, mock(ServiceReference.class), new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello {}"));
         assertNotNull(ft.getThrowable());
         assertNotNull(ft.getServiceReference());
         try {
-            FormattingTriple.forArguments("Hello %s", true, mock(ServiceReference.class), new Throwable());
+            FormattingTriple.resolve("Hello %s", true, mock(ServiceReference.class), new Throwable());
             fail("Should throw MissingFormatArgumentException");
         } catch (MissingFormatArgumentException expected) {
         }
-        ft = FormattingTriple.forArguments("Hello %s", false, mock(ServiceReference.class), new Throwable());
+        ft = FormattingTriple.resolve("Hello %s", false, mock(ServiceReference.class), new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello %s"));
         assertNotNull(ft.getThrowable());
         assertNotNull(ft.getServiceReference());
@@ -142,67 +142,67 @@ public class FormattingTripleTest {
 
     @Test
     public void twoSameNonFormattingArguments() {
-        FormattingTriple ft = FormattingTriple.forArguments("Hello {}", false, new MyThrowable(), new Throwable());
+        FormattingTriple ft = FormattingTriple.resolve("Hello {}", false, new MyThrowable(), new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello my exception"));
         assertNotNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello {}", true, new MyThrowable(), new Throwable());
+        ft = FormattingTriple.resolve("Hello {}", true, new MyThrowable(), new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello {}"));
         assertNotNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello %s", true, new MyThrowable(), new Throwable());
+        ft = FormattingTriple.resolve("Hello %s", true, new MyThrowable(), new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello my exception"));
         assertNotNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello %s", false, new MyThrowable(), new Throwable());
+        ft = FormattingTriple.resolve("Hello %s", false, new MyThrowable(), new Throwable());
         assertThat(ft.getMessage(), equalTo("Hello %s"));
         assertNotNull(ft.getThrowable());
     }
 
     @Test
     public void twoFormattingArgumentsWithThrowableAsNonLastArgument() {
-        FormattingTriple ft = FormattingTriple.forArguments("Hello {} {}", false, new MyThrowable(), "arg");
+        FormattingTriple ft = FormattingTriple.resolve("Hello {} {}", false, new MyThrowable(), "arg");
         assertThat(ft.getMessage(), equalTo("Hello my exception arg"));
         assertNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello {} {}", true, new MyThrowable(), "arg");
+        ft = FormattingTriple.resolve("Hello {} {}", true, new MyThrowable(), "arg");
         assertThat(ft.getMessage(), equalTo("Hello {} {}"));
         assertNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello %s %s", true, new MyThrowable(), "arg");
+        ft = FormattingTriple.resolve("Hello %s %s", true, new MyThrowable(), "arg");
         assertThat(ft.getMessage(), equalTo("Hello my exception arg"));
         assertNull(ft.getThrowable());
-        ft = FormattingTriple.forArguments("Hello %s %s", false, new MyThrowable(), "arg");
+        ft = FormattingTriple.resolve("Hello %s %s", false, new MyThrowable(), "arg");
         assertThat(ft.getMessage(), equalTo("Hello %s %s"));
         assertNull(ft.getThrowable());
     }
 
     @Test
     public void threeFormattingArguments() {
-        FormattingTriple ft = FormattingTriple.forArguments("Hello {} {}", false, "1", "2", "3");
+        FormattingTriple ft = FormattingTriple.resolve("Hello {} {}", false, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello 1 2"));
-        ft = FormattingTriple.forArguments("Hello {} {} {}", false, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello {} {} {}", false, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello 1 2 3"));
-        ft = FormattingTriple.forArguments("Hello {} {} {} {}", false, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello {} {} {} {}", false, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello 1 2 3 {}"));
 
-        ft = FormattingTriple.forArguments("Hello {} {}", true, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello {} {}", true, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello {} {}"));
-        ft = FormattingTriple.forArguments("Hello {} {} {}", true, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello {} {} {}", true, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello {} {} {}"));
-        ft = FormattingTriple.forArguments("Hello {} {} {} {}", true, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello {} {} {} {}", true, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello {} {} {} {}"));
 
-        ft = FormattingTriple.forArguments("Hello %s %s", true, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello %s %s", true, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello 1 2"));
-        ft = FormattingTriple.forArguments("Hello %s %s %s", true, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello %s %s %s", true, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello 1 2 3"));
         try {
-            ft = FormattingTriple.forArguments("Hello %s %s %s %s", true, "1", "2", "3");
+            ft = FormattingTriple.resolve("Hello %s %s %s %s", true, "1", "2", "3");
             fail("Should throw MissingFormatArgumentException");
         } catch (MissingFormatArgumentException expected) {
         }
 
-        ft = FormattingTriple.forArguments("Hello %s %s", false, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello %s %s", false, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello %s %s"));
-        ft = FormattingTriple.forArguments("Hello %s %s %s", false, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello %s %s %s", false, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello %s %s %s"));
-        ft = FormattingTriple.forArguments("Hello %s %s %s %s", false, "1", "2", "3");
+        ft = FormattingTriple.resolve("Hello %s %s %s %s", false, "1", "2", "3");
         assertThat(ft.getMessage(), equalTo("Hello %s %s %s %s"));
     }
 

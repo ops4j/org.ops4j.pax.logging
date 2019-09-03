@@ -225,10 +225,10 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         PaxLogger l2 = paxLoggingService.getLogger(b2, "com.example.l1", fqcn);
         PaxLogger l2a = paxLoggingService.getLogger(b2, "com.example.l2", fqcn);
 
-        l1.inform("Hello from b1/l1", null);
-        l1a.inform("Hello from b1/l2", null);
-        l2.inform("Hello from b2/l1", null);
-        l2a.inform("Hello from b2/l2", null);
+        l1.info("Hello from b1/l1");
+        l1a.info("Hello from b1/l2");
+        l2.info("Hello from b2/l1");
+        l2a.info("Hello from b2/l2");
 
         List<String> linesB1 = readLines("target/logs-log4j1/" + b1.getBundleId() + "-file-appender.log");
         List<String> linesB2 = readLines("target/logs-log4j1/" + b2.getBundleId() + "-file-appender.log");
@@ -247,7 +247,6 @@ public class Log4J1BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         linesB1 = readLines("target/logs-log4j1/" + b1.getBundleId() + "-file-appender.log");
         linesB2 = readLines("target/logs-log4j1/" + b2.getBundleId() + "-file-appender.log");
 
-        assertTrue(true);
         assertTrue(linesB1.stream().anyMatch(l ->
                 l.contains("org.ops4j.test/org.ops4j.pax.logging.it.support.OnDemandLogger")
                 && l.contains("bundle.name,b1")

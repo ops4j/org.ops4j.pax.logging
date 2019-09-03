@@ -149,7 +149,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void trace(String format, Object arg) {
         if (isTraceEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg);
             output(levels[PaxLogger.LEVEL_TRACE], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -157,7 +157,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void trace(String format, Object arg1, Object arg2) {
         if (isTraceEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg1, arg2);
             output(levels[PaxLogger.LEVEL_TRACE], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -165,7 +165,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void trace(String format, Object... arguments) {
         if (isTraceEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arguments);
             output(levels[PaxLogger.LEVEL_TRACE], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -212,7 +212,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void debug(String format, Object arg) {
         if (isDebugEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg);
             output(levels[PaxLogger.LEVEL_DEBUG], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -220,7 +220,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void debug(String format, Object arg1, Object arg2) {
         if (isDebugEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg1, arg2);
             output(levels[PaxLogger.LEVEL_DEBUG], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -228,7 +228,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void debug(String format, Object... arguments) {
         if (isDebugEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arguments);
             output(levels[PaxLogger.LEVEL_DEBUG], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -275,7 +275,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void info(String format, Object arg) {
         if (isInfoEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg);
             output(levels[PaxLogger.LEVEL_INFO], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -283,7 +283,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void info(String format, Object arg1, Object arg2) {
         if (isInfoEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg1, arg2);
             output(levels[PaxLogger.LEVEL_INFO], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -291,7 +291,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void info(String format, Object... arguments) {
         if (isInfoEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arguments);
             output(levels[PaxLogger.LEVEL_INFO], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -338,7 +338,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void warn(String format, Object arg) {
         if (isWarnEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg);
             output(levels[PaxLogger.LEVEL_WARNING], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -346,7 +346,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void warn(String format, Object arg1, Object arg2) {
         if (isWarnEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg1, arg2);
             output(levels[PaxLogger.LEVEL_WARNING], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -354,7 +354,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void warn(String format, Object... arguments) {
         if (isWarnEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arguments);
             output(levels[PaxLogger.LEVEL_WARNING], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -401,7 +401,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void error(String format, Object arg) {
         if (isErrorEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg);
             output(levels[PaxLogger.LEVEL_ERROR], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -409,7 +409,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void error(String format, Object arg1, Object arg2) {
         if (isErrorEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg1, arg2);
             output(levels[PaxLogger.LEVEL_ERROR], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -417,7 +417,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void error(String format, Object... arguments) {
         if (isErrorEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arguments);
             output(levels[PaxLogger.LEVEL_ERROR], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -464,7 +464,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void fatal(String format, Object arg) {
         if (isFatalEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg);
             output(levels[PaxLogger.LEVEL_FATAL], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -472,7 +472,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void fatal(String format, Object arg1, Object arg2) {
         if (isFatalEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arg1, arg2);
             output(levels[PaxLogger.LEVEL_FATAL], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -480,7 +480,7 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public void fatal(String format, Object... arguments) {
         if (isFatalEnabled()) {
-            FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+            FormattingTriple ft = FormattingTriple.resolve(format, false, arguments);
             output(levels[PaxLogger.LEVEL_FATAL], ft.getMessage(), ft.getThrowable());
         }
     }
@@ -517,8 +517,6 @@ public class DefaultServiceLog implements PaxLogger {
         fatal(consumer);
     }
 
-    /// audit
-
     @Override
     public void audit(String message) {
         output(levels[PaxLogger.LEVEL_AUDIT], message, null);
@@ -526,19 +524,19 @@ public class DefaultServiceLog implements PaxLogger {
 
     @Override
     public void audit(String format, Object arg) {
-        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        FormattingTriple ft = FormattingTriple.resolve(format, false, arg);
         output(levels[PaxLogger.LEVEL_AUDIT], ft.getMessage(), ft.getThrowable());
     }
 
     @Override
     public void audit(String format, Object arg1, Object arg2) {
-        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        FormattingTriple ft = FormattingTriple.resolve(format, false, arg1, arg2);
         output(levels[PaxLogger.LEVEL_AUDIT], ft.getMessage(), ft.getThrowable());
     }
 
     @Override
     public void audit(String format, Object... arguments) {
-        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        FormattingTriple ft = FormattingTriple.resolve(format, false, arguments);
         output(levels[PaxLogger.LEVEL_AUDIT], ft.getMessage(), ft.getThrowable());
     }
 
@@ -570,6 +568,126 @@ public class DefaultServiceLog implements PaxLogger {
     @Override
     public <E extends Exception> void audit(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
         audit(consumer);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, String message) {
+        trace(message);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, String message) {
+        debug(message);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, String message) {
+        info(message);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, String message) {
+        warn(message);
+    }
+
+    @Override
+    public void fqerror(String fqcn, String message) {
+        error(message);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, String message) {
+        fatal(message);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, PaxMarker marker, String message) {
+        trace(marker, message);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, PaxMarker marker, String message) {
+        debug(marker, message);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, PaxMarker marker, String message) {
+        info(marker, message);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, PaxMarker marker, String message) {
+        warn(marker, message);
+    }
+
+    @Override
+    public void fqerror(String fqcn, PaxMarker marker, String message) {
+        error(marker, message);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, PaxMarker marker, String message) {
+        fatal(marker, message);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, String message, Throwable t) {
+        trace(message, t);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, String message, Throwable t) {
+        debug(message, t);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, String message, Throwable t) {
+        info(message, t);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, String message, Throwable t) {
+        warn(message, t);
+    }
+
+    @Override
+    public void fqerror(String fqcn, String message, Throwable t) {
+        error(message, t);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, String message, Throwable t) {
+        fatal(message, t);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, PaxMarker marker, String message, Throwable t) {
+        trace(marker, message, t);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, PaxMarker marker, String message, Throwable t) {
+        debug(marker, message, t);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, PaxMarker marker, String message, Throwable t) {
+        info(marker, message, t);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, PaxMarker marker, String message, Throwable t) {
+        warn(marker, message, t);
+    }
+
+    @Override
+    public void fqerror(String fqcn, PaxMarker marker, String message, Throwable t) {
+        error(marker, message, t);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, PaxMarker marker, String message, Throwable t) {
+        fatal(marker, message, t);
     }
 
     @Override

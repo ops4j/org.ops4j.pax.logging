@@ -21,6 +21,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.ops4j.pax.logging.PaxLogger;
+import org.osgi.service.log.LogLevel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -43,13 +44,13 @@ public class PaxLoggerImplTest {
         l2.setLevel(Level.WARN);
         Logger l3 = Logger.getLogger("l3");
         l3.setLevel(Level.INFO);
-        PaxLoggerImpl error = new PaxLoggerImpl(null, l1, "", null);
-        PaxLoggerImpl warn = new PaxLoggerImpl(null, l2, "", null);
-        PaxLoggerImpl info = new PaxLoggerImpl(null, l3, "", null);
+        PaxLoggerImpl error = new PaxLoggerImpl(null, l1, "", null, false);
+        PaxLoggerImpl warn = new PaxLoggerImpl(null, l2, "", null, false);
+        PaxLoggerImpl info = new PaxLoggerImpl(null, l3, "", null, false);
 
-        assertEquals(error.getLogLevel(), PaxLogger.LEVEL_ERROR);
-        assertEquals(warn.getLogLevel(), PaxLogger.LEVEL_WARNING);
-        assertEquals(info.getLogLevel(), PaxLogger.LEVEL_INFO);
+        assertEquals(error.getLogLevel(), LogLevel.ERROR);
+        assertEquals(warn.getLogLevel(), LogLevel.WARN);
+        assertEquals(info.getLogLevel(), LogLevel.INFO);
     }
 
     @Test
@@ -58,33 +59,34 @@ public class PaxLoggerImplTest {
         c.setAccessible(true);
 
         Logger logger = c.newInstance("test");
-        PaxLoggerImpl loggerImpl = new PaxLoggerImpl(null, logger, null, null);
+        PaxLoggerImpl loggerImpl = new PaxLoggerImpl(null, logger, null, null, false);
 
         logger.setLevel(null);
-        assertEquals(PaxLogger.LEVEL_ERROR, loggerImpl.getLogLevel());
+        assertEquals(LogLevel.AUDIT, loggerImpl.getLogLevel());
 
         logger.setLevel(Level.ALL);
-        assertEquals(PaxLogger.LEVEL_TRACE, loggerImpl.getLogLevel());
+        assertEquals(LogLevel.TRACE, loggerImpl.getLogLevel());
 
         logger.setLevel(Level.TRACE);
-        assertEquals(PaxLogger.LEVEL_TRACE, loggerImpl.getLogLevel());
+        assertEquals(LogLevel.TRACE, loggerImpl.getLogLevel());
 
         logger.setLevel(Level.DEBUG);
-        assertEquals(PaxLogger.LEVEL_DEBUG, loggerImpl.getLogLevel());
+        assertEquals(LogLevel.DEBUG, loggerImpl.getLogLevel());
 
         logger.setLevel(Level.INFO);
-        assertEquals(PaxLogger.LEVEL_INFO, loggerImpl.getLogLevel());
+        assertEquals(LogLevel.INFO, loggerImpl.getLogLevel());
 
         logger.setLevel(Level.WARN);
-        assertEquals(PaxLogger.LEVEL_WARNING, loggerImpl.getLogLevel());
+        assertEquals(LogLevel.WARN, loggerImpl.getLogLevel());
 
         logger.setLevel(Level.ERROR);
-        assertEquals(PaxLogger.LEVEL_ERROR, loggerImpl.getLogLevel());
+        assertEquals(LogLevel.ERROR, loggerImpl.getLogLevel());
 
         logger.setLevel(Level.FATAL);
-        assertEquals(PaxLogger.LEVEL_ERROR, loggerImpl.getLogLevel());
+        assertEquals(LogLevel.ERROR, loggerImpl.getLogLevel());
 
         logger.setLevel(Level.OFF);
-        assertEquals(PaxLogger.LEVEL_ERROR, loggerImpl.getLogLevel());
+        assertEquals(LogLevel.ERROR, loggerImpl.getLogLevel());
     }
+
 }

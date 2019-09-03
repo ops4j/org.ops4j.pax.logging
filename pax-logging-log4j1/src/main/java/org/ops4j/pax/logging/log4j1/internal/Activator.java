@@ -26,6 +26,7 @@ import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.xml.XMLLayout;
 import org.ops4j.pax.logging.EventAdminPoster;
+import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
@@ -70,7 +71,7 @@ public class Activator implements BundleActivator {
         // package is private in all backends
         String levelName = BackendSupport.defaultLogLevel(bundleContext);
         DefaultServiceLog.setLogLevel(levelName);
-        if (DefaultServiceLog.getStaticLogLevel() <= DefaultServiceLog.DEBUG) {
+        if (DefaultServiceLog.getStaticLogLevel() <= PaxLogger.LEVEL_DEBUG) {
             // Log4j1 internal debug
             LogLog.setInternalDebugging(true);
         }

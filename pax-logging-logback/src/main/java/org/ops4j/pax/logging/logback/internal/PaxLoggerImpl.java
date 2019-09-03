@@ -21,13 +21,16 @@ package org.ops4j.pax.logging.logback.internal;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxMarker;
-import org.ops4j.pax.logging.logback.internal.spi.PaxLevelImpl;
+import org.ops4j.pax.logging.spi.support.FormattingTriple;
 import org.osgi.framework.Bundle;
-import org.osgi.service.log.LogService;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogLevel;
+import org.osgi.service.log.LoggerConsumer;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
 import org.slf4j.spi.LocationAwareLogger;
@@ -52,6 +55,8 @@ import org.slf4j.spi.MDCAdapter;
  */
 public class PaxLoggerImpl implements PaxLogger {
 
+    static String FQCN = PaxLoggerImpl.class.getName();
+
     // "the" delegate.
     private final Logger m_delegate;
 
@@ -61,19 +66,25 @@ public class PaxLoggerImpl implements PaxLogger {
     private final Bundle m_bundle;
     // actual PaxLoggingService
     private final PaxLoggingServiceImpl m_service;
+    // if true, loggers use printf formatting on passed arguments
+    private boolean m_printfFormatting;
 
     /**
      * @param bundle   The bundle that this PaxLogger belongs to.
      * @param delegate The logback delegate to receive the log message.
      * @param fqcn     The fully qualified class name of the client owning this logger.
      * @param service  The service to be used to handle the logging events.
+     * @param printfFormatting Whether to use printf or Slf4J formatting
      */
-    PaxLoggerImpl(Bundle bundle, Logger delegate, String fqcn, PaxLoggingServiceImpl service) {
+    PaxLoggerImpl(Bundle bundle, Logger delegate, String fqcn, PaxLoggingServiceImpl service, boolean printfFormatting) {
         m_delegate = delegate;
         m_fqcn = fqcn;
         m_bundle = bundle;
         m_service = service;
+        m_printfFormatting = printfFormatting;
     }
+
+    // isXXXEnabled() from org.osgi.service.log.Logger and org.ops4j.pax.logging.PaxLogger
 
     @Override
     public boolean isTraceEnabled() {
@@ -135,177 +146,962 @@ public class PaxLoggerImpl implements PaxLogger {
         return m_delegate.isErrorEnabled(marker.slf4jMarker());
     }
 
+    // R7: org.osgi.service.log.Logger
+
     @Override
-    public void trace(String message, Throwable t) {
+    public void trace(String message) {
         if (isTraceEnabled()) {
-            doLog(null, LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
+            doLog(null, LocationAwareLogger.TRACE_INT, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void debug(String message, Throwable t) {
-        if (isDebugEnabled()) {
-            doLog(null, LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void inform(String message, Throwable t) {
-        if (isInfoEnabled()) {
-            doLog(null, LocationAwareLogger.INFO_INT, LogService.LOG_INFO, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void warn(String message, Throwable t) {
-        if (isWarnEnabled()) {
-            doLog(null, LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void error(String message, Throwable t) {
-        if (isErrorEnabled()) {
-            doLog(null, LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void fatal(String message, Throwable t) {
-        if (isFatalEnabled()) {
-            doLog(null, LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void trace(String message, Throwable t, String fqcn) {
+    public void trace(String format, Object arg) {
         if (isTraceEnabled()) {
-            doLog(null, LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, fqcn, message, t);
+            if (m_printfFormatting) {
+                // we have to do it ourselves
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(null, LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                // Logback can do Slf4J formatting on its own, but we have to extract Throwable and/or ServiceReference
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(null, LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
         }
     }
 
     @Override
-    public void debug(String message, Throwable t, String fqcn) {
+    public void trace(String format, Object arg1, Object arg2) {
+        if (isTraceEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(null, LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(null, LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void trace(String format, Object... arguments) {
+        if (isTraceEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(null, LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(null, LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void trace(LoggerConsumer<E> consumer) throws E {
+        if (isTraceEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message) {
+        if (isTraceEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, m_fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String format, Object arg) {
+        if (isTraceEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String format, Object arg1, Object arg2) {
+        if (isTraceEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String format, Object... arguments) {
+        if (isTraceEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void trace(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        if (isTraceEnabled(marker)) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void debug(String message) {
         if (isDebugEnabled()) {
-            doLog(null, LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, fqcn, message, t);
+            doLog(null, LocationAwareLogger.DEBUG_INT, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void inform(String message, Throwable t, String fqcn) {
+    public void debug(String format, Object arg) {
+        if (isDebugEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(null, LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(null, LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void debug(String format, Object arg1, Object arg2) {
+        if (isDebugEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(null, LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(null, LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void debug(String format, Object... arguments) {
+        if (isDebugEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(null, LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(null, LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void debug(LoggerConsumer<E> consumer) throws E {
+        if (isDebugEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message) {
+        if (isDebugEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, m_fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String format, Object arg) {
+        if (isDebugEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String format, Object arg1, Object arg2) {
+        if (isDebugEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String format, Object... arguments) {
+        if (isDebugEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void debug(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        if (isDebugEnabled(marker)) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void info(String message) {
         if (isInfoEnabled()) {
-            doLog(null, LocationAwareLogger.INFO_INT, LogService.LOG_INFO, fqcn, message, t);
+            doLog(null, LocationAwareLogger.INFO_INT, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void warn(String message, Throwable t, String fqcn) {
+    public void info(String format, Object arg) {
+        if (isInfoEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(null, LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(null, LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void info(String format, Object arg1, Object arg2) {
+        if (isInfoEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(null, LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(null, LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void info(String format, Object... arguments) {
+        if (isInfoEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(null, LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(null, LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void info(LoggerConsumer<E> consumer) throws E {
+        if (isInfoEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void info(PaxMarker marker, String message) {
+        if (isInfoEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, m_fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object arg) {
+        if (isInfoEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object arg1, Object arg2) {
+        if (isInfoEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object... arguments) {
+        if (isInfoEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void info(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        if (isInfoEnabled(marker)) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void warn(String message) {
         if (isWarnEnabled()) {
-            doLog(null, LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, fqcn, message, t);
+            doLog(null, LocationAwareLogger.WARN_INT, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void error(String message, Throwable t, String fqcn) {
+    public void warn(String format, Object arg) {
+        if (isWarnEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(null, LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(null, LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void warn(String format, Object arg1, Object arg2) {
+        if (isWarnEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(null, LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(null, LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void warn(String format, Object... arguments) {
+        if (isWarnEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(null, LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(null, LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void warn(LoggerConsumer<E> consumer) throws E {
+        if (isWarnEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message) {
+        if (isWarnEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, m_fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object arg) {
+        if (isWarnEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object arg1, Object arg2) {
+        if (isWarnEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object... arguments) {
+        if (isWarnEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void warn(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        if (isWarnEnabled(marker)) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void error(String message) {
         if (isErrorEnabled()) {
-            doLog(null, LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
+            doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void fatal(String message, Throwable t, String fqcn) {
+    public void error(String format, Object arg) {
+        if (isErrorEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void error(String format, Object arg1, Object arg2) {
+        if (isErrorEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void error(String format, Object... arguments) {
+        if (isErrorEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void error(LoggerConsumer<E> consumer) throws E {
+        if (isErrorEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message) {
+        if (isErrorEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object arg) {
+        if (isErrorEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object arg1, Object arg2) {
+        if (isErrorEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object... arguments) {
+        if (isErrorEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void error(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        if (isErrorEnabled(marker)) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void fatal(String message) {
         if (isFatalEnabled()) {
-            doLog(null, LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
+            doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void trace(PaxMarker marker, String message, Throwable t) {
-        if (isTraceEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
+    public void fatal(String format, Object arg) {
+        if (isFatalEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
         }
     }
 
     @Override
-    public void debug(PaxMarker marker, String message, Throwable t) {
-        if (isDebugEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, m_fqcn, message, t);
+    public void fatal(String format, Object arg1, Object arg2) {
+        if (isFatalEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
         }
     }
 
     @Override
-    public void inform(PaxMarker marker, String message, Throwable t) {
-        if (isInfoEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, LogService.LOG_INFO, m_fqcn, message, t);
+    public void fatal(String format, Object... arguments) {
+        if (isFatalEnabled()) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
         }
     }
 
     @Override
-    public void warn(PaxMarker marker, String message, Throwable t) {
-        if (isWarnEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, m_fqcn, message, t);
+    public <E extends Exception> void fatal(LoggerConsumer<E> consumer) throws E {
+        if (isFatalEnabled()) {
+            consumer.accept(this);
         }
     }
 
     @Override
-    public void error(PaxMarker marker, String message, Throwable t) {
-        if (isErrorEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void fatal(PaxMarker marker, String message, Throwable t) {
+    public void fatal(PaxMarker marker, String message) {
         if (isFatalEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, m_fqcn, message, t);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
-        if (isTraceEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, LogService.LOG_DEBUG, fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
-        if (isDebugEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, LogService.LOG_DEBUG, fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
-        if (isInfoEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, LogService.LOG_INFO, fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
-        if (isWarnEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, LogService.LOG_WARNING, fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
-        if (isErrorEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
+    public void fatal(PaxMarker marker, String format, Object arg) {
         if (isFatalEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, LogService.LOG_ERROR, fqcn, message, t);
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
         }
     }
 
     @Override
-    public int getLogLevel() {
-        return new PaxLevelImpl(m_delegate.getEffectiveLevel()).toPaxLoggingLevel();
+    public void fatal(PaxMarker marker, String format, Object arg1, Object arg2) {
+        if (isFatalEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String format, Object... arguments) {
+        if (isFatalEnabled(marker)) {
+            if (m_printfFormatting) {
+                FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            } else {
+                FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+                doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            }
+        }
+    }
+
+    @Override
+    public <E extends Exception> void fatal(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        if (isFatalEnabled(marker)) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void audit(String message) {
+        doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, message, null, null);
+    }
+
+    @Override
+    public void audit(String format, Object arg) {
+        if (m_printfFormatting) {
+            FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+            doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        } else {
+            FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+            doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+        }
+    }
+
+    @Override
+    public void audit(String format, Object arg1, Object arg2) {
+        if (m_printfFormatting) {
+            FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+            doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        } else {
+            FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+            doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+        }
+    }
+
+    @Override
+    public void audit(String format, Object... arguments) {
+        if (m_printfFormatting) {
+            FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+            doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        } else {
+            FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+            doLog(null, LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+        }
+    }
+
+    @Override
+    public <E extends Exception> void audit(LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String message) {
+        doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, message, null, null);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object arg) {
+        if (m_printfFormatting) {
+            FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        } else {
+            FormattingTriple ft = FormattingTriple.discover(format, false, arg);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+        }
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object arg1, Object arg2) {
+        if (m_printfFormatting) {
+            FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        } else {
+            FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+        }
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object... arguments) {
+        if (m_printfFormatting) {
+            FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        } else {
+            FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+        }
+    }
+
+    @Override
+    public <E extends Exception> void audit(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, String message) {
+        if (isTraceEnabled()) {
+            doLog(null, LocationAwareLogger.TRACE_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqdebug(String fqcn, String message) {
+        if (isDebugEnabled()) {
+            doLog(null, LocationAwareLogger.DEBUG_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqinfo(String fqcn, String message) {
+        if (isInfoEnabled()) {
+            doLog(null, LocationAwareLogger.INFO_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqwarn(String fqcn, String message) {
+        if (isWarnEnabled()) {
+            doLog(null, LocationAwareLogger.WARN_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqerror(String fqcn, String message) {
+        if (isErrorEnabled()) {
+            doLog(null, LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqfatal(String fqcn, String message) {
+        if (isFatalEnabled()) {
+            doLog(null, LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqtrace(String fqcn, PaxMarker marker, String message) {
+        if (isTraceEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqdebug(String fqcn, PaxMarker marker, String message) {
+        if (isDebugEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqinfo(String fqcn, PaxMarker marker, String message) {
+        if (isInfoEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqwarn(String fqcn, PaxMarker marker, String message) {
+        if (isWarnEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqerror(String fqcn, PaxMarker marker, String message) {
+        if (isErrorEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqfatal(String fqcn, PaxMarker marker, String message) {
+        if (isFatalEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqtrace(String fqcn, String message, Throwable t) {
+        if (isTraceEnabled()) {
+            doLog(null, LocationAwareLogger.TRACE_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqdebug(String fqcn, String message, Throwable t) {
+        if (isDebugEnabled()) {
+            doLog(null, LocationAwareLogger.DEBUG_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqinfo(String fqcn, String message, Throwable t) {
+        if (isInfoEnabled()) {
+            doLog(null, LocationAwareLogger.INFO_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqwarn(String fqcn, String message, Throwable t) {
+        if (isWarnEnabled()) {
+            doLog(null, LocationAwareLogger.WARN_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqerror(String fqcn, String message, Throwable t) {
+        if (isErrorEnabled()) {
+            doLog(null, LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqfatal(String fqcn, String message, Throwable t) {
+        if (isFatalEnabled()) {
+            doLog(null, LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqtrace(String fqcn, PaxMarker marker, String message, Throwable t) {
+        if (isTraceEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqdebug(String fqcn, PaxMarker marker, String message, Throwable t) {
+        if (isDebugEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqinfo(String fqcn, PaxMarker marker, String message, Throwable t) {
+        if (isInfoEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqwarn(String fqcn, PaxMarker marker, String message, Throwable t) {
+        if (isWarnEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqerror(String fqcn, PaxMarker marker, String message, Throwable t) {
+        if (isErrorEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public void fqfatal(String fqcn, PaxMarker marker, String message, Throwable t) {
+        if (isFatalEnabled(marker)) {
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+        }
+    }
+
+    @Override
+    public int getPaxLogLevel() {
+        switch (m_delegate.getEffectiveLevel().toInt()) {
+            case Level.ALL_INT:
+                return LEVEL_AUDIT;
+            case Level.TRACE_INT:
+                return LEVEL_TRACE;
+            case Level.DEBUG_INT:
+                return LEVEL_DEBUG;
+            case Level.INFO_INT:
+                return LEVEL_INFO;
+            case Level.WARN_INT:
+                return LEVEL_WARNING;
+            case Level.ERROR_INT:
+                return LEVEL_ERROR;
+            case Level.OFF_INT:
+            default:
+                return LEVEL_NONE;
+        }
+    }
+
+    @Override
+    public LogLevel getLogLevel() {
+        Level level = m_delegate.getEffectiveLevel();
+        if (level == null || level == Level.ALL) {
+            return LogLevel.AUDIT;
+        }
+
+        if (Level.TRACE.isGreaterOrEqual(level)) {
+            return LogLevel.TRACE;
+        }
+
+        if (Level.DEBUG.isGreaterOrEqual(level)) {
+            return LogLevel.DEBUG;
+        }
+
+        if (Level.INFO.isGreaterOrEqual(level)) {
+            return LogLevel.INFO;
+        }
+
+        if (Level.WARN.isGreaterOrEqual(level)) {
+            return LogLevel.WARN;
+        }
+
+        return LogLevel.ERROR;
+    }
+
+    private LogLevel getLogLevel(int levelFromLocationAwareLogger) {
+        switch (levelFromLocationAwareLogger) {
+            case LocationAwareLogger.TRACE_INT:
+                return LogLevel.TRACE;
+            case LocationAwareLogger.DEBUG_INT:
+                return LogLevel.DEBUG;
+            case LocationAwareLogger.INFO_INT:
+                return LogLevel.INFO;
+            case LocationAwareLogger.WARN_INT:
+                return LogLevel.WARN;
+            case LocationAwareLogger.ERROR_INT:
+                return LogLevel.ERROR;
+            default:
+                return LogLevel.AUDIT;
+        }
     }
 
     @Override
@@ -320,17 +1116,18 @@ public class PaxLoggerImpl implements PaxLogger {
 
     // private methods
 
-
-    private void doLog(final Marker marker, final int level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+    private void doLog(final Marker marker, final int level, final String fqcn, final String message,
+                       final Throwable t, final ServiceReference<?> ref,
+                       final Object... args) {
         if (System.getSecurityManager() != null) {
             AccessController.doPrivileged(
                     (PrivilegedAction<Void>) () -> {
-                        doLog0(marker, level, svcLevel, fqcn, message, t);
+                        doLog0(marker, level, fqcn, message, t, ref, args);
                         return null;
                     }
             );
         } else {
-            doLog0(marker, level, svcLevel, fqcn, message, t);
+            doLog0(marker, level, fqcn, message, t, ref, args);
         }
     }
 
@@ -343,20 +1140,24 @@ public class PaxLoggerImpl implements PaxLogger {
      * </ul></p>
      *
      * @param marker
-     * @param level
-     * @param svcLevel
+     * @param level int from {@link Level}
      * @param fqcn
      * @param message
      * @param t
+     * @param ref
+     * @param args
      */
-    private void doLog0(Marker marker, final int level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+    private void doLog0(Marker marker, final int level, final String fqcn, final String message,
+                        final Throwable t, final ServiceReference<?> ref,
+                        final Object... args) {
         setDelegateContext();
         try {
-            m_delegate.log(marker, fqcn, level, message, null, t);
+            m_delegate.log(marker, fqcn, level, message, args, t);
         } finally {
             clearDelegateContext();
         }
-        m_service.handleEvents(m_bundle, null, svcLevel, message, t);
+        LogLevel l = getLogLevel(level);
+        m_service.handleEvents(getName(), m_bundle, ref, l, message, t);
     }
 
     private void setDelegateContext() {

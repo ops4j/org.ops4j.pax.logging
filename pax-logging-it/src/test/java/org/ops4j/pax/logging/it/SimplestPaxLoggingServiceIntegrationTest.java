@@ -31,6 +31,7 @@ import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.it.support.MockPaxLogger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +69,8 @@ public class SimplestPaxLoggingServiceIntegrationTest extends AbstractControlled
             }
 
             @Override
-            public int getLogLevel() {
-                return 0;
+            public LogLevel getLogLevel() {
+                return LogLevel.ERROR;
             }
 
             @Override
@@ -91,6 +92,31 @@ public class SimplestPaxLoggingServiceIntegrationTest extends AbstractControlled
 
             @Override
             public void log(ServiceReference sr, int level, String message, Throwable exception) {
+            }
+
+            @Override
+            public org.osgi.service.log.Logger getLogger(String name) {
+                return null;
+            }
+
+            @Override
+            public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
+                return null;
+            }
+
+            @Override
+            public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
+                return null;
+            }
+
+            @Override
+            public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
+                return null;
+            }
+
+            @Override
+            public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
+                return null;
             }
         }, null);
 

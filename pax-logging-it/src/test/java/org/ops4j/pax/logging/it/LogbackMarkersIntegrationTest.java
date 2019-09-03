@@ -105,10 +105,10 @@ public class LogbackMarkersIntegrationTest extends AbstractStdoutInterceptingInt
         String fqcn = paxLogger.getClass().getName();
         // again - with better FQCN
         paxLogger = paxLoggingService.getLogger(context.getBundle(), "my.logger", fqcn);
-        paxLogger.inform(new PaxMarker(m1a), "INFO using PaxLogger with SLF4J marker", null);
-        paxLogger.inform(new PaxMarker(reject1), "INFO using PaxLogger with SLF4J marker2", null);
-        paxLogger.inform(new PaxMarker(m2a), "INFO using PaxLogger with Log4J2 marker", null);
-        paxLogger.inform(new PaxMarker(reject2), "INFO using PaxLogger with Log4J2 marker2", null);
+        paxLogger.info(new PaxMarker(m1a), "INFO using PaxLogger with SLF4J marker");
+        paxLogger.info(new PaxMarker(reject1), "INFO using PaxLogger with SLF4J marker2");
+        paxLogger.info(new PaxMarker(m2a), "INFO using PaxLogger with Log4J2 marker");
+        paxLogger.info(new PaxMarker(reject2), "INFO using PaxLogger with Log4J2 marker2");
         assertTrue(paxLogger.isInfoEnabled(new PaxMarker(m1a)));
         assertTrue(paxLogger.isInfoEnabled(new PaxMarker(m2a)));
         assertFalse(paxLogger.isInfoEnabled(new PaxMarker(reject1)));

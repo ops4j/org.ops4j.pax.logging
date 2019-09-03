@@ -113,6 +113,39 @@ public interface PaxLogger extends FormatterLogger {
     void fatal(PaxMarker marker, String format, Object... arguments);
     <E extends Exception> void fatal(PaxMarker marker, LoggerConsumer<E> consumer) throws E;
 
+    // With OSGi R7, the methods from org.osgi.service.log.Logger interface caused a conflict with previous
+    // PaxLogger methods that allowed to pass FQCN. That's why we had to create new methods with "fq" prefix to
+    // remove conflicts with varargs
+    // these mathods usually take already processed message, no more need to format it using parameters.
+
+    void fqtrace(String fqcn, String message);
+    void fqdebug(String fqcn, String message);
+    void fqinfo(String fqcn, String message);
+    void fqwarn(String fqcn, String message);
+    void fqerror(String fqcn, String message);
+    void fqfatal(String fqcn, String message);
+
+    void fqtrace(String fqcn, PaxMarker marker, String message);
+    void fqdebug(String fqcn, PaxMarker marker, String message);
+    void fqinfo(String fqcn, PaxMarker marker, String message);
+    void fqwarn(String fqcn, PaxMarker marker, String message);
+    void fqerror(String fqcn, PaxMarker marker, String message);
+    void fqfatal(String fqcn, PaxMarker marker, String message);
+
+    void fqtrace(String fqcn, String message, Throwable t);
+    void fqdebug(String fqcn, String message, Throwable t);
+    void fqinfo(String fqcn, String message, Throwable t);
+    void fqwarn(String fqcn, String message, Throwable t);
+    void fqerror(String fqcn, String message, Throwable t);
+    void fqfatal(String fqcn, String message, Throwable t);
+
+    void fqtrace(String fqcn, PaxMarker marker, String message, Throwable t);
+    void fqdebug(String fqcn, PaxMarker marker, String message, Throwable t);
+    void fqinfo(String fqcn, PaxMarker marker, String message, Throwable t);
+    void fqwarn(String fqcn, PaxMarker marker, String message, Throwable t);
+    void fqerror(String fqcn, PaxMarker marker, String message, Throwable t);
+    void fqfatal(String fqcn, PaxMarker marker, String message, Throwable t);
+
     /**
      * <p>Returns numerical log level associated with this logger. Higher values mean more <em>important</em>
      * levels (as in {@link org.ops4j.pax.logging.spi.PaxLevel}). Only these constants should be returned

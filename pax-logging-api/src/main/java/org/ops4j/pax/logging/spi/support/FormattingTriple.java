@@ -47,15 +47,41 @@ public class FormattingTriple {
      * @param argArray
      * @return
      */
-    public static FormattingTriple forArguments(String format, boolean printfFormatting, Object... argArray) {
+    public static FormattingTriple discover(String format, boolean printfFormatting, Object... argArray) {
+        return forArguments(format, printfFormatting, false, argArray);
+    }
+
+    /**
+     * According to OSGi R7 Logging specification, argument array may contain {@link Throwable} and/or
+     * {@link ServiceReference} among last two arguments. This methods returns extracted information, also, message
+     * is immediately resolved using discovered arguments.
+     * @param format
+     * @param printfFormatting
+     * @param argArray
+     * @return
+     */
+    public static FormattingTriple resolve(String format, boolean printfFormatting, Object... argArray) {
+        return forArguments(format, printfFormatting, true, argArray);
+    }
+
+    /**
+     * According to OSGi R7 Logging specification, argument array may contain {@link Throwable} and/or
+     * {@link ServiceReference} among last two arguments. This methods returns extracted information.
+     * @param format
+     * @param printfFormatting
+     * @param resolve whether to replace format+arguments into formatted message
+     * @param argArray
+     * @return
+     */
+    private static FormattingTriple forArguments(String format, boolean printfFormatting, boolean resolve, Object... argArray) {
         if (argArray == null || argArray.length == 0) {
             // only message
             return new FormattingTriple(format, null, null, null);
-        } else if (argArray.length == 1 && argArray[0] != null) {
-            if (Throwable.class.isAssignableFrom(argArray[0].getClass())) {
+        } else if (argArray.length == 1) {
+            if (argArray[0] != null && Throwable.class.isAssignableFrom(argArray[0].getClass())) {
                 return new FormattingTriple(format, null, (Throwable) argArray[0], null);
             }
-            if (ServiceReference.class.isAssignableFrom(argArray[0].getClass())) {
+            if (argArray[0] != null && ServiceReference.class.isAssignableFrom(argArray[0].getClass())) {
                 return new FormattingTriple(format, null, null, (ServiceReference<?>) argArray[0]);
             }
             // format is one-argument format
@@ -101,10 +127,10 @@ public class FormattingTriple {
         System.arraycopy(argArray, 0, newArgs, 0, toCopy);
 
         if (printfFormatting) {
-            String m = String.format(format, newArgs);
+            String m = resolve ? String.format(format, newArgs) : format;
             return new FormattingTriple(m, newArgs, t, sr);
         } else {
-            String m = MessageFormatter.arrayFormat(format, newArgs, t).getMessage();
+            String m = resolve ? MessageFormatter.arrayFormat(format, newArgs, t).getMessage() : format;
             return new FormattingTriple(m, newArgs, t, sr);
         }
     }

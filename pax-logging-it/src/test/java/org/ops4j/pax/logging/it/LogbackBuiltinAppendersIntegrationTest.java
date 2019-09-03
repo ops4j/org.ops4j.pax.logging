@@ -221,10 +221,10 @@ public class LogbackBuiltinAppendersIntegrationTest extends AbstractStdoutInterc
         PaxLogger l2 = paxLoggingService.getLogger(b2, "com.example.l1", fqcn);
         PaxLogger l2a = paxLoggingService.getLogger(b2, "com.example.l2", fqcn);
 
-        l1.inform("Hello from b1/l1", null);
-        l1a.inform("Hello from b1/l2", null);
-        l2.inform("Hello from b2/l1", null);
-        l2a.inform("Hello from b2/l2", null);
+        l1.info("Hello from b1/l1");
+        l1a.info("Hello from b1/l2");
+        l2.info("Hello from b2/l1");
+        l2a.info("Hello from b2/l2");
 
         List<String> linesB1 = readLines("target/logs-logback/b1-file-appender.log");
         List<String> linesB2 = readLines("target/logs-logback/b2-file-appender.log");

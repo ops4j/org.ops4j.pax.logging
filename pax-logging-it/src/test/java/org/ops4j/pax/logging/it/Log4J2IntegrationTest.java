@@ -30,12 +30,14 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.logging.it.support.Helpers;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.FormatterLogger;
 import org.osgi.service.log.LogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
@@ -111,6 +113,36 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
     }
 
     @Test
+    public void usageThroughOsgiR7() throws IOException {
+        ServiceReference<org.osgi.service.log.LoggerFactory> sr = context.getServiceReference(org.osgi.service.log.LoggerFactory.class);
+        org.osgi.service.log.LoggerFactory loggerFactory = context.getService(sr);
+
+        org.osgi.service.log.Logger log = loggerFactory.getLogger("my.logger");
+        log.info("INFO1 through org.osgi.service.log.Logger");
+        log.debug("DEBUG1 through org.osgi.service.log.Logger");
+        log.warn("WARN1 through org.osgi.service.log.Logger {}", "arg1");
+
+        log = loggerFactory.getLogger("my.logger", FormatterLogger.class);
+        log.info("INFO2 through org.osgi.service.log.Logger");
+        log.debug("DEBUG2 through org.osgi.service.log.Logger");
+        log.warn("WARN2 through org.osgi.service.log.Logger %s", "arg1");
+
+        log.error("ERROR1 through org.osgi.service.log.Logger", new Exception("Hello"));
+
+        List<String> lines = readLines(13);
+        List<String> lines2 = readLines();
+
+        assertTrue(lines.contains("[main] INFO  my.logger - INFO1 through org.osgi.service.log.Logger"));
+        assertTrue(lines.contains("[main] DEBUG my.logger - DEBUG1 through org.osgi.service.log.Logger"));
+        assertTrue(lines.contains("[main] WARN  my.logger - WARN1 through org.osgi.service.log.Logger arg1"));
+        assertTrue(lines.contains("[main] INFO  my.logger - INFO2 through org.osgi.service.log.Logger"));
+        assertTrue(lines.contains("[main] DEBUG my.logger - DEBUG2 through org.osgi.service.log.Logger"));
+        assertTrue(lines.contains("[main] WARN  my.logger - WARN2 through org.osgi.service.log.Logger arg1"));
+        assertTrue(lines.contains("[main] ERROR my.logger - ERROR1 through org.osgi.service.log.Logger"));
+        assertTrue(lines2.contains("java.lang.Exception: Hello"));
+    }
+
+    @Test
     public void usageThroughOtherAPIs() throws IOException {
         String name = Log4J2IntegrationTest.class.getName();
 
@@ -136,14 +168,14 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
 
         // Knopflerfish - the bundle associated with the "logger" will be the bundle used to obtain
         // service reference - here, PaxExam-Probe
-        LogRef lr = new LogRef(context);
-        lr.info("INFO1 through Knopflerfish");
-        lr.debug("DEBUG1 through Knopflerfish");
+//        LogRef lr = new LogRef(context);
+//        lr.info("INFO1 through Knopflerfish");
+//        lr.debug("DEBUG1 through Knopflerfish");
 
-        !!ServiceReference<org.knopflerfish.service.log.LogService> sr = context.getServiceReference(org.knopflerfish.service.log.LogService.class);
-        !!org.knopflerfish.service.log.LogService fishLogService = context.getService(sr);
-        !!fishLogService.log(LogService.LOG_INFO, "INFO2 through Knopflerfish");
-        !!fishLogService.log(LogService.LOG_DEBUG, "DEBUG2 through Knopflerfish");
+//        !!ServiceReference<org.knopflerfish.service.log.LogService> sr = context.getServiceReference(org.knopflerfish.service.log.LogService.class);
+//        !!org.knopflerfish.service.log.LogService fishLogService = context.getService(sr);
+//        !!fishLogService.log(LogService.LOG_INFO, "INFO2 through Knopflerfish");
+//        !!fishLogService.log(LogService.LOG_DEBUG, "DEBUG2 through Knopflerfish");
 
         org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(name);
         log4j2Logger.info("INFO through Log4J v2 API");
@@ -162,10 +194,10 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.Log4J2IntegrationTest - DEBUG through Avalon Logger API"));
         assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through JBoss Logging Logger API"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through JBoss Logging Logger API"));
-        !!assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO1 through Knopflerfish"));
-        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
-        !!assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO2 through Knopflerfish"));
-        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
+//        !!assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO1 through Knopflerfish"));
+//        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
+//        !!assertTrue(lines.contains("[main] INFO  PaxExam-Probe - INFO2 through Knopflerfish"));
+//        !!assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
         assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through Log4J v2 API"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through Log4J v2 API"));
     }

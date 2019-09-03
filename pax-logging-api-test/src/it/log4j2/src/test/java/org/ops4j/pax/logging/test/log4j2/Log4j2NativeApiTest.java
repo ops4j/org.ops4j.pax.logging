@@ -51,7 +51,7 @@ public class Log4j2NativeApiTest {
         AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
                 .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
         appenderBuilder.add(builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "%d {%t} %c/%C (%X) %level (%marker | %markerSimpleName): %msg%n%throwable"));
+                .addAttribute("pattern", "%d {%t} %c (%X) %level (%marker | %markerSimpleName): %msg%n%throwable"));
         builder.add(appenderBuilder);
 
         builder.add(builder.newRootLogger(Level.DEBUG)
@@ -88,6 +88,7 @@ public class Log4j2NativeApiTest {
         ExtendedLogger log = (ExtendedLogger) LogManager.getLogger(Log4j2NativeApiTest.class);
 
         log.log(Level.ERROR, "Hello 1!");
+        log.log(Level.INFO, "Hello {}!!", "world");
         log.logMessage("a.b.c.d", Level.ERROR, null, ReusableMessageFactory.INSTANCE.newMessage("Hello 2!"), null);
     }
 

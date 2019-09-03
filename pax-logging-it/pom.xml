@@ -301,6 +301,17 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>invoker-tests-development</id>
+            <dependencies>
+                <!-- This dependency is needed to compile some itests within IDE -->
+                <dependency>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
 </project>

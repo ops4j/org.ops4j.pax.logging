@@ -321,29 +321,52 @@ public class PaxLoggingServiceImpl
         String category = BackendSupport.category(bundle);
 
         PaxLogger logger = getLogger(bundle, category, fqcn);
-        if (level < LOG_ERROR) {
-            logger.audit(message, exception);
+        if (exception != null) {
+            if (level < LOG_ERROR) {
+                logger.audit(message, exception);
+            } else {
+                switch (level) {
+                    case LOG_ERROR:
+                        logger.error(message, exception);
+                        break;
+                    case LOG_WARNING:
+                        logger.warn(message, exception);
+                        break;
+                    case LOG_INFO:
+                        logger.info(message, exception);
+                        break;
+                    case LOG_DEBUG:
+                        logger.debug(message, exception);
+                        break;
+                    default:
+                        logger.trace(message, exception);
+                }
+            }
         } else {
-            switch (level) {
-                case LOG_ERROR:
-                    logger.error(message, exception);
-                    break;
-                case LOG_WARNING:
-                    logger.warn(message, exception);
-                    break;
-                case LOG_INFO:
-                    logger.info(message, exception);
-                    break;
-                case LOG_DEBUG:
-                    logger.debug(message, exception);
-                    break;
-                default:
-                    logger.trace(message, exception);
+            if (level < LOG_ERROR) {
+                logger.audit(message);
+            } else {
+                switch (level) {
+                    case LOG_ERROR:
+                        logger.error(message);
+                        break;
+                    case LOG_WARNING:
+                        logger.warn(message);
+                        break;
+                    case LOG_INFO:
+                        logger.info(message);
+                        break;
+                    case LOG_DEBUG:
+                        logger.debug(message);
+                        break;
+                    default:
+                        logger.trace(message);
+                }
             }
         }
     }
 
-    void handleEvents(String name, Bundle bundle, ServiceReference sr, LogLevel level, String message, Throwable exception) {
+    void handleEvents(String name, Bundle bundle, ServiceReference<?> sr, LogLevel level, String message, Throwable exception) {
         LogEntry entry = new LogEntryImpl(name, bundle, sr, level, message, exception);
         m_logReader.fireEvent(entry);
 
@@ -488,27 +511,27 @@ public class PaxLoggingServiceImpl
 
             @Override
             public org.osgi.service.log.Logger getLogger(String name) {
-                return PaxLoggingServiceImpl.this.getLogger(null, name, FQCN);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, name, PaxLoggerImpl.FQCN);
             }
 
             @Override
             public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
-                return PaxLoggingServiceImpl.this.getLogger(null, clazz.getName(), FQCN);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, clazz.getName(), PaxLoggerImpl.FQCN);
             }
 
             @Override
             public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
-                return PaxLoggingServiceImpl.this.getLogger(null, name, loggerType, FQCN);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, name, loggerType, PaxLoggerImpl.FQCN);
             }
 
             @Override
             public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
-                return PaxLoggingServiceImpl.this.getLogger(null, clazz.getName(), loggerType, FQCN);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, clazz.getName(), loggerType, PaxLoggerImpl.FQCN);
             }
 
             @Override
             public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
-                return PaxLoggingServiceImpl.this.getLogger(bundle, name, loggerType, FQCN);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, name, loggerType, PaxLoggerImpl.FQCN);
             }
         }
 

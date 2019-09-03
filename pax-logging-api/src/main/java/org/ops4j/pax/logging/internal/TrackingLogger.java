@@ -462,6 +462,126 @@ public class TrackingLogger implements PaxLogger {
     }
 
     @Override
+    public void fqtrace(String fqcn, String message) {
+        m_delegate.fqtrace(fqcn, message);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, String message) {
+        m_delegate.fqdebug(fqcn, message);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, String message) {
+        m_delegate.fqinfo(fqcn, message);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, String message) {
+        m_delegate.fqwarn(fqcn, message);
+    }
+
+    @Override
+    public void fqerror(String fqcn, String message) {
+        m_delegate.fqerror(fqcn, message);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, String message) {
+        m_delegate.fqfatal(fqcn, message);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, PaxMarker marker, String message) {
+        m_delegate.fqtrace(fqcn, marker, message);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, PaxMarker marker, String message) {
+        m_delegate.fqdebug(fqcn, marker, message);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, PaxMarker marker, String message) {
+        m_delegate.fqinfo(fqcn, marker, message);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, PaxMarker marker, String message) {
+        m_delegate.fqwarn(fqcn, marker, message);
+    }
+
+    @Override
+    public void fqerror(String fqcn, PaxMarker marker, String message) {
+        m_delegate.fqerror(fqcn, marker, message);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, PaxMarker marker, String message) {
+        m_delegate.fqfatal(fqcn, marker, message);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, String message, Throwable t) {
+        m_delegate.fqtrace(fqcn, message, t);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, String message, Throwable t) {
+        m_delegate.fqdebug(fqcn, message, t);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, String message, Throwable t) {
+        m_delegate.fqinfo(fqcn, message, t);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, String message, Throwable t) {
+        m_delegate.fqwarn(fqcn, message, t);
+    }
+
+    @Override
+    public void fqerror(String fqcn, String message, Throwable t) {
+        m_delegate.fqerror(fqcn, message, t);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, String message, Throwable t) {
+        m_delegate.fqfatal(fqcn, message, t);
+    }
+
+    @Override
+    public void fqtrace(String fqcn, PaxMarker marker, String message, Throwable t) {
+        m_delegate.fqtrace(fqcn,marker, message, t);
+    }
+
+    @Override
+    public void fqdebug(String fqcn, PaxMarker marker, String message, Throwable t) {
+        m_delegate.fqdebug(fqcn,marker, message, t);
+    }
+
+    @Override
+    public void fqinfo(String fqcn, PaxMarker marker, String message, Throwable t) {
+        m_delegate.fqinfo(fqcn,marker, message, t);
+    }
+
+    @Override
+    public void fqwarn(String fqcn, PaxMarker marker, String message, Throwable t) {
+        m_delegate.fqwarn(fqcn,marker, message, t);
+    }
+
+    @Override
+    public void fqerror(String fqcn, PaxMarker marker, String message, Throwable t) {
+        m_delegate.fqerror(fqcn,marker, message, t);
+    }
+
+    @Override
+    public void fqfatal(String fqcn, PaxMarker marker, String message, Throwable t) {
+        m_delegate.fqfatal(fqcn,marker, message, t);
+    }
+
+    @Override
     public int getPaxLogLevel() {
         return m_delegate.getPaxLogLevel();
     }

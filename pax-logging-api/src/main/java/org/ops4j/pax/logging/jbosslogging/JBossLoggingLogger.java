@@ -59,22 +59,22 @@ public class JBossLoggingLogger extends Logger implements PaxLoggingManagerAware
         final String text = parameters == null || parameters.length == 0 ? String.valueOf(message) : MessageFormat.format(String.valueOf(message), parameters);
         switch (level) {
             case FATAL:
-                m_delegate.fatal(text, thrown);
+                m_delegate.fqfatal(fqcn, text, thrown);
                 break;
             case ERROR:
-                m_delegate.error(text, thrown);
+                m_delegate.fqerror(fqcn, text, thrown);
                 break;
             case WARN:
-                m_delegate.warn(text, thrown);
+                m_delegate.fqwarn(fqcn, text, thrown);
                 break;
             case INFO:
-                m_delegate.info(text, thrown);
+                m_delegate.fqinfo(fqcn, text, thrown);
                 break;
             case DEBUG:
-                m_delegate.debug(text, thrown);
+                m_delegate.fqdebug(fqcn, text, thrown);
                 break;
             case TRACE:
-                m_delegate.trace(text, thrown);
+                m_delegate.fqtrace(fqcn, text, thrown);
                 break;
         }
     }

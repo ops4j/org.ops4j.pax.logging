@@ -114,7 +114,6 @@ public class PaxLoggingServiceImpl
     private final ConfigurationNotifier m_configNotifier;
 
     // Log level (actually a threashold) for this entire service.
-    private int m_logLevel = org.osgi.service.log.LogService.LOG_DEBUG;
     private LogLevel m_r7LogLevel = LogLevel.DEBUG;
 
     // choose between LoggerContext managed here or managed inside logback-classic's
@@ -233,30 +232,21 @@ public class PaxLoggingServiceImpl
         }
     }
 
+    // org.ops4j.pax.logging.PaxLoggingService
+
     @Override
     public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
-        Logger logbackLogger;
-        if (category == null) {
-            logbackLogger = m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-        } else {
-            logbackLogger = m_logbackContext.getLogger(category);
-        }
-        return new PaxLoggerImpl(bundle, logbackLogger, fqcn, this);
-    }
-
-    // org.osgi.service.log.LogService
-    // these methods are actually never called directly (except in tests), because the actual published
-    // methods come from service factory produced object
-
-    @Override
-    public int getPaxLogLevel() {
-        return m_logLevel;
+        return getLogger(bundle, category, fqcn, false);
     }
 
     @Override
     public LogLevel getLogLevel() {
         return m_r7LogLevel;
     }
+
+    // org.osgi.service.log.LogService
+    // these methods are actually never called directly (except in tests), because the actual published
+    // methods come from service factory produced object
 
     @Override
     public void log(int level, String message) {
@@ -287,27 +277,55 @@ public class PaxLoggingServiceImpl
 
     @Override
     public org.osgi.service.log.Logger getLogger(String name) {
-        return x;
+        return getLogger(null, name, PaxLoggerImpl.FQCN);
     }
 
     @Override
     public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
-        return x;
+        return getLogger(null, clazz.getName(), PaxLoggerImpl.FQCN);
     }
 
     @Override
     public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
-        return x;
+        return getLogger(null, name, loggerType);
     }
 
     @Override
     public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
-        return x;
+        return getLogger(null, clazz.getName(), loggerType);
     }
 
     @Override
     public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
-        return x;
+        return getLogger(bundle, name, loggerType, PaxLoggerImpl.FQCN);
+    }
+
+    private <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType, String fqcn) {
+        if (loggerType == org.osgi.service.log.Logger.class) {
+            return loggerType.cast(getLogger(bundle, name, fqcn, false));
+        } else if (loggerType == org.osgi.service.log.FormatterLogger.class) {
+            return loggerType.cast(getLogger(bundle, name, fqcn, true));
+        }
+        throw new IllegalArgumentException("Can't obtain logger with type " + loggerType);
+    }
+
+    /**
+     * The only method that creates new instance of {@link PaxLoggerImpl}. Used by log() methods from R6 and directly
+     * by getLogger() methods from R7.
+     * @param bundle
+     * @param category
+     * @param fqcn
+     * @param printfFormatting whether to use Slf4J ({@code "{}"} - {@code false}) or printf formatting ({@code "%s"} - {@code true}).
+     * @return
+     */
+    private PaxLogger getLogger(Bundle bundle, String category, String fqcn, boolean printfFormatting) {
+        Logger logbackLogger;
+        if (category == null) {
+            logbackLogger = m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        } else {
+            logbackLogger = m_logbackContext.getLogger(category);
+        }
+        return new PaxLoggerImpl(bundle, logbackLogger, fqcn, this, printfFormatting);
     }
 
     // org.osgi.service.cm.ManagedService
@@ -358,24 +376,47 @@ public class PaxLoggingServiceImpl
 
         try {
             PaxLogger logger = getLogger(bundle, category, fqcn);
-            if (level < LOG_ERROR) {
-                logger.fatal(message, exception);
+            if (exception != null) {
+                if (level < LOG_ERROR) {
+                    logger.audit(message, exception);
+                } else {
+                    switch (level) {
+                        case LOG_ERROR:
+                            logger.error(message, exception);
+                            break;
+                        case LOG_WARNING:
+                            logger.warn(message, exception);
+                            break;
+                        case LOG_INFO:
+                            logger.info(message, exception);
+                            break;
+                        case LOG_DEBUG:
+                            logger.debug(message, exception);
+                            break;
+                        default:
+                            logger.trace(message, exception);
+                    }
+                }
             } else {
-                switch (level) {
-                    case LOG_ERROR:
-                        logger.error(message, exception);
-                        break;
-                    case LOG_WARNING:
-                        logger.warn(message, exception);
-                        break;
-                    case LOG_INFO:
-                        logger.inform(message, exception);
-                        break;
-                    case LOG_DEBUG:
-                        logger.debug(message, exception);
-                        break;
-                    default:
-                        logger.trace(message, exception);
+                if (level < LOG_ERROR) {
+                    logger.audit(message);
+                } else {
+                    switch (level) {
+                        case LOG_ERROR:
+                            logger.error(message);
+                            break;
+                        case LOG_WARNING:
+                            logger.warn(message);
+                            break;
+                        case LOG_INFO:
+                            logger.info(message);
+                            break;
+                        case LOG_DEBUG:
+                            logger.debug(message);
+                            break;
+                        default:
+                            logger.trace(message);
+                    }
                 }
             }
         } catch (RuntimeException e) {
@@ -383,8 +424,8 @@ public class PaxLoggingServiceImpl
         }
     }
 
-    void handleEvents(Bundle bundle, ServiceReference sr, int level, String message, Throwable exception) {
-        LogEntry entry = new LogEntryImpl(bundle, sr, level, message, exception);
+    void handleEvents(String name, Bundle bundle, ServiceReference sr, LogLevel level, String message, Throwable exception) {
+        LogEntry entry = new LogEntryImpl(name, bundle, sr, level, message, exception);
         m_logReader.fireEvent(entry);
 
         // This should only be null for TestCases.
@@ -401,7 +442,7 @@ public class PaxLoggingServiceImpl
         String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
         java.util.logging.Level julLevel = BackendSupport.toJULLevel(levelName);
 
-        m_logLevel = BackendSupport.convertR6LogServiceLevel(levelName);
+        m_r7LogLevel = BackendSupport.convertR7LogLevel(levelName, LogLevel.DEBUG);
 
         final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
         rootLogger.setLevel(julLevel);
@@ -450,8 +491,7 @@ public class PaxLoggingServiceImpl
                     configurator.setContext(m_logbackContext);
                     configurator.configure(m_logbackContext);
 
-                    String level = BackendSupport.convertR6LogServiceLevel(m_logLevel);
-                    Level l = Level.toLevel(level);
+                    Level l = Level.toLevel(m_r7LogLevel.name(), Level.DEBUG);
 
                     Logger rootLogger = m_logbackContext.getLogger(Logger.ROOT_LOGGER_NAME);
                     rootLogger.setLevel(l);
@@ -586,16 +626,31 @@ public class PaxLoggingServiceImpl
     }
 
     private void logLogbackStatus(Status status) {
-        switch (status.getLevel()) {
-            case Status.ERROR:
-                logLog.error(status.getMessage(), status.getThrowable());
-                break;
-            case Status.WARN:
-                logLog.warn(status.getMessage(), status.getThrowable());
-                break;
-            case Status.INFO:
-                logLog.inform(status.getMessage(), status.getThrowable());
-                break;
+        Throwable t = status.getThrowable();
+        if (t != null) {
+            switch (status.getLevel()) {
+                case Status.ERROR:
+                    logLog.error(status.getMessage(), status.getThrowable());
+                    break;
+                case Status.WARN:
+                    logLog.warn(status.getMessage(), status.getThrowable());
+                    break;
+                case Status.INFO:
+                    logLog.info(status.getMessage(), status.getThrowable());
+                    break;
+            }
+        } else {
+            switch (status.getLevel()) {
+                case Status.ERROR:
+                    logLog.error(status.getMessage());
+                    break;
+                case Status.WARN:
+                    logLog.warn(status.getMessage());
+                    break;
+                case Status.INFO:
+                    logLog.info(status.getMessage());
+                    break;
+            }
         }
     }
 
@@ -636,11 +691,6 @@ public class PaxLoggingServiceImpl
             }
 
             @Override
-            public int getPaxLogLevel() {
-                return PaxLoggingServiceImpl.this.getPaxLogLevel();
-            }
-
-            @Override
             public LogLevel getLogLevel() {
                 return PaxLoggingServiceImpl.this.getLogLevel();
             }
@@ -663,27 +713,27 @@ public class PaxLoggingServiceImpl
 
             @Override
             public org.osgi.service.log.Logger getLogger(String name) {
-                return PaxLoggingServiceImpl.this.getLogger(name);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, name, PaxLoggerImpl.FQCN);
             }
 
             @Override
             public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
-                return PaxLoggingServiceImpl.this.getLogger(clazz);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, clazz.getName(), PaxLoggerImpl.FQCN);
             }
 
             @Override
             public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
-                return PaxLoggingServiceImpl.this.getLogger(name, loggerType);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, name, loggerType, PaxLoggerImpl.FQCN);
             }
 
             @Override
             public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
-                return PaxLoggingServiceImpl.this.getLogger(clazz, loggerType);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, clazz.getName(), loggerType, PaxLoggerImpl.FQCN);
             }
 
             @Override
             public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
-                return PaxLoggingServiceImpl.this.getLogger(bundle, name, loggerType);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, name, loggerType, PaxLoggerImpl.FQCN);
             }
         }
 

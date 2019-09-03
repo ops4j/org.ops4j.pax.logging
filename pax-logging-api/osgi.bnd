@@ -90,6 +90,8 @@ Import-Package: \
  org.osgi.util.tracker; version="[1.0.0,2.0.0)", \
  org.osgi.service.event; version="[1.0.0,2.0.0)"; resolution:=optional, \
  org.osgi.service.log; version="[1.4.0,2.0.0)", \
+ org.osgi.service.log.admin; version="[1.0,2.0)"; resolution:=optional, \
+ org.osgi.service.log.stream; version="[1.0,2.0)"; resolution:=optional, \
  org.apache.log; resolution:=optional, \
  javax.xml.parsers, \
  org.w3c.dom

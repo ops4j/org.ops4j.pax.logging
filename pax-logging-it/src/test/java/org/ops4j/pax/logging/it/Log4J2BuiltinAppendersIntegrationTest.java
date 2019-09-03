@@ -194,7 +194,7 @@ public class Log4J2BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         Object obj = list.get(0);
 
         assertThat(obj.getClass().getName(), equalTo("org.apache.logging.log4j.core.impl.Log4jLogEvent"));
-        assertThat(Helpers.getField(obj, "message.message", String.class), equalTo("should be added to list"));
+        assertThat(Helpers.getField(obj, "message.messagePattern", String.class), equalTo("should be added to list"));
     }
 
     @Test
@@ -225,10 +225,10 @@ public class Log4J2BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         PaxLogger l2 = paxLoggingService.getLogger(b2, "com.example.l1", fqcn);
         PaxLogger l2a = paxLoggingService.getLogger(b2, "com.example.l2", fqcn);
 
-        l1.inform("Hello from b1/l1", null);
-        l1a.inform("Hello from b1/l2", null);
-        l2.inform("Hello from b2/l1", null);
-        l2a.inform("Hello from b2/l2", null);
+        l1.info("Hello from b1/l1");
+        l1a.info("Hello from b1/l2");
+        l2.info("Hello from b2/l1");
+        l2a.info("Hello from b2/l2");
 
         List<String> linesB1 = readLines("target/logs-log4j2/b1-file-appender.log");
         List<String> linesB2 = readLines("target/logs-log4j2/b2-file-appender.log");

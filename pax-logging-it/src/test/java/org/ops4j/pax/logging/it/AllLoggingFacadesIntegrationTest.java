@@ -56,7 +56,7 @@ public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrat
      * {@link DefaultServiceLog} and down to {@code stdout}.
      */
     @Test
-    public void logUsingEverything() {
+    public void logUsingAllFacades() {
         String name = "org.ops4j.pax.logging.it.test";
 
         // 1. SLF4j
@@ -69,14 +69,13 @@ public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrat
         org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger(name).info("INFO using Avalon Logging");
         // 5. JBoss Logging
         org.jboss.logging.Logger.getLogger(name).info("INFO using JBoss Logging");
-        !!// 6. Knopflerfish - no special facade
-        // 7. Log4J1
+        // 6. Log4J1
         org.apache.log4j.Logger.getLogger(name).info("INFO using Log4Jv1");
-        // 8. Logback - only behind SLF4J
-        // 9. Log4J2
+        // 7. Logback - only behind SLF4J
+        // 8. Log4J2
         // Log4J2 Logging involves log() methods that pass FQCN
         org.apache.logging.log4j.LogManager.getLogger(name).info("INFO using Log4Jv2");
-        // 10. JUL - extra handling without a pax-logging specific facade and shadowing. Only handler redirection
+        // 9. JUL - extra handling without a pax-logging specific facade and shadowing. Only handler redirection
         java.util.logging.Logger.getLogger(name).info("INFO using java.util.logging");
         java.util.logging.Logger.getLogger(name).fine("FINE using java.util.logging");
         java.util.logging.Logger.getLogger(name).finer("FINER using java.util.logging");

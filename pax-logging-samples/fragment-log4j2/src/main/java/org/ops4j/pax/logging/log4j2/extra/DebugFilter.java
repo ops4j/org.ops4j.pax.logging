@@ -44,7 +44,7 @@ public class DebugFilter extends AbstractFilter {
     @Override
     public Result filter(LogEvent event) {
         Object simpleMessage = getField(event, "message");
-        String message = (String) getField(simpleMessage, "message");
+        String message = (String) getField(simpleMessage, "messagePattern");
         if (message.equals("before")) {
             beforeTS = (long) getField(getField(event, "instant"), "epochSecond");
         }

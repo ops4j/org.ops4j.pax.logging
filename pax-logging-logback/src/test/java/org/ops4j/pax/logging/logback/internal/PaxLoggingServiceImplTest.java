@@ -27,6 +27,7 @@ import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogService;
 
 import static org.junit.Assert.assertEquals;
@@ -71,7 +72,7 @@ public class PaxLoggingServiceImplTest {
         };
 
         try {
-            assertEquals(LogService.LOG_DEBUG, service.getLogLevel());
+            assertEquals(LogLevel.DEBUG, service.getLogLevel());
 
             service.log(LogService.LOG_DEBUG, "d");
             service.log(LogService.LOG_INFO, "i");
@@ -85,15 +86,15 @@ public class PaxLoggingServiceImplTest {
             service.shutdown();
         }
 
-        verify(logger1).debug("d", null);
-        verify(logger1).inform("i", null);
-        verify(logger1).warn("w", null);
-        verify(logger1).error("e", null);
+        verify(logger1).debug("d");
+        verify(logger1).info("i");
+        verify(logger1).warn("w");
+        verify(logger1).error("e");
         verify(logger1).error(eq("e"), isA(Throwable.class));
 
-        verify(logger2).inform("ib", null);
-        verify(logger2).inform("isr", null);
-        verify(logger2).inform("isr2", null);
+        verify(logger2).info("ib");
+        verify(logger2).info("isr");
+        verify(logger2).info("isr2");
     }
 
     /**
@@ -121,7 +122,7 @@ public class PaxLoggingServiceImplTest {
 
         PaxLoggingService innerService = (PaxLoggingService) service.getService(mockBundle, null);
         try {
-            assertEquals(LogService.LOG_DEBUG, innerService.getLogLevel());
+            assertEquals(LogLevel.DEBUG, innerService.getLogLevel());
             innerService.log(LogService.LOG_DEBUG, "d");
             innerService.log(LogService.LOG_INFO, "i");
             innerService.log(LogService.LOG_WARNING, "w");
@@ -131,10 +132,10 @@ public class PaxLoggingServiceImplTest {
             service.shutdown();
         }
 
-        verify(logger).debug("d", null);
-        verify(logger).inform("i", null);
-        verify(logger).warn("w", null);
-        verify(logger).error("e", null);
+        verify(logger).debug("d");
+        verify(logger).info("i");
+        verify(logger).warn("w");
+        verify(logger).error("e");
         verify(logger).error(eq("e"), isA(Throwable.class));
     }
 

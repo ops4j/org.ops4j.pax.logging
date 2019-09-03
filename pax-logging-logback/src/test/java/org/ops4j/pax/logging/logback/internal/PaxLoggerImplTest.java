@@ -37,6 +37,7 @@ import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
+import org.osgi.service.log.LogLevel;
 import org.slf4j.MDC;
 
 import static org.mockito.Mockito.mock;
@@ -52,7 +53,6 @@ public class PaxLoggerImplTest {
     @Test
     public void test() {
         String fqcn = "blarg";
-        String fqcn2 = "other";
         LoggerContext context = new LoggerContext();
         Logger logger = context.getLogger("foo");
         PaxContext paxContext = new PaxContext();
@@ -68,25 +68,18 @@ public class PaxLoggerImplTest {
         MDC.put("bundle.version", "1.2.3.4");
 
         logger.addAppender(appender);
-        PaxLoggerImpl paxLogger = new PaxLoggerImpl(bundle, logger, fqcn, svc);
+        PaxLoggerImpl paxLogger = new PaxLoggerImpl(bundle, logger, fqcn, svc, false);
 
-        Assert.assertEquals(PaxLogger.LEVEL_DEBUG, paxLogger.getLogLevel());
+        Assert.assertEquals(LogLevel.DEBUG, paxLogger.getLogLevel());
         Assert.assertEquals("foo", paxLogger.getName());
         Assert.assertSame(paxContext, paxLogger.getPaxContext());
 
-        paxLogger.trace("t", null); // won't be logged, default level is DEBUG
-        paxLogger.debug("d", null);
-        paxLogger.inform("i", null);
-        paxLogger.warn("w", null);
-        paxLogger.error("e", null);
-        paxLogger.fatal("f", null);
-
-        paxLogger.trace("t", null, fqcn2); // won't be logged, default level is DEBUG
-        paxLogger.debug("d", null, fqcn2);
-        paxLogger.inform("i", null, fqcn2);
-        paxLogger.warn("w", null, fqcn2);
-        paxLogger.error("e", null, fqcn2);
-        paxLogger.fatal("f", null, fqcn2);
+        paxLogger.trace("t"); // won't be logged, default level is DEBUG
+        paxLogger.debug("d");
+        paxLogger.info("i");
+        paxLogger.warn("w");
+        paxLogger.error("e");
+        paxLogger.fatal("f");
 
         Assert.assertFalse(paxLogger.isTraceEnabled());
         Assert.assertTrue(paxLogger.isDebugEnabled());
@@ -95,17 +88,11 @@ public class PaxLoggerImplTest {
         Assert.assertTrue(paxLogger.isErrorEnabled());
         Assert.assertTrue(paxLogger.isFatalEnabled());
 
-        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.DEBUG, "d"));
-        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.INFO, "i"));
-        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.WARN, "w"));
-        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.ERROR, "e"));
-        verify(appender).doAppend(eqLogEvent(fqcn, logger, Level.ERROR, "f"));
-
-        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.DEBUG, "d"));
-        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.INFO, "i"));
-        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.WARN, "w"));
-        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.ERROR, "e"));
-        verify(appender).doAppend(eqLogEvent(fqcn2, logger, Level.ERROR, "f"));
+        verify(appender).doAppend(eqLogEvent(logger, Level.DEBUG, "d"));
+        verify(appender).doAppend(eqLogEvent(logger, Level.INFO, "i"));
+        verify(appender).doAppend(eqLogEvent(logger, Level.WARN, "w"));
+        verify(appender).doAppend(eqLogEvent(logger, Level.ERROR, "e"));
+        verify(appender).doAppend(eqLogEvent(logger, Level.ERROR, "f"));
     }
 
     /**
@@ -136,8 +123,8 @@ public class PaxLoggerImplTest {
         return bundle;
     }
 
-    private LoggingEvent eqLogEvent(String fqcn, Logger logger, Level level, String msg) {
-        return eqLogEvent(new LoggingEvent(fqcn, logger, level, msg, null, null));
+    private LoggingEvent eqLogEvent(Logger logger, Level level, String msg) {
+        return eqLogEvent(new LoggingEvent(null, logger, level, msg, null, new Object[0]));
     }
 
     private LoggingEvent eqLogEvent(final LoggingEvent le) {
@@ -167,8 +154,6 @@ public class PaxLoggerImplTest {
             if (le.getMarker() != that.getMarker())
                 return false;
             if (!le.getLoggerName().equals(that.getLoggerName()))
-                return false;
-            if (!getField(le, "fqnOfLoggerClass").equals(getField(that, "fqnOfLoggerClass")))
                 return false;
             IThrowableProxy thrown = le.getThrowableProxy();
             IThrowableProxy thatThrown = that.getThrowableProxy();

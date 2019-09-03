@@ -66,6 +66,44 @@ logger.info(message, throwable) // or warn() or debug(), ...
 
 Being aware of this, it's actually better to _not_ use `org.osgi.service.log.LogService.log()` in your code directly and just use given logging facade (like SLF4J or Commons Logging) - this removes a need to obtain a logger (which is cached anyway) on each log call.
 
+=== OSGi R7 Log Service
+
+With OSGi R7, standard Log Service gets a concept of _logger_. This makes the service easier to use - almost like de facto standard logging facades, where some _factory_ is used to obtain _loggers_ that are used to invoke logging methods.
+
+OSGi R7 adds new interface `org.osgi.service.log.LoggerFactory`, which is actually a new super interface of old `org.osgi.service.log.LogService` service.
+
+Factory methods that return instances of `org.osgi.service.log.Logger` by name or class are intuitive. There are however factory methods that take new argument: `Class<L> loggerType` where `<L extends org.osgi.service.log.Logger>`.
+The only known/acceptable classes that can be passed to such factory methods are:
+
+* `org.osgi.service.log.Logger`
+* `org.osgi.service.log.FormatterLogger`
+
+By passing `org.osgi.service.log.FormatterLogger.class` as an argument, user of factory method indicates that he/she wants to use printf-like formatting, for example:
+
+[listing,options=nowrap]
+----
+ServiceReference<LoggerFactory> sr = context.getServiceReference(org.osgi.service.log.LoggerFactory.class);
+LoggerFactory loggerFactory = context.getService(sr);
+org.osgi.service.log.Logger log = loggerFactory.getLogger("com.example.service", FormatterLogger.class);
+log.info("Hello %s", "world");
+----
+
+When passing `org.osgi.service.log.Logger.class` or when not passing anything, we assume Slf4J-like formatting:
+
+[listing,options=nowrap]
+----
+ServiceReference<LoggerFactory> sr = context.getServiceReference(org.osgi.service.log.LoggerFactory.class);
+LoggerFactory loggerFactory = context.getService(sr);
+org.osgi.service.log.Logger log = loggerFactory.getLogger("com.example.service");
+log.info("Hello {}", "world");
+----
+
+==== Fully Qualified Class Name
+
+`FQCN` concept is very important. It's used to _mark_ a place inside stack trace where code that invokes logging operation _transitions_ into the logging mechanism itself. Last stack frame before logging mechanism marks a _location_ that can be used to obtain class name, method name, file name and line number (so called _location info_). Before OSGi R7, it was quite easy to implement correctly, because all the logging methods where managed by Pax Logging itself and proper `FQCN` could be set. With OSGi R7 logging service, _logger_ is also a standard interface and logging methods may be called without any facade (like Slf4J).
+
+Pax Logging had to carefuly handle all the _entry points_ into logging mechanism, to correctly determine `FQCN`.
+
 == Concepts
 
 pax-logging is not trivial bridge to different (3 actually) logging frameworks (Log4J1, Log4J2, Logback), it also provides SPI layer that allows users to extend any logging framework. The most clear usage is when user wants to provide custom _appender_ that processes _logging events_.
@@ -1052,7 +1090,7 @@ org.ops4j.pax.logging.karaf.base-logger [org.ops4j.pax.logging.karaf.base.Activa
 org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.internal.Activator] INFO : Enabling Java Util Logging API support.
 org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.internal.Activator] INFO : Enabling SLF4J API support.
 ...
-org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.internal.Activator] INFO : Disabling Log4J v2 API support. Ignored FQCN: org.apache.logging.log4j.spi.AbstractLogger
+org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.internal.Activator] INFO : Disabling Log4J v2 API support.
 org.ops4j.pax.logging.pax-logging-api [org.ops4j.pax.logging.internal.Activator] INFO : Disabling Java Util Logging API support.
 ----
 * Then pax-logging-log4j2 starts, finds there's no `org.ops4j.pax.logging` PID so defaults are used (in this particular case from `org.apache.logging.log4j.core.config.AbstractConfiguration.setToDefault()`). The pattern is `org.apache.logging.log4j.core.config.DefaultConfiguration.DEFAULT_PATTERN` and no file appender is configured, so this is printed to stdout (if maven-failsafe-plugin is told so):

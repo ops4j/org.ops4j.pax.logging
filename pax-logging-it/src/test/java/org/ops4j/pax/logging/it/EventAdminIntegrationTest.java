@@ -72,6 +72,7 @@ public class EventAdminIntegrationTest extends AbstractControlledIntegrationTest
         final List<Event> events = new LinkedList<>();
         Dictionary<String, Object> props = new Hashtable<>();
         props.put(EventConstants.EVENT_TOPIC, new String[] {
+                "org/osgi/service/log/LogEntry/LOG_AUDIT",
                 "org/osgi/service/log/LogEntry/LOG_ERROR",
                 "org/osgi/service/log/LogEntry/LOG_WARNING",
                 "org/osgi/service/log/LogEntry/LOG_INFO",

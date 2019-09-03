@@ -155,31 +155,31 @@ public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAw
         if (marker != null) {
             PaxMarker paxMarker = new PaxMarker(marker);
             if (level.intLevel() >= Level.TRACE.intLevel()) {
-                m_delegate.trace(paxMarker, message.getFormattedMessage(), t);
+                m_delegate.fqtrace(fqcn, paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
-                m_delegate.debug(paxMarker, message.getFormattedMessage(), t);
+                m_delegate.fqdebug(fqcn, paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.INFO.intLevel()) {
-                m_delegate.info(paxMarker, message.getFormattedMessage(), t);
+                m_delegate.fqinfo(fqcn, paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.WARN.intLevel()) {
-                m_delegate.warn(paxMarker, message.getFormattedMessage(), t);
+                m_delegate.fqwarn(fqcn, paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.ERROR.intLevel()) {
-                m_delegate.error(paxMarker, message.getFormattedMessage(), t);
+                m_delegate.fqerror(fqcn, paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.FATAL.intLevel()) {
-                m_delegate.fatal(paxMarker, message.getFormattedMessage(), t);
+                m_delegate.fqfatal(fqcn, paxMarker, message.getFormattedMessage(), t);
             }
         } else {
             if (level.intLevel() >= Level.TRACE.intLevel()) {
-                m_delegate.trace(message.getFormattedMessage(), t);
+                m_delegate.fqtrace(fqcn, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
-                m_delegate.debug(message.getFormattedMessage(), t);
+                m_delegate.fqdebug(fqcn, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.INFO.intLevel()) {
-                m_delegate.info(message.getFormattedMessage(), t);
+                m_delegate.fqinfo(fqcn, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.WARN.intLevel()) {
-                m_delegate.warn(message.getFormattedMessage(), t);
+                m_delegate.fqwarn(fqcn, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.ERROR.intLevel()) {
-                m_delegate.error(message.getFormattedMessage(), t);
+                m_delegate.fqerror(fqcn, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.FATAL.intLevel()) {
-                m_delegate.fatal(message.getFormattedMessage(), t);
+                m_delegate.fqfatal(fqcn, message.getFormattedMessage(), t);
             }
         }
     }
@@ -222,6 +222,11 @@ public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAw
             return m_delegate.isFatalEnabled(m);
         }
         return false;
+    }
+
+    @Override
+    protected boolean requiresLocation() {
+        return true;
     }
 
 }
