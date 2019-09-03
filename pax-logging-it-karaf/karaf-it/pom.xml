@@ -108,6 +108,10 @@
         <!-- pax-logging own artifacts -->
 
         <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.ops4j.pax.logging.karaf</groupId>
             <artifactId>karaf-distribution</artifactId>
             <type>zip</type>

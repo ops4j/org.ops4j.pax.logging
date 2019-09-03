@@ -46,7 +46,7 @@
                     <instructions>
                         <Bundle-Activator>org.ops4j.pax.logging.karaf.base.Activator</Bundle-Activator>
                         <Import-Package>
-                            org.osgi.framework,
+                            org.osgi.framework;version="[1.8,2.0)",
                             org.slf4j
                         </Import-Package>
                     </instructions>
