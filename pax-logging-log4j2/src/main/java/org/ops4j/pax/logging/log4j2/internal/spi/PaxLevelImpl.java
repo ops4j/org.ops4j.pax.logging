@@ -20,8 +20,8 @@ package org.ops4j.pax.logging.log4j2.internal.spi;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.spi.StandardLevel;
-import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.spi.PaxLevel;
+import org.osgi.service.log.LogLevel;
 
 /**
  * Numerical Log4J2 levels come from {@link StandardLevel}
@@ -50,21 +50,21 @@ public class PaxLevelImpl implements PaxLevel {
     }
 
     @Override
-    public int toInt() {
+    public LogLevel toLevel() {
         int lvl = level.intLevel();
         if (lvl <= Level.ERROR.intLevel()) {
-            return PaxLogger.LEVEL_ERROR;
+            return LogLevel.ERROR;
         }
         if (lvl <= Level.WARN.intLevel()) {
-            return PaxLogger.LEVEL_WARNING;
+            return LogLevel.WARN;
         }
         if (lvl <= Level.INFO.intLevel()) {
-            return PaxLogger.LEVEL_INFO;
+            return LogLevel.INFO;
         }
         if (lvl <= Level.DEBUG.intLevel()) {
-            return PaxLogger.LEVEL_DEBUG;
+            return LogLevel.DEBUG;
         }
-        return PaxLogger.LEVEL_TRACE;
+        return LogLevel.TRACE;
     }
 
     @Override

@@ -21,19 +21,25 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Map;
 
+import org.apache.log4j.AuditLevel;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxMarker;
+import org.ops4j.pax.logging.spi.support.FormattingTriple;
 import org.osgi.framework.Bundle;
-import org.osgi.service.log.LogService;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.log.LogLevel;
+import org.osgi.service.log.LoggerConsumer;
 
 /**
  * Log4J1 specific {@link PaxLogger} delegating directly to Log4J1's {@link Logger}.
  */
 public class PaxLoggerImpl implements PaxLogger {
+
+    static String FQCN = PaxLoggerImpl.class.getName();
 
     // "the" delegate. org.apache.log4j.Logger should be loaded from pax-logging-log4j1 bundle and
     // not from pax-logging-api bundle
@@ -45,6 +51,8 @@ public class PaxLoggerImpl implements PaxLogger {
     private Bundle m_bundle;
     // actual PaxLoggingService
     private PaxLoggingServiceImpl m_service;
+    // if true, loggers use printf formatting on passed arguments
+    private boolean m_printfFormatting;
 
     /**
      * @param bundle   The bundle that this PaxLogger belongs to.
@@ -52,12 +60,15 @@ public class PaxLoggerImpl implements PaxLogger {
      * @param fqcn     The fully qualified classname of the client owning this logger.
      * @param service  The service to be used to handle the logging events.
      */
-    PaxLoggerImpl(Bundle bundle, Logger delegate, String fqcn, PaxLoggingServiceImpl service) {
+    PaxLoggerImpl(Bundle bundle, Logger delegate, String fqcn, PaxLoggingServiceImpl service, boolean printfFormatting) {
         m_delegate = delegate;
         m_fqcn = fqcn;
         m_bundle = bundle;
         m_service = service;
+        m_printfFormatting = printfFormatting;
     }
+
+    // isXXXEnabled() from org.osgi.service.log.Logger and org.ops4j.pax.logging.PaxLogger
 
     @Override
     public boolean isTraceEnabled() {
@@ -119,173 +130,509 @@ public class PaxLoggerImpl implements PaxLogger {
         return m_delegate.isEnabledFor(Level.FATAL);
     }
 
+    // R7: org.osgi.service.log.Logger
+    // that's a bit tricky, as Throwable and/or ServiceReference may be hidden withing varargs
+
     @Override
-    public void trace(String message, Throwable t) {
+    public void trace(String message) {
         if (isTraceEnabled()) {
-            doLog(Level.TRACE, LogService.LOG_DEBUG, m_fqcn, message, t);
+            doLog(Level.TRACE, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void debug(String message, Throwable t) {
-        if (isDebugEnabled()) {
-            doLog(Level.DEBUG, LogService.LOG_DEBUG, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void inform(String message, Throwable t) {
-        if (isInfoEnabled()) {
-            doLog(Level.INFO, LogService.LOG_INFO, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void warn(String message, Throwable t) {
-        if (isWarnEnabled()) {
-            doLog(Level.WARN, LogService.LOG_WARNING, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void error(String message, Throwable t) {
-        if (isErrorEnabled()) {
-            doLog(Level.ERROR, LogService.LOG_ERROR, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void fatal(String message, Throwable t) {
-        if (isFatalEnabled()) {
-            doLog(Level.FATAL, LogService.LOG_ERROR, m_fqcn, message, t);
-        }
-    }
-
-    @Override
-    public void trace(String message, Throwable t, String fqcn) {
+    public void trace(String format, Object arg) {
         if (isTraceEnabled()) {
-            doLog(Level.TRACE, LogService.LOG_DEBUG, fqcn, message, t);
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            doLog(Level.TRACE, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         }
     }
 
     @Override
-    public void debug(String message, Throwable t, String fqcn) {
+    public void trace(String format, Object arg1, Object arg2) {
+        if (isTraceEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            doLog(Level.TRACE, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public void trace(String format, Object... arguments) {
+        if (isTraceEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            doLog(Level.TRACE, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public <E extends Exception> void trace(LoggerConsumer<E> consumer) throws E {
+        if (isTraceEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message) {
+        trace(message);
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String format, Object arg) {
+        trace(format, arg);
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String format, Object arg1, Object arg2) {
+        trace(format, arg1, arg2);
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String format, Object... arguments) {
+        trace(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void trace(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        trace(consumer);
+    }
+
+    @Override
+    public void debug(String message) {
         if (isDebugEnabled()) {
-            doLog(Level.DEBUG, LogService.LOG_DEBUG, fqcn, message, t);
+            doLog(Level.DEBUG, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void inform(String message, Throwable t, String fqcn) {
+    public void debug(String format, Object arg) {
+        if (isDebugEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            doLog(Level.DEBUG, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public void debug(String format, Object arg1, Object arg2) {
+        if (isDebugEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            doLog(Level.DEBUG, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public void debug(String format, Object... arguments) {
+        if (isDebugEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            doLog(Level.DEBUG, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public <E extends Exception> void debug(LoggerConsumer<E> consumer) throws E {
+        if (isDebugEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String message) {
+        debug(message);
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String format, Object arg) {
+        debug(format, arg);
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String format, Object arg1, Object arg2) {
+        debug(format, arg1, arg2);
+    }
+
+    @Override
+    public void debug(PaxMarker marker, String format, Object... arguments) {
+        debug(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void debug(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        debug(consumer);
+    }
+
+    @Override
+    public void info(String message) {
         if (isInfoEnabled()) {
-            doLog(Level.INFO, LogService.LOG_INFO, fqcn, message, t);
+            doLog(Level.INFO, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void warn(String message, Throwable t, String fqcn) {
+    public void info(String format, Object arg) {
+        if (isInfoEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            doLog(Level.INFO, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public void info(String format, Object arg1, Object arg2) {
+        if (isInfoEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            doLog(Level.INFO, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public void info(String format, Object... arguments) {
+        if (isInfoEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            doLog(Level.INFO, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public <E extends Exception> void info(LoggerConsumer<E> consumer) throws E {
+        if (isInfoEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void info(PaxMarker marker, String message) {
+        info(message);
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object arg) {
+        info(format, arg);
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object arg1, Object arg2) {
+        info(format, arg1, arg2);
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object... arguments) {
+        info(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void info(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        info(consumer);
+    }
+
+    @Override
+    public void warn(String message) {
         if (isWarnEnabled()) {
-            doLog(Level.WARN, LogService.LOG_WARNING, fqcn, message, t);
+            doLog(Level.WARN, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void error(String message, Throwable t, String fqcn) {
+    public void warn(String format, Object arg) {
+        if (isWarnEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            doLog(Level.WARN, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public void warn(String format, Object arg1, Object arg2) {
+        if (isWarnEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            doLog(Level.WARN, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public void warn(String format, Object... arguments) {
+        if (isWarnEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            doLog(Level.WARN, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public <E extends Exception> void warn(LoggerConsumer<E> consumer) throws E {
+        if (isWarnEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message) {
+        warn(message);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object arg) {
+        warn(format, arg);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object arg1, Object arg2) {
+        warn(format, arg1, arg2);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object... arguments) {
+        warn(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void warn(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        warn(consumer);
+    }
+
+    @Override
+    public void error(String message) {
         if (isErrorEnabled()) {
-            doLog(Level.ERROR, LogService.LOG_ERROR, fqcn, message, t);
+            doLog(Level.ERROR, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void fatal(String message, Throwable t, String fqcn) {
+    public void error(String format, Object arg) {
+        if (isErrorEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            doLog(Level.ERROR, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public void error(String format, Object arg1, Object arg2) {
+        if (isErrorEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            doLog(Level.ERROR, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public void error(String format, Object... arguments) {
+        if (isErrorEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            doLog(Level.ERROR, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
+    }
+
+    @Override
+    public <E extends Exception> void error(LoggerConsumer<E> consumer) throws E {
+        if (isErrorEnabled()) {
+            consumer.accept(this);
+        }
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message) {
+        error(message);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object arg) {
+        error(format, arg);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object arg1, Object arg2) {
+        error(format, arg1, arg2);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object... arguments) {
+        error(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void error(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        error(consumer);
+    }
+
+    @Override
+    public void fatal(String message) {
         if (isFatalEnabled()) {
-            doLog(Level.FATAL, LogService.LOG_ERROR, fqcn, message, t);
+            doLog(Level.FATAL, m_fqcn, message, null, null);
         }
     }
 
     @Override
-    public void trace(PaxMarker marker, String message, Throwable t) {
-        trace(message, t);
+    public void fatal(String format, Object arg) {
+        if (isFatalEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+            doLog(Level.FATAL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
     }
 
     @Override
-    public void debug(PaxMarker marker, String message, Throwable t) {
-        debug(message, t);
+    public void fatal(String format, Object arg1, Object arg2) {
+        if (isFatalEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+            doLog(Level.FATAL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
     }
 
     @Override
-    public void inform(PaxMarker marker, String message, Throwable t) {
-        inform(message, t);
+    public void fatal(String format, Object... arguments) {
+        if (isFatalEnabled()) {
+            FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+            doLog(Level.FATAL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+        }
     }
 
     @Override
-    public void warn(PaxMarker marker, String message, Throwable t) {
-        warn(message, t);
+    public <E extends Exception> void fatal(LoggerConsumer<E> consumer) throws E {
+        if (isFatalEnabled()) {
+            consumer.accept(this);
+        }
     }
 
     @Override
-    public void error(PaxMarker marker, String message, Throwable t) {
-        error(message, t);
+    public void fatal(PaxMarker marker, String message) {
+        fatal(message);
     }
 
     @Override
-    public void fatal(PaxMarker marker, String message, Throwable t) {
-        fatal(message, t);
+    public void fatal(PaxMarker marker, String format, Object arg) {
+        fatal(format, arg);
     }
 
     @Override
-    public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
-        trace(message, t, fqcn);
+    public void fatal(PaxMarker marker, String format, Object arg1, Object arg2) {
+        fatal(format, arg1, arg2);
     }
 
     @Override
-    public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
-        debug(message, t, fqcn);
+    public void fatal(PaxMarker marker, String format, Object... arguments) {
+        fatal(format, arguments);
     }
 
     @Override
-    public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
-        inform(message, t, fqcn);
+    public <E extends Exception> void fatal(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        fatal(consumer);
     }
 
     @Override
-    public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
-        warn(message, t, fqcn);
+    public void audit(String message) {
+        doLog(AuditLevel.AUDIT, m_fqcn, message, null, null);
     }
 
     @Override
-    public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
-        error(message, t, fqcn);
+    public void audit(String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg);
+        doLog(AuditLevel.AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
     }
 
     @Override
-    public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
-        fatal(message, t, fqcn);
+    public void audit(String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arg1, arg2);
+        doLog(AuditLevel.AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
     }
 
     @Override
-    public int getLogLevel() {
+    public void audit(String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, m_printfFormatting, arguments);
+        doLog(AuditLevel.AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+    }
+
+    @Override
+    public <E extends Exception> void audit(LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String message) {
+        audit(message);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object arg) {
+        audit(format, arg);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object arg1, Object arg2) {
+        audit(format, arg1, arg2);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object... arguments) {
+        audit(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void audit(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        audit(consumer);
+    }
+
+    @Override
+    public int getPaxLogLevel() {
         // org.apache.log4j.Priority.isGreaterOrEqual checks if "this" level's numerical value
         // is >= than passed value - TRACE < DEBUG and DEBUG >= TRACE
         // because Log4J1 has higher num value for more severe level (opposite to Syslog and OSGi)
         Level level = m_delegate.getEffectiveLevel();
 
-        if (level == null)
-            return LEVEL_ERROR;
+        if (level == null) {
+            return LEVEL_NONE;
+        }
 
-        if (Level.TRACE.isGreaterOrEqual(level))
+        if (Level.TRACE.isGreaterOrEqual(level)) {
             return LEVEL_TRACE;
+        }
 
-        if (Level.DEBUG.isGreaterOrEqual(level))
+        if (Level.DEBUG.isGreaterOrEqual(level)) {
             return LEVEL_DEBUG;
+        }
 
-        if (Level.INFO.isGreaterOrEqual(level))
+        if (Level.INFO.isGreaterOrEqual(level)) {
             return LEVEL_INFO;
+        }
 
-        if (Level.WARN.isGreaterOrEqual(level))
+        if (Level.WARN.isGreaterOrEqual(level)) {
             return LEVEL_WARNING;
+        }
 
-        return LEVEL_ERROR;
+        if (Level.ERROR.isGreaterOrEqual(level)) {
+            return LEVEL_ERROR;
+        }
+
+        if (Level.FATAL.isGreaterOrEqual(level)) {
+            return LEVEL_FATAL;
+        }
+
+        return LEVEL_AUDIT;
+    }
+
+    @Override
+    public LogLevel getLogLevel() {
+        Level level = m_delegate.getEffectiveLevel();
+        return getLogLevel(level);
+    }
+
+    private LogLevel getLogLevel(Level level) {
+        // org.apache.log4j.Priority.isGreaterOrEqual checks if "this" level's numerical value
+        // is >= than passed value - TRACE < DEBUG and DEBUG >= TRACE
+        // because Log4J1 has higher num value for more severe level (opposite to Syslog and OSGi)
+        if (level == null) {
+            return LogLevel.AUDIT;
+        }
+
+        if (Level.TRACE.isGreaterOrEqual(level)) {
+            return LogLevel.TRACE;
+        }
+
+        if (Level.DEBUG.isGreaterOrEqual(level)) {
+            return LogLevel.DEBUG;
+        }
+
+        if (Level.INFO.isGreaterOrEqual(level)) {
+            return LogLevel.INFO;
+        }
+
+        if (Level.WARN.isGreaterOrEqual(level)) {
+            return LogLevel.WARN;
+        }
+
+        return LogLevel.ERROR;
     }
 
     @Override
@@ -300,16 +647,16 @@ public class PaxLoggerImpl implements PaxLogger {
 
     // private methods
 
-    private void doLog(final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+    private void doLog(final Level level, final String fqcn, final String message, final Throwable t, final ServiceReference<?> ref) {
         if (System.getSecurityManager() != null) {
             AccessController.doPrivileged(
                     (PrivilegedAction<Void>) () -> {
-                        doLog0(level, svcLevel, fqcn, message, t);
+                        doLog0(level, fqcn, message, t, ref);
                         return null;
                     }
             );
         } else {
-            doLog0(level, svcLevel, fqcn, message, t);
+            doLog0(level, fqcn, message, t, ref);
         }
     }
 
@@ -320,21 +667,23 @@ public class PaxLoggerImpl implements PaxLogger {
      *     <li>{@code bundle.name} - from {@link Bundle#getSymbolicName()}</li>
      *     <li>{@code bundle.version} - from {@link Bundle#getVersion()}</li>
      * </ul></p>
+     * <p>This method should be called only within {@code isXXXEnabled()} check, as it calls some heavy operations.</p>
      *
      * @param level
-     * @param svcLevel
      * @param fqcn
-     * @param message
+     * @param message already formatted message coming from various R7 log() methods accepting arguments
      * @param t
+     * @param ref a reference associated only with {@link org.osgi.service.log.LogEntry}, not needed by Log4J1
      */
-    private void doLog0(final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+    private void doLog0(final Level level, final String fqcn, final String message, final Throwable t, final ServiceReference<?> ref) {
         setDelegateContext();
         try {
             m_delegate.log(fqcn, level, message, t);
         } finally {
             clearDelegateContext();
         }
-        m_service.handleEvents(m_bundle, null, svcLevel, message, t);
+        LogLevel l = getLogLevel(level);
+        m_service.handleEvents(getName(), m_bundle, ref, l, message, t);
     }
 
     private void setDelegateContext() {

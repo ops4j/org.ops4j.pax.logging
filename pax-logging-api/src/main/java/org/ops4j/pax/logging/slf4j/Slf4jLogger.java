@@ -85,7 +85,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void trace(String msg) {
-        m_delegate.trace(msg, null);
+        m_delegate.trace(msg);
     }
 
     /**
@@ -177,11 +177,11 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
         if (marker != null) {
             PaxMarker m = new PaxMarker(marker);
             if (m_delegate.isTraceEnabled(m)) {
-                m_delegate.trace(m, msg, null);
+                m_delegate.trace(m, msg);
             }
         } else {
             if (m_delegate.isTraceEnabled()) {
-                m_delegate.trace(msg, null);
+                m_delegate.trace(msg);
             }
         }
     }
@@ -301,7 +301,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void debug(String msg) {
-        m_delegate.debug(msg, null);
+        m_delegate.debug(msg);
     }
 
     /**
@@ -393,11 +393,11 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
         if (marker != null) {
             PaxMarker m = new PaxMarker(marker);
             if (m_delegate.isDebugEnabled(m)) {
-                m_delegate.debug(m, msg, null);
+                m_delegate.debug(m, msg);
             }
         } else {
             if (m_delegate.isDebugEnabled()) {
-                m_delegate.debug(msg, null);
+                m_delegate.debug(msg);
             }
         }
     }
@@ -517,7 +517,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void info(String msg) {
-        m_delegate.inform(msg, null);
+        m_delegate.info(msg);
     }
 
     /**
@@ -534,7 +534,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
     public void info(String format, Object arg) {
         if (m_delegate.isInfoEnabled()) {
             FormattingTuple tuple = MessageFormatter.format(format, arg);
-            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
+            m_delegate.info(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -553,7 +553,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
     public void info(String format, Object arg1, Object arg2) {
         if (m_delegate.isInfoEnabled()) {
             FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
-            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
+            m_delegate.info(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -571,7 +571,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
     public void info(String format, Object[] argArray) {
         if (m_delegate.isInfoEnabled()) {
             FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
-            m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
+            m_delegate.info(tuple.getMessage(), tuple.getThrowable());
         }
     }
 
@@ -584,7 +584,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void info(String msg, Throwable t) {
-        m_delegate.inform(msg, t);
+        m_delegate.info(msg, t);
     }
 
     /**
@@ -609,11 +609,11 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
         if (marker != null) {
             PaxMarker m = new PaxMarker(marker);
             if (m_delegate.isInfoEnabled(m)) {
-                m_delegate.inform(m, msg, null);
+                m_delegate.info(m, msg);
             }
         } else {
             if (m_delegate.isInfoEnabled()) {
-                m_delegate.inform(msg, null);
+                m_delegate.info(msg);
             }
         }
     }
@@ -632,12 +632,12 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
             PaxMarker m = new PaxMarker(marker);
             if (m_delegate.isInfoEnabled(m)) {
                 FormattingTuple tuple = MessageFormatter.format(format, arg);
-                m_delegate.inform(m, tuple.getMessage(), tuple.getThrowable());
+                m_delegate.info(m, tuple.getMessage(), tuple.getThrowable());
             }
         } else {
             if (m_delegate.isInfoEnabled()) {
                 FormattingTuple tuple = MessageFormatter.format(format, arg);
-                m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
+                m_delegate.info(tuple.getMessage(), tuple.getThrowable());
             }
         }
     }
@@ -658,12 +658,12 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
             PaxMarker m = new PaxMarker(marker);
             if (m_delegate.isInfoEnabled(m)) {
                 FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
-                m_delegate.inform(m, tuple.getMessage(), tuple.getThrowable());
+                m_delegate.info(m, tuple.getMessage(), tuple.getThrowable());
             }
         } else {
             if (m_delegate.isInfoEnabled()) {
                 FormattingTuple tuple = MessageFormatter.format(format, arg1, arg2);
-                m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
+                m_delegate.info(tuple.getMessage(), tuple.getThrowable());
             }
         }
     }
@@ -683,12 +683,12 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
             PaxMarker m = new PaxMarker(marker);
             if (m_delegate.isInfoEnabled(m)) {
                 FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
-                m_delegate.inform(m, tuple.getMessage(), tuple.getThrowable());
+                m_delegate.info(m, tuple.getMessage(), tuple.getThrowable());
             }
         } else {
             if (m_delegate.isInfoEnabled()) {
                 FormattingTuple tuple = MessageFormatter.arrayFormat(format, argArray);
-                m_delegate.inform(tuple.getMessage(), tuple.getThrowable());
+                m_delegate.info(tuple.getMessage(), tuple.getThrowable());
             }
         }
     }
@@ -706,11 +706,11 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
         if (marker != null) {
             PaxMarker m = new PaxMarker(marker);
             if (m_delegate.isInfoEnabled(m)) {
-                m_delegate.inform(m, msg, t);
+                m_delegate.info(m, msg, t);
             }
         } else {
             if (m_delegate.isInfoEnabled()) {
-                m_delegate.inform(msg, t);
+                m_delegate.info(msg, t);
             }
         }
     }
@@ -733,7 +733,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void warn(String msg) {
-        m_delegate.warn(msg, null);
+        m_delegate.warn(msg);
     }
 
     /**
@@ -825,11 +825,11 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
         if (marker != null) {
             PaxMarker m = new PaxMarker(marker);
             if (m_delegate.isWarnEnabled(m)) {
-                m_delegate.warn(m, msg, null);
+                m_delegate.warn(m, msg);
             }
         } else {
             if (m_delegate.isWarnEnabled()) {
-                m_delegate.warn(msg, null);
+                m_delegate.warn(msg);
             }
         }
     }
@@ -949,7 +949,7 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      */
     @Override
     public void error(String msg) {
-        m_delegate.error(msg, null);
+        m_delegate.error(msg);
     }
 
     /**
@@ -1041,11 +1041,11 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
         if (marker != null) {
             PaxMarker m = new PaxMarker(marker);
             if (m_delegate.isErrorEnabled(m)) {
-                m_delegate.error(m, msg, null);
+                m_delegate.error(m, msg);
             }
         } else {
             if (m_delegate.isErrorEnabled()) {
-                m_delegate.error(msg, null);
+                m_delegate.error(msg);
             }
         }
     }
@@ -1171,9 +1171,9 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
                 if (m_delegate.isTraceEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
                     if (paxMarker != null) {
-                        m_delegate.trace(paxMarker, tuple.getMessage(), t, fqcn);
+                        m_delegate.trace(paxMarker, tuple.getMessage(), t);
                     } else {
-                        m_delegate.trace(tuple.getMessage(), t, fqcn);
+                        m_delegate.trace(tuple.getMessage(), t);
                     }
                 }
                 break;
@@ -1181,9 +1181,9 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
                 if (m_delegate.isDebugEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
                     if (paxMarker != null) {
-                        m_delegate.debug(paxMarker, tuple.getMessage(), t, fqcn);
+                        m_delegate.debug(paxMarker, tuple.getMessage(), t);
                     } else {
-                        m_delegate.debug(tuple.getMessage(), t, fqcn);
+                        m_delegate.debug(tuple.getMessage(), t);
                     }
                 }
                 break;
@@ -1191,9 +1191,9 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
                 if (m_delegate.isInfoEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
                     if (paxMarker != null) {
-                        m_delegate.inform(paxMarker, tuple.getMessage(), t, fqcn);
+                        m_delegate.info(paxMarker, tuple.getMessage(), t);
                     } else {
-                        m_delegate.inform(tuple.getMessage(), t, fqcn);
+                        m_delegate.info(tuple.getMessage(), t);
                     }
                 }
                 break;
@@ -1201,9 +1201,9 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
                 if (m_delegate.isWarnEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
                     if (paxMarker != null) {
-                        m_delegate.warn(paxMarker, tuple.getMessage(), t, fqcn);
+                        m_delegate.warn(paxMarker, tuple.getMessage(), t);
                     } else {
-                        m_delegate.warn(tuple.getMessage(), t, fqcn);
+                        m_delegate.warn(tuple.getMessage(), t);
                     }
                 }
                 break;
@@ -1211,9 +1211,9 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
                 if (m_delegate.isErrorEnabled()) {
                     FormattingTuple tuple = MessageFormatter.arrayFormat(message, argArray);
                     if (paxMarker != null) {
-                        m_delegate.error(paxMarker, tuple.getMessage(), t, fqcn);
+                        m_delegate.error(paxMarker, tuple.getMessage(), t);
                     } else {
-                        m_delegate.error(tuple.getMessage(), t, fqcn);
+                        m_delegate.error(tuple.getMessage(), t);
                     }
                 }
                 break;

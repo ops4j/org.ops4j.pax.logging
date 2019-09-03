@@ -21,6 +21,7 @@ import java.util.Map;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogLevel;
 
 /**
  * Interface to implement by logging framework specific provider, to pass logging events to Event Admin
@@ -38,7 +39,7 @@ public interface EventAdminPoster extends AutoCloseable {
      * @param sr
      * @param context
      */
-    void postEvent(Bundle bundle, int level, LogEntry entry, String message,
+    void postEvent(Bundle bundle, LogLevel level, LogEntry entry, String message,
                    Throwable exception, ServiceReference<?> sr, Map<String, ?> context);
 
     /**

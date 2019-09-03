@@ -60,6 +60,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogLevel;
 
 public class PaxLoggingServiceImpl
         implements PaxLoggingService, ManagedService, ServiceFactory {
@@ -92,6 +93,7 @@ public class PaxLoggingServiceImpl
 
     // Log level (actually a threashold) for this entire service.
     private int m_logLevel = org.osgi.service.log.LogService.LOG_DEBUG;
+    private LogLevel m_r7LogLevel = LogLevel.DEBUG;
 
     // the main org.apache.logging.log4j.core.LoggerContext
     private LoggerContext m_log4jContext;
@@ -197,8 +199,13 @@ public class PaxLoggingServiceImpl
     // methods come from service factory produced object
 
     @Override
-    public int getLogLevel() {
+    public int getPaxLogLevel() {
         return m_logLevel;
+    }
+
+    @Override
+    public LogLevel getLogLevel() {
+        return m_r7LogLevel;
     }
 
     @Override
@@ -224,6 +231,33 @@ public class PaxLoggingServiceImpl
     @Override
     public PaxContext getPaxContext() {
         return m_paxContext;
+    }
+
+    // org.osgi.service.log.LoggerFactory
+
+    @Override
+    public org.osgi.service.log.Logger getLogger(String name) {
+        return x;
+    }
+
+    @Override
+    public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
+        return x;
+    }
+
+    @Override
+    public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
+        return x;
+    }
+
+    @Override
+    public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
+        return x;
+    }
+
+    @Override
+    public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
+        return x;
     }
 
     // org.osgi.service.cm.ManagedService
@@ -324,7 +358,7 @@ public class PaxLoggingServiceImpl
         String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
         java.util.logging.Level julLevel = BackendSupport.toJULLevel(levelName);
 
-        m_logLevel = BackendSupport.convertLogServiceLevel(levelName);
+        m_logLevel = BackendSupport.convertR6LogServiceLevel(levelName);
 
         final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
         rootLogger.setLevel(julLevel);
@@ -432,7 +466,7 @@ public class PaxLoggingServiceImpl
                     // org.apache.logging.log4j.core.config.properties.PropertiesConfiguration
                     m_log4jContext.start(new DefaultConfiguration());
 
-                    String level = BackendSupport.convertLogServiceLevel(m_logLevel);
+                    String level = BackendSupport.convertR6LogServiceLevel(m_logLevel);
                     Level l = Level.getLevel(level);
 
                     m_log4jContext.getConfiguration().getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(l);
@@ -551,7 +585,12 @@ public class PaxLoggingServiceImpl
             }
 
             @Override
-            public int getLogLevel() {
+            public int getPaxLogLevel() {
+                return PaxLoggingServiceImpl.this.getPaxLogLevel();
+            }
+
+            @Override
+            public LogLevel getLogLevel() {
                 return PaxLoggingServiceImpl.this.getLogLevel();
             }
 
@@ -569,6 +608,31 @@ public class PaxLoggingServiceImpl
             @Override
             public PaxContext getPaxContext() {
                 return PaxLoggingServiceImpl.this.getPaxContext();
+            }
+
+            @Override
+            public org.osgi.service.log.Logger getLogger(String name) {
+                return PaxLoggingServiceImpl.this.getLogger(name);
+            }
+
+            @Override
+            public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
+                return PaxLoggingServiceImpl.this.getLogger(clazz);
+            }
+
+            @Override
+            public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
+                return PaxLoggingServiceImpl.this.getLogger(name, loggerType);
+            }
+
+            @Override
+            public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
+                return PaxLoggingServiceImpl.this.getLogger(clazz, loggerType);
+            }
+
+            @Override
+            public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
+                return PaxLoggingServiceImpl.this.getLogger(bundle, name, loggerType);
             }
         }
 

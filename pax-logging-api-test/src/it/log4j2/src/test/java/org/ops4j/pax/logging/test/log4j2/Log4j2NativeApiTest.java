@@ -30,6 +30,9 @@ import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.apache.logging.log4j.message.MessageFormatMessageFactory;
+import org.apache.logging.log4j.message.ReusableMessageFactory;
+import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -48,7 +51,7 @@ public class Log4j2NativeApiTest {
         AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE")
                 .addAttribute("target", ConsoleAppender.Target.SYSTEM_OUT);
         appenderBuilder.add(builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "%d {%t} %c (%X) %level (%marker | %markerSimpleName): %msg%n%throwable"));
+                .addAttribute("pattern", "%d {%t} %c/%C (%X) %level (%marker | %markerSimpleName): %msg%n%throwable"));
         builder.add(appenderBuilder);
 
         builder.add(builder.newRootLogger(Level.DEBUG)
@@ -75,6 +78,17 @@ public class Log4j2NativeApiTest {
         // as the Logger name.
         Logger log2 = LogManager.getLogger();
         log2.info("simplestUsage - INFO3");
+    }
+
+    @Test
+    public void fqcn() {
+        // Loggers are created by calling LogManager.getLogger. The Logger itself performs no direct actions.
+        // It simply has a name and is associated with a LoggerConfig
+
+        ExtendedLogger log = (ExtendedLogger) LogManager.getLogger(Log4j2NativeApiTest.class);
+
+        log.log(Level.ERROR, "Hello 1!");
+        log.logMessage("a.b.c.d", Level.ERROR, null, ReusableMessageFactory.INSTANCE.newMessage("Hello 2!"), null);
     }
 
     @Test

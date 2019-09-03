@@ -17,6 +17,8 @@
  */
 package org.ops4j.pax.logging.spi;
 
+import org.osgi.service.log.LogLevel;
+
 /**
  * <p>Framework library agnostic representation of <em>logging level</em>. There are two uses of <em>level</em>
  * concept:<ul>
@@ -46,16 +48,13 @@ public interface PaxLevel {
     boolean isGreaterOrEqual(PaxLevel r);
 
     /**
-     * Returns the integer representation of this level. The higher the numerical value, the more
-     * <em>important</em> is the logging event with given level. When used as <em>threshold</em>, the higher
-     * the numerical value, the more events are rejected (i.e., high <em>threshold</em> means <em>process only
-     * more important events</em>).
-     *
-     * @return the integer representation of this level. The value is not logging-framework specific - only values
-     * from {@link org.ops4j.pax.logging.PaxLogger} (e.g., {@link org.ops4j.pax.logging.PaxLogger#LEVEL_INFO}) are
-     * returned
+     * <p>Returns {@link LogLevel} representation of this level. In {@link LogLevel} enum, the higher the numerical
+     * value (ordinal of the enum), the less <em>important</em> is the logging event with given level. When used as
+     * <em>threshold</em>, the higher the numerical value, the less events are rejected (i.e., high <em>threshold</em>
+     * means <em>process even less important events</em>).</p>
+     * @return
      */
-    int toInt();
+    LogLevel toLevel();
 
     /**
      * Return the syslog equivalent of this priority as an integer. In Syslog

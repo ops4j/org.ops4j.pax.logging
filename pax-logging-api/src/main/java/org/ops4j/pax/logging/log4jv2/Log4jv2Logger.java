@@ -155,31 +155,31 @@ public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAw
         if (marker != null) {
             PaxMarker paxMarker = new PaxMarker(marker);
             if (level.intLevel() >= Level.TRACE.intLevel()) {
-                m_delegate.trace(paxMarker, message.getFormattedMessage(), t, fqcn);
+                m_delegate.trace(paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
-                m_delegate.debug(paxMarker, message.getFormattedMessage(), t, fqcn);
+                m_delegate.debug(paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.INFO.intLevel()) {
-                m_delegate.inform(paxMarker, message.getFormattedMessage(), t, fqcn);
+                m_delegate.info(paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.WARN.intLevel()) {
-                m_delegate.warn(paxMarker, message.getFormattedMessage(), t, fqcn);
+                m_delegate.warn(paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.ERROR.intLevel()) {
-                m_delegate.error(paxMarker, message.getFormattedMessage(), t, fqcn);
+                m_delegate.error(paxMarker, message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.FATAL.intLevel()) {
-                m_delegate.fatal(paxMarker, message.getFormattedMessage(), t, fqcn);
+                m_delegate.fatal(paxMarker, message.getFormattedMessage(), t);
             }
         } else {
             if (level.intLevel() >= Level.TRACE.intLevel()) {
-                m_delegate.trace(message.getFormattedMessage(), t, fqcn);
+                m_delegate.trace(message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
-                m_delegate.debug(message.getFormattedMessage(), t, fqcn);
+                m_delegate.debug(message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.INFO.intLevel()) {
-                m_delegate.inform(message.getFormattedMessage(), t, fqcn);
+                m_delegate.info(message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.WARN.intLevel()) {
-                m_delegate.warn(message.getFormattedMessage(), t, fqcn);
+                m_delegate.warn(message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.ERROR.intLevel()) {
-                m_delegate.error(message.getFormattedMessage(), t, fqcn);
+                m_delegate.error(message.getFormattedMessage(), t);
             } else if (level.intLevel() >= Level.FATAL.intLevel()) {
-                m_delegate.fatal(message.getFormattedMessage(), t, fqcn);
+                m_delegate.fatal(message.getFormattedMessage(), t);
             }
         }
     }
@@ -187,16 +187,18 @@ public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAw
     @Override
     public Level getLevel() {
         switch (m_delegate.getLogLevel()) {
-            case PaxLogger.LEVEL_TRACE:
+            case TRACE:
                 return Level.TRACE;
-            case PaxLogger.LEVEL_DEBUG:
+            case DEBUG:
                 return Level.DEBUG;
-            case PaxLogger.LEVEL_INFO:
+            case INFO:
                 return Level.INFO;
-            case PaxLogger.LEVEL_WARNING:
+            case WARN:
                 return Level.WARN;
-            case PaxLogger.LEVEL_ERROR:
+            case ERROR:
                 return Level.ERROR;
+            case AUDIT:
+                return Level.ALL;
             default:
                 return Level.OFF;
         }
@@ -204,7 +206,9 @@ public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAw
 
     private boolean markerDecision(Level level, Marker marker) {
         PaxMarker m = new PaxMarker(marker);
-        if (level.intLevel() >= Level.TRACE.intLevel()) {
+        if (level.intLevel() >= Level.ALL.intLevel()) {
+            return true;
+        } else if (level.intLevel() >= Level.TRACE.intLevel()) {
             return m_delegate.isTraceEnabled(m);
         } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
             return m_delegate.isDebugEnabled(m);

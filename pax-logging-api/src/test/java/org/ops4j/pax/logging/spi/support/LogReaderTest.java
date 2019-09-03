@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogListener;
 
 import static org.junit.Assert.assertEquals;
@@ -33,7 +34,7 @@ public class LogReaderTest {
         LogReaderServiceImpl underTest = new LogReaderServiceImpl(10, null);
         MyTestListener listener = new MyTestListener();
         underTest.addLogListener(listener);
-        LogEntry entry = new LogEntryImpl(null, null, 2, "", null);
+        LogEntry entry = new LogEntryImpl(null, null, null, LogLevel.INFO, "", null);
         underTest.fireEvent(entry);
         assertEquals(1, listener.entries.size());
         underTest.addLogListener(listener);
@@ -47,7 +48,7 @@ public class LogReaderTest {
         assertEquals(4, listener.entries.size());
     }
 
-    private class MyTestListener implements LogListener {
+    private static class MyTestListener implements LogListener {
 
         private List<LogEntry> entries;
 
@@ -59,4 +60,5 @@ public class LogReaderTest {
             entries.add(logEntry);
         }
     }
+
 }

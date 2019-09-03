@@ -80,7 +80,7 @@ public class AvalonLogger implements Logger, PaxLoggingManagerAwareLogger {
 
     @Override
     public void debug(String string) {
-        m_delegate.debug(string, null);
+        m_delegate.debug(string);
     }
 
     @Override
@@ -90,17 +90,17 @@ public class AvalonLogger implements Logger, PaxLoggingManagerAwareLogger {
 
     @Override
     public void info(String string) {
-        m_delegate.inform(string, null);
+        m_delegate.info(string);
     }
 
     @Override
     public void info(String string, Throwable throwable) {
-        m_delegate.inform(string, throwable);
+        m_delegate.info(string, throwable);
     }
 
     @Override
     public void warn(String string) {
-        m_delegate.warn(string, null);
+        m_delegate.warn(string);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class AvalonLogger implements Logger, PaxLoggingManagerAwareLogger {
 
     @Override
     public void error(String string) {
-        m_delegate.error(string, null);
+        m_delegate.error(string);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class AvalonLogger implements Logger, PaxLoggingManagerAwareLogger {
 
     @Override
     public void fatalError(String string) {
-        m_delegate.fatal(string, null);
+        m_delegate.fatal(string);
     }
 
     @Override

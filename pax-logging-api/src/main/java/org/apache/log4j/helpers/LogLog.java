@@ -91,7 +91,7 @@ public class LogLog {
   static
   void debug(String msg) {
     if(debugEnabled && !quietMode) {
-      log.debug(msg, null);
+      log.debug(msg);
     }
   }
 
@@ -118,7 +118,7 @@ public class LogLog {
   void error(String msg) {
     if(quietMode)
       return;
-    log.error(msg, null);
+    log.error(msg);
   }
 
   /**
@@ -157,7 +157,7 @@ public class LogLog {
     if(quietMode)
       return;
 
-    log.warn(msg, null);
+    log.warn(msg);
   }
 
   /**

@@ -17,25 +17,35 @@
  */
 package org.ops4j.pax.logging;
 
+import org.osgi.service.log.FormatterLogger;
+import org.osgi.service.log.LogLevel;
+import org.osgi.service.log.LoggerConsumer;
+
 /**
  * Main pax-logging interface for loggers to interact with any logging system.
  */
-public interface PaxLogger {
+public interface PaxLogger extends FormatterLogger {
+
+    String FQCN = PaxLogger.class.getName();
 
     int LEVEL_TRACE = 0;
     int LEVEL_DEBUG = 1;
     int LEVEL_INFO = 2;
     int LEVEL_WARNING = 3;
     int LEVEL_ERROR = 4;
+    int LEVEL_FATAL = 5;
+    int LEVEL_AUDIT = 6;
+    int LEVEL_NONE = 7;
 
-    boolean isTraceEnabled();
-    boolean isDebugEnabled();
-    boolean isInfoEnabled();
-    boolean isWarnEnabled();
-    boolean isErrorEnabled();
+    // since R7, isXXXEnabled are defined in org.osgi.service.log.Logger. Except for fatal and audit levels
+    // org.osgi.service.log.LogLevel.AUDIT is always enabled
+
     boolean isFatalEnabled();
+    default boolean isAuditEnabled() {
+        return true;
+    }
 
-    // logging methods with marker support
+    // logging methods with marker support - not available in in R7 org.osgi.service.log.Logger
 
     boolean isTraceEnabled(PaxMarker marker);
     boolean isDebugEnabled(PaxMarker marker);
@@ -43,60 +53,88 @@ public interface PaxLogger {
     boolean isWarnEnabled(PaxMarker marker);
     boolean isErrorEnabled(PaxMarker marker);
     boolean isFatalEnabled(PaxMarker marker);
+    // R7: org.osgi.service.log.LogLevel.AUDIT - always enabled
+    default boolean isAuditEnabled(PaxMarker marker) {
+        return true;
+    }
 
-    void trace(String message, Throwable t);
-    void debug(String message, Throwable t);
-    void inform(String message, Throwable t);
-    void warn(String message, Throwable t);
-    void error(String message, Throwable t);
-    void fatal(String message, Throwable t);
+    // R7 adds all the trace/debug/info/warn/error/audit methods where last (and next to last)
+    // arguments may be java.lang.Throwable and/or org.osgi.framework.ServiceReference. Pax Logging 2.x
+    // removes own versions of the methods and only duplicates all org.osgi.service.log.Logger methods
+    // to provider marker-aware variants
 
-    // logging methods accepting "fqcn" that allows backend framework to analyze stacktrace
-    // when searching for actual Class/Method/File/LineNumber to log using certain
-    // patterns (like %F, %L in Log4J).
+    void trace(PaxMarker marker, String message);
+    void trace(PaxMarker marker, String format, Object arg);
+    void trace(PaxMarker marker, String format, Object arg1, Object arg2);
+    void trace(PaxMarker marker, String format, Object... arguments);
+    <E extends Exception> void trace(PaxMarker marker, LoggerConsumer<E> consumer) throws E;
 
-    void trace(String message, Throwable t, String fqcn);
-    void debug(String message, Throwable t, String fqcn);
-    void inform(String message, Throwable t, String fqcn);
-    void warn(String message, Throwable t, String fqcn);
-    void error(String message, Throwable t, String fqcn);
-    void fatal(String message, Throwable t, String fqcn);
+    void debug(PaxMarker marker, String message);
+    void debug(PaxMarker marker, String format, Object arg);
+    void debug(PaxMarker marker, String format, Object arg1, Object arg2);
+    void debug(PaxMarker marker, String format, Object... arguments);
+    <E extends Exception> void debug(PaxMarker marker, LoggerConsumer<E> consumer) throws E;
 
-    // logging methods with marker support
+    void info(PaxMarker marker, String message);
+    void info(PaxMarker marker, String format, Object arg);
+    void info(PaxMarker marker, String format, Object arg1, Object arg2);
+    void info(PaxMarker marker, String format, Object... arguments);
+    <E extends Exception> void info(PaxMarker marker, LoggerConsumer<E> consumer) throws E;
 
-    void trace(PaxMarker marker, String message, Throwable t);
-    void debug(PaxMarker marker, String message, Throwable t);
-    void inform(PaxMarker marker, String message, Throwable t);
-    void warn(PaxMarker marker, String message, Throwable t);
-    void error(PaxMarker marker, String message, Throwable t);
-    void fatal(PaxMarker marker, String message, Throwable t);
+    void warn(PaxMarker marker, String message);
+    void warn(PaxMarker marker, String format, Object arg);
+    void warn(PaxMarker marker, String format, Object arg1, Object arg2);
+    void warn(PaxMarker marker, String format, Object... arguments);
+    <E extends Exception> void warn(PaxMarker marker, LoggerConsumer<E> consumer) throws E;
 
-    void trace(PaxMarker marker, String message, Throwable t, String fqcn);
-    void debug(PaxMarker marker, String message, Throwable t, String fqcn);
-    void inform(PaxMarker marker, String message, Throwable t, String fqcn);
-    void warn(PaxMarker marker, String message, Throwable t, String fqcn);
-    void error(PaxMarker marker, String message, Throwable t, String fqcn);
-    void fatal(PaxMarker marker, String message, Throwable t, String fqcn);
+    void error(PaxMarker marker, String message);
+    void error(PaxMarker marker, String format, Object arg);
+    void error(PaxMarker marker, String format, Object arg1, Object arg2);
+    void error(PaxMarker marker, String format, Object... arguments);
+    <E extends Exception> void error(PaxMarker marker, LoggerConsumer<E> consumer) throws E;
+
+    void audit(PaxMarker marker, String message);
+    void audit(PaxMarker marker, String format, Object arg);
+    void audit(PaxMarker marker, String format, Object arg1, Object arg2);
+    void audit(PaxMarker marker, String format, Object... arguments);
+    <E extends Exception> void audit(LoggerConsumer<E> consumer) throws E;
+    <E extends Exception> void audit(PaxMarker marker, LoggerConsumer<E> consumer) throws E;
+
+    // there are no fatal() methods in org.osgi.service.log.Logger
+
+    void fatal(String message);
+    void fatal(String format, Object arg);
+    void fatal(String format, Object arg1, Object arg2);
+    void fatal(String format, Object... arguments);
+    <E extends Exception> void fatal(LoggerConsumer<E> consumer) throws E;
+    void fatal(PaxMarker marker, String message);
+    void fatal(PaxMarker marker, String format, Object arg);
+    void fatal(PaxMarker marker, String format, Object arg1, Object arg2);
+    void fatal(PaxMarker marker, String format, Object... arguments);
+    <E extends Exception> void fatal(PaxMarker marker, LoggerConsumer<E> consumer) throws E;
 
     /**
      * <p>Returns numerical log level associated with this logger. Higher values mean more <em>important</em>
      * levels (as in {@link org.ops4j.pax.logging.spi.PaxLevel}). Only these constants should be returned
      * (in increasing importance/severity):<ul>
+     *     <li>{@link PaxLogger#LEVEL_NONE}</li>
      *     <li>{@link PaxLogger#LEVEL_TRACE}</li>
      *     <li>{@link PaxLogger#LEVEL_DEBUG}</li>
      *     <li>{@link PaxLogger#LEVEL_INFO}</li>
      *     <li>{@link PaxLogger#LEVEL_WARNING}</li>
      *     <li>{@link PaxLogger#LEVEL_ERROR}</li>
+     *     <li>{@link PaxLogger#LEVEL_AUDIT}</li>
      * </ul></p>
      * @return
      */
-    int getLogLevel();
+    int getPaxLogLevel();
 
     /**
-     * Returns the name of the logger - usually in dot-separated format.
+     * <p>Returns R7 {@link LogLevel} for this logger.</p>
      * @return
+     * @since 2.0.0
      */
-    String getName();
+    LogLevel getLogLevel();
 
     /**
      * {@link PaxContext} of this logger that gives access to thread-bound MDC context.

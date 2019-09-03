@@ -18,8 +18,8 @@
 package org.ops4j.pax.logging.log4j1.internal.spi;
 
 import org.apache.log4j.Level;
-import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.spi.PaxLevel;
+import org.osgi.service.log.LogLevel;
 
 /**
  * Log4J1 delegated {@link PaxLevel}. It's the easiest implementation, because {@link PaxLevel}
@@ -45,16 +45,19 @@ public class PaxLevelImpl implements PaxLevel {
     }
 
     @Override
-    public int toInt() {
+    public LogLevel toLevel() {
+        // see integer values in org.apache.log4j.Priority
+        if (m_delegate.isGreaterOrEqual(Level.FATAL))
+            return LogLevel.AUDIT;
         if (m_delegate.isGreaterOrEqual(Level.ERROR))
-            return PaxLogger.LEVEL_ERROR;
+            return LogLevel.ERROR;
         if (m_delegate.isGreaterOrEqual(Level.WARN))
-            return PaxLogger.LEVEL_WARNING;
+            return LogLevel.WARN;
         if (m_delegate.isGreaterOrEqual(Level.INFO))
-            return PaxLogger.LEVEL_INFO;
+            return LogLevel.INFO;
         if (m_delegate.isGreaterOrEqual(Level.DEBUG))
-            return PaxLogger.LEVEL_DEBUG;
-        return PaxLogger.LEVEL_TRACE;
+            return LogLevel.DEBUG;
+        return LogLevel.TRACE;
     }
 
     @Override

@@ -29,7 +29,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
 import org.osgi.service.log.LogEntry;
-import org.osgi.service.log.LogService;
+import org.osgi.service.log.LogLevel;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -55,7 +55,7 @@ public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
         open();
     }
 
-    public void postEvent(Bundle bundle, int level, LogEntry entry, String message,
+    public void postEvent(Bundle bundle, LogLevel level, LogEntry entry, String message,
                           Throwable exception, ServiceReference<?> sr, Map<String, ?> context) {
         Event event = createEvent(bundle, level, entry, message, exception, sr, context);
         synchronized (m_queue) {
@@ -134,22 +134,26 @@ public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
         }
     }
 
-    static Event createEvent(Bundle bundle, int level, LogEntry entry, String message,
+    static Event createEvent(Bundle bundle, LogLevel level, LogEntry entry, String message,
                              Throwable exception, ServiceReference sr, Map<String, ?> context) {
         String type;
         switch (level) {
-            case LogService.LOG_ERROR:
+            case AUDIT:
+                type = "LOG_AUDIT";
+                break;
+            case ERROR:
                 type = "LOG_ERROR";
                 break;
-            case LogService.LOG_WARNING:
+            case WARN:
                 type = "LOG_WARNING";
                 break;
-            case LogService.LOG_INFO:
+            case INFO:
                 type = "LOG_INFO";
                 break;
-            case LogService.LOG_DEBUG:
+            case DEBUG:
                 type = "LOG_DEBUG";
                 break;
+            case TRACE:
             default:
                 type = "LOG_OTHER";
         }

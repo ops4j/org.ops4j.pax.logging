@@ -25,7 +25,7 @@ import ch.qos.logback.classic.Logger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxMarker;
-import org.ops4j.pax.logging.logback.internal.spi.PaxLevelForLogback;
+import org.ops4j.pax.logging.logback.internal.spi.PaxLevelImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
 import org.slf4j.MDC;
@@ -305,7 +305,7 @@ public class PaxLoggerImpl implements PaxLogger {
 
     @Override
     public int getLogLevel() {
-        return new PaxLevelForLogback(m_delegate.getEffectiveLevel()).toInt();
+        return new PaxLevelImpl(m_delegate.getEffectiveLevel()).toPaxLoggingLevel();
     }
 
     @Override

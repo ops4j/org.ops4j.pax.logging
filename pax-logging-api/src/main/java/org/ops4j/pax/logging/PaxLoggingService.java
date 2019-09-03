@@ -18,18 +18,26 @@
 package org.ops4j.pax.logging;
 
 import org.osgi.framework.Bundle;
+import org.osgi.service.log.LogLevel;
+import org.osgi.service.log.LogService;
 
 /**
- * <p>This interface extends Knopflerfish' LogService which extends original {@link org.osgi.service.log.LogService}.
+ * <p>This interface extends {@link org.osgi.service.log.LogService}.
  * It should be implemented by specific logging provider (Log4j, Logback, ...).</p>
  * <p>It's role is to provide methods to obtain {@link PaxLogger} and {@link PaxContext} that are specific to
  * one of pax-logging-* implementations.</p>
+ * <p>Since OSGi </p>
  */
 public interface PaxLoggingService extends LogService {
 
     /**
-     * Obtains {@link PaxLogger} instance - implementation-specific logger hidden under {@link PaxLogger} interface.
-     * This method is not used directly, but rather through {@link org.ops4j.pax.logging.PaxLoggingManager}
+     * <p>Obtains {@link PaxLogger} instance - implementation-specific logger hidden under {@link PaxLogger} interface.
+     * This method is not used directly, but rather through {@link org.ops4j.pax.logging.PaxLoggingManager}</p>
+     * <p>Since R7 (Pax Logging 2.0.0), similar methods to obtain a logger come directly from {@link org.osgi.service.log.LoggerFactory}
+     * interface. Some of these methods may configure returned logger to use printf or Slf4J style of formatting. This
+     * methods returns loggers that use Slf4J formatting.</p>
+     * <p>This method should be called by framework-specific facades (like {@code org.ops4j.pax.logging.slf4j.Slf4jLogger})
+     * which pass proper {@code fqcn}.</p>
      * @param bundle
      * @param category
      * @param fqcn
@@ -38,11 +46,12 @@ public interface PaxLoggingService extends LogService {
     PaxLogger getLogger(Bundle bundle, String category, String fqcn);
 
     /**
-     * <p>Returns log level (actually, a threahold) associated with entire logging service. Usually individual
+     * <p>Returns R7 {@link LogLevel} (actually, a threahold) associated with entire logging service. Usually individual
      * loggers may have different levels specified.</p>
      * @return
+     * @since 2.0.0
      */
-    int getLogLevel();
+    LogLevel getLogLevel();
 
     /**
      * Returns {@link PaxContext} of this service that gives access to thread-bound MDC context.

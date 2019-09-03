@@ -75,7 +75,7 @@ public class OSGIPaxLoggingManager
     @Override
     public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
         if (fqcn == null) {
-            fqcn = PaxLogger.class.getName();
+            fqcn = PaxLogger.FQCN;
         }
 
         String key = fqcn + "#" + category + "#" + (bundle != null ? Long.toString(bundle.getBundleId()) : "0");

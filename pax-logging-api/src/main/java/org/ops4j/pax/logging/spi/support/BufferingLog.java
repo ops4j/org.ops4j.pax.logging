@@ -25,6 +25,8 @@ import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxMarker;
 import org.osgi.framework.Bundle;
+import org.osgi.service.log.LogLevel;
+import org.osgi.service.log.LoggerConsumer;
 
 /**
  * Experimental fallback strategy for non-availability.
@@ -49,22 +51,22 @@ public class BufferingLog implements PaxLogger {
             int logTypeAsInt = logType.getType();
             switch (logTypeAsInt) {
                 case LogType.DEBUG_INT:
-                    destination.debug(message, throwable, fqcn);
+                    destination.debug(message, throwable);
                     break;
                 case LogType.TRACE_INT:
-                    destination.trace(message, throwable, fqcn);
+                    destination.trace(message, throwable);
                     break;
                 case LogType.INFO_INT:
-                    destination.inform(message, throwable, fqcn);
+                    destination.info(message, throwable);
                     break;
                 case LogType.WARN_INT:
-                    destination.warn(message, throwable, fqcn);
+                    destination.warn(message, throwable);
                     break;
                 case LogType.ERROR_INT:
-                    destination.error(message, throwable, fqcn);
+                    destination.error(message, throwable);
                     break;
                 case LogType.FATAL_INT:
-                    destination.fatal(message, throwable, fqcn);
+                    destination.fatal(message, throwable);
                     break;
             }
             getPaxContext().clear();
@@ -132,140 +134,461 @@ public class BufferingLog implements PaxLogger {
     }
 
     @Override
-    public void trace(String message, Throwable t) {
-        LogPackage p = new LogPackage(m_fqcn, LogType.trace, message, t, getPaxContext().getContext());
+    public void trace(String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.trace, message, null, getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void debug(String message, Throwable t) {
-        LogPackage p = new LogPackage(m_fqcn, LogType.debug, message, t, getPaxContext().getContext());
+    public void trace(String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.trace, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void inform(String message, Throwable t) {
-        LogPackage p = new LogPackage(m_fqcn, LogType.info, message, t, getPaxContext().getContext());
+    public void trace(String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.trace, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void warn(String message, Throwable t) {
-        LogPackage p = new LogPackage(m_fqcn, LogType.warn, message, t, getPaxContext().getContext());
+    public void trace(String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.trace, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void error(String message, Throwable t) {
-        LogPackage p = new LogPackage(m_fqcn, LogType.error, message, t, getPaxContext().getContext());
+    public <E extends Exception> void trace(LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public void trace(PaxMarker marker, String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.trace, message, null, getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void fatal(String message, Throwable t) {
-        LogPackage p = new LogPackage(m_fqcn, LogType.fatal, message, t, getPaxContext().getContext());
+    public void trace(PaxMarker marker, String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.trace, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void trace(String message, Throwable t, String fqcn) {
-        LogPackage p = new LogPackage(fqcn, LogType.trace, message, t, getPaxContext().getContext());
+    public void trace(PaxMarker marker, String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.trace, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void debug(String message, Throwable t, String fqcn) {
-        LogPackage p = new LogPackage(fqcn, LogType.debug, message, t, getPaxContext().getContext());
+    public void trace(PaxMarker marker, String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.trace, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void inform(String message, Throwable t, String fqcn) {
-        LogPackage p = new LogPackage(fqcn, LogType.info, message, t, getPaxContext().getContext());
+    public <E extends Exception> void trace(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public void debug(String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.debug, message, null, getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void warn(String message, Throwable t, String fqcn) {
-        LogPackage p = new LogPackage(fqcn, LogType.warn, message, t, getPaxContext().getContext());
+    public void debug(String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.debug, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void error(String message, Throwable t, String fqcn) {
-        LogPackage p = new LogPackage(fqcn, LogType.error, message, t, getPaxContext().getContext());
+    public void debug(String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.debug, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void fatal(String message, Throwable t, String fqcn) {
-        LogPackage p = new LogPackage(fqcn, LogType.fatal, message, t, getPaxContext().getContext());
+    public void debug(String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.debug, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
         m_queue.add(p);
     }
 
     @Override
-    public void trace(PaxMarker marker, String message, Throwable t) {
-        trace(message, t);
+    public <E extends Exception> void debug(LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
     }
 
     @Override
-    public void debug(PaxMarker marker, String message, Throwable t) {
-        debug(message, t);
+    public void debug(PaxMarker marker, String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.debug, message, null, getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public void inform(PaxMarker marker, String message, Throwable t) {
-        inform(message, t);
+    public void debug(PaxMarker marker, String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.debug, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public void warn(PaxMarker marker, String message, Throwable t) {
-        warn(message, t);
+    public void debug(PaxMarker marker, String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.debug, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public void error(PaxMarker marker, String message, Throwable t) {
-        error(message, t);
+    public void debug(PaxMarker marker, String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.debug, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public void fatal(PaxMarker marker, String message, Throwable t) {
-        fatal(message, t);
+    public <E extends Exception> void debug(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+    
+    @Override
+    public void info(String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.info, message, null, getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
-        trace(message, t, fqcn);
+    public void info(String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.info, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
-        debug(message, t, fqcn);
+    public void info(String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.info, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
-        inform(message, t, fqcn);
+    public void info(String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.info, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
-        warn(message, t, fqcn);
+    public <E extends Exception> void info(LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
     }
 
     @Override
-    public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
-        error(message, t, fqcn);
+    public void info(PaxMarker marker, String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.info, message, null, getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
-        fatal(message, t, fqcn);
+    public void info(PaxMarker marker, String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.info, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
     }
 
     @Override
-    public int getLogLevel() {
-        return PaxLogger.LEVEL_TRACE;
+    public void info(PaxMarker marker, String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.info, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.info, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public <E extends Exception> void info(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+    
+    @Override
+    public void warn(String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.warn, message, null, getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void warn(String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.warn, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void warn(String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.warn, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void warn(String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.warn, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public <E extends Exception> void warn(LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.warn, message, null, getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.warn, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.warn, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.warn, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public <E extends Exception> void warn(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+    
+    @Override
+    public void error(String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.error, message, null, getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void error(String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.error, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void error(String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.error, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void error(String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.error, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public <E extends Exception> void error(LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.error, message, null, getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.error, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.error, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.error, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public <E extends Exception> void error(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+    
+    @Override
+    public void fatal(String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.fatal, message, null, getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void fatal(String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.fatal, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void fatal(String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.fatal, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void fatal(String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.fatal, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public <E extends Exception> void fatal(LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.fatal, message, null, getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.fatal, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.fatal, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.fatal, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public <E extends Exception> void fatal(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+    
+    @Override
+    public void audit(String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.audit, message, null, getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void audit(String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.audit, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void audit(String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.audit, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void audit(String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.audit, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public <E extends Exception> void audit(LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String message) {
+        LogPackage p = new LogPackage(m_fqcn, LogType.audit, message, null, getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object arg) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg);
+        LogPackage p = new LogPackage(m_fqcn, LogType.audit, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object arg1, Object arg2) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arg1, arg2);
+        LogPackage p = new LogPackage(m_fqcn, LogType.audit, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object... arguments) {
+        FormattingTriple ft = FormattingTriple.forArguments(format, false, arguments);
+        LogPackage p = new LogPackage(m_fqcn, LogType.audit, ft.getMessage(), ft.getThrowable(), getPaxContext().getContext());
+        m_queue.add(p);
+    }
+
+    @Override
+    public <E extends Exception> void audit(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        consumer.accept(this);
+    }
+
+    @Override
+    public int getPaxLogLevel() {
+        return LogType.TRACE_INT;
+    }
+
+    @Override
+    public LogLevel getLogLevel() {
+        return LogLevel.TRACE;
     }
 
     @Override
@@ -286,6 +609,7 @@ public class BufferingLog implements PaxLogger {
         private static final int WARN_INT = 3;
         private static final int ERROR_INT = 4;
         private static final int FATAL_INT = 5;
+        private static final int AUDIT_INT = 6;
 
         private static LogType trace = new LogType(TRACE_INT);
         private static LogType debug = new LogType(DEBUG_INT);
@@ -293,6 +617,7 @@ public class BufferingLog implements PaxLogger {
         private static LogType warn = new LogType(WARN_INT);
         private static LogType error = new LogType(ERROR_INT);
         private static LogType fatal = new LogType(FATAL_INT);
+        private static LogType audit = new LogType(AUDIT_INT);
 
         private final int m_type;
 

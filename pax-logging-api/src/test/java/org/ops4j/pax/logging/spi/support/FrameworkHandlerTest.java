@@ -31,7 +31,7 @@ import org.osgi.framework.wiring.BundleRevision;
 import org.osgi.service.log.LogEntry;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,7 +50,7 @@ public class FrameworkHandlerTest {
     public void testDefaultLogLevelIsDebug() throws Exception {
         System.clearProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
         logAnEvent();
-        verify(currentLogger).debug(any(), isNull());
+        verify(currentLogger).debug(anyString());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class FrameworkHandlerTest {
         System.setProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL, "INFO");
         try {
             logAnEvent();
-            verify(currentLogger).inform(any(), isNull());
+            verify(currentLogger).info(anyString());
         } finally {
             System.clearProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
         }
@@ -69,7 +69,7 @@ public class FrameworkHandlerTest {
         System.setProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL, "GARBAGE");
         try {
             logAnEvent();
-            verify(currentLogger).debug(any(), isNull());
+            verify(currentLogger).debug(anyString());
         } finally {
             System.clearProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
         }

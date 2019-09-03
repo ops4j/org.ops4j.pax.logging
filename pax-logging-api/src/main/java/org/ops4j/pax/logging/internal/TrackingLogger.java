@@ -23,6 +23,8 @@ import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.PaxMarker;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.Bundle;
+import org.osgi.service.log.LogLevel;
+import org.osgi.service.log.LoggerConsumer;
 
 /**
  * <p>A {@link PaxLogger} that's delegating to real {@link PaxLoggingService} when one's available and falls back
@@ -44,6 +46,8 @@ public class TrackingLogger implements PaxLogger {
         m_bundle = bundle;
         added(service);
     }
+
+    // isXXXEnabled() from org.osgi.service.log.Logger and org.ops4j.pax.logging.PaxLogger
 
     @Override
     public boolean isTraceEnabled() {
@@ -105,127 +109,365 @@ public class TrackingLogger implements PaxLogger {
         return m_delegate.isFatalEnabled(marker);
     }
 
+    // R7: org.osgi.service.log.Logger
+
     @Override
-    public void trace(String message, Throwable t) {
-        m_delegate.trace(message, t);
+    public void trace(String message) {
+        m_delegate.trace(message);
     }
 
     @Override
-    public void debug(String message, Throwable t) {
-        m_delegate.debug(message, t);
+    public void trace(String format, Object arg) {
+        m_delegate.trace(format, arg);
     }
 
     @Override
-    public void inform(String message, Throwable t) {
-        m_delegate.inform(message, t);
+    public void trace(String format, Object arg1, Object arg2) {
+        m_delegate.trace(format, arg1, arg2);
     }
 
     @Override
-    public void warn(String message, Throwable t) {
-        m_delegate.warn(message, t);
+    public void trace(String format, Object... arguments) {
+        m_delegate.trace(format, arguments);
     }
 
     @Override
-    public void error(String message, Throwable t) {
-        m_delegate.error(message, t);
+    public <E extends Exception> void trace(LoggerConsumer<E> consumer) throws E {
+        m_delegate.trace(consumer);
     }
 
     @Override
-    public void fatal(String message, Throwable t) {
-        m_delegate.fatal(message, t);
+    public void trace(PaxMarker marker, String message) {
+        m_delegate.trace(marker, message);
     }
 
     @Override
-    public void trace(String message, Throwable t, String fqcn) {
-        m_delegate.trace(message, t, fqcn);
+    public void trace(PaxMarker marker, String format, Object arg) {
+        m_delegate.trace(marker, format, arg);
     }
 
     @Override
-    public void debug(String message, Throwable t, String fqcn) {
-        m_delegate.debug(message, t, fqcn);
+    public void trace(PaxMarker marker, String format, Object arg1, Object arg2) {
+        m_delegate.trace(marker, format, arg1, arg2);
     }
 
     @Override
-    public void inform(String message, Throwable t, String fqcn) {
-        m_delegate.inform(message, t, fqcn);
-    }
-
-    public void warn(String message, Throwable t, String fqcn) {
-        m_delegate.warn(message, t, fqcn);
+    public void trace(PaxMarker marker, String format, Object... arguments) {
+        m_delegate.trace(marker, format, arguments);
     }
 
     @Override
-    public void error(String message, Throwable t, String fqcn) {
-        m_delegate.error(message, t, fqcn);
+    public <E extends Exception> void trace(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        m_delegate.trace(marker, consumer);
     }
 
     @Override
-    public void fatal(String message, Throwable t, String fqcn) {
-        m_delegate.fatal(message, t, fqcn);
+    public void debug(String message) {
+        m_delegate.debug(message);
     }
 
     @Override
-    public void trace(PaxMarker marker, String message, Throwable t) {
-        m_delegate.trace(marker, message, t);
+    public void debug(String format, Object arg) {
+        m_delegate.debug(format, arg);
     }
 
     @Override
-    public void debug(PaxMarker marker, String message, Throwable t) {
-        m_delegate.debug(marker, message, t);
+    public void debug(String format, Object arg1, Object arg2) {
+        m_delegate.debug(format, arg1, arg2);
     }
 
     @Override
-    public void inform(PaxMarker marker, String message, Throwable t) {
-        m_delegate.inform(marker, message, t);
+    public void debug(String format, Object... arguments) {
+        m_delegate.debug(format, arguments);
     }
 
     @Override
-    public void warn(PaxMarker marker, String message, Throwable t) {
-        m_delegate.warn(marker, message, t);
+    public <E extends Exception> void debug(LoggerConsumer<E> consumer) throws E {
+        m_delegate.debug(consumer);
     }
 
     @Override
-    public void error(PaxMarker marker, String message, Throwable t) {
-        m_delegate.error(marker, message, t);
+    public void debug(PaxMarker marker, String message) {
+        m_delegate.debug(marker, message);
     }
 
     @Override
-    public void fatal(PaxMarker marker, String message, Throwable t) {
-        m_delegate.fatal(marker, message, t);
+    public void debug(PaxMarker marker, String format, Object arg) {
+        m_delegate.debug(marker, format, arg);
     }
 
     @Override
-    public void trace(PaxMarker marker, String message, Throwable t, String fqcn) {
-        m_delegate.trace(marker, message, t, fqcn);
+    public void debug(PaxMarker marker, String format, Object arg1, Object arg2) {
+        m_delegate.debug(marker, format, arg1, arg2);
     }
 
     @Override
-    public void debug(PaxMarker marker, String message, Throwable t, String fqcn) {
-        m_delegate.debug(marker, message, t, fqcn);
+    public void debug(PaxMarker marker, String format, Object... arguments) {
+        m_delegate.debug(marker, format, arguments);
     }
 
     @Override
-    public void inform(PaxMarker marker, String message, Throwable t, String fqcn) {
-        m_delegate.inform(marker, message, t, fqcn);
+    public <E extends Exception> void debug(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        m_delegate.debug(marker, consumer);
+    }
+    
+    @Override
+    public void info(String message) {
+        m_delegate.info(message);
     }
 
     @Override
-    public void warn(PaxMarker marker, String message, Throwable t, String fqcn) {
-        m_delegate.warn(marker, message, t, fqcn);
+    public void info(String format, Object arg) {
+        m_delegate.info(format, arg);
     }
 
     @Override
-    public void error(PaxMarker marker, String message, Throwable t, String fqcn) {
-        m_delegate.error(marker, message, t, fqcn);
+    public void info(String format, Object arg1, Object arg2) {
+        m_delegate.info(format, arg1, arg2);
     }
 
     @Override
-    public void fatal(PaxMarker marker, String message, Throwable t, String fqcn) {
-        m_delegate.fatal(marker, message, t, fqcn);
+    public void info(String format, Object... arguments) {
+        m_delegate.info(format, arguments);
     }
 
     @Override
-    public int getLogLevel() {
+    public <E extends Exception> void info(LoggerConsumer<E> consumer) throws E {
+        m_delegate.info(consumer);
+    }
+
+    @Override
+    public void info(PaxMarker marker, String message) {
+        m_delegate.info(marker, message);
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object arg) {
+        m_delegate.info(marker, format, arg);
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object arg1, Object arg2) {
+        m_delegate.info(marker, format, arg1, arg2);
+    }
+
+    @Override
+    public void info(PaxMarker marker, String format, Object... arguments) {
+        m_delegate.info(marker, format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void info(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        m_delegate.info(marker, consumer);
+    }
+    
+    @Override
+    public void warn(String message) {
+        m_delegate.warn(message);
+    }
+
+    @Override
+    public void warn(String format, Object arg) {
+        m_delegate.warn(format, arg);
+    }
+
+    @Override
+    public void warn(String format, Object arg1, Object arg2) {
+        m_delegate.warn(format, arg1, arg2);
+    }
+
+    @Override
+    public void warn(String format, Object... arguments) {
+        m_delegate.warn(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void warn(LoggerConsumer<E> consumer) throws E {
+        m_delegate.warn(consumer);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String message) {
+        m_delegate.warn(marker, message);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object arg) {
+        m_delegate.warn(marker, format, arg);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object arg1, Object arg2) {
+        m_delegate.warn(marker, format, arg1, arg2);
+    }
+
+    @Override
+    public void warn(PaxMarker marker, String format, Object... arguments) {
+        m_delegate.warn(marker, format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void warn(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        m_delegate.warn(marker, consumer);
+    }
+    
+    @Override
+    public void error(String message) {
+        m_delegate.error(message);
+    }
+
+    @Override
+    public void error(String format, Object arg) {
+        m_delegate.error(format, arg);
+    }
+
+    @Override
+    public void error(String format, Object arg1, Object arg2) {
+        m_delegate.error(format, arg1, arg2);
+    }
+
+    @Override
+    public void error(String format, Object... arguments) {
+        m_delegate.error(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void error(LoggerConsumer<E> consumer) throws E {
+        m_delegate.error(consumer);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String message) {
+        m_delegate.error(marker, message);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object arg) {
+        m_delegate.error(marker, format, arg);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object arg1, Object arg2) {
+        m_delegate.error(marker, format, arg1, arg2);
+    }
+
+    @Override
+    public void error(PaxMarker marker, String format, Object... arguments) {
+        m_delegate.error(marker, format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void error(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        m_delegate.error(marker, consumer);
+    }
+    
+    @Override
+    public void fatal(String message) {
+        m_delegate.fatal(message);
+    }
+
+    @Override
+    public void fatal(String format, Object arg) {
+        m_delegate.fatal(format, arg);
+    }
+
+    @Override
+    public void fatal(String format, Object arg1, Object arg2) {
+        m_delegate.fatal(format, arg1, arg2);
+    }
+
+    @Override
+    public void fatal(String format, Object... arguments) {
+        m_delegate.fatal(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void fatal(LoggerConsumer<E> consumer) throws E {
+        m_delegate.fatal(consumer);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String message) {
+        m_delegate.fatal(marker, message);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String format, Object arg) {
+        m_delegate.fatal(marker, format, arg);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String format, Object arg1, Object arg2) {
+        m_delegate.fatal(marker, format, arg1, arg2);
+    }
+
+    @Override
+    public void fatal(PaxMarker marker, String format, Object... arguments) {
+        m_delegate.fatal(marker, format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void fatal(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        m_delegate.fatal(marker, consumer);
+    }
+
+    @Override
+    public void audit(String message) {
+        m_delegate.audit(message);
+    }
+
+    @Override
+    public void audit(String format, Object arg) {
+        m_delegate.audit(format, arg);
+    }
+
+    @Override
+    public void audit(String format, Object arg1, Object arg2) {
+        m_delegate.audit(format, arg1, arg2);
+    }
+
+    @Override
+    public void audit(String format, Object... arguments) {
+        m_delegate.audit(format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void audit(LoggerConsumer<E> consumer) throws E {
+        m_delegate.audit(consumer);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String message) {
+        m_delegate.audit(marker, message);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object arg) {
+        m_delegate.audit(marker, format, arg);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object arg1, Object arg2) {
+        m_delegate.audit(marker, format, arg1, arg2);
+    }
+
+    @Override
+    public void audit(PaxMarker marker, String format, Object... arguments) {
+        m_delegate.audit(marker, format, arguments);
+    }
+
+    @Override
+    public <E extends Exception> void audit(PaxMarker marker, LoggerConsumer<E> consumer) throws E {
+        m_delegate.audit(marker, consumer);
+    }
+
+    @Override
+    public int getPaxLogLevel() {
+        return m_delegate.getPaxLogLevel();
+    }
+
+    @Override
+    public LogLevel getLogLevel() {
         return m_delegate.getLogLevel();
     }
 

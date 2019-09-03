@@ -139,11 +139,12 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 * Logback: constants in `ch.qos.logback.classic.Level` class
 * java.util.logging: values in `java.util.logging.Level` class
 * Slf4J: constants in `org.slf4j.spi.LocationAwareLogger` interface
-* OSGi: constants in `org.osgi.service.log.LogService` interface
+* OSGi R6: constants in `org.osgi.service.log.LogService` interface
+* OSGi R7: values in `org.osgi.service.log.LogLevel` enum
 
 [options=nowrap]
 |===
-|Syslog |Log4J1 |Log4J2 |Logback| java.util.logging |SLF4J |OSGi
+|Syslog |Log4J1 |Log4J2 |Logback|java.util.logging |SLF4J |OSGi R6|OSGi R7
 
 |0 - Emergency
 |Integer.MAX_VALUE - OFF
@@ -152,6 +153,7 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |Integer.MAX_VALUE - OFF
 |
 |
+|0 - AUDIT
 
 |0 - Emergency
 |50000 - FATAL
@@ -160,8 +162,10 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |1000 - SEVERE
 |
 |
+|
 
 |1 - Alert
+|
 |
 |
 |
@@ -176,6 +180,7 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |
 |
 |
+|
 
 |3 - Error
 |40000 - ERROR
@@ -183,6 +188,7 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |40000 - ERROR
 |1000 - SEVERE
 |40 - ERROR
+|1 - ERROR
 |1 - ERROR
 
 |4 - Warning
@@ -192,8 +198,10 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |900 - WARNING
 |30 - WARN
 |2 - WARNING
+|2 - WARN
 
 |5 - Notice
+|
 |
 |
 |
@@ -208,6 +216,7 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |800 - INFO, 700 - CONFIG
 |20 - INFO
 |3 - INFO
+|3 - INFO
 
 |7 - Debug
 |10000 - DEBUG
@@ -215,6 +224,7 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |10000 - DEBUG
 |500 - FINE
 |10 - DEBUG
+|4 - DEBUG
 |4 - DEBUG
 
 |7 - Debug
@@ -224,6 +234,7 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |400 - FINER
 |0 - TRACE
 |
+|5 - TRACE
 
 |
 |
@@ -232,12 +243,14 @@ Here's a table where Syslog and Log4J1 can be directly related. Placement of lev
 |300 - FINEST
 |
 |
+|
 
 |7 - Debug
 |Integer.MIN_VALUE - ALL
 |Integer.MAX_VALUE - ALL
 |Integer.MIN_VALUE - ALL
 |Integer.MIN_VALUE - ALL
+|
 |
 |
 |===
@@ -251,6 +264,7 @@ Notes and confusing parts:
 * Log4J1, java.util.logging and SLF4J use higher numerical levels for more important events
 * Mapping of java.util.logging levels to more popular level names is implemented in `org.ops4j.pax.logging.spi.support.BackendSupport.toJULLevel()`
 * `OFF` and `ALL` special levels have to be treated carefully by pax-logging because the usage of numerical values is totally unintuitive.
+* OSGi R7 introduces `AUDIT` log level for _information that must always be logged_ - thus suggesting that it's _more than error_ - I've associated it with Syslog's `Emergency` level. Though matching value from `org.apache.log4j.Priority` has comment _is intended to turn off logging_.
 
 === Markers
 

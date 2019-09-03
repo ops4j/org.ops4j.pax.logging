@@ -55,37 +55,37 @@ public class JBossLoggingLogger extends Logger implements PaxLoggingManagerAware
     }
 
     @Override
-    protected void doLog(Level level, String loggerClassName, Object message, Object[] parameters, Throwable thrown) {
+    protected void doLog(Level level, String fqcn, Object message, Object[] parameters, Throwable thrown) {
         final String text = parameters == null || parameters.length == 0 ? String.valueOf(message) : MessageFormat.format(String.valueOf(message), parameters);
         switch (level) {
             case FATAL:
-                m_delegate.fatal(text, thrown, loggerClassName);
+                m_delegate.fatal(text, thrown);
                 break;
             case ERROR:
-                m_delegate.error(text, thrown, loggerClassName);
+                m_delegate.error(text, thrown);
                 break;
             case WARN:
-                m_delegate.warn(text, thrown, loggerClassName);
+                m_delegate.warn(text, thrown);
                 break;
             case INFO:
-                m_delegate.inform(text, thrown, loggerClassName);
+                m_delegate.info(text, thrown);
                 break;
             case DEBUG:
-                m_delegate.debug(text, thrown, loggerClassName);
+                m_delegate.debug(text, thrown);
                 break;
             case TRACE:
-                m_delegate.trace(text, thrown, loggerClassName);
+                m_delegate.trace(text, thrown);
                 break;
         }
     }
 
     @Override
-    protected void doLogf(Level level, String loggerClassName, String format, Object[] parameters, Throwable thrown) {
+    protected void doLogf(Level level, String fqcn, String format, Object[] parameters, Throwable thrown) {
         if (parameters == null || parameters.length == 0) {
-            doLog(level, loggerClassName, format, parameters, thrown);
+            doLog(level, fqcn, format, parameters, thrown);
         } else {
             String message = String.format(String.valueOf(format), parameters);
-            doLog(level, loggerClassName, message, null, thrown);
+            doLog(level, fqcn, message, null, thrown);
         }
     }
 

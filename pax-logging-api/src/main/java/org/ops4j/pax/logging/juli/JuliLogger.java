@@ -85,7 +85,7 @@ public class JuliLogger implements Log, PaxLoggingManagerAwareLogger {
 
     @Override
     public void trace(Object message) {
-        m_delegate.trace(message == null ? null : message.toString(), null);
+        m_delegate.trace(message == null ? null : message.toString());
     }
 
     @Override
@@ -95,7 +95,7 @@ public class JuliLogger implements Log, PaxLoggingManagerAwareLogger {
 
     @Override
     public void debug(Object message) {
-        m_delegate.debug(message == null ? null : message.toString(), null);
+        m_delegate.debug(message == null ? null : message.toString());
     }
 
     @Override
@@ -105,17 +105,17 @@ public class JuliLogger implements Log, PaxLoggingManagerAwareLogger {
 
     @Override
     public void info(Object message) {
-        m_delegate.inform(message == null ? null : message.toString(), null);
+        m_delegate.info(message == null ? null : message.toString());
     }
 
     @Override
     public void info(Object message, Throwable t) {
-        m_delegate.inform(message == null ? null : message.toString(), t);
+        m_delegate.info(message == null ? null : message.toString(), t);
     }
 
     @Override
     public void warn(Object message) {
-        m_delegate.warn(message == null ? null : message.toString(), null);
+        m_delegate.warn(message == null ? null : message.toString());
     }
 
     @Override
@@ -125,7 +125,7 @@ public class JuliLogger implements Log, PaxLoggingManagerAwareLogger {
 
     @Override
     public void error(Object message) {
-        m_delegate.error(message == null ? null : message.toString(), null);
+        m_delegate.error(message == null ? null : message.toString());
     }
 
     @Override
@@ -135,7 +135,7 @@ public class JuliLogger implements Log, PaxLoggingManagerAwareLogger {
 
     @Override
     public void fatal(Object message) {
-        m_delegate.fatal(message == null ? null : message.toString(), null);
+        m_delegate.fatal(message == null ? null : message.toString());
     }
 
     @Override

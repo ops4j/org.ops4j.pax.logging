@@ -50,7 +50,7 @@ public class PaxLoggingEventForLogback implements PaxLoggingEvent {
     }
 
     public PaxLevel getLevel() {
-        return new PaxLevelForLogback(event.getLevel());
+        return new PaxLevelImpl(event.getLevel());
     }
 
     public String getLoggerName() {

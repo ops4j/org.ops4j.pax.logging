@@ -41,7 +41,6 @@ import org.apache.logging.log4j.util.Constants;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.apache.logging.log4j.util.Strings;
 import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
 
@@ -49,7 +48,7 @@ import org.osgi.framework.FrameworkUtil;
  * Records events that occur in the logging system. By default, only error messages are logged to {@link System#err}.
  * Normally, the Log4j StatusLogger is configured via the root {@code <Configuration status="LEVEL"/>} node in a Log4j
  * configuration file. However, this can be overridden via a system property named
- * "{@value SimpleLoggerContext#SYSTEM_PREFIX}StatusLogger.level" and will work with any Log4j provider.
+ * "{@code SimpleLoggerContext#SYSTEM_PREFIX}StatusLogger.level" and will work with any Log4j provider.
  *
  * @see SimpleLogger
  * @see SimpleLoggerContext
@@ -240,19 +239,17 @@ public final class StatusLogger extends AbstractLogger {
     @Override
     public Level getLevel() {
         switch (logger.getLogLevel()) {
-            case DefaultServiceLog.TRACE:
-                return Level.TRACE;
-            case DefaultServiceLog.INFO:
+            case AUDIT:
+                return Level.ALL;
+            case INFO:
                 return Level.INFO;
-            case DefaultServiceLog.WARN:
+            case WARN:
                 return Level.WARN;
-            case DefaultServiceLog.ERROR:
+            case ERROR:
                 return Level.ERROR;
-            case DefaultServiceLog.FATAL:
-                return Level.FATAL;
-            case DefaultServiceLog.NONE:
-                return Level.OFF;
-            case DefaultServiceLog.DEBUG:
+            case TRACE:
+                return Level.TRACE;
+            case DEBUG:
             default:
                 return Level.DEBUG;
         }
@@ -308,7 +305,7 @@ public final class StatusLogger extends AbstractLogger {
         } else if (level == Level.WARN) {
             logger.warn(msg.getFormattedMessage(), t, fqcn);
         } else if (level == Level.INFO) {
-            logger.inform(msg.getFormattedMessage(), t, fqcn);
+            logger.info(msg.getFormattedMessage(), t, fqcn);
         } else if (level == Level.DEBUG) {
             logger.debug(msg.getFormattedMessage(), t, fqcn);
         } else if (level == Level.TRACE) {

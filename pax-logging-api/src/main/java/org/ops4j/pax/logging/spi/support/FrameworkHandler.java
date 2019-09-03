@@ -27,6 +27,7 @@ import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogService;
 
 /**
@@ -46,9 +47,9 @@ public class FrameworkHandler
     private final PaxLoggingManager m_manager;
 
     /**
-     * Level at which framework/bundle/service events will be logged even if 101.6 chapter says otherwise.
+     * Level at which framework/bundle/service events will be logged even if 101.6 chapter (R6) says otherwise.
      */
-    private final int loggingLevel;
+    private final LogLevel loggingLevel;
 
     public FrameworkHandler(BundleContext context, final PaxLoggingManager manager) {
         m_manager = manager;
@@ -59,11 +60,11 @@ public class FrameworkHandler
         } else if (!"".equals(context.getProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL))) {
             levelName = context.getProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
         }
-        loggingLevel = convertLevel(levelName);
+        loggingLevel = BackendSupport.convertR7LogLevel(levelName, LogLevel.DEBUG);
     }
 
     /**
-     * {@link BundleEvent bundle events} are logged with {@link LogService#LOG_INFO} level unless
+     * {@link BundleEvent bundle events} are logged with {@link LogLevel#INFO} level (according to spec) unless
      * other level is specified by {@link PaxLoggingConstants#LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL}.
      * @param bundleEvent
      */
@@ -108,24 +109,27 @@ public class FrameworkHandler
 //            message += " - " + bundle.getSymbolicName();
 //        }
         final Bundle bundle = bundleEvent.getBundle();
-        if (loggingLevel > 0) {
+        if (loggingLevel != null) {
             doLog(loggingLevel, bundle, "org.osgi.framework.BundleEvent", message, null);
         }
     }
 
+    /**
+     * Specification determines logging level for given framework events. But we're overriding the values.
+     * @param frameworkEvent
+     */
     @Override
     public void frameworkEvent(final FrameworkEvent frameworkEvent) {
         final int type = frameworkEvent.getType();
         String message;
-        int level = loggingLevel;
+        LogLevel level = loggingLevel;
         switch (type) {
             case FrameworkEvent.ERROR:
                 message = "FrameworkEvent ERROR";
-                level = LogService.LOG_ERROR;
+                level = LogLevel.ERROR;
                 break;
             case FrameworkEvent.INFO:
                 message = "FrameworkEvent INFO";
-                level = LogService.LOG_INFO;
                 break;
             case FrameworkEvent.PACKAGES_REFRESHED:
                 message = "FrameworkEvent PACKAGES REFRESHED";
@@ -138,7 +142,7 @@ public class FrameworkHandler
                 break;
             case FrameworkEvent.WARNING:
                 message = "FrameworkEvent WARNING";
-                level = LogService.LOG_WARNING;
+                level = LogLevel.WARN;
                 break;
             default:
                 message = "FrameworkEvent [unknown:" + type + "]";
@@ -146,8 +150,8 @@ public class FrameworkHandler
         }
         final Bundle bundle = frameworkEvent.getBundle();
         final Throwable exception = frameworkEvent.getThrowable();
-        if (loggingLevel > 0) {
-            doLog(loggingLevel, bundle, "org.osgi.framework.FrameworkEvent", message, exception);
+        if (level != null) {
+            doLog(level, bundle, "org.osgi.framework.FrameworkEvent", message, exception);
         }
     }
 
@@ -173,47 +177,38 @@ public class FrameworkHandler
         // service events, even if specification doesn't say so, have serviceRef.toString() appended to the message
         message += " - " + serviceRef;
         Bundle bundle = serviceRef.getBundle();
-        if (loggingLevel > 0) {
+        if (loggingLevel != null) {
             doLog(loggingLevel, bundle, "org.osgi.framework.ServiceEvent", message, null);
         }
     }
 
-    private void doLog(int loggingLevel, Bundle bundle, String category, String message, Throwable exception) {
-        if (loggingLevel <= 0) {
+    private void doLog(LogLevel loggingLevel, Bundle bundle, String category, String message, Throwable exception) {
+        if (loggingLevel == null) {
             return;
         }
 
         switch (loggingLevel) {
-            case LogService.LOG_ERROR:
-                m_manager.getLogger(bundle, category, "").error(message, null);
+            case AUDIT:
+                m_manager.getLogger(bundle, category, "").audit(message);
                 break;
-            case LogService.LOG_WARNING:
-                m_manager.getLogger(bundle, category, "").warn(message, null);
+            case ERROR:
+                m_manager.getLogger(bundle, category, "").error(message);
                 break;
-            case LogService.LOG_INFO:
-                m_manager.getLogger(bundle, category, "").inform(message, null);
+            case WARN:
+                m_manager.getLogger(bundle, category, "").warn(message);
                 break;
-            case LogService.LOG_DEBUG:
-                m_manager.getLogger(bundle, category, "").debug(message, null);
+            case INFO:
+                m_manager.getLogger(bundle, category, "").info(message);
+                break;
+            case DEBUG:
+                m_manager.getLogger(bundle, category, "").debug(message);
+                break;
+            case TRACE:
+                m_manager.getLogger(bundle, category, "").trace(message);
                 break;
             default:
                 break;
         }
     }
 
-    private static int convertLevel(final String levelName) {
-        if ("DEBUG".equalsIgnoreCase(levelName)) {
-            return LogService.LOG_DEBUG;
-        } else if ("INFO".equalsIgnoreCase(levelName)) {
-            return LogService.LOG_INFO;
-        } else if ("WARN".equalsIgnoreCase(levelName) || "WARNING".equalsIgnoreCase(levelName)) {
-            return LogService.LOG_WARNING;
-        } else if ("ERROR".equalsIgnoreCase(levelName)) {
-            return LogService.LOG_ERROR;
-        } else if ("DISABLED".equalsIgnoreCase(levelName)) {
-            return 0;
-        } else {
-            return LogService.LOG_DEBUG;
-        }
-    }
 }

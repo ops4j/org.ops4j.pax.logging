@@ -68,15 +68,15 @@ public class JdkHandlerTest {
             handler.close();
         }
 
-        verify(logger).trace("all", null);
-        verify(logger).trace("fff", null);
-        verify(logger).trace("ff", null);
-        verify(logger).debug("f", null);
-        verify(logger).inform("c", null);
-        verify(logger).inform("i", null);
-        verify(logger).warn("w", null);
-        verify(logger).error("s", null);
-        verify(logger).error("off", null);
+        verify(logger).trace("all");
+        verify(logger).trace("fff");
+        verify(logger).trace("ff");
+        verify(logger).debug("f");
+        verify(logger).info("c");
+        verify(logger).info("i");
+        verify(logger).warn("w");
+        verify(logger).error("s");
+        verify(logger).error("off");
         verify(logger).error(eq("s"), isA(Throwable.class));
     }
 

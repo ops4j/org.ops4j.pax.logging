@@ -49,6 +49,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogLevel;
 
 /**
  * Log4J1 specific implementation of {@link PaxLoggingService}. It's a {@link ServiceFactory}, so each
@@ -75,7 +76,7 @@ public class PaxLoggingServiceImpl
     private final ConfigurationNotifier m_configNotifier;
 
     // Log level (actually a threashold) for this entire service.
-    private int m_logLevel = org.osgi.service.log.LogService.LOG_DEBUG;
+    private LogLevel m_r7LogLevel = LogLevel.DEBUG;
 
     // there's no need to run configureDefaults() more than once. That was happening in constructor
     // and millisecond later during registration of ManagedService, upon receiving empty org.ops4j.pax.logging
@@ -143,22 +144,12 @@ public class PaxLoggingServiceImpl
 
     @Override
     public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
-        // obtain org.apache.log4j.Logger from unshaded and unchanged log4j:log4j class.
-        // pax-logging-api uses shaded org.apache.log4j.Logger class, but here we need real
-        // implementation
-        Logger log4jLogger;
-        if (category == null) {
-            // Anonymous Logger in JDK Util Logging will have a category of null.
-            log4jLogger = Logger.getRootLogger();
-        } else {
-            log4jLogger = Logger.getLogger(category);
-        }
-        return new PaxLoggerImpl(bundle, log4jLogger, fqcn, this);
+        return getLogger(bundle, category, fqcn, false);
     }
 
     @Override
-    public int getLogLevel() {
-        return m_logLevel;
+    public LogLevel getLogLevel() {
+        return m_r7LogLevel;
     }
 
     // org.osgi.service.log.LogService
@@ -190,31 +181,63 @@ public class PaxLoggingServiceImpl
         return m_context;
     }
 
-    // org.osgi.service.log.LoggerFactory
+    // R7 org.osgi.service.log.LoggerFactory
 
     @Override
     public org.osgi.service.log.Logger getLogger(String name) {
-        return getLo;
+        return getLogger(null, name, PaxLoggerImpl.FQCN);
     }
 
     @Override
     public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
-        return x;
+        return getLogger(null, clazz.getName(), PaxLoggerImpl.FQCN);
     }
 
     @Override
     public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
-        return x;
+        return getLogger(null, name, loggerType);
     }
 
     @Override
     public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
-        return x;
+        return getLogger(null, clazz.getName(), loggerType);
     }
 
     @Override
     public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
-        return x;
+        return getLogger(bundle, name, loggerType, PaxLoggerImpl.FQCN);
+    }
+
+    private <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType, String fqcn) {
+        if (loggerType == org.osgi.service.log.Logger.class) {
+            return loggerType.cast(getLogger(bundle, name, fqcn, false));
+        } else if (loggerType == org.osgi.service.log.FormatterLogger.class) {
+            return loggerType.cast(getLogger(bundle, name, fqcn, true));
+        }
+        throw new IllegalArgumentException("Can't obtain logger with type " + loggerType);
+    }
+
+    /**
+     * The only method that creates new instance of {@link PaxLoggerImpl}. Used by log() methods from R6 and directly
+     * by getLogger() methods from R7.
+     * @param bundle
+     * @param category
+     * @param fqcn
+     * @param printfFormatting whether to use Slf4J ({@code "{}"} - {@code false}) or printf formatting ({@code "%s"} - {@code true}).
+     * @return
+     */
+    private PaxLogger getLogger(Bundle bundle, String category, String fqcn, boolean printfFormatting) {
+        // obtain org.apache.log4j.Logger from unshaded and unchanged log4j:log4j class.
+        // pax-logging-api uses shaded org.apache.log4j.Logger class, but here we need real
+        // implementation
+        Logger log4jLogger;
+        if (category == null) {
+            // Anonymous Logger in JDK Util Logging will have a category of null.
+            log4jLogger = Logger.getRootLogger();
+        } else {
+            log4jLogger = Logger.getLogger(category);
+        }
+        return new PaxLoggerImpl(bundle, log4jLogger, fqcn, this, printfFormatting);
     }
 
     // org.osgi.service.cm.ManagedService
@@ -287,7 +310,7 @@ public class PaxLoggingServiceImpl
     }
 
     /**
-     * Actual logging work is done here
+     * Actual logging work is done here for R6 log methods.
      * @param bundle
      * @param level
      * @param message
@@ -299,7 +322,7 @@ public class PaxLoggingServiceImpl
 
         PaxLogger logger = getLogger(bundle, category, fqcn);
         if (level < LOG_ERROR) {
-            logger.fatal(message, exception);
+            logger.audit(message, exception);
         } else {
             switch (level) {
                 case LOG_ERROR:
@@ -309,7 +332,7 @@ public class PaxLoggingServiceImpl
                     logger.warn(message, exception);
                     break;
                 case LOG_INFO:
-                    logger.inform(message, exception);
+                    logger.info(message, exception);
                     break;
                 case LOG_DEBUG:
                     logger.debug(message, exception);
@@ -320,8 +343,8 @@ public class PaxLoggingServiceImpl
         }
     }
 
-    void handleEvents(Bundle bundle, ServiceReference sr, int level, String message, Throwable exception) {
-        LogEntry entry = new LogEntryImpl(bundle, sr, level, message, exception);
+    void handleEvents(String name, Bundle bundle, ServiceReference sr, LogLevel level, String message, Throwable exception) {
+        LogEntry entry = new LogEntryImpl(name, bundle, sr, level, message, exception);
         m_logReader.fireEvent(entry);
 
         // This should only be null for TestCases.
@@ -371,13 +394,12 @@ public class PaxLoggingServiceImpl
 
             String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
             Level julLevel = BackendSupport.toJULLevel(levelName);
-
-            m_logLevel = BackendSupport.convertLogServiceLevel(levelName);
+            org.apache.log4j.Level log4j1Level = org.apache.log4j.Level.toLevel(levelName, org.apache.log4j.Level.DEBUG);
 
             PaxLoggingConfigurator configurator = new PaxLoggingConfigurator(m_bundleContext);
 
             Properties defaultProperties = new Properties();
-            defaultProperties.put("log4j.rootLogger", BackendSupport.convertLogServiceLevel(m_logLevel) + ", A1");
+            defaultProperties.put("log4j.rootLogger", log4j1Level.toString() + ", A1");
             defaultProperties.put("log4j.appender.A1", "org.apache.log4j.ConsoleAppender");
             // "Time, Thread, Category, nested Context layout"
             defaultProperties.put("log4j.appender.A1.layout", "org.apache.log4j.TTCCLayout");
@@ -444,7 +466,7 @@ public class PaxLoggingServiceImpl
             }
 
             @Override
-            public int getLogLevel() {
+            public LogLevel getLogLevel() {
                 return PaxLoggingServiceImpl.this.getLogLevel();
             }
 
@@ -466,27 +488,27 @@ public class PaxLoggingServiceImpl
 
             @Override
             public org.osgi.service.log.Logger getLogger(String name) {
-                return PaxLoggingServiceImpl.this.getLogger(name);
+                return PaxLoggingServiceImpl.this.getLogger(null, name, FQCN);
             }
 
             @Override
             public org.osgi.service.log.Logger getLogger(Class<?> clazz) {
-                return PaxLoggingServiceImpl.this.getLogger(clazz);
+                return PaxLoggingServiceImpl.this.getLogger(null, clazz.getName(), FQCN);
             }
 
             @Override
             public <L extends org.osgi.service.log.Logger> L getLogger(String name, Class<L> loggerType) {
-                return PaxLoggingServiceImpl.this.getLogger(name, loggerType);
+                return PaxLoggingServiceImpl.this.getLogger(null, name, loggerType, FQCN);
             }
 
             @Override
             public <L extends org.osgi.service.log.Logger> L getLogger(Class<?> clazz, Class<L> loggerType) {
-                return PaxLoggingServiceImpl.this.getLogger(clazz, loggerType);
+                return PaxLoggingServiceImpl.this.getLogger(null, clazz.getName(), loggerType, FQCN);
             }
 
             @Override
             public <L extends org.osgi.service.log.Logger> L getLogger(Bundle bundle, String name, Class<L> loggerType) {
-                return PaxLoggingServiceImpl.this.getLogger(bundle, name, loggerType);
+                return PaxLoggingServiceImpl.this.getLogger(bundle, name, loggerType, FQCN);
             }
         }
 

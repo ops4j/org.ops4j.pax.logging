@@ -64,7 +64,7 @@ public class LogReaderServiceImpl implements LogReaderService {
     }
 
     @Override
-    public Enumeration getLog() {
+    public Enumeration<LogEntry> getLog() {
         // Need to do a copy to avoid a ConcurrentModificationException if
         // a new event is logged while the enumeration is iterated.
         synchronized (m_entries) {

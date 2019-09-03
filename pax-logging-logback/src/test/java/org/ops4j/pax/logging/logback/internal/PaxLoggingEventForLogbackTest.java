@@ -23,7 +23,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import org.junit.Test;
-import org.ops4j.pax.logging.logback.internal.spi.PaxLevelForLogback;
+import org.ops4j.pax.logging.logback.internal.spi.PaxLevelImpl;
 import org.ops4j.pax.logging.logback.internal.spi.PaxLoggingEventForLogback;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +45,7 @@ public class PaxLoggingEventForLogbackTest {
         LoggingEvent levent = new LoggingEvent("myfqcn", logger, Level.INFO, "foo {} baz", null, new Object[] { "bar" });
 
         PaxLoggingEventForLogback event = new PaxLoggingEventForLogback(levent);
-        assertEquals(new PaxLevelForLogback(Level.INFO), event.getLevel());
+        assertEquals(new PaxLevelImpl(Level.INFO), event.getLevel());
         assertEquals("foo bar baz", event.getRenderedMessage());
         assertEquals("foo {} baz", event.getMessage());
         assertEquals("mylogger", event.getLoggerName());

@@ -18,15 +18,15 @@
 package org.ops4j.pax.logging.logback.internal.spi;
 
 import ch.qos.logback.classic.Level;
-import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.spi.PaxLevel;
+import org.osgi.service.log.LogLevel;
 
 /**
  * <p>A straightforward facade to make a Logback Level instance look like a PaxLevel.</p>
  * <p>Logback doesn't refer to Syslog like Log4J1, so we have to do it ourselves.</p>
  * @author Chris Dolan
  */
-public class PaxLevelForLogback implements PaxLevel {
+public class PaxLevelImpl implements PaxLevel {
 
     // this data comes from the Log4J1 org.apache.log4j.Level class
     public static final int SYSLOG_ALL = 7;
@@ -40,14 +40,14 @@ public class PaxLevelForLogback implements PaxLevel {
 
     private Level m_delegate;
 
-    public PaxLevelForLogback(Level delegate) {
+    public PaxLevelImpl(Level delegate) {
         m_delegate = delegate;
     }
 
     @Override
     public boolean isGreaterOrEqual(PaxLevel r) {
-        if (r instanceof PaxLevelForLogback) {
-            PaxLevelForLogback impl = (PaxLevelForLogback) r;
+        if (r instanceof PaxLevelImpl) {
+            PaxLevelImpl impl = (PaxLevelImpl) r;
             return m_delegate.isGreaterOrEqual(impl.m_delegate);
         } else {
             // fallback case: the syslog numbers are portable
@@ -56,16 +56,17 @@ public class PaxLevelForLogback implements PaxLevel {
     }
 
     @Override
-    public int toInt() {
+    public LogLevel toLevel() {
+        // see integer values in ch.qos.logback.classic.Level
         if (m_delegate.isGreaterOrEqual(Level.ERROR))
-            return PaxLogger.LEVEL_ERROR;
+            return LogLevel.ERROR;
         if (m_delegate.isGreaterOrEqual(Level.WARN))
-            return PaxLogger.LEVEL_WARNING;
+            return LogLevel.WARN;
         if (m_delegate.isGreaterOrEqual(Level.INFO))
-            return PaxLogger.LEVEL_INFO;
+            return LogLevel.INFO;
         if (m_delegate.isGreaterOrEqual(Level.DEBUG))
-            return PaxLogger.LEVEL_DEBUG;
-        return PaxLogger.LEVEL_TRACE;
+            return LogLevel.DEBUG;
+        return LogLevel.TRACE;
     }
 
     @Override
@@ -97,7 +98,7 @@ public class PaxLevelForLogback implements PaxLevel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PaxLevelForLogback that = (PaxLevelForLogback) o;
+        PaxLevelImpl that = (PaxLevelImpl) o;
 
         if (!m_delegate.equals(that.m_delegate)) return false;
 

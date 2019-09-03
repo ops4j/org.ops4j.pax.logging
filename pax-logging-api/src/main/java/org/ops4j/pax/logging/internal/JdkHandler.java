@@ -71,16 +71,30 @@ public class JdkHandler extends Handler {
 
         Throwable throwable = record.getThrown();
         int levelInt = level.intValue();
-        if (levelInt <= Level.FINER.intValue()) {
-            logger.trace(message, throwable);
-        } else if (levelInt <= Level.FINE.intValue()) {
-            logger.debug(message, throwable);
-        } else if (levelInt <= Level.INFO.intValue()) {
-            logger.inform(message, throwable);
-        } else if (levelInt <= Level.WARNING.intValue()) {
-            logger.warn(message, throwable);
+        if (throwable != null) {
+            if (levelInt <= Level.FINER.intValue()) {
+                logger.trace(message, throwable);
+            } else if (levelInt <= Level.FINE.intValue()) {
+                logger.debug(message, throwable);
+            } else if (levelInt <= Level.INFO.intValue()) {
+                logger.info(message, throwable);
+            } else if (levelInt <= Level.WARNING.intValue()) {
+                logger.warn(message, throwable);
+            } else {
+                logger.error(message, throwable);
+            }
         } else {
-            logger.error(message, throwable);
+            if (levelInt <= Level.FINER.intValue()) {
+                logger.trace(message);
+            } else if (levelInt <= Level.FINE.intValue()) {
+                logger.debug(message);
+            } else if (levelInt <= Level.INFO.intValue()) {
+                logger.info(message);
+            } else if (levelInt <= Level.WARNING.intValue()) {
+                logger.warn(message);
+            } else {
+                logger.error(message);
+            }
         }
     }
 

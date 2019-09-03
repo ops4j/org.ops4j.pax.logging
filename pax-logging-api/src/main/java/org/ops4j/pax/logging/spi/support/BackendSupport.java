@@ -31,6 +31,7 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogEntry;
+import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 
@@ -85,7 +86,7 @@ public class BackendSupport {
             // so use a dummy poster
             eventAdmin = new EventAdminPoster() {
                 @Override
-                public void postEvent(Bundle bundle, int level, LogEntry entry, String message, Throwable exception,
+                public void postEvent(Bundle bundle, LogLevel level, LogEntry entry, String message, Throwable exception,
                                       ServiceReference sr, Map context) {
                 }
 
@@ -145,47 +146,31 @@ public class BackendSupport {
     }
 
     /**
-     * Returns one of the log level constants from {@link LogService} based on level name (case insensitive).
-     * If level is not recognized, {@code DEBUG} is assumed.
+     * Returns one of the log level enums from {@link LogLevel} based on level name (case insensitive).
+     * If level is not recognized, {@code defaultLevel} is assumed.
      * @param levelName
-     * @return one of {@link LogService#LOG_ERROR}, {@link LogService#LOG_WARNING}, {@link LogService#LOG_INFO},
-     * {@link LogService#LOG_DEBUG} or {@code ZERO} (meaning <em>off</em>).
+     * @param defaultLevel
+     * @return {@link LogLevel} for matching level name. May return {@code null} for {@code OFF} or {@code NONE} level names.
+     * @since 2.0.0
      */
-    public static int convertLogServiceLevel(String levelName) {
-        if ("DEBUG".equalsIgnoreCase(levelName)) {
-            return LogService.LOG_DEBUG;
+    public static LogLevel convertR7LogLevel(String levelName, LogLevel defaultLevel) {
+        if ("ALL".equalsIgnoreCase(levelName) || "AUDIT".equalsIgnoreCase(levelName)) {
+            return LogLevel.AUDIT;
+        } else if ("TRACE".equalsIgnoreCase(levelName) || "FINER".equalsIgnoreCase(levelName) || "FINEST".equalsIgnoreCase(levelName)) {
+            return LogLevel.TRACE;
+        } else if ("DEBUG".equalsIgnoreCase(levelName)) {
+            return LogLevel.DEBUG;
         } else if ("INFO".equalsIgnoreCase(levelName)) {
-            return LogService.LOG_INFO;
-        } else if ("ERROR".equalsIgnoreCase(levelName)) {
-            return LogService.LOG_ERROR;
+            return LogLevel.INFO;
+        } else if ("ERROR".equalsIgnoreCase(levelName) || "SEVERE".equalsIgnoreCase(levelName) || "FATAL".equalsIgnoreCase(levelName)) {
+            return LogLevel.ERROR;
         } else if ("WARN".equalsIgnoreCase(levelName)) {
-            return LogService.LOG_WARNING;
+            return LogLevel.WARN;
         } else if ("OFF".equalsIgnoreCase(levelName) || "NONE".equalsIgnoreCase(levelName)) {
-            return 0;
+            // special case...
+            return null;
         } else {
-            return LogService.LOG_DEBUG;
-        }
-    }
-
-    /**
-     * Returns level name for given integer value that should match one of constants from {@link LogService}. For
-     * {@code zero}, {@code OFF} value is returned.
-     * @param level
-     * @return
-     */
-    public static String convertLogServiceLevel(int level) {
-        switch (level) {
-            case 0:
-                return "OFF";
-            case LogService.LOG_INFO:
-                return "INFO";
-            case LogService.LOG_WARNING:
-                return "WARN";
-            case LogService.LOG_ERROR:
-                return "ERROR";
-            case LogService.LOG_DEBUG:
-            default:
-                return "DEBUG";
+            return defaultLevel;
         }
     }
 

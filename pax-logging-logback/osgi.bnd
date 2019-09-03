@@ -67,6 +67,7 @@ Import-Package: \
  *
 
 Provide-Capability: \
- osgi.service;effective:=active;objectClass=org.osgi.service.log.LogService,\
- osgi.service;effective:=active;objectClass=org.ops4j.pax.logging.PaxLoggingService,\
- osgi.service;effective:=active;objectClass=org.osgi.service.cm.ManagedService
+ osgi.service;effective:=active;objectClass:List<String>="org.osgi.service.log.LogService,\
+ org.osgi.service.log.LoggerFactory,\
+ org.ops4j.pax.logging.PaxLoggingService,\
+ org.osgi.service.cm.ManagedService";uses="org.osgi.service.log"
