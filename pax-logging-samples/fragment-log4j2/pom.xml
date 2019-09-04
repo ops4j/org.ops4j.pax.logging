@@ -63,7 +63,7 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            org.osgi.framework
+                            org.osgi.framework;version="[1.8,2.0)",
                         </Import-Package>
                         <Export-Package />
                         <Private-Package>org.ops4j.pax.logging.log4j2.extra</Private-Package>
