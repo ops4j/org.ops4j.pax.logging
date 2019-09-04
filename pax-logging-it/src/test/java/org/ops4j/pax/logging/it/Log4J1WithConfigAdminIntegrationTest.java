@@ -56,7 +56,7 @@ public class Log4J1WithConfigAdminIntegrationTest extends AbstractStdoutIntercep
     @Override
     public void hijackStdout() throws BundleException {
         super.hijackStdout();
-        Helpers.restartPaxLoggingService(context, true);
+        Helpers.restartPaxLoggingLog4j1(context, true);
     }
 
     @Configuration

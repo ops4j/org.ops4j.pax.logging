@@ -66,7 +66,7 @@ public class LogReaderIntegrationTest extends AbstractControlledIntegrationTestB
         ServiceReference<LogReaderService> sr = context.getServiceReference(LogReaderService.class);
         assertNull(sr);
 
-        Bundle paxLoggingLog4J1 = Helpers.paxLoggingService(context);
+        Bundle paxLoggingLog4J1 = Helpers.paxLoggingLog4j1(context);
         Bundle paxLoggingLogback = Helpers.paxLoggingLogback(context);
         Bundle paxLoggingLog4J2 = Helpers.paxLoggingLog4j2(context);
 

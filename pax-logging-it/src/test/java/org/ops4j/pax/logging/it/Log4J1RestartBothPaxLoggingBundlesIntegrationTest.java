@@ -52,7 +52,7 @@ public class Log4J1RestartBothPaxLoggingBundlesIntegrationTest extends AbstractS
     @Override
     public void hijackStdout() throws BundleException {
         super.hijackStdout();
-        Helpers.restartPaxLoggingService(context, true);
+        Helpers.restartPaxLoggingLog4j1(context, true);
     }
 
     @Configuration
@@ -75,7 +75,7 @@ public class Log4J1RestartBothPaxLoggingBundlesIntegrationTest extends AbstractS
     public void restartBothBundles() throws BundleException {
         Logger log = LoggerFactory.getLogger(this.getClass());
         Bundle paxLoggingApi = Helpers.paxLoggingApi(context);
-        Bundle paxLoggingService = Helpers.paxLoggingService(context);
+        Bundle paxLoggingService = Helpers.paxLoggingLog4j1(context);
 
         // TTCCLayout - everything's working
         log.info("Before restarting");

@@ -42,6 +42,7 @@ import org.osgi.service.log.LoggerConsumer;
 public class PaxLoggerImpl implements PaxLogger {
 
     static String FQCN = PaxLoggerImpl.class.getName();
+    static Level AUDIT = Level.forName("AUDIT", 50);
 
     // "the" delegate. org.apache.logging.log4j.spi.ExtendedLogger
     private ExtendedLogger m_delegate;
@@ -769,17 +770,17 @@ public class PaxLoggerImpl implements PaxLogger {
 
     @Override
     public void audit(String message) {
-        doLog(null, Level.ALL, m_fqcn, message, null, null);
+        doLog(null, AUDIT, m_fqcn, message, null, null);
     }
 
     @Override
     public void audit(String format, Object arg) {
         if (m_printfFormatting) {
             FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
-            doLog(null, Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            doLog(null, AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         } else {
             FormattingTriple ft = FormattingTriple.discover(format, false, arg);
-            doLog(null, Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            doLog(null, AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
         }
     }
 
@@ -787,10 +788,10 @@ public class PaxLoggerImpl implements PaxLogger {
     public void audit(String format, Object arg1, Object arg2) {
         if (m_printfFormatting) {
             FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
-            doLog(null, Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            doLog(null, AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         } else {
             FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
-            doLog(null, Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            doLog(null, AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
         }
     }
 
@@ -798,10 +799,10 @@ public class PaxLoggerImpl implements PaxLogger {
     public void audit(String format, Object... arguments) {
         if (m_printfFormatting) {
             FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
-            doLog(null, Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            doLog(null, AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         } else {
             FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
-            doLog(null, Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            doLog(null, AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
         }
     }
 
@@ -812,17 +813,17 @@ public class PaxLoggerImpl implements PaxLogger {
 
     @Override
     public void audit(PaxMarker marker, String message) {
-        doLog(marker.log4j2Marker(), Level.ALL, m_fqcn, message, null, null);
+        doLog(marker.log4j2Marker(), AUDIT, m_fqcn, message, null, null);
     }
 
     @Override
     public void audit(PaxMarker marker, String format, Object arg) {
         if (m_printfFormatting) {
             FormattingTriple ft = FormattingTriple.resolve(format, true, arg);
-            doLog(marker.log4j2Marker(), Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            doLog(marker.log4j2Marker(), AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         } else {
             FormattingTriple ft = FormattingTriple.discover(format, false, arg);
-            doLog(marker.log4j2Marker(), Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            doLog(marker.log4j2Marker(), AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
         }
     }
 
@@ -830,10 +831,10 @@ public class PaxLoggerImpl implements PaxLogger {
     public void audit(PaxMarker marker, String format, Object arg1, Object arg2) {
         if (m_printfFormatting) {
             FormattingTriple ft = FormattingTriple.resolve(format, true, arg1, arg2);
-            doLog(marker.log4j2Marker(), Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            doLog(marker.log4j2Marker(), AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         } else {
             FormattingTriple ft = FormattingTriple.discover(format, false, arg1, arg2);
-            doLog(marker.log4j2Marker(), Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            doLog(marker.log4j2Marker(), AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
         }
     }
 
@@ -841,10 +842,10 @@ public class PaxLoggerImpl implements PaxLogger {
     public void audit(PaxMarker marker, String format, Object... arguments) {
         if (m_printfFormatting) {
             FormattingTriple ft = FormattingTriple.resolve(format, true, arguments);
-            doLog(marker.log4j2Marker(), Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
+            doLog(marker.log4j2Marker(), AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference());
         } else {
             FormattingTriple ft = FormattingTriple.discover(format, false, arguments);
-            doLog(marker.log4j2Marker(), Level.ALL, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
+            doLog(marker.log4j2Marker(), AUDIT, m_fqcn, ft.getMessage(), ft.getThrowable(), ft.getServiceReference(), ft.getArgArray());
         }
     }
 
@@ -1118,7 +1119,7 @@ public class PaxLoggerImpl implements PaxLogger {
         } finally {
             clearDelegateContext();
         }
-        LogLevel l = getLogLevel(level.getStandardLevel());
+        LogLevel l = level == AUDIT ? LogLevel.AUDIT : getLogLevel(level.getStandardLevel());
         m_service.handleEvents(getName(), m_bundle, ref, l, message, t);
     }
 

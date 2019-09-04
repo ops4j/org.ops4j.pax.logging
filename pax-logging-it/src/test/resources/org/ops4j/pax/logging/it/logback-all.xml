@@ -348,4 +348,17 @@
         </root>
     </configuration>
 
+    <!-- test for R7 audit logging -->
+    <configuration id="r7.audit">
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%logger/%class [%level] %message%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="off">
+            <appender-ref ref="console" />
+        </root>
+    </configuration>
+
 </all-configurations>

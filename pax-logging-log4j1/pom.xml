@@ -110,7 +110,7 @@
 
                     Because it's not possible in OSGi to have some classes from one package imported from
                     one bundle while some classes of the same package being used from own bundle, We
-                    we have to explicitly decide which packages are imported from pax-logging-api and which
+                    have to explicitly decide which packages are imported from pax-logging-api and which
                     we want private-packaged in pax-logging-log4j1.
 
                     Also, because some classes which are exported from pax-logging-api and private packaged
@@ -160,6 +160,7 @@
                                 <resource>
                                     <directory>${project.build.directory}/unpack-deps/pax-logging-api</directory>
                                     <includes>
+                                        <include>org/apache/log4j/AuditLevel.class</include>
                                         <include>org/apache/log4j/helpers/*.class</include>
                                     </includes>
                                 </resource>

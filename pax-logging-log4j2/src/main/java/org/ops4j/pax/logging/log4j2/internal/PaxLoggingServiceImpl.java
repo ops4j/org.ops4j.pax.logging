@@ -473,6 +473,8 @@ public class PaxLoggingServiceImpl
                         return;
                     }
 
+                    emptyConfiguration.set(false);
+
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     props.store(baos, null);
                     ConfigurationSource src = new ConfigurationSource(new ByteArrayInputStream(baos.toByteArray()));

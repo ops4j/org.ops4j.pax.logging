@@ -65,18 +65,18 @@ public class Helpers {
         return paxLoggingApi.orElse(null);
     }
 
-    public static Bundle paxLoggingService(BundleContext context) {
-        Optional<Bundle> paxLoggingService = Arrays.stream(context.getBundles())
+    public static Bundle paxLoggingLog4j1(BundleContext context) {
+        Optional<Bundle> paxLoggingLog4j1 = Arrays.stream(context.getBundles())
                 .filter(b -> "org.ops4j.pax.logging.pax-logging-log4j1".equals(b.getSymbolicName()))
                 .findFirst();
-        return paxLoggingService.orElse(null);
+        return paxLoggingLog4j1.orElse(null);
     }
 
     public static Bundle paxLoggingLogback(BundleContext context) {
-        Optional<Bundle> paxLoggingService = Arrays.stream(context.getBundles())
+        Optional<Bundle> paxLoggingLogback = Arrays.stream(context.getBundles())
                 .filter(b -> "org.ops4j.pax.logging.pax-logging-logback".equals(b.getSymbolicName()))
                 .findFirst();
-        return paxLoggingService.orElse(null);
+        return paxLoggingLogback.orElse(null);
     }
 
     public static Bundle paxLoggingLog4j2(BundleContext context) {
@@ -94,13 +94,13 @@ public class Helpers {
         }
     }
 
-    public static void restartPaxLoggingService(BundleContext context, boolean await) {
+    public static void restartPaxLoggingLog4j1(BundleContext context, boolean await) {
         // restart pax-logging-log4j1 to pick up replaced stdout
         // awaits for signal indicating successfull (re)configuration
-        Bundle paxLoggingService = paxLoggingService(context);
-        if (paxLoggingService != null) {
+        Bundle paxLoggingLog4j1 = paxLoggingLog4j1(context);
+        if (paxLoggingLog4j1 != null) {
             try {
-                paxLoggingService.stop(Bundle.STOP_TRANSIENT);
+                paxLoggingLog4j1.stop(Bundle.STOP_TRANSIENT);
 
                 final CountDownLatch latch = new CountDownLatch(1);
                 ServiceRegistration<EventHandler> sr = null;
@@ -113,7 +113,7 @@ public class Helpers {
                     sr = context.registerService(EventHandler.class, handler, props);
                 }
 
-                paxLoggingService.start();
+                paxLoggingLog4j1.start();
                 if (await) {
                     assertTrue(latch.await(5, TimeUnit.SECONDS));
                     sr.unregister();
@@ -311,6 +311,39 @@ public class Helpers {
             }
 
             c.update(configuration);
+
+            assertTrue(latch.await(5, TimeUnit.SECONDS));
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+
+        if (pt[0] != null) {
+            throw new RuntimeException("Configuration problem", pt[0]);
+        }
+    }
+
+    /**
+     * Synchronized method that simply deletes any {@code org.ops4j.pax.logging} configuration
+     * @param context
+     * @param cm
+     */
+    public static void deleteLoggingConfig(BundleContext context, ConfigurationAdmin cm) {
+        final Throwable[] pt = new Throwable[1];
+        try {
+            Configuration c = cm.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, "?");
+
+            final CountDownLatch latch = new CountDownLatch(1);
+            EventHandler handler = event -> {
+                if (event.containsProperty("exception")) {
+                    pt[0] = (Throwable) event.getProperty("exception");
+                }
+                latch.countDown();
+            };
+            Dictionary<String, Object> props = new Hashtable<>();
+            props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
+            context.registerService(EventHandler.class, handler, props);
+
+            c.delete();
 
             assertTrue(latch.await(5, TimeUnit.SECONDS));
         } catch (Exception e) {

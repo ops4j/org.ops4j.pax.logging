@@ -29,7 +29,8 @@ import org.osgi.service.log.LogLevel;
 public class AuditLevel extends Priority implements Serializable {
 
     /**
-     * The {@code AUDIT} has the highest rank/priority and is intended to mean <em>log always</em>.
+     * <p>The {@code AUDIT} has the highest rank/priority and is intended to mean <em>log always</em>.</p>
+     * <p>{@link Priority#isGreaterOrEqual(Priority)} returns {@code true} even when comparing with {@link Level#OFF}</p>
      */
     final static public Level AUDIT = new Level(Integer.MAX_VALUE, "AUDIT", 0);
 

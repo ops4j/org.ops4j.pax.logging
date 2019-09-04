@@ -76,7 +76,7 @@ public class JulReconfigurationIntegrationTest extends AbstractStdoutInterceptin
     public void julLogging() throws BundleException, InterruptedException {
         String name = "org.ops4j.pax.logging.it.test";
 
-        Bundle paxLoggingLog4J1 = Helpers.paxLoggingService(context);
+        Bundle paxLoggingLog4J1 = Helpers.paxLoggingLog4j1(context);
         Bundle paxLoggingLogback = Helpers.paxLoggingLogback(context);
         Bundle paxLoggingLog4J2 = Helpers.paxLoggingLog4j2(context);
 

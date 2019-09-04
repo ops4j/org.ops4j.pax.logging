@@ -63,7 +63,7 @@ public class EventAdminIntegrationTest extends AbstractControlledIntegrationTest
     public void eventAdminNotificationFromAll3Backends() throws Exception {
         Logger logger = LoggerFactory.getLogger(EventAdminIntegrationTest.class);
 
-        Bundle paxLoggingLog4J1 = Helpers.paxLoggingService(context);
+        Bundle paxLoggingLog4J1 = Helpers.paxLoggingLog4j1(context);
         Bundle paxLoggingLogback = Helpers.paxLoggingLogback(context);
         Bundle paxLoggingLog4J2 = Helpers.paxLoggingLog4j2(context);
 
