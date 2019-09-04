@@ -19,6 +19,8 @@
 
 Bundle-Activator: org.ops4j.pax.logging.internal.Activator
 
+Multi-Release: true
+
 Private-Package: \
  org.slf4j.impl, \
  org.ops4j.pax.logging.slf4j, \
@@ -95,3 +97,7 @@ Import-Package: \
  org.apache.log; resolution:=optional, \
  javax.xml.parsers, \
  org.w3c.dom
+
+Include-Resource: \
+ {maven-resources}, \
+ META-INF/versions/9=target/classes/META-INF/versions/9

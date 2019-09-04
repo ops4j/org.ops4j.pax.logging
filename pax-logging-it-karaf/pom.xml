@@ -60,4 +60,17 @@
         </profile>
     </profiles>
 
+    <dependencyManagement>
+
+        <!-- We're using Karaf 4.2.x, so we need Felix 5.x -->
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${version.org.apache.felix.framework}</version>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
+
 </project>
