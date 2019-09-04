@@ -240,10 +240,18 @@ public class LogbackBuiltinAppendersIntegrationTest extends AbstractStdoutInterc
         c1.accept("hello through c1");
         c2.accept("hello through c2");
 
+        // yet another new way to obtain loggers for different bundles
+        ServiceReference<org.osgi.service.log.LoggerFactory> lfsr = context.getServiceReference(org.osgi.service.log.LoggerFactory.class);
+        org.osgi.service.log.LoggerFactory lf = context.getService(lfsr);
+        org.osgi.service.log.Logger r7l1 = lf.getLogger(b1, "com.example.l3", org.osgi.service.log.Logger.class);
+        org.osgi.service.log.Logger r7l2 = lf.getLogger(b2, "com.example.l3", org.osgi.service.log.Logger.class);
+
+        r7l1.info("hello through b1 (R7)");
+        r7l2.info("hello through b2 (R7)");
+
         linesB1 = readLines("target/logs-logback/b1-file-appender.log");
         linesB2 = readLines("target/logs-logback/b2-file-appender.log");
 
-        assertTrue(true);
         assertTrue(linesB1.stream().anyMatch(l ->
                 l.contains("org.ops4j.test/org.ops4j.pax.logging.it.support.OnDemandLogger")
                 && l.contains("bundle.name=b1")
@@ -253,6 +261,11 @@ public class LogbackBuiltinAppendersIntegrationTest extends AbstractStdoutInterc
                 l.contains("org.ops4j.test/org.ops4j.pax.logging.it.support.OnDemandLogger")
                 && l.contains("bundle.name=b1")
                 && l.contains("log4j2: sn=b1, message=hello through c1"))
+        );
+        assertTrue(linesB1.stream().anyMatch(l ->
+                l.contains("com.example.l3/org.ops4j.pax.logging.it.LogbackBuiltinAppendersIntegrationTest")
+                && l.contains("bundle.name=b1")
+                && l.contains("hello through b1 (R7)"))
         );
         assertTrue(linesB1.stream().noneMatch(l -> l.contains("bundle.name=b2")));
         assertTrue(linesB2.stream().anyMatch(l ->
@@ -264,6 +277,11 @@ public class LogbackBuiltinAppendersIntegrationTest extends AbstractStdoutInterc
                 l.contains("org.ops4j.test/org.ops4j.pax.logging.it.support.OnDemandLogger")
                 && l.contains("bundle.name=b2")
                 && l.contains("log4j2: sn=b2, message=hello through c2"))
+        );
+        assertTrue(linesB2.stream().anyMatch(l ->
+                l.contains("com.example.l3/org.ops4j.pax.logging.it.LogbackBuiltinAppendersIntegrationTest")
+                && l.contains("bundle.name=b2")
+                && l.contains("hello through b2 (R7)"))
         );
         assertTrue(linesB2.stream().noneMatch(l -> l.contains("bundle.name=b1")));
     }
