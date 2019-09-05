@@ -20,16 +20,32 @@ import java.util.NoSuchElementException;
 import java.util.Stack;
 
 import org.apache.logging.log4j.status.StatusLogger;
+import org.ops4j.pax.logging.spi.support.BackendSupport;
+import org.ops4j.pax.logging.spi.support.OsgiUtil;
+import org.osgi.framework.Version;
 
 /**
  * <em>Consider this class private.</em> Provides various methods to determine the caller class. <h3>Background</h3>
  */
 public final class StackLocatorUtil {
-    private static StackLocator stackLocator = null;
+    private static IStackLocator stackLocator = null;
     private static volatile boolean errorLogged = false;
 
     static {
-        stackLocator = StackLocator.getInstance();
+        String version = OsgiUtil.systemOrContextProperty(null, "java.specification.version");
+        Version v = Version.parseVersion(version);
+        if (v == null) {
+            // fallback to JDK8
+            stackLocator = StackLocator.getInstance();
+        } else {
+            if (v.getMajor() >= 9) {
+                // JDK9+, avoid sun.reflect.Reflection.getCallerClass
+                stackLocator = StackLocator9.getInstance();
+            } else {
+                // JDK8
+                stackLocator = StackLocator.getInstance();
+            }
+        }
     }
 
     private StackLocatorUtil() {

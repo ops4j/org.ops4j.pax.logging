@@ -44,7 +44,7 @@ import java.util.Stack;
  * examination of every virtual frame of execution.
  * </p>
  */
-public final class StackLocator {
+public final class StackLocator implements IStackLocator {
 
     // Checkstyle Suppress: the lower-case 'u' ticks off CheckStyle...
     // CHECKSTYLE:OFF

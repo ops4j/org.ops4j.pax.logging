@@ -556,6 +556,11 @@
 
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-api-java9</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -975,6 +980,7 @@
     </repositories>
 
     <modules>
+        <module>pax-logging-api-java9</module>
         <module>pax-logging-api</module>
         <module>pax-logging-api-test</module>
         <module>pax-logging-service</module>

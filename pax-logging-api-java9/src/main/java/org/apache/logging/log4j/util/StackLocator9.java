@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 /**
  * <em>Consider this class private.</em> Determines the caller's class.
  */
-public class StackLocator9 {
+public class StackLocator9 implements IStackLocator {
 
     private final static StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 

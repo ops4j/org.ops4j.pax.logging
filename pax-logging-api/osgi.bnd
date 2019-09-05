@@ -95,3 +95,5 @@ Import-Package: \
  org.apache.log; resolution:=optional, \
  javax.xml.parsers, \
  org.w3c.dom
+
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"

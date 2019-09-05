@@ -55,6 +55,14 @@
 
     <dependencies>
 
+        <!-- pax-logging own artifacts -->
+
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api-java9</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- OSGi -->
 
         <dependency>
