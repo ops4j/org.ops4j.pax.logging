@@ -39,20 +39,25 @@
 
         <plugins>
 
-            <!-- Core plugins -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <toolchains>
+                        <jdk>
+                            <version>[9, )</version>
+                        </jdk>
+                    </toolchains>
                 </configuration>
             </plugin>
+
         </plugins>
 
     </build>
