@@ -177,7 +177,7 @@ public class FrameworkHandler
         // service events, even if specification doesn't say so, have serviceRef.toString() appended to the message
         message += " - " + serviceRef;
         Bundle bundle = serviceRef.getBundle();
-        doLog(loggingLevel, bundle, "org.osgi.framework.ServiceEvent", message);
+        doLog(loggingLevel, bundle, "org.osgi.framework.ServiceEvent", message, serviceRef);
     }
 
     private void doLog(LogLevel loggingLevel, Bundle bundle, String category, String message, Object... args) {
