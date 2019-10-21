@@ -17,18 +17,17 @@
 package org.apache.logging.log4j.message;
 
 import org.apache.logging.log4j.util.PerformanceSensitive;
-import org.apache.logging.log4j.util.StringBuilderFormattable;
+import org.apache.logging.log4j.util.StringBuilders;
 
 /**
  * Mutable Message wrapper around an Object message.
  * @since 2.6
  */
 @PerformanceSensitive("allocation")
-public class ReusableObjectMessage implements ReusableMessage {
+public class ReusableObjectMessage implements ReusableMessage, ParameterVisitable, Clearable {
     private static final long serialVersionUID = 6922476812535519960L;
 
     private transient Object obj;
-    private transient String objectString;
 
     public void set(final Object object) {
         this.obj = object;
@@ -46,29 +45,7 @@ public class ReusableObjectMessage implements ReusableMessage {
 
     @Override
     public void formatTo(final StringBuilder buffer) {
-        if (obj == null || obj instanceof String) {
-            buffer.append((String) obj);
-        } else if (obj instanceof StringBuilderFormattable) {
-            ((StringBuilderFormattable) obj).formatTo(buffer);
-        } else if (obj instanceof CharSequence) {
-            buffer.append((CharSequence) obj);
-        } else if (obj instanceof Integer) { // LOG4J2-1437 unbox auto-boxed primitives to avoid calling toString()
-            buffer.append(((Integer) obj).intValue());
-        } else if (obj instanceof Long) {
-            buffer.append(((Long) obj).longValue());
-        } else if (obj instanceof Double) {
-            buffer.append(((Double) obj).doubleValue());
-        } else if (obj instanceof Boolean) {
-            buffer.append(((Boolean) obj).booleanValue());
-        } else if (obj instanceof Character) {
-            buffer.append(((Character) obj).charValue());
-        } else if (obj instanceof Short) {
-            buffer.append(((Short) obj).shortValue());
-        } else if (obj instanceof Float) {
-            buffer.append(((Float) obj).floatValue());
-        } else {
-            buffer.append(obj);
-        }
+        StringBuilders.appendValue(buffer, obj);
     }
 
     /**
@@ -78,7 +55,7 @@ public class ReusableObjectMessage implements ReusableMessage {
      */
     @Override
     public String getFormat() {
-        return getFormattedMessage();
+        return obj instanceof String ? (String) obj : null;
     }
 
     /**
@@ -117,26 +94,45 @@ public class ReusableObjectMessage implements ReusableMessage {
     }
 
     /**
-     * This message does not have any parameters, so this method returns the specified array.
+     * This message has exactly one parameter (the object), so returns it as the first parameter in the array.
      * @param emptyReplacement the parameter array to return
      * @return the specified array
      */
     @Override
     public Object[] swapParameters(final Object[] emptyReplacement) {
+        // it's unlikely that emptyReplacement is of length 0, but if it is,
+        // go ahead and allocate the memory now;
+        // this saves an allocation in the future when this buffer is re-used
+        if (emptyReplacement.length == 0) {
+            final Object[] params = new Object[10]; // Default reusable parameter buffer size
+            params[0] = obj;
+            return params;
+        }
+        emptyReplacement[0] = obj;
         return emptyReplacement;
     }
 
     /**
-     * This message does not have any parameters so this method always returns zero.
-     * @return 0 (zero)
+     * This message has exactly one parameter (the object), so always returns one.
+     * @return 1
      */
     @Override
     public short getParameterCount() {
-        return 0;
+        return 1;
+    }
+
+    @Override
+    public <S> void forEachParameter(final ParameterConsumer<S> action, final S state) {
+        action.accept(obj, 0, state);
     }
 
     @Override
     public Message memento() {
         return new ObjectMessage(obj);
+    }
+
+    @Override
+    public void clear() {
+        obj = null;
     }
 }

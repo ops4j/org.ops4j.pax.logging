@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -62,9 +63,21 @@ public final class ProviderUtil {
     private static volatile ProviderUtil instance;
 
     private ProviderUtil() {
+        for (final ClassLoader classLoader : LoaderUtil.getClassLoaders()) {
+            try {
+                loadProviders(classLoader);
+            } catch (final Throwable ex) {
+                LOGGER.debug("Unable to retrieve provider from ClassLoader {}", classLoader, ex);
+            }
+        }
         for (final LoaderUtil.UrlResource resource : LoaderUtil.findUrlResources(PROVIDER_RESOURCE)) {
             loadProvider(resource.getUrl(), resource.getClassLoader());
         }
+    }
+
+    protected static void addProvider(final Provider provider) {
+        PROVIDERS.add(provider);
+        LOGGER.debug("Loaded Provider {}", provider);
     }
 
     /**
@@ -86,6 +99,19 @@ public final class ProviderUtil {
             LOGGER.error("Unable to open {}", url, e);
         }
     }
+
+	/**
+	 * 
+	 * @param classLoader null can be used to mark the bootstrap class loader.
+	 */
+	protected static void loadProviders(final ClassLoader classLoader) {
+		final ServiceLoader<Provider> serviceLoader = ServiceLoader.load(Provider.class, classLoader);
+		for (final Provider provider : serviceLoader) {
+			if (validVersion(provider.getVersions()) && !PROVIDERS.contains(provider)) {
+				PROVIDERS.add(provider);
+			}
+		}
+	}
 
     /**
      * @deprecated Use {@link #loadProvider(java.net.URL, ClassLoader)} instead. Will be removed in 3.0.

@@ -18,7 +18,9 @@ package org.apache.logging.log4j.message;
 
 import java.util.Arrays;
 
+import org.apache.logging.log4j.util.Constants;
 import org.apache.logging.log4j.util.PerformanceSensitive;
+import org.apache.logging.log4j.util.StringBuilders;
 
 /**
  * Reusable parameterized message. This message is mutable and is not safe to be accessed or modified by multiple
@@ -28,7 +30,7 @@ import org.apache.logging.log4j.util.PerformanceSensitive;
  * @since 2.6
  */
 @PerformanceSensitive("allocation")
-public class ReusableParameterizedMessage implements ReusableMessage {
+public class ReusableParameterizedMessage implements ReusableMessage, ParameterVisitable, Clearable {
 
     private static final int MIN_BUILDER_SIZE = 512;
     private static final int MAX_PARMS = 10;
@@ -71,6 +73,10 @@ public class ReusableParameterizedMessage implements ReusableMessage {
                 if (argCount <= emptyReplacement.length) {
                     // copy params into the specified replacement array and return that
                     System.arraycopy(params, 0, emptyReplacement, 0, argCount);
+                    // Do not retain references to objects in the reusable params array.
+                    for (int i = 0; i < argCount; i++) {
+                        params[i] = null;
+                    }
                     result = emptyReplacement;
                 } else {
                     // replacement array is too small for current content and future content: discard it
@@ -100,6 +106,14 @@ public class ReusableParameterizedMessage implements ReusableMessage {
     @Override
     public short getParameterCount() {
         return (short) argCount;
+    }
+
+    @Override
+    public <S> void forEachParameter(final ParameterConsumer<S> action, final S state) {
+        final Object[] parameters = getParams();
+        for (short i = 0; i < argCount; i++) {
+            action.accept(parameters[i], i, state);
+        }
     }
 
     @Override
@@ -288,7 +302,9 @@ public class ReusableParameterizedMessage implements ReusableMessage {
     public String getFormattedMessage() {
         final StringBuilder sb = getBuffer();
         formatTo(sb);
-        return sb.toString();
+        final String result = sb.toString();
+        StringBuilders.trimToMaxSize(sb, Constants.MAX_REUSABLE_MESSAGE_SIZE);
+        return result;
     }
 
     private StringBuilder getBuffer() {
@@ -298,7 +314,7 @@ public class ReusableParameterizedMessage implements ReusableMessage {
         StringBuilder result = buffer.get();
         if (result == null) {
             final int currentPatternLength = messagePattern == null ? 0 : messagePattern.length();
-            result = new StringBuilder(Math.min(MIN_BUILDER_SIZE, currentPatternLength * 2));
+            result = new StringBuilder(Math.max(MIN_BUILDER_SIZE, currentPatternLength * 2));
             buffer.set(result);
         }
         result.setLength(0);
@@ -328,5 +344,15 @@ public class ReusableParameterizedMessage implements ReusableMessage {
     public String toString() {
         return "ReusableParameterizedMessage[messagePattern=" + getFormat() + ", stringArgs=" +
                 Arrays.toString(getParameters()) + ", throwable=" + getThrowable() + ']';
+    }
+
+    @Override
+    public void clear() { // LOG4J2-1583
+        // This method does not clear parameter values, those are expected to be swapped to a
+        // reusable message, which is responsible for clearing references.
+        reserved = false;
+        varargs = null;
+        messagePattern = null;
+        throwable = null;
     }
 }

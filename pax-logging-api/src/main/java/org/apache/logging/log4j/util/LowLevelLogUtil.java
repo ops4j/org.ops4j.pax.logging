@@ -33,14 +33,26 @@ final class LowLevelLogUtil {
 
     private static PrintWriter writer = new PrintWriter(System.err, true);
 
-    public static void logException(final Throwable exception) {
-        exception.printStackTrace(writer);
-    }
-
-    public static void logException(final String message, final Throwable exception) {
+    /**
+     * Logs the given message.
+     * 
+     * @param message the message to log
+     * @since 2.9.2
+     */
+    public static void log(final String message) {
         if (message != null) {
             writer.println(message);
         }
+    }
+
+    public static void logException(final Throwable exception) {
+        if (exception != null) {
+            exception.printStackTrace(writer);
+        }
+    }
+
+    public static void logException(final String message, final Throwable exception) {
+        log(message);
         logException(exception);
     }
 

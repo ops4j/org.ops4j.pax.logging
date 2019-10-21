@@ -37,6 +37,7 @@ import org.apache.logging.log4j.message.ParameterizedNoReferenceMessageFactory;
 import org.apache.logging.log4j.simple.SimpleLogger;
 import org.apache.logging.log4j.simple.SimpleLoggerContext;
 import org.apache.logging.log4j.spi.AbstractLogger;
+import org.apache.logging.log4j.util.Constants;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.apache.logging.log4j.util.Strings;
 
@@ -62,6 +63,13 @@ public final class StatusLogger extends AbstractLogger {
      * {@link StatusListener}s.
      */
     public static final String DEFAULT_STATUS_LISTENER_LEVEL = "log4j2.StatusLogger.level";
+
+    /**
+     * System property that can be configured with a date-time format string to use as the format for timestamps
+     * in the status logger output. See {@link java.text.SimpleDateFormat} for supported formats.
+     * @since 2.11.0
+     */
+    public static final String STATUS_DATE_FORMAT = "log4j2.StatusLogger.DateFormat";
 
     private static final long serialVersionUID = 2L;
 
@@ -95,9 +103,21 @@ public final class StatusLogger extends AbstractLogger {
 
     private StatusLogger(final String name, final MessageFactory messageFactory) {
         super(name, messageFactory);
-        this.logger = new SimpleLogger("StatusLogger", Level.ERROR, false, true, false, false, Strings.EMPTY,
-                messageFactory, PROPS, System.err);
+        final String dateFormat = PROPS.getStringProperty(STATUS_DATE_FORMAT, Strings.EMPTY);
+        final boolean showDateTime = !Strings.isEmpty(dateFormat);
+        this.logger = new SimpleLogger("StatusLogger", Level.ERROR, false, true, showDateTime, false,
+                dateFormat, messageFactory, PROPS, System.err);
         this.listenersLevel = Level.toLevel(DEFAULT_STATUS_LEVEL, Level.WARN).intLevel();
+
+        // LOG4J2-1813 if system property "log4j2.debug" is defined, print all status logging
+        if (isDebugPropertyEnabled()) {
+            logger.setLevel(Level.TRACE);
+        }
+    }
+
+    // LOG4J2-1813 if system property "log4j2.debug" is defined, print all status logging
+    private boolean isDebugPropertyEnabled() {
+        return PropertiesUtil.getProperties().getBooleanProperty(Constants.LOG4J2_DEBUG, false, true);
     }
 
     /**
@@ -248,14 +268,19 @@ public final class StatusLogger extends AbstractLogger {
         } finally {
             msgLock.unlock();
         }
-        if (listeners.size() > 0) {
-            for (final StatusListener listener : listeners) {
-                if (data.getLevel().isMoreSpecificThan(listener.getStatusLevel())) {
-                    listener.log(data);
-                }
-            }
-        } else {
+        // LOG4J2-1813 if system property "log4j2.debug" is defined, all status logging is enabled
+        if (isDebugPropertyEnabled()) {
             logger.logMessage(fqcn, level, marker, msg, t);
+        } else {
+            if (listeners.size() > 0) {
+                for (final StatusListener listener : listeners) {
+                    if (data.getLevel().isMoreSpecificThan(listener.getStatusLevel())) {
+                        listener.log(data);
+                    }
+                }
+            } else {
+                logger.logMessage(fqcn, level, marker, msg, t);
+            }
         }
     }
 
@@ -378,6 +403,10 @@ public final class StatusLogger extends AbstractLogger {
 
     @Override
     public boolean isEnabled(final Level level, final Marker marker) {
+        // LOG4J2-1813 if system property "log4j2.debug" is defined, all status logging is enabled
+        if (isDebugPropertyEnabled()) {
+            return true;
+        }
         if (listeners.size() > 0) {
             return listenersLevel >= level.intLevel();
         }

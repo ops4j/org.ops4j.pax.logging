@@ -30,9 +30,9 @@ import org.apache.logging.log4j.util.Strings;
 import org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContextFactory;
 
 /**
- * The anchor point for the logging system. The most common usage of this class is to obtain a named {@link Logger}. The
- * method {@link #getLogger()} is provided as the most convenient way to obtain a named Logger based on the calling
- * class name. This class also provides method for obtaining named Loggers that use
+ * The anchor point for the Log4j logging system. The most common usage of this class is to obtain a named
+ * {@link Logger}. The method {@link #getLogger()} is provided as the most convenient way to obtain a named Logger based
+ * on the calling class name. This class also provides method for obtaining named Loggers that use
  * {@link String#format(String, Object...)} style messages instead of the default type of parameterized messages. These
  * are obtained through the {@link #getFormatterLogger(Class)} family of methods. Other service provider methods are
  * given through the {@link #getContext()} and {@link #getFactory()} family of methods; these methods are not normally
@@ -275,6 +275,31 @@ public class LogManager {
         }
     }
 
+
+    /**
+     * Returns a LoggerContext
+     *
+     * @param fqcn The fully qualified class name of the Class that this method is a member of.
+     * @param loader The ClassLoader for the context. If null the context will attempt to determine the appropriate
+     *            ClassLoader.
+     * @param currentContext if false the LoggerContext appropriate for the caller of this method is returned. For
+     *            example, in a web application if the caller is a class in WEB-INF/lib then one LoggerContext may be
+     *            returned and if the caller is a class in the container's classpath then a different LoggerContext may
+     *            be returned. If true then only a single LoggerContext will be returned.
+     * @param configLocation The URI for the configuration to use.
+     * @param name The LoggerContext name.
+     * @return a LoggerContext.
+     */
+    protected static LoggerContext getContext(final String fqcn, final ClassLoader loader,
+                                              final boolean currentContext, final URI configLocation, final String name) {
+        try {
+            return factory.getContext(fqcn, loader, null, currentContext, configLocation, name);
+        } catch (final IllegalStateException ex) {
+            LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
+            return new SimpleLoggerContextFactory().getContext(fqcn, loader, null, currentContext);
+        }
+    }
+
     /**
      * Shutdown using the LoggerContext appropriate for the caller of this method.
      * This is equivalent to calling {@code LogManager.shutdown(false)}.
@@ -320,6 +345,11 @@ public class LogManager {
         if (context != null && context instanceof Terminable) {
             ((Terminable) context).terminate();
         }
+    }
+
+    private static String toLoggerName(final Class<?> cls) {
+        final String canonicalName = cls.getCanonicalName();
+        return canonicalName != null ? canonicalName : cls.getName();
     }
 
     /**

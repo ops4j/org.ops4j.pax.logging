@@ -14,21 +14,13 @@
  * See the license for the specific language governing permissions and
  * limitations under the license.
  */
-package org.apache.logging.log4j.util;
+package org.apache.logging.log4j.spi;
 
 /**
- * An extension of {@code StringMap} that imposes a total ordering on its keys.
- * The map is ordered according to the natural ordering of its keys. This order is reflected when
- * {@link #forEach(BiConsumer) consuming} the key-value pairs with a {@link BiConsumer} or a {@link TriConsumer}.
- * <p>
- * This interface views all key-value pairs as a sequence ordered by key, and allows
- * keys and values to be accessed by their index in the sequence.
- * </p>
- *
- * @see IndexedReadOnlyStringMap
- * @see StringMap
- * @since 2.8
+ * Interface allowing interested classes to know when a LoggerContext has shutdown - if the LoggerContext
+ * implementation provides a way to register listeners.
  */
-public interface IndexedStringMap extends IndexedReadOnlyStringMap, StringMap {
-    // nothing more
+public interface LoggerContextShutdownAware {
+
+    void contextShutdown(LoggerContext loggerContext);
 }

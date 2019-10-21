@@ -18,10 +18,12 @@ package org.apache.logging.log4j.util;
 
 import java.net.URL;
 import java.security.Permission;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
+import org.apache.logging.log4j.spi.Provider;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.osgi.framework.AdaptPermission;
 import org.osgi.framework.AdminPermission;
@@ -29,6 +31,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.wiring.BundleWire;
 import org.osgi.framework.wiring.BundleWiring;
@@ -63,7 +67,12 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
         try {
             checkPermission(new AdminPermission(bundle, AdminPermission.RESOURCE));
             checkPermission(new AdaptPermission(BundleWiring.class.getName(), bundle, AdaptPermission.ADAPT));
-            loadProvider(bundle.adapt(BundleWiring.class));
+            final BundleContext bundleContext = bundle.getBundleContext();
+            if (bundleContext == null) {
+                LOGGER.debug("Bundle {} has no context (state={}), skipping loading provider", bundle.getSymbolicName(), toStateString(bundle.getState()));
+            } else {
+                loadProvider(bundleContext, bundle.adapt(BundleWiring.class));
+            }
         } catch (final SecurityException e) {
             LOGGER.debug("Cannot access bundle [{}] contents. Ignoring.", bundle.getSymbolicName(), e);
         } catch (final Exception e) {
@@ -71,24 +80,59 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
         }
     }
 
-    private void loadProvider(final BundleWiring provider) {
-        final List<URL> urls = provider.findEntries("META-INF", "log4j-provider.properties", 0);
+    private String toStateString(final int state) {
+        switch (state) {
+        case Bundle.UNINSTALLED:
+            return "UNINSTALLED";
+        case Bundle.INSTALLED:
+            return "INSTALLED";
+        case Bundle.RESOLVED:
+            return "RESOLVED";
+        case Bundle.STARTING:
+            return "STARTING";
+        case Bundle.STOPPING:
+            return "STOPPING";
+        case Bundle.ACTIVE:
+            return "ACTIVE";
+        default:
+            return Integer.toString(state);
+        }
+    }
+
+    private void loadProvider(final BundleContext bundleContext, final BundleWiring bundleWiring) {
+        final String filter = "(APIVersion>=2.6.0)";
+        try {
+            final Collection<ServiceReference<Provider>> serviceReferences = bundleContext.getServiceReferences(Provider.class, filter);
+            Provider maxProvider = null;
+            for (final ServiceReference<Provider> serviceReference : serviceReferences) {
+                final Provider provider = bundleContext.getService(serviceReference);
+                if (maxProvider == null || provider.getPriority() > maxProvider.getPriority()) {
+                    maxProvider = provider;
+                }
+            }
+            if (maxProvider != null) {
+                ProviderUtil.addProvider(maxProvider);
+            }
+        } catch (final InvalidSyntaxException ex) {
+            LOGGER.error("Invalid service filter: " + filter, ex);
+        }
+        final List<URL> urls = bundleWiring.findEntries("META-INF", "log4j-provider.properties", 0);
         for (final URL url : urls) {
-            ProviderUtil.loadProvider(url, provider.getClassLoader());
+            ProviderUtil.loadProvider(url, bundleWiring.getClassLoader());
         }
     }
 
     @Override
-    public void start(final BundleContext context) throws Exception {
+    public void start(final BundleContext bundleContext) throws Exception {
         ProviderUtil.STARTUP_LOCK.lock();
         lockingProviderUtil = true;
-        final BundleWiring self = context.getBundle().adapt(BundleWiring.class);
+        final BundleWiring self = bundleContext.getBundle().adapt(BundleWiring.class);
         final List<BundleWire> required = self.getRequiredWires(LoggerContextFactory.class.getName());
         for (final BundleWire wire : required) {
-            loadProvider(wire.getProviderWiring());
+            loadProvider(bundleContext, wire.getProviderWiring());
         }
-        context.addBundleListener(this);
-        final Bundle[] bundles = context.getBundles();
+        bundleContext.addBundleListener(this);
+        final Bundle[] bundles = bundleContext.getBundles();
         for (final Bundle bundle : bundles) {
             loadProvider(bundle);
         }
@@ -103,8 +147,8 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
     }
 
     @Override
-    public void stop(final BundleContext context) throws Exception {
-        context.removeBundleListener(this);
+    public void stop(final BundleContext bundleContext) throws Exception {
+        bundleContext.removeBundleListener(this);
         unlockIfReady();
     }
 

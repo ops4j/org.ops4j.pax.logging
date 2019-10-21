@@ -69,6 +69,12 @@ public final class StringBuilders {
      * @param obj the object whose text representation to append to the StringBuilder
      */
     public static void appendValue(final StringBuilder stringBuilder, final Object obj) {
+        if (!appendSpecificTypes(stringBuilder, obj)) {
+            stringBuilder.append(obj);
+        }
+    }
+
+    public static boolean appendSpecificTypes(final StringBuilder stringBuilder, final Object obj) {
         if (obj == null || obj instanceof String) {
             stringBuilder.append((String) obj);
         } else if (obj instanceof StringBuilderFormattable) {
@@ -89,9 +95,12 @@ public final class StringBuilders {
             stringBuilder.append(((Short) obj).shortValue());
         } else if (obj instanceof Float) {
             stringBuilder.append(((Float) obj).floatValue());
+        } else if (obj instanceof Byte) {
+            stringBuilder.append(((Byte) obj).byteValue());
         } else {
-            stringBuilder.append(obj);
+            return false;
         }
+        return true;
     }
 
     /**
@@ -142,5 +151,162 @@ public final class StringBuilders {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Ensures that the char[] array of the specified StringBuilder does not exceed the specified number of characters.
+     * This method is useful to ensure that excessively long char[] arrays are not kept in memory forever.
+     *
+     * @param stringBuilder the StringBuilder to check
+     * @param maxSize the maximum number of characters the StringBuilder is allowed to have
+     * @since 2.9
+     */
+    public static void trimToMaxSize(final StringBuilder stringBuilder, final int maxSize) {
+        if (stringBuilder != null && stringBuilder.capacity() > maxSize) {
+            stringBuilder.setLength(maxSize);
+            stringBuilder.trimToSize();
+        }
+    }
+
+    public static void escapeJson(final StringBuilder toAppendTo, final int start) {
+        int escapeCount = 0;
+        for (int i = start; i < toAppendTo.length(); i++) {
+            final char c = toAppendTo.charAt(i);
+            switch (c) {
+                case '\b':
+                case '\t':
+                case '\f':
+                case '\n':
+                case '\r':
+                case '"':
+                case '\\':
+                    escapeCount++;
+                    break;
+                default:
+                    if (Character.isISOControl(c)) {
+                        escapeCount += 5;
+                    }
+            }
+        }
+
+        final int lastChar = toAppendTo.length() - 1;
+        toAppendTo.setLength(toAppendTo.length() + escapeCount);
+        int lastPos = toAppendTo.length() - 1;
+
+        for (int i = lastChar; lastPos > i; i--) {
+            final char c = toAppendTo.charAt(i);
+            switch (c) {
+                case '\b':
+                    lastPos = escapeAndDecrement(toAppendTo, lastPos, 'b');
+                    break;
+
+                case '\t':
+                    lastPos = escapeAndDecrement(toAppendTo, lastPos, 't');
+                    break;
+
+                case '\f':
+                    lastPos = escapeAndDecrement(toAppendTo, lastPos, 'f');
+                    break;
+
+                case '\n':
+                    lastPos = escapeAndDecrement(toAppendTo, lastPos, 'n');
+                    break;
+
+                case '\r':
+                    lastPos = escapeAndDecrement(toAppendTo, lastPos, 'r');
+                    break;
+
+                case '"':
+                case '\\':
+                    lastPos = escapeAndDecrement(toAppendTo, lastPos, c);
+                    break;
+
+                default:
+                    if (Character.isISOControl(c)) {
+                        // all iso control characters are in U+00xx, JSON output format is "\\u00XX"
+                        toAppendTo.setCharAt(lastPos--, Chars.getUpperCaseHex(c & 0xF));
+                        toAppendTo.setCharAt(lastPos--, Chars.getUpperCaseHex((c & 0xF0) >> 4));
+                        toAppendTo.setCharAt(lastPos--, '0');
+                        toAppendTo.setCharAt(lastPos--, '0');
+                        toAppendTo.setCharAt(lastPos--, 'u');
+                        toAppendTo.setCharAt(lastPos--, '\\');
+                    } else {
+                        toAppendTo.setCharAt(lastPos, c);
+                        lastPos--;
+                    }
+            }
+        }
+    }
+
+    private static int escapeAndDecrement(final StringBuilder toAppendTo, int lastPos, final char c) {
+        toAppendTo.setCharAt(lastPos--, c);
+        toAppendTo.setCharAt(lastPos--, '\\');
+        return lastPos;
+    }
+
+    public static void escapeXml(final StringBuilder toAppendTo, final int start) {
+        int escapeCount = 0;
+        for (int i = start; i < toAppendTo.length(); i++) {
+            final char c = toAppendTo.charAt(i);
+            switch (c) {
+                case '&':
+                    escapeCount += 4;
+                    break;
+                case '<':
+                case '>':
+                    escapeCount += 3;
+                    break;
+                case '"':
+                case '\'':
+                    escapeCount += 5;
+            }
+        }
+
+        final int lastChar = toAppendTo.length() - 1;
+        toAppendTo.setLength(toAppendTo.length() + escapeCount);
+        int lastPos = toAppendTo.length() - 1;
+
+        for (int i = lastChar; lastPos > i; i--) {
+            final char c = toAppendTo.charAt(i);
+            switch (c) {
+                case '&':
+                    toAppendTo.setCharAt(lastPos--, ';');
+                    toAppendTo.setCharAt(lastPos--, 'p');
+                    toAppendTo.setCharAt(lastPos--, 'm');
+                    toAppendTo.setCharAt(lastPos--, 'a');
+                    toAppendTo.setCharAt(lastPos--, '&');
+                    break;
+                case '<':
+                    toAppendTo.setCharAt(lastPos--, ';');
+                    toAppendTo.setCharAt(lastPos--, 't');
+                    toAppendTo.setCharAt(lastPos--, 'l');
+                    toAppendTo.setCharAt(lastPos--, '&');
+                    break;
+                case '>':
+                    toAppendTo.setCharAt(lastPos--, ';');
+                    toAppendTo.setCharAt(lastPos--, 't');
+                    toAppendTo.setCharAt(lastPos--, 'g');
+                    toAppendTo.setCharAt(lastPos--, '&');
+                    break;
+                case '"':
+                    toAppendTo.setCharAt(lastPos--, ';');
+                    toAppendTo.setCharAt(lastPos--, 't');
+                    toAppendTo.setCharAt(lastPos--, 'o');
+                    toAppendTo.setCharAt(lastPos--, 'u');
+                    toAppendTo.setCharAt(lastPos--, 'q');
+                    toAppendTo.setCharAt(lastPos--, '&');
+                    break;
+                case '\'':
+                    toAppendTo.setCharAt(lastPos--, ';');
+                    toAppendTo.setCharAt(lastPos--, 's');
+                    toAppendTo.setCharAt(lastPos--, 'o');
+                    toAppendTo.setCharAt(lastPos--, 'p');
+                    toAppendTo.setCharAt(lastPos--, 'a');
+                    toAppendTo.setCharAt(lastPos--, '&');
+                    break;
+                default:
+                    toAppendTo.setCharAt(lastPos--, c);
+            }
+        }
     }
 }

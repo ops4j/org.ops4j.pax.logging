@@ -14,21 +14,29 @@
  * See the license for the specific language governing permissions and
  * limitations under the license.
  */
-package org.apache.logging.log4j.util;
+package org.apache.logging.log4j.message;
 
 /**
- * An extension of {@code StringMap} that imposes a total ordering on its keys.
- * The map is ordered according to the natural ordering of its keys. This order is reflected when
- * {@link #forEach(BiConsumer) consuming} the key-value pairs with a {@link BiConsumer} or a {@link TriConsumer}.
+ * An operation that accepts two input arguments and returns no result.
+ *
  * <p>
- * This interface views all key-value pairs as a sequence ordered by key, and allows
- * keys and values to be accessed by their index in the sequence.
+ * The third parameter lets callers pass in a stateful object to be modified with the key-value pairs,
+ * so the ParameterConsumer implementation itself can be stateless and potentially reusable.
  * </p>
  *
- * @see IndexedReadOnlyStringMap
- * @see StringMap
- * @since 2.8
+ * @param <S> state data
+ * @see ReusableMessage
+ * @since 2.11
  */
-public interface IndexedStringMap extends IndexedReadOnlyStringMap, StringMap {
-    // nothing more
+public interface ParameterConsumer<S> {
+
+    /**
+     * Performs an operation given the specified arguments.
+     *
+     * @param parameter the parameter
+     * @param parameterIndex Index of the parameter
+     * @param state
+     */
+    void accept(Object parameter, int parameterIndex, S state);
+
 }

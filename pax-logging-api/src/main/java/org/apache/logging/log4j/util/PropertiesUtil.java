@@ -18,26 +18,39 @@ package org.apache.logging.log4j.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <em>Consider this class private.</em>
  * <p>
- * Helps access properties. This utility provides a method to override system properties by specifying properties in a
- * properties file.
+ * Provides utility methods for managing {@link Properties} instances as well as access to the global configuration
+ * system. Properties by default are loaded from the system properties, system environment, and a classpath resource
+ * file named {@value #LOG4J_PROPERTIES_FILE_NAME}. Additional properties can be loaded by implementing a custom
+ * {@link PropertySource} service and specifying it via a {@link ServiceLoader} file called
+ * {@code META-INF/services/org.apache.logging.log4j.util.PropertySource} with a list of fully qualified class names
+ * implementing that interface.
  * </p>
+ *
+ * @see PropertySource
  */
 public final class PropertiesUtil {
 
-    private static final PropertiesUtil LOG4J_PROPERTIES = new PropertiesUtil("log4j2.component.properties");
+    private static final String LOG4J_PROPERTIES_FILE_NAME = "log4j2.component.properties";
+    private static final String LOG4J_SYSTEM_PROPERTIES_FILE_NAME = "log4j2.system.properties";
+    private static final String SYSTEM = "system:";
+    private static final PropertiesUtil LOG4J_PROPERTIES = new PropertiesUtil(LOG4J_PROPERTIES_FILE_NAME);
 
-    private final Properties props;
+    private final Environment environment;
 
     /**
      * Constructs a PropertiesUtil using a given Properties object as its source of defined properties.
@@ -45,7 +58,7 @@ public final class PropertiesUtil {
      * @param props the Properties to use by default
      */
     public PropertiesUtil(final Properties props) {
-        this.props = props;
+        this.environment = new Environment(new PropertiesPropertySource(props));
     }
 
     /**
@@ -55,21 +68,13 @@ public final class PropertiesUtil {
      * @param propertiesFileName the location of properties file to load
      */
     public PropertiesUtil(final String propertiesFileName) {
-        final Properties properties = new Properties();
-        for (final URL url : LoaderUtil.findResources(propertiesFileName)) {
-            try (final InputStream in = url.openStream()) {
-                properties.load(in);
-            } catch (final IOException ioe) {
-                LowLevelLogUtil.logException("Unable to read " + url.toString(), ioe);
-            }
-        }
-        this.props = properties;
+        this.environment = new Environment(new PropertyFilePropertySource(propertiesFileName));
     }
 
     /**
      * Loads and closes the given property input stream. If an error occurs, log to the status logger.
      *
-     * @param in a property input stream.
+     * @param in     a property input stream.
      * @param source a source object describing the source, like a resource string or a URL.
      * @return a new Properties object
      */
@@ -101,6 +106,16 @@ public final class PropertiesUtil {
     }
 
     /**
+     * Returns {@code true} if the specified property is defined, regardless of its value (it may not have a value).
+     *
+     * @param name the name of the property to verify
+     * @return {@code true} if the specified property is defined, regardless of its value
+     */
+    public boolean hasProperty(final String name) {
+        return environment.containsKey(name);
+    }
+
+    /**
      * Gets the named property as a boolean value. If the property matches the string {@code "true"} (case-insensitive),
      * then it is returned as the boolean value {@code true}. Any other non-{@code null} text in the property is
      * considered {@code false}.
@@ -115,13 +130,28 @@ public final class PropertiesUtil {
     /**
      * Gets the named property as a boolean value.
      *
-     * @param name the name of the property to look up
+     * @param name         the name of the property to look up
      * @param defaultValue the default value to use if the property is undefined
      * @return the boolean value of the property or {@code defaultValue} if undefined.
      */
     public boolean getBooleanProperty(final String name, final boolean defaultValue) {
         final String prop = getStringProperty(name);
-        return (prop == null) ? defaultValue : "true".equalsIgnoreCase(prop);
+        return prop == null ? defaultValue : "true".equalsIgnoreCase(prop);
+    }
+
+    /**
+     * Gets the named property as a boolean value.
+     *
+     * @param name                  the name of the property to look up
+     * @param defaultValueIfAbsent  the default value to use if the property is undefined
+     * @param defaultValueIfPresent the default value to use if the property is defined but not assigned
+     * @return the boolean value of the property or {@code defaultValue} if undefined.
+     */
+    public boolean getBooleanProperty(final String name, final boolean defaultValueIfAbsent,
+                                      final boolean defaultValueIfPresent) {
+        final String prop = getStringProperty(name);
+        return prop == null ? defaultValueIfAbsent
+            : prop.isEmpty() ? defaultValueIfPresent : "true".equalsIgnoreCase(prop);
     }
 
     /**
@@ -135,21 +165,37 @@ public final class PropertiesUtil {
     }
 
     /**
-     * Gets the named property as a Charset value.
+     * Gets the named property as a Charset value. If we cannot find the named Charset, see if it is mapped in
+     * file {@code Log4j-charsets.properties} on the class path.
      *
-     * @param name the name of the property to look up
+     * @param name         the name of the property to look up
      * @param defaultValue the default value to use if the property is undefined
      * @return the Charset value of the property or {@code defaultValue} if undefined.
      */
     public Charset getCharsetProperty(final String name, final Charset defaultValue) {
-        final String prop = getStringProperty(name);
-        return prop == null ? defaultValue : Charset.forName(prop);
+        final String charsetName = getStringProperty(name);
+        if (charsetName == null) {
+            return defaultValue;
+        }
+        if (Charset.isSupported(charsetName)) {
+            return Charset.forName(charsetName);
+        }
+        final ResourceBundle bundle = getCharsetsResourceBundle();
+        if (bundle.containsKey(name)) {
+            final String mapped = bundle.getString(name);
+            if (Charset.isSupported(mapped)) {
+                return Charset.forName(mapped);
+            }
+        }
+        LowLevelLogUtil.log("Unable to get Charset '" + charsetName + "' for property '" + name + "', using default "
+            + defaultValue + " and continuing.");
+        return defaultValue;
     }
 
     /**
      * Gets the named property as a double.
      *
-     * @param name the name of the property to look up
+     * @param name         the name of the property to look up
      * @param defaultValue the default value to use if the property is undefined
      * @return the parsed double value of the property or {@code defaultValue} if it was undefined or could not be parsed.
      */
@@ -168,10 +214,10 @@ public final class PropertiesUtil {
     /**
      * Gets the named property as an integer.
      *
-     * @param name the name of the property to look up
+     * @param name         the name of the property to look up
      * @param defaultValue the default value to use if the property is undefined
      * @return the parsed integer value of the property or {@code defaultValue} if it was undefined or could not be
-     *         parsed.
+     * parsed.
      */
     public int getIntegerProperty(final String name, final int defaultValue) {
         final String prop = getStringProperty(name);
@@ -188,7 +234,7 @@ public final class PropertiesUtil {
     /**
      * Gets the named property as a long.
      *
-     * @param name the name of the property to look up
+     * @param name         the name of the property to look up
      * @param defaultValue the default value to use if the property is undefined
      * @return the parsed long value of the property or {@code defaultValue} if it was undefined or could not be parsed.
      */
@@ -211,19 +257,13 @@ public final class PropertiesUtil {
      * @return the String value of the property or {@code null} if undefined.
      */
     public String getStringProperty(final String name) {
-        String prop = null;
-        try {
-            prop = System.getProperty(name);
-        } catch (final SecurityException ignored) {
-            // Ignore
-        }
-        return prop == null ? props.getProperty(name) : prop;
+        return environment.get(name);
     }
 
     /**
      * Gets the named property as a String.
      *
-     * @param name the name of the property to look up
+     * @param name         the name of the property to look up
      * @param defaultValue the default value to use if the property is undefined
      * @return the String value of the property or {@code defaultValue} if undefined.
      */
@@ -248,11 +288,122 @@ public final class PropertiesUtil {
     }
 
     /**
+     * Reloads all properties. This is primarily useful for unit tests.
+     *
+     * @since 2.10.0
+     */
+    public void reload() {
+        environment.reload();
+    }
+
+    /**
+     * Provides support for looking up global configuration properties via environment variables, property files,
+     * and system properties, in three variations:
+     * <p>
+     * Normalized: all log4j-related prefixes removed, remaining property is camelCased with a log4j2 prefix for
+     * property files and system properties, or follows a LOG4J_FOO_BAR format for environment variables.
+     * <p>
+     * Legacy: the original property name as defined in the source pre-2.10.0.
+     * <p>
+     * Tokenized: loose matching based on word boundaries.
+     *
+     * @since 2.10.0
+     */
+    private static class Environment {
+
+        private final Set<PropertySource> sources = new TreeSet<>(new PropertySource.Comparator());
+        private final Map<CharSequence, String> literal = new ConcurrentHashMap<>();
+        private final Map<CharSequence, String> normalized = new ConcurrentHashMap<>();
+        private final Map<List<CharSequence>, String> tokenized = new ConcurrentHashMap<>();
+
+        private Environment(final PropertySource propertySource) {
+            PropertyFilePropertySource sysProps = new PropertyFilePropertySource(LOG4J_SYSTEM_PROPERTIES_FILE_NAME);
+            try {
+                sysProps.forEach(new BiConsumer<String, String>() {
+                    @Override
+                    public void accept(String key, String value) {
+                        if (System.getProperty(key) == null) {
+                            System.setProperty(key, value);
+                        }
+                    }
+                });
+            } catch (SecurityException ex) {
+                // Access to System Properties is restricted so just skip it.
+            }
+            sources.add(propertySource);
+			for (final ClassLoader classLoader : LoaderUtil.getClassLoaders()) {
+				try {
+					for (final PropertySource source : ServiceLoader.load(PropertySource.class, classLoader)) {
+						sources.add(source);
+					}
+				} catch (final Throwable ex) {
+					/* Don't log anything to the console. It may not be a problem that a PropertySource
+					 * isn't accessible.
+					 */
+				}
+			}
+
+            reload();
+        }
+
+        private synchronized void reload() {
+            literal.clear();
+            normalized.clear();
+            tokenized.clear();
+            for (final PropertySource source : sources) {
+                source.forEach(new BiConsumer<String, String>() {
+                    @Override
+                    public void accept(final String key, final String value) {
+                        if (key != null && value != null) {
+                            literal.put(key, value);
+                            final List<CharSequence> tokens = PropertySource.Util.tokenize(key);
+                            if (tokens.isEmpty()) {
+                                normalized.put(source.getNormalForm(Collections.singleton(key)), value);
+                            } else {
+                                normalized.put(source.getNormalForm(tokens), value);
+                                tokenized.put(tokens, value);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        private static boolean hasSystemProperty(final String key) {
+            try {
+                return System.getProperties().containsKey(key);
+            } catch (final SecurityException ignored) {
+                return false;
+            }
+        }
+
+        private String get(final String key) {
+            if (normalized.containsKey(key)) {
+                return normalized.get(key);
+            }
+            if (literal.containsKey(key)) {
+                return literal.get(key);
+            }
+            if (hasSystemProperty(key)) {
+                return System.getProperty(key);
+            }
+            return tokenized.get(PropertySource.Util.tokenize(key));
+        }
+
+        private boolean containsKey(final String key) {
+            return normalized.containsKey(key) ||
+                literal.containsKey(key) ||
+                hasSystemProperty(key) ||
+                tokenized.containsKey(PropertySource.Util.tokenize(key));
+        }
+    }
+
+    /**
      * Extracts properties that start with or are equals to the specific prefix and returns them in a new Properties
      * object with the prefix removed.
      *
      * @param properties The Properties to evaluate.
-     * @param prefix The prefix to extract.
+     * @param prefix     The prefix to extract.
      * @return The subset of properties.
      */
     public static Properties extractSubset(final Properties properties, final String prefix) {
@@ -279,6 +430,10 @@ public final class PropertiesUtil {
         return subset;
     }
 
+    static ResourceBundle getCharsetsResourceBundle() {
+        return ResourceBundle.getBundle("Log4j-charsets");
+    }
+
     /**
      * Partitions a properties map based on common key prefixes up to the first period.
      *
@@ -301,10 +456,11 @@ public final class PropertiesUtil {
 
     /**
      * Returns true if system properties tell us we are running on Windows.
+     *
      * @return true if system properties tell us we are running on Windows.
      */
     public boolean isOsWindows() {
-        return getStringProperty("os.name").startsWith("Windows");
+        return getStringProperty("os.name", "").startsWith("Windows");
     }
 
 }

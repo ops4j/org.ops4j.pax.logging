@@ -14,21 +14,20 @@
  * See the license for the specific language governing permissions and
  * limitations under the license.
  */
-package org.apache.logging.log4j.util;
+package org.apache.logging.log4j.message;
 
 /**
- * An extension of {@code StringMap} that imposes a total ordering on its keys.
- * The map is ordered according to the natural ordering of its keys. This order is reflected when
- * {@link #forEach(BiConsumer) consuming} the key-value pairs with a {@link BiConsumer} or a {@link TriConsumer}.
- * <p>
- * This interface views all key-value pairs as a sequence ordered by key, and allows
- * keys and values to be accessed by their index in the sequence.
- * </p>
+ * {@link Clearable} objects may be reset to a reusable state.
  *
- * @see IndexedReadOnlyStringMap
- * @see StringMap
- * @since 2.8
+ * This type should be combined into {@link ReusableMessage} as a default method for 3.0.
+ *
+ * @since 2.11.1
  */
-public interface IndexedStringMap extends IndexedReadOnlyStringMap, StringMap {
-    // nothing more
+interface Clearable {
+
+    /**
+     * Resets the object to a clean state.
+     */
+    void clear();
+
 }
