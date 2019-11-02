@@ -11,6 +11,7 @@ Per Böckman             dev2null
 David Ribeiro Alves     dr-alves@criticalsoftware.com
 Edward Yakop            edward.yakop@gmail.com
 Guillaume Nodet         gnodet
+JB Onofré               jbonofre
 Makas Lau               makas@ops4j.org
 Stuart McCulloch        mcculls
 Niclas Hedhman          niclas@hedhman.org
