@@ -214,7 +214,7 @@
         <version.org.apache.avalon.framework>4.3.1</version.org.apache.avalon.framework>
         <version.org.apache.tomcat.juli>9.0.19</version.org.apache.tomcat.juli>
         <version.org.apache.xbean>4.15</version.org.apache.xbean>
-        <version.biz.aQute.bnd>4.2.0</version.biz.aQute.bnd>
+        <version.biz.aQute.bnd>4.3.0</version.biz.aQute.bnd>
         <version.ch.qos.logback>1.2.3</version.ch.qos.logback>
         <version.ch.qos.logback.contrib>0.1.5</version.ch.qos.logback.contrib>
         <version.com.fasterxml.jackson>2.10.0</version.com.fasterxml.jackson>
