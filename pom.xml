@@ -257,7 +257,7 @@
         <plugin.maven-install-plugin>2.5.2</plugin.maven-install-plugin>
         <plugin.maven-invoker-plugin>3.2.0</plugin.maven-invoker-plugin>
         <plugin.maven-jar-plugin>3.1.2</plugin.maven-jar-plugin>
-        <plugin.maven-javadoc-plugin>3.1.0</plugin.maven-javadoc-plugin>
+        <plugin.maven-javadoc-plugin>3.1.1</plugin.maven-javadoc-plugin>
         <plugin.maven-release-plugin>2.5.3</plugin.maven-release-plugin>
         <plugin.maven-remote-resources-plugin>1.6.0</plugin.maven-remote-resources-plugin>
         <plugin.maven-resources-plugin>3.1.0</plugin.maven-resources-plugin>
