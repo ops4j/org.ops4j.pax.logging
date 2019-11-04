@@ -255,7 +255,7 @@
         <plugin.maven-failsafe-plugin>2.22.1</plugin.maven-failsafe-plugin>
         <plugin.maven-gpg-plugin>1.6</plugin.maven-gpg-plugin>
         <plugin.maven-install-plugin>2.5.2</plugin.maven-install-plugin>
-        <plugin.maven-invoker-plugin>3.2.0</plugin.maven-invoker-plugin>
+        <plugin.maven-invoker-plugin>3.2.1</plugin.maven-invoker-plugin>
         <plugin.maven-jar-plugin>3.2.0</plugin.maven-jar-plugin>
         <plugin.maven-javadoc-plugin>3.1.1</plugin.maven-javadoc-plugin>
         <plugin.maven-release-plugin>2.5.3</plugin.maven-release-plugin>
