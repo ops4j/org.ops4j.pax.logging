@@ -263,7 +263,7 @@
         <plugin.maven-resources-plugin>3.1.0</plugin.maven-resources-plugin>
         <plugin.dependency.maven-filtering>3.1.1</plugin.dependency.maven-filtering>
         <plugin.maven-shade-plugin>3.2.1</plugin.maven-shade-plugin>
-        <plugin.maven-site-plugin>3.7.1</plugin.maven-site-plugin>
+        <plugin.maven-site-plugin>3.8.2</plugin.maven-site-plugin>
         <plugin.maven-source-plugin>3.2.0</plugin.maven-source-plugin>
         <plugin.maven-surefire-plugin>2.22.2</plugin.maven-surefire-plugin>
         <plugin.maven-toolchains-plugin>3.0.0</plugin.maven-toolchains-plugin>
