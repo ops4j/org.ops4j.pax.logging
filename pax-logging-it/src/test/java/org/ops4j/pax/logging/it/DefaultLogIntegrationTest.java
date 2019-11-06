@@ -74,7 +74,7 @@ import static org.ops4j.pax.logging.it.support.Helpers.delegate;
  * }
  * </pre> prints:<pre>
  * r: jar:file:~/.m2/repository/org/ops4j/pax/logging/pax-logging-api/1.11.0-SNAPSHOT/pax-logging-api-1.11.0-SNAPSHOT.jar!/org/slf4j/Logger.class
- * r: jar:file:~/.m2/repository/org/slf4j/slf4j-api/1.7.26/slf4j-api-1.7.26.jar!/org/slf4j/Logger.class
+ * r: jar:file:~/.m2/repository/org/slf4j/slf4j-api/1.7.29/slf4j-api-1.7.29.jar!/org/slf4j/Logger.class
  * </pre>
  * That's why even pax-exam logs go through pax-logging-api's {@link DefaultServiceLog}.</p>
  */
