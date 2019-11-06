@@ -151,6 +151,7 @@
         <dependency>
             <groupId>org.knopflerfish.kf6</groupId>
             <artifactId>log-API</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

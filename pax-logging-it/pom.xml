@@ -251,6 +251,7 @@
             <groupId>org.knopflerfish.kf6</groupId>
             <artifactId>log-API</artifactId>
             <scope>test</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- ServiceMIX -->
