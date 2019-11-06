@@ -18,8 +18,8 @@
  */
 
 /**
- * This package is present slf4j-api-1.7.26-sources.jar, but it's not compiled
- * into slf4j-api-1.7.26.jar, because actual binding is provided by e.g., slf4j-nop,
+ * This package is present slf4j-api-1.7.29-sources.jar, but it's not compiled
+ * into slf4j-api-1.7.29.jar, because actual binding is provided by e.g., slf4j-nop,
  * slf4j-simple, logback-classic or log4j-slf4j-impl.
  * pax-logging-api provides own binding.
  */

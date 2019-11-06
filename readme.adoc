@@ -323,7 +323,7 @@ Remember - in Pax Logging, it's possible to use for example Log4J2 _API_ to log 
 
 == SLF4J
 
-`slf4j-api-1.7.26-sources.jar` contains more sources than `slf4j-api-1.7.26.jar` has classes - in particular, `org.slf4j.impl` package is removed from the jar and the responsibility to provide:
+`slf4j-api-1.7.29-sources.jar` contains more sources than `slf4j-api-1.7.29.jar` has classes - in particular, `org.slf4j.impl` package is removed from the jar and the responsibility to provide:
 
 * `org.ops4j.impl.StaticLoggerBinder`
 * `org.ops4j.impl.StaticMDCBinder`
@@ -333,11 +333,11 @@ classes lies on the side of _binding library_ for SLF4J API. Such classes are pr
 
 * `logback-classic-1.2.3.jar`
 * `log4j-slf4j-impl-2.11.2.jar`
-* `slf4j-nop-1.7.26.jar`
-* `slf4j-log4j12-1.7.26.jar`
-* `slf4j-simple-1.7.26.jar`
+* `slf4j-nop-1.7.29.jar`
+* `slf4j-log4j12-1.7.29.jar`
+* `slf4j-simple-1.7.29.jar`
 
-pax-logging-api provides own implementation of these three classes. All other classes are directly repackaged (using bndlib) from `slf4j-api-1.7.26.jar` - classes that don't have to be changed are no longer shipped in pax-logging-api source directory.
+pax-logging-api provides own implementation of these three classes. All other classes are directly repackaged (using bndlib) from `slf4j-api-1.7.29.jar` - classes that don't have to be changed are no longer shipped in pax-logging-api source directory.
 
 == Commons Logging
 
