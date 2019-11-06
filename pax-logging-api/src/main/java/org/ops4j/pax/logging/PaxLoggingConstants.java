@@ -182,4 +182,9 @@ public interface PaxLoggingConstants {
      */
     String LOGGING_CFG_USE_LOCKS = PID_CFG_USE_LOCKS;
 
+    /**
+     * <p>System property to disable (because its enabled by default) thread map inheritance in {@link PaxContext}</p>
+     */
+    String LOGGING_CFG_INHERIT_THREAD_CONTEXT_MAP = "org.ops4j.pax.logging.threadContextMapInheritable";
+
 }
