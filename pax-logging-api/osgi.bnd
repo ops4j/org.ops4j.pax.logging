@@ -52,7 +52,7 @@ Export-Package: \
  org.apache.commons.logging.impl;-split-package:=merge-first; version=1.2.0; provider=paxlogging, \
  org.apache.commons.logging.impl;-split-package:=merge-first; version=1.1.3; provider=paxlogging, \
  org.apache.commons.logging.impl;-split-package:=merge-first; version=1.0.4; provider=paxlogging, \
- org.apache.juli.logging;-split-package:=merge-first; version=9.0.19; provider=paxlogging, \
+ org.apache.juli.logging;-split-package:=merge-first; version=9.0.27; provider=paxlogging, \
  org.apache.juli.logging;-split-package:=merge-first; version=8.5.40; provider=paxlogging, \
  org.apache.juli.logging;-split-package:=merge-first; version=7.0.94; provider=paxlogging, \
  org.apache.juli.logging;-split-package:=merge-first; version=6.0.18; provider=paxlogging, \
