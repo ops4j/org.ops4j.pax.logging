@@ -20,6 +20,9 @@ package org.ops4j.pax.logging.log4j2.internal;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -66,6 +69,7 @@ public class PaxLoggingServiceImpl
         implements PaxLoggingService, ManagedService, ServiceFactory {
 
     private static final String LOGGER_CONTEXT_NAME = "pax-logging";
+    private static final String LOG4J2_CONFIG_DEFAULTS_KEY = "org.ops4j.pax.logging.log4j2.defaults.file";
 
     static {
 //        PluginManager.addPackage("org.apache.logging.log4j.core");
@@ -436,6 +440,15 @@ public class PaxLoggingServiceImpl
         if (configuration != null) {
             // properties passed directly
             props = new Properties();
+            Object defaultsFile = configuration.get(LOG4J2_CONFIG_DEFAULTS_KEY);
+            if (defaultsFile != null) {
+                // merge with properties from defaults file.
+                try (InputStream inputStream = new FileInputStream(defaultsFile.toString())) {
+                    props.load(inputStream);
+                } catch (IOException e) {
+                    StatusLogger.getLogger().error("Error reading defaults file.", e);
+                }
+            }
             for (Enumeration<String> keys = configuration.keys(); keys.hasMoreElements(); ) {
                 String key = keys.nextElement();
                 props.setProperty(key, configuration.get(key).toString());
