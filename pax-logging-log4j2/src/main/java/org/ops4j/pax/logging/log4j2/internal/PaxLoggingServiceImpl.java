@@ -69,7 +69,6 @@ public class PaxLoggingServiceImpl
         implements PaxLoggingService, ManagedService, ServiceFactory {
 
     private static final String LOGGER_CONTEXT_NAME = "pax-logging";
-    private static final String LOG4J2_CONFIG_DEFAULTS_KEY = "org.ops4j.pax.logging.log4j2.defaults.file";
 
     static {
 //        PluginManager.addPackage("org.apache.logging.log4j.core");
@@ -440,7 +439,7 @@ public class PaxLoggingServiceImpl
         if (configuration != null) {
             // properties passed directly
             props = new Properties();
-            Object defaultsFile = configuration.get(LOG4J2_CONFIG_DEFAULTS_KEY);
+            Object defaultsFile = configuration.get(PaxLoggingConstants.PID_CFG_LOG4J2_DEFAULTS_FILE);
             if (defaultsFile != null) {
                 // merge with properties from defaults file.
                 try (InputStream inputStream = new FileInputStream(defaultsFile.toString())) {
