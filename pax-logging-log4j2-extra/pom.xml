@@ -34,7 +34,7 @@
     <artifactId>pax-logging-log4j2-extra</artifactId>
     <packaging>bundle</packaging>
 
-    <name>OPS4J Pax Logging - Log4j v2 Extra packages</name>
+    <name>OPS4J Pax Logging - Log4Jv2 extra packages</name>
 
     <description>
         This bundle extends Pax Logging Log4j2 one with extra packages only required for some specific appenders.
