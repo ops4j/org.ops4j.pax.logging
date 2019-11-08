@@ -57,6 +57,24 @@ public class CleanIntegrationTest extends AbstractControlledIntegrationTestBase 
             String info = String.format("#%d: %s (%s)", b.getBundleId(), b.getSymbolicName(), b.getLocation());
             LOG.info(info);
         }
+
+        // PAXLOGGING-274: for bundles starting before pax-logging-api, any logging facade may already
+        // be used (e.g., SLF4J), that's why in this case (for special, pax-logging-it-karaf/karaf-distribution),
+        // we see this in log:
+        // org.ops4j.pax.logging.karaf.base-logger [org.ops4j.pax.logging.karaf.base.Activator] INFO : Starting before pax-logging-api
+        // the log is actually stdout or pax-logging-it-karaf/karaf-it/target/failsafe-reports/org.ops4j.pax.logging.it.karaf.R7LoggerIntegrationTest-output.txt
+        // (depending on maven-failsafe-plugin configuration)
+        // we do test these files with verify.groovy script and maven-invoker-plugin, but it's not that easy with
+        // pax-exam (either native or karaf container).
+        //
+        // that's why I only mention this and ensure that this is seen in the log:
+        //    org.ops4j.pax.logging.karaf.base-logger [org.ops4j.pax.logging.karaf.base.Activator] INFO : Starting before pax-logging-api
+        //    org.ops4j.pax.logging.karaf.base-logger [org.ops4j.pax.logging.karaf.base.Activator] WARN : Starting before pax-logging-api
+        // but this is not:
+        //    org.ops4j.pax.logging.karaf.base-logger [org.ops4j.pax.logging.karaf.base.Activator] TRACE : Starting before pax-logging-api
+        //    org.ops4j.pax.logging.karaf.base-logger [org.ops4j.pax.logging.karaf.base.Activator] DEBUG : Starting before pax-logging-api
+        // when -Dorg.ops4j.pax.logging.DefaultServiceLog.level=INFO is used
+        // I can't prove it with JUnit - just trust me ;)
     }
 
 }

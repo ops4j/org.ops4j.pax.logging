@@ -29,12 +29,18 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
+        LOG.trace("Starting before pax-logging-api");
+        LOG.debug("Starting before pax-logging-api");
         LOG.info("Starting before pax-logging-api");
+        LOG.warn("Starting before pax-logging-api");
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        LOG.trace("Stopping after pax-logging-api");
+        LOG.debug("Stopping after pax-logging-api");
         LOG.info("Stopping after pax-logging-api");
+        LOG.warn("Stopping after pax-logging-api");
     }
 
 }

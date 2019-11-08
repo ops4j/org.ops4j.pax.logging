@@ -48,6 +48,11 @@ public class DefaultServiceLog implements PaxLogger {
     private String m_categoryName;
     private PaxContext m_context = new PaxContext();
 
+    static {
+        // PAXLOGGING-274: needed when loggers are called before pax-logging-api bundle starts
+        setLogLevel(BackendSupport.defaultLogLevel(null));
+    }
+
     DefaultServiceLog(Bundle bundle, String categoryName) {
         m_bundle = bundle;
         m_categoryName = categoryName;
@@ -736,7 +741,7 @@ public class DefaultServiceLog implements PaxLogger {
      * @param t
      */
     protected void output(String levelName, String message, Throwable t) {
-        synchronized (this) {
+        synchronized (System.out) {
             output(System.out, levelName, message, t);
         }
     }
