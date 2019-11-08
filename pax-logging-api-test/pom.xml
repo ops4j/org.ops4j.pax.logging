@@ -46,6 +46,9 @@
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                     <postBuildHookScript>verify</postBuildHookScript>
                     <skipInvocation>${skipTests}</skipInvocation>
+                    <properties>
+                        <org.ops4j.pax.logging.DefaultServiceLog.level>TRACE</org.ops4j.pax.logging.DefaultServiceLog.level>
+                    </properties>
                 </configuration>
                 <executions>
                     <execution>
