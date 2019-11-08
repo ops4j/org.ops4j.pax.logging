@@ -50,7 +50,7 @@ public class FrameworkHandlerTest {
     public void testDefaultLogLevelIsDebug() throws Exception {
         System.clearProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
         logAnEvent();
-        verify(currentLogger).debug(anyString());
+        verify(currentLogger).debug(anyString(), any(Object[].class));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class FrameworkHandlerTest {
         System.setProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL, "INFO");
         try {
             logAnEvent();
-            verify(currentLogger).info(anyString());
+            verify(currentLogger).info(anyString(), any(Object[].class));
         } finally {
             System.clearProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
         }
@@ -69,7 +69,7 @@ public class FrameworkHandlerTest {
         System.setProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL, "GARBAGE");
         try {
             logAnEvent();
-            verify(currentLogger).debug(anyString());
+            verify(currentLogger).debug(anyString(), any(Object[].class));
         } finally {
             System.clearProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
         }

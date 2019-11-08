@@ -182,6 +182,7 @@ public class FrameworkHandler
 
     private void doLog(LogLevel loggingLevel, Bundle bundle, String category, String message, Object... args) {
         if (loggingLevel == null) {
+            // OFF or NONE specified as logging level
             return;
         }
 
