@@ -193,4 +193,9 @@ public interface PaxLoggingConstants {
      */
     String LOGGING_CFG_INHERIT_THREAD_CONTEXT_MAP = "org.ops4j.pax.logging.threadContextMapInheritable";
 
+    /**
+     * <em>Private</em> key to pass original Log4j2 {@code org.apache.logging.log4j.message.Message}
+     * if it's going to be used by Log4j2 backend (see https://ops4j1.jira.com/browse/PAXLOGGING-302)
+     */
+    String _LOG4J2_MESSAGE = ".log4j2_message";
 }

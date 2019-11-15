@@ -36,5 +36,20 @@ for (String l : lines) {
   if (l.contains("org.ops4j.pax.logging.test.log4j2.Log4j2NativeApiTest ({}) INFO (m1[ p1, p2 ] | m1): markers - INFO")) {
     ok++
   }
+  if (l.contains("FORMAT> -42- 0042")) {
+    ok++
+  }
+  if (l.contains("MAP> <Map>")) {
+    ok++
+  }
+  if (l.contains("MAP> {\"k1\":\"v2\", \"k2\":\"v2\"}")) {
+    ok++
+  }
+  if (l.contains("SD> sd-test [1 k1=\"v1\" k2=\"v2\"] hello10")) {
+    ok++
+  }
+  if (l.contains("SD> 1/sd-test v1 sd-test [1 k1=\"v1\" k2=\"v2\"] hello10")) {
+    ok++
+  }
 }
-assert ok == 5
+assert ok == 10

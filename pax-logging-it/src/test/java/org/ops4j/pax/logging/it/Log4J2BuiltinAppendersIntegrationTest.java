@@ -194,7 +194,7 @@ public class Log4J2BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         Object obj = list.get(0);
 
         assertThat(obj.getClass().getName(), equalTo("org.apache.logging.log4j.core.impl.Log4jLogEvent"));
-        assertThat(Helpers.getField(obj, "message.messagePattern", String.class), equalTo("should be added to list"));
+        assertThat(Helpers.getField(obj, "message.message", String.class), equalTo("should be added to list"));
     }
 
     @Test

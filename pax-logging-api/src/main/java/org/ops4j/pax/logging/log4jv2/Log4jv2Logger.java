@@ -23,6 +23,7 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.spi.AbstractLogger;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 import org.ops4j.pax.logging.PaxMarker;
@@ -152,35 +153,41 @@ public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAw
 
     @Override
     public void logMessage(String fqcn, Level level, Marker marker, Message message, Throwable t) {
-        if (marker != null) {
-            PaxMarker paxMarker = new PaxMarker(marker);
-            if (level.intLevel() >= Level.TRACE.intLevel()) {
-                m_delegate.fqtrace(fqcn, paxMarker, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
-                m_delegate.fqdebug(fqcn, paxMarker, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.INFO.intLevel()) {
-                m_delegate.fqinfo(fqcn, paxMarker, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.WARN.intLevel()) {
-                m_delegate.fqwarn(fqcn, paxMarker, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.ERROR.intLevel()) {
-                m_delegate.fqerror(fqcn, paxMarker, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.FATAL.intLevel()) {
-                m_delegate.fqfatal(fqcn, paxMarker, message.getFormattedMessage(), t);
+        try {
+            // PAXLOGGING-302
+            m_delegate.getPaxContext().put(PaxLoggingConstants._LOG4J2_MESSAGE, message);
+            if (marker != null) {
+                PaxMarker paxMarker = new PaxMarker(marker);
+                if (level.intLevel() >= Level.TRACE.intLevel()) {
+                    m_delegate.fqtrace(fqcn, paxMarker, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
+                    m_delegate.fqdebug(fqcn, paxMarker, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.INFO.intLevel()) {
+                    m_delegate.fqinfo(fqcn, paxMarker, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.WARN.intLevel()) {
+                    m_delegate.fqwarn(fqcn, paxMarker, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.ERROR.intLevel()) {
+                    m_delegate.fqerror(fqcn, paxMarker, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.FATAL.intLevel()) {
+                    m_delegate.fqfatal(fqcn, paxMarker, message.getFormattedMessage(), t);
+                }
+            } else {
+                if (level.intLevel() >= Level.TRACE.intLevel()) {
+                    m_delegate.fqtrace(fqcn, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
+                    m_delegate.fqdebug(fqcn, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.INFO.intLevel()) {
+                    m_delegate.fqinfo(fqcn, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.WARN.intLevel()) {
+                    m_delegate.fqwarn(fqcn, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.ERROR.intLevel()) {
+                    m_delegate.fqerror(fqcn, message.getFormattedMessage(), t);
+                } else if (level.intLevel() >= Level.FATAL.intLevel()) {
+                    m_delegate.fqfatal(fqcn, message.getFormattedMessage(), t);
+                }
             }
-        } else {
-            if (level.intLevel() >= Level.TRACE.intLevel()) {
-                m_delegate.fqtrace(fqcn, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.DEBUG.intLevel()) {
-                m_delegate.fqdebug(fqcn, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.INFO.intLevel()) {
-                m_delegate.fqinfo(fqcn, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.WARN.intLevel()) {
-                m_delegate.fqwarn(fqcn, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.ERROR.intLevel()) {
-                m_delegate.fqerror(fqcn, message.getFormattedMessage(), t);
-            } else if (level.intLevel() >= Level.FATAL.intLevel()) {
-                m_delegate.fqfatal(fqcn, message.getFormattedMessage(), t);
-            }
+        } finally {
+            m_delegate.getPaxContext().remove(PaxLoggingConstants._LOG4J2_MESSAGE);
         }
     }
 

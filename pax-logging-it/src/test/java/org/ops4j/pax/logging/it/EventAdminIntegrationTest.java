@@ -23,6 +23,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,7 +70,7 @@ public class EventAdminIntegrationTest extends AbstractControlledIntegrationTest
 
         Bundle probe = FrameworkUtil.getBundle(this.getClass());
 
-        final List<Event> events = new LinkedList<>();
+        final List<Event> events = new CopyOnWriteArrayList<>();
         Dictionary<String, Object> props = new Hashtable<>();
         props.put(EventConstants.EVENT_TOPIC, new String[] {
                 "org/osgi/service/log/LogEntry/LOG_AUDIT",
