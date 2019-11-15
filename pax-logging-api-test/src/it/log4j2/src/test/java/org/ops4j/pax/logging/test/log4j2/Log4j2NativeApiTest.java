@@ -18,26 +18,48 @@
  */
 package org.ops4j.pax.logging.test.log4j2;
 
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.message.DefaultFlowMessageFactory;
+import org.apache.logging.log4j.message.EntryMessage;
+import org.apache.logging.log4j.message.FormattedMessage;
+import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.message.MessageFormatMessage;
+import org.apache.logging.log4j.message.ParameterizedMessage;
+import org.apache.logging.log4j.message.SimpleMessage;
+import org.apache.logging.log4j.message.StringFormattedMessage;
+import org.apache.logging.log4j.message.StringMapMessage;
+import org.apache.logging.log4j.message.StructuredDataMessage;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * <p>This unit test shows different log4j2 API usages. It's much easier than with Log4J1 because API separation
  * in Log4J2 is better.</p>
  */
 public class Log4j2NativeApiTest {
+
+    private static LoggerContext context;
 
     @BeforeClass
     public static void config() {
@@ -54,7 +76,7 @@ public class Log4j2NativeApiTest {
         builder.add(builder.newRootLogger(Level.DEBUG)
                 .add(builder.newAppenderRef("Stdout")));
 
-        Configurator.initialize(builder.build(true));
+        context = Configurator.initialize(builder.build(true));
     }
 
     @Test
@@ -96,6 +118,93 @@ public class Log4j2NativeApiTest {
         Marker m1 = MarkerManager.getMarker("m1");
         m1.addParents(MarkerManager.getMarker("p1"), MarkerManager.getMarker("p2"));
         log.info(m1, "markers - INFO");
+    }
+
+    @Test
+    public void messages() {
+        // backup appenders
+        org.apache.logging.log4j.core.Logger root = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        Map<String, Appender> appenders = root.getAppenders();
+        appenders.values().forEach(root::removeAppender);
+
+        Logger log = LogManager.getLogger(Log4j2NativeApiTest.class);
+
+        log.info((Message) new SimpleMessage("Hello1"));
+
+        EntryMessage hello2 = new DefaultFlowMessageFactory().newEntryMessage(new SimpleMessage("Hello2"));
+        log.info(hello2);
+
+        // org.apache.logging.log4j.message.FormattedMessage dynamically choses between:
+        //  - java.text.MessageFormat {N,format} style
+        //  - java.util.Formatter % style
+        //  - slf4j-like {} style
+        assertThat(MessageFormat.format("-{0,number}- {0,number,0000}", 3), equalTo("-3- 0003"));
+
+        layout("FORMAT> %msg%n");
+        Message hello3 = new FormattedMessage("{0,number,00}", 1);
+        log.info(hello3);
+        Message hello4 = new FormattedMessage("%03d", 1);
+        log.info(hello4);
+        Message hello5 = new FormattedMessage("{}, {}", 1, "hello5");
+        log.info(hello5);
+
+        Message hello6 = new MessageFormatMessage("-{0,number}- {0,number,0000}", 42);
+        log.info(hello6);
+
+        Message hello7 = new StringFormattedMessage("%04d", 42);
+        log.info(hello7);
+
+        Message hello8 = new ParameterizedMessage("{}, {}", 42, 43);
+        log.info(hello8);
+
+        HashMap<String, String> map9 = new HashMap<>();
+        map9.put("k1", "v2");
+        map9.put("k2", "v2");
+        Message hello9 = new StringMapMessage(map9);
+
+        // org.apache.logging.log4j.message.MapMessage.MapFormat.lookupIgnoreCase() for %msg parameters
+        layout("MAP> %msg{XML}%n");
+        log.info(hello9);
+        layout("MAP> %msg{JSON}%n");
+        log.info(hello9);
+        ThreadContext.put("x1", "y1");
+        layout("MAP> ${map:k1} ${ctx:x1} ${sys:java.home} %msg%n");
+        log.info(hello9);
+
+        // http://logging.apache.org/log4j/2.x/manual/configuration.html#PropertySubstitution
+        // http://logging.apache.org/log4j/2.x/manual/lookups.html#StructuredDataLookup
+        StructuredDataMessage hello10 = new StructuredDataMessage("1", "hello10", "sd-test");
+        hello10.put("k1", "v1");
+        hello10.put("k2", "v2");
+        layout("SD> %msg%n");
+        log.info(hello10);
+        layout("SD> ${sd:id}/${sd:type} ${sd:k1} %msg%n");
+        log.info(hello10);
+
+        // restore appenders
+        root.getAppenders().values().forEach(root::removeAppender);
+        appenders.values().forEach(root::addAppender);
+        ThreadContext.clearAll();
+    }
+
+    private void layout(String layout) {
+        org.apache.logging.log4j.core.Logger root = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        Map<String, Appender> appenders = root.getAppenders();
+        appenders.values().forEach(root::removeAppender);
+
+        PatternLayout pl = PatternLayout.newBuilder()
+                .withPattern(layout)
+                .withConfiguration(context.getConfiguration())
+                .build();
+        ConsoleAppender appender = ConsoleAppender.newBuilder()
+                .setName("Stdout")
+                .setConfiguration(context.getConfiguration())
+                .setTarget(ConsoleAppender.Target.SYSTEM_OUT)
+                .setLayout(pl)
+                .build();
+        appender.start();
+
+        root.addAppender(appender);
     }
 
     @Test

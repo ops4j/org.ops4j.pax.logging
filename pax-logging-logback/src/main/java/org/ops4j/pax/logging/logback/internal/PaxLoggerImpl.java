@@ -24,6 +24,7 @@ import java.security.PrivilegedAction;
 import ch.qos.logback.classic.Logger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxMarker;
 import org.ops4j.pax.logging.logback.internal.spi.PaxLevelForLogback;
 import org.osgi.framework.Bundle;
@@ -368,6 +369,10 @@ public class PaxLoggerImpl implements PaxLogger {
             adapter.put("bundle.id", String.valueOf(m_bundle.getBundleId()));
             adapter.put("bundle.name", m_bundle.getSymbolicName());
             adapter.put("bundle.version", m_bundle.getVersion().toString());
+        }
+        if (adapter != null) {
+            // remove this potential value to not pollute MDC
+            adapter.remove(PaxLoggingConstants._LOG4J2_MESSAGE);
         }
         m_service.lock(false);
     }

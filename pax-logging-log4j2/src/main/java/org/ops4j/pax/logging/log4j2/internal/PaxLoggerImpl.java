@@ -28,6 +28,7 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxMarker;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
@@ -348,9 +349,10 @@ public class PaxLoggerImpl implements PaxLogger {
      * @param t
      */
     private void doLog0(Marker marker, Level level, int svcLevel, String fqcn, String message, Throwable t) {
-        setDelegateContext();
+        Message originalMessage = setDelegateContext();
         try {
-            Message msg = m_delegate.getMessageFactory().newMessage(message);
+            Message msg = originalMessage == null ? m_delegate.getMessageFactory().newMessage(message)
+                    : originalMessage;
             m_delegate.logMessage(fqcn, level, marker, msg, t);
         } finally {
             clearDelegateContext();
@@ -358,9 +360,11 @@ public class PaxLoggerImpl implements PaxLogger {
         m_service.handleEvents(m_bundle, null, svcLevel, message, t);
     }
 
-    private void setDelegateContext() {
+    private Message setDelegateContext() {
+        Message originalMessage = null;
         Map<String, Object> context = getPaxContext().getContext();
         if (context != null) {
+            originalMessage = (Message) context.remove(PaxLoggingConstants._LOG4J2_MESSAGE);
             for (Map.Entry<String, Object> entry : context.entrySet()) {
                 put(entry.getKey(), entry.getValue());
             }
@@ -371,6 +375,8 @@ public class PaxLoggerImpl implements PaxLogger {
             put("bundle.version", m_bundle.getVersion().toString());
         }
         m_service.lock(false);
+
+        return originalMessage;
     }
 
     private void put(String name, Object o) {

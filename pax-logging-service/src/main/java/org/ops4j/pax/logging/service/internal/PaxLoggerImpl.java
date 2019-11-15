@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxMarker;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
@@ -345,6 +346,8 @@ public class PaxLoggerImpl implements PaxLogger {
                 Object value = context.get(key);
                 MDC.put(key, value);
             }
+            // remove this potential value to not pollute MDC
+            context.remove(PaxLoggingConstants._LOG4J2_MESSAGE);
         }
         if (m_bundle != null) {
             put("bundle.id", String.valueOf(m_bundle.getBundleId()));
