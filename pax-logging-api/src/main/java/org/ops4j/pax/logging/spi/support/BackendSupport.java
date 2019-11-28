@@ -166,7 +166,7 @@ public class BackendSupport {
             return LogLevel.ERROR;
         } else if ("WARN".equalsIgnoreCase(levelName)) {
             return LogLevel.WARN;
-        } else if ("OFF".equalsIgnoreCase(levelName) || "NONE".equalsIgnoreCase(levelName)) {
+        } else if ("DISABLED".equalsIgnoreCase(levelName) || "OFF".equalsIgnoreCase(levelName) || "NONE".equalsIgnoreCase(levelName)) {
             // special case...
             return null;
         } else {

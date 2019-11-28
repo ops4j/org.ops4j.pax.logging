@@ -148,16 +148,20 @@ public class FrameworkHandler
         }
         final Bundle bundle = frameworkEvent.getBundle();
         final Throwable exception = frameworkEvent.getThrowable();
-        if (exception != null) {
-            doLog(level, bundle, "org.osgi.framework.FrameworkEvent", message, exception);
-        } else {
-            doLog(level, bundle, "org.osgi.framework.FrameworkEvent", message);
+        if (loggingLevel != null) {
+            // even if logging level was overriden according to framework event type, let's allow
+            // to NOT log at all if configured
+            if (exception != null) {
+                doLog(level, bundle, "org.osgi.framework.FrameworkEvent", message, exception);
+            } else {
+                doLog(level, bundle, "org.osgi.framework.FrameworkEvent", message);
+            }
         }
     }
 
     @Override
     public void serviceChanged(final ServiceEvent serviceEvent) {
-        final ServiceReference serviceRef = serviceEvent.getServiceReference();
+        final ServiceReference<?> serviceRef = serviceEvent.getServiceReference();
         String message;
         final int type = serviceEvent.getType();
         switch (type) {
