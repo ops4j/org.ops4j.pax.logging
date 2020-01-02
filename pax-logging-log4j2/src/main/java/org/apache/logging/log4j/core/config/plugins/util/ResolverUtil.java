@@ -18,9 +18,10 @@ package org.apache.logging.log4j.core.config.plugins.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -33,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 
 import org.apache.logging.log4j.Logger;
@@ -67,11 +69,11 @@ import org.osgi.framework.wiring.BundleWiring;
  * </p>
  *
  * <pre>
- * ResolverUtil&lt;ActionBean&gt; resolver = new ResolverUtil&lt;ActionBean&gt;();
- * resolver.findImplementation(ActionBean.class, pkg1, pkg2);
+ * ResolverUtil resolver = new ResolverUtil();
+ * resolver.findInPackage(new CustomTest(), pkg1);
  * resolver.find(new CustomTest(), pkg1);
- * resolver.find(new CustomTest(), pkg2);
- * Collection&lt;ActionBean&gt; beans = resolver.getClasses();
+ * resolver.find(new CustomTest(), pkg1, pkg2);
+ * Set&lt;Class&lt;?&gt;&gt; beans = resolver.getClasses();
  * </pre>
  *
  * <p>
@@ -84,14 +86,18 @@ public class ResolverUtil {
 
     private static final String VFSZIP = "vfszip";
 
+    private static final String VFS = "vfs";
+
+    private static final String JAR = "jar";
+
     private static final String BUNDLE = "bundle";
     private static final String BUNDLE_RESOURCE = "bundleresource";
 
     /** The set of matches being accumulated. */
-    private final Set<Class<?>> classMatches = new HashSet<Class<?>>();
+    private final Set<Class<?>> classMatches = new HashSet<>();
 
     /** The set of matches being accumulated. */
-    private final Set<URI> resourceMatches = new HashSet<URI>();
+    private final Set<URI> resourceMatches = new HashSet<>();
 
     /**
      * The ClassLoader to use when looking for classes. If null then the ClassLoader returned by
@@ -119,7 +125,7 @@ public class ResolverUtil {
     }
 
     /**
-     * Returns the classloader that will be used for scanning for classes. If no explicit ClassLoader has been set by
+     * Returns the ClassLoader that will be used for scanning for classes. If no explicit ClassLoader has been set by
      * the calling, the context class loader will be used.
      *
      * @return the ClassLoader that will be used to scan for classes
@@ -130,7 +136,7 @@ public class ResolverUtil {
 
     /**
      * Sets an explicit ClassLoader that should be used when scanning for classes. If none is set then the context
-     * classloader will be used.
+     * ClassLoader will be used.
      *
      * @param aClassloader
      *        a ClassLoader to use when scanning for classes
@@ -176,7 +182,7 @@ public class ResolverUtil {
         try {
             urls = loader.getResources(packageName);
         } catch (final IOException ioe) {
-            LOGGER.warn("Could not read package: " + packageName, ioe);
+            LOGGER.warn("Could not read package: {}", packageName, ioe);
             return;
         }
 
@@ -185,7 +191,7 @@ public class ResolverUtil {
                 final URL url = urls.nextElement();
                 final String urlPath = extractPath(url);
 
-                LOGGER.info("Scanning for classes in [" + urlPath + "] matching criteria: " + test);
+                LOGGER.info("Scanning for classes in '{}' matching criteria {}", urlPath , test);
                 // Check for a jar in a war in JBoss
                 if (VFSZIP.equals(url.getProtocol())) {
                     final String path = urlPath.substring(0, urlPath.length() - packageName.length() - 2);
@@ -197,8 +203,35 @@ public class ResolverUtil {
                     } finally {
                         close(stream, newURL);
                     }
+                } else if (VFS.equals(url.getProtocol())) {
+                    final String containerPath = urlPath.substring(1, urlPath.length() - packageName.length() - 2);
+                    final File containerFile = new File(containerPath);
+                    if (containerFile.exists()) {
+                        if (containerFile.isDirectory()) {
+                            loadImplementationsInDirectory(test, packageName, new File(containerFile, packageName));
+                        } else {
+                            loadImplementationsInJar(test, packageName, containerFile);
+                        }
+                    } else {
+                        // fallback code for Jboss/Wildfly, if the file couldn't be found
+                        // by loading the path as a file, try to read the jar as a stream
+                        final String path = urlPath.substring(0, urlPath.length() - packageName.length() - 2);
+                        final URL newURL = new URL(url.getProtocol(), url.getHost(), path);
+
+                        try (final InputStream is = newURL.openStream()) {
+                            final JarInputStream jarStream;
+                            if (is instanceof JarInputStream) {
+                                jarStream = (JarInputStream) is;
+                            } else {
+                                jarStream = new JarInputStream(is);
+                            }
+                            loadImplementationsInJar(test, packageName, path, jarStream);
+                        }
+                    }
                 } else if (BUNDLE_RESOURCE.equals(url.getProtocol()) || BUNDLE.equals(url.getProtocol())) {
                     loadImplementationsInBundle(test, packageName);
+                } else if (JAR.equals(url.getProtocol())) {
+                    loadImplementationsInJar(test, packageName, url);
                 } else {
                     final File file = new File(urlPath);
                     if (file.isDirectory()) {
@@ -207,10 +240,8 @@ public class ResolverUtil {
                         loadImplementationsInJar(test, packageName, file);
                     }
                 }
-            } catch (final IOException ioe) {
-                LOGGER.warn("could not read entries", ioe);
-            } catch (final URISyntaxException e) {
-                LOGGER.warn("could not read entries", e);
+            } catch (final IOException | URISyntaxException ioe) {
+                LOGGER.warn("Could not read entries", ioe);
             }
         }
     }
@@ -228,14 +259,15 @@ public class ResolverUtil {
             urlPath = urlPath.substring(5);
         }
         // If it was in a JAR, grab the path to the jar
-        if (urlPath.indexOf('!') > 0) {
-            urlPath = urlPath.substring(0, urlPath.indexOf('!'));
+        final int bangIndex = urlPath.indexOf('!');
+        if (bangIndex > 0) {
+            urlPath = urlPath.substring(0, bangIndex);
         }
 
         // LOG4J2-445
         // Finally, decide whether to URL-decode the file name or not...
         final String protocol = url.getProtocol();
-        final List<String> neverDecode = Arrays.asList(VFSZIP, BUNDLE_RESOURCE, BUNDLE);
+        final List<String> neverDecode = Arrays.asList(VFS, VFSZIP, BUNDLE_RESOURCE, BUNDLE);
         if (neverDecode.contains(protocol)) {
             return urlPath;
         }
@@ -257,7 +289,7 @@ public class ResolverUtil {
     }
 
     /**
-     * Finds matches in a physical directory on a filesystem. Examines all files within a directory - if the File object
+     * Finds matches in a physical directory on a file system. Examines all files within a directory - if the File object
      * is not a directory, and ends with <i>.class</i> the file is loaded and tested to see if it is acceptable
      * according to the Test. Operates recursively to find classes within a folder structure matching the package
      * structure.
@@ -303,21 +335,52 @@ public class ResolverUtil {
      *        a Test used to filter the classes that are discovered
      * @param parent
      *        the parent package under which classes must be in order to be considered
+     * @param url
+     *        the url that identifies the jar containing the resource.
+     */
+    private void loadImplementationsInJar(final Test test, final String parent, final URL url) {
+        JarURLConnection connection = null;
+        try {
+            connection = (JarURLConnection) url.openConnection();
+            if (connection != null) {
+                try (JarFile jarFile = connection.getJarFile()) {
+                    Enumeration<JarEntry> entries = jarFile.entries();
+                    while (entries.hasMoreElements()) {
+                        JarEntry entry = entries.nextElement();
+                        final String name = entry.getName();
+                        if (!entry.isDirectory() && name.startsWith(parent) && isTestApplicable(test, name)) {
+                            addIfMatching(test, name);
+                        }
+                    }
+                }
+            } else {
+                LOGGER.error("Could not establish connection to {}", url.toString());
+            }
+        } catch (final IOException ex) {
+            LOGGER.error("Could not search JAR file '{}' for classes matching criteria {}, file not found",
+                url.toString(), test, ex);
+        }
+    }
+
+    /**
+     * Finds matching classes within a jar files that contains a folder structure matching the package structure. If the
+     * File is not a JarFile or does not exist a warning will be logged, but no error will be raised.
+     *
+     * @param test
+     *        a Test used to filter the classes that are discovered
+     * @param parent
+     *        the parent package under which classes must be in order to be considered
      * @param jarFile
      *        the jar file to be examined for classes
      */
     private void loadImplementationsInJar(final Test test, final String parent, final File jarFile) {
-        @SuppressWarnings("resource")
         JarInputStream jarStream = null;
         try {
             jarStream = new JarInputStream(new FileInputStream(jarFile));
             loadImplementationsInJar(test, parent, jarFile.getPath(), jarStream);
-        } catch (final FileNotFoundException ex) {
-            LOGGER.error("Could not search jar file '" + jarFile + "' for classes matching criteria: " + test
-                    + " file not found", ex);
-        } catch (final IOException ioe) {
-            LOGGER.error("Could not search jar file '" + jarFile + "' for classes matching criteria: " + test
-                    + " due to an IOException", ioe);
+        } catch (final IOException ex) {
+            LOGGER.error("Could not search JAR file '{}' for classes matching criteria {}, file not found", jarFile,
+                    test, ex);
         } finally {
             close(jarStream, jarFile);
         }
@@ -349,7 +412,7 @@ public class ResolverUtil {
      *        The jar InputStream
      */
     private void loadImplementationsInJar(final Test test, final String parent, final String path,
-                                          final JarInputStream stream) {
+            final JarInputStream stream) {
 
         try {
             JarEntry entry;
@@ -361,8 +424,8 @@ public class ResolverUtil {
                 }
             }
         } catch (final IOException ioe) {
-            LOGGER.error("Could not search jar file '" + path + "' for classes matching criteria: " + test
-                    + " due to an IOException", ioe);
+            LOGGER.error("Could not search JAR file '{}' for classes matching criteria {} due to an IOException", path,
+                    test, ioe);
         }
     }
 
@@ -381,7 +444,7 @@ public class ResolverUtil {
             if (test.doesMatchClass()) {
                 final String externalName = fqn.substring(0, fqn.indexOf('.')).replace('/', '.');
                 if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Checking to see if class " + externalName + " matches criteria [" + test + ']');
+                    LOGGER.debug("Checking to see if class {} matches criteria {}", externalName, test);
                 }
 
                 final Class<?> type = loader.loadClass(externalName);
@@ -399,7 +462,7 @@ public class ResolverUtil {
                 }
             }
         } catch (final Throwable t) {
-            LOGGER.warn("Could not examine class '" + fqn, t);
+            LOGGER.warn("Could not examine class {}", fqn, t);
         }
     }
 
