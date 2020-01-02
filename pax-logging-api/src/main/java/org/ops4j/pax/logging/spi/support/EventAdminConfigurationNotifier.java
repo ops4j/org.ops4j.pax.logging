@@ -45,7 +45,7 @@ public class EventAdminConfigurationNotifier implements ConfigurationNotifier {
     public void configurationDone() {
         EventAdmin ea = tracker.getService();
         if (ea != null) {
-            LOG.info("Sending Event Admin nofification (configuration successful) to " + PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
+            LOG.info("Sending Event Admin notification (configuration successful) to " + PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
             ea.postEvent(new Event(PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC, (Map<String, ?>)null));
         } else {
             LOG.info("Logging configuration changed. (Event Admin service unavailable - no notification sent).");
@@ -56,7 +56,7 @@ public class EventAdminConfigurationNotifier implements ConfigurationNotifier {
     public void configurationError(Throwable t) {
         EventAdmin ea = tracker.getService();
         if (ea != null) {
-            LOG.warn("Sending Event Admin nofification (configuration error) to " + PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
+            LOG.warn("Sending Event Admin notification (configuration error) to " + PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
             Map<String, Object> properties = new HashMap<>();
             properties.put("exception", t);
             ea.postEvent(new Event(PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC, new EventProperties(properties)));
