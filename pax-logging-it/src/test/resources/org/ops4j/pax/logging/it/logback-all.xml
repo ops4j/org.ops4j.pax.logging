@@ -361,4 +361,19 @@
         </root>
     </configuration>
 
+    <!-- test for framework events -->
+    <configuration id="frameworkEvents">
+        <appender name="file" class="ch.qos.logback.core.FileAppender">
+            <file>target/logs-logback/framework-events.log</file>
+            <append>false</append>
+            <encoder>
+                <pattern>{%t} %logger/%class [%level] %message%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="info">
+            <appender-ref ref="file" />
+        </root>
+    </configuration>
+
 </all-configurations>

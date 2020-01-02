@@ -148,7 +148,7 @@ public class AbstractControlledIntegrationTestBase {
         return new Option[] {
                 // every log with level higher or equal to DEBUG (i.e., not TRACE) will be logged
                 frameworkProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL).value("DEBUG"),
-                // level at which OSGi R6 Compendium 101.6 logging statements will be printed
+                // threshold for R7 Compendium 101.8 logging statements
                 // (from framework/bundle/service events)
                 frameworkProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL).value("DISABLED"),
                 // default log will be written to file which we can safely read without failsafe-maven-plugin

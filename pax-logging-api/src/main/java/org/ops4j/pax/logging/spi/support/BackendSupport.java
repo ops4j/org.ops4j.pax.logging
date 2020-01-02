@@ -77,6 +77,7 @@ public class BackendSupport {
      * Event Admin service
      * @return
      */
+    @SuppressWarnings("rawtypes")
     public static RegisteredService<EventAdminPoster, EventAdminPoster> eventAdminSupport(BundleContext context) {
         EventAdminPoster eventAdmin;
         try {

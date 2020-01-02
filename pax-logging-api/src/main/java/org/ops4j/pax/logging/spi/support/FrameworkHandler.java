@@ -38,8 +38,8 @@ import org.osgi.service.log.LogLevel;
  * changed to a different level by setting the context or system property
  * {@code org.ops4j.pax.logging.service.frameworkEventsLogLevel} to DEBUG, INFO, WARNING, or ERROR.</p>
  *
- * <p>According OSGi Compendium R6, 101.6 Mapping of Events, each even has precise logging level associated
- * but we always use either configured level or {@code DEBUG} (pax-logging always did this).</p>
+ * <p>According OSGi Compendium R7, 101.8 Mapping of Events, each even has precise logging level associated and using
+ * {@link PaxLoggingConstants#LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL} we can filter out some events.</p>
  */
 public class FrameworkHandler
         implements SynchronousBundleListener, FrameworkListener, ServiceListener {
@@ -47,20 +47,19 @@ public class FrameworkHandler
     private final PaxLoggingManager m_manager;
 
     /**
-     * Level at which framework/bundle/service events will be logged even if 101.6 chapter (R6) says otherwise.
+     * Threshold to filter framework/bundle/service events according to 101.8 chapter of OSGi Cmpn specification.
      */
-    private final LogLevel loggingLevel;
+    private final LogLevel loggingThreshold;
 
     public FrameworkHandler(BundleContext context, final PaxLoggingManager manager) {
         m_manager = manager;
 
-        String levelName = "DEBUG";
-        if (!"".equals(System.getProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL, "").trim())) {
-            levelName = System.getProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
-        } else if (!"".equals(context.getProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL))) {
-            levelName = context.getProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
+        String defaultThreshold = "ERROR";
+        String threshold = OsgiUtil.systemOrContextProperty(context, PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL);
+        if (threshold != null && !"".equals(threshold)) {
+            defaultThreshold = threshold;
         }
-        loggingLevel = BackendSupport.convertR7LogLevel(levelName, LogLevel.DEBUG);
+        loggingThreshold = BackendSupport.convertR7LogLevel(threshold, LogLevel.ERROR);
     }
 
     /**
@@ -72,6 +71,8 @@ public class FrameworkHandler
     public void bundleChanged(final BundleEvent bundleEvent) {
         String message;
         final int type = bundleEvent.getType();
+        // 101.8.1 "Bundle Events Mapping"
+        final LogLevel level = LogLevel.INFO;
         switch (type) {
             case BundleEvent.INSTALLED:
                 message = "BundleEvent INSTALLED";
@@ -109,7 +110,7 @@ public class FrameworkHandler
 //            message += " - " + bundle.getSymbolicName();
 //        }
         final Bundle bundle = bundleEvent.getBundle();
-        doLog(loggingLevel, bundle, "org.osgi.framework.BundleEvent", message);
+        doLog(level, bundle, "Events.Bundle", message);
     }
 
     /**
@@ -120,7 +121,8 @@ public class FrameworkHandler
     public void frameworkEvent(final FrameworkEvent frameworkEvent) {
         final int type = frameworkEvent.getType();
         String message;
-        LogLevel level = loggingLevel;
+        // 101.8.3 "Service Events Mapping"
+        LogLevel level = LogLevel.INFO;
         switch (type) {
             case FrameworkEvent.ERROR:
                 message = "FrameworkEvent ERROR";
@@ -148,15 +150,7 @@ public class FrameworkHandler
         }
         final Bundle bundle = frameworkEvent.getBundle();
         final Throwable exception = frameworkEvent.getThrowable();
-        if (loggingLevel != null) {
-            // even if logging level was overriden according to framework event type, let's allow
-            // to NOT log at all if configured
-            if (exception != null) {
-                doLog(level, bundle, "org.osgi.framework.FrameworkEvent", message, exception);
-            } else {
-                doLog(level, bundle, "org.osgi.framework.FrameworkEvent", message);
-            }
-        }
+        doLog(level, bundle, "Events.Framework", message, exception);
     }
 
     @Override
@@ -164,9 +158,12 @@ public class FrameworkHandler
         final ServiceReference<?> serviceRef = serviceEvent.getServiceReference();
         String message;
         final int type = serviceEvent.getType();
+        // 101.8.2 "Service Events Mapping"
+        LogLevel level = LogLevel.INFO;
         switch (type) {
             case ServiceEvent.MODIFIED:
                 message = "ServiceEvent MODIFIED";
+                level = LogLevel.DEBUG;
                 break;
             case ServiceEvent.REGISTERED:
                 message = "ServiceEvent REGISTERED";
@@ -181,7 +178,7 @@ public class FrameworkHandler
         // service events, even if specification doesn't say so, have serviceRef.toString() appended to the message
         message += " - " + serviceRef;
         Bundle bundle = serviceRef.getBundle();
-        doLog(loggingLevel, bundle, "org.osgi.framework.ServiceEvent", message, serviceRef);
+        doLog(level, bundle, "Events.Service", message, serviceRef);
     }
 
     private void doLog(LogLevel loggingLevel, Bundle bundle, String category, String message, Object... args) {

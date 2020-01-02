@@ -79,8 +79,8 @@ public class DefaultLogThresholdIntegrationTest extends AbstractStdoutIntercepti
 
                 // every log with level higher or equal to INFO (i.e., not TRACE and not DEBUG) will be logged
                 frameworkProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL).value("INFO"),
-                // level at which OSGi R6 Compendium 101.6 logging statements will be printed
-                frameworkProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL).value("DEBUG")
+                // threshold for R7 Compendium 101.8 logging statements
+                frameworkProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL).value("WARN")
         );
     }
 
@@ -116,10 +116,10 @@ public class DefaultLogThresholdIntegrationTest extends AbstractStdoutIntercepti
         List<String> lines = readLines();
 
         // verification of logging BundleEvents
-        assertFalse(lines.contains("MySpecialBundleThatShouldTriggerBundleEventWhenInstalling [org.osgi.framework.BundleEvent] DEBUG : BundleEvent INSTALLED"));
-        assertFalse(lines.contains("MySpecialBundleThatShouldTriggerBundleEventWhenInstalling [org.osgi.framework.BundleEvent] DEBUG : BundleEvent STARTED"));
-        assertFalse(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] DEBUG : BundleEvent INSTALLED"));
-        assertFalse(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] DEBUG : BundleEvent STARTED"));
+        assertFalse(lines.contains("MySpecialBundleThatShouldTriggerBundleEventWhenInstalling [org.osgi.framework.BundleEvent] INFO : BundleEvent INSTALLED"));
+        assertFalse(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] INFO : BundleEvent INSTALLED"));
+        assertFalse(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] INFO : BundleEvent RESOLVED"));
+        assertFalse(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] INFO : BundleEvent STARTED"));
     }
 
 }
