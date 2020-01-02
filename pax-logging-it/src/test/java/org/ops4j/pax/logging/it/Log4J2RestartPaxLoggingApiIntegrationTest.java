@@ -83,8 +83,10 @@ public class Log4J2RestartPaxLoggingApiIntegrationTest extends AbstractStdoutInt
         // but this bundle is stopped, so it always returns default/fallback loggers writing to
         // System.out - even if bundle context may have file-based default/fallback logger configured.
         // That's needed, because file-logger has to have PrintStream registered as OSGi service
-        Logger log1 = LoggerFactory.getLogger(this.getClass());
-        log1.info("When pax-logging-api is stopped (log1)");
+        Logger log1a = LoggerFactory.getLogger(this.getClass());
+        Logger log1b = LoggerFactory.getLogger(this.getClass());
+        log1a.info("When pax-logging-api is stopped (log1a)");
+        log1b.info("When pax-logging-api is stopped (log1b)");
 
         // when pax-logging-api bundle is started, OSGIPaxLoggingManager immediately tracks PaxLoggingService
         // registered by pax-logging-log4j1, so it immediately starts printing through Log4J1
@@ -94,7 +96,8 @@ public class Log4J2RestartPaxLoggingApiIntegrationTest extends AbstractStdoutInt
         // to tracking logger again
         log.info("After restarting pax-logging-api");
         // however, logger obtained when pax-logging-api was stopped will be connected
-        log1.info("After restarting pax-logging-api (log1)");
+        log1a.info("After restarting pax-logging-api (log1a)");
+        log1b.info("After restarting pax-logging-api (log1b)");
         osgiLog.log(LogService.LOG_INFO, "After restarting pax-logging-api");
 
         // another logger obtained is normally bridged to Log4J2
@@ -108,11 +111,13 @@ public class Log4J2RestartPaxLoggingApiIntegrationTest extends AbstractStdoutInt
         assertTrue("line from DEFAULT_PATTERN (log service)", lines2.contains("[main] INFO  PaxExam-Probe - Before restarting pax-logging-api"));
         assertTrue("line from DEFAULT_PATTERN when pax-logging-api is being stopped", lines2.contains("[main] INFO  org.ops4j.pax.logging.internal.Activator - Disabling SLF4J API support."));
         assertTrue("line from DefaultServiceLog when pax-logging-api is stopped", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingApiIntegrationTest] INFO : When pax-logging-api is stopped"));
-        assertTrue("line from DefaultServiceLog when pax-logging-api is stopped (new logger)", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingApiIntegrationTest] INFO : When pax-logging-api is stopped (log1)"));
+        assertTrue("line from DefaultServiceLog when pax-logging-api is stopped (new logger)", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingApiIntegrationTest] INFO : When pax-logging-api is stopped (log1a)"));
+        assertTrue("line from DefaultServiceLog when pax-logging-api is stopped (new logger)", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingApiIntegrationTest] INFO : When pax-logging-api is stopped (log1b)"));
         assertTrue("line from DEFAULT_PATTERN when pax-logging-api is stopped (log service)", lines2.contains("[main] INFO  PaxExam-Probe - When pax-logging-api is stopped"));
         assertTrue("line from DEFAULT_PATTERN when pax-logging-api is being started", lines2.contains("[main] INFO  org.ops4j.pax.logging.internal.Activator - Enabling SLF4J API support."));
         assertTrue("line from DefaultServiceLog when pax-logging-api is started", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingApiIntegrationTest] INFO : After restarting pax-logging-api"));
-        assertTrue("line from DEFAULT_PATTERN when pax-logging-api is started (new logger)", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingApiIntegrationTest - After restarting pax-logging-api (log1)"));
+        assertTrue("line from DEFAULT_PATTERN when pax-logging-api is started (new logger)", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingApiIntegrationTest - After restarting pax-logging-api (log1a)"));
+        assertTrue("line from DEFAULT_PATTERN when pax-logging-api is started (new logger)", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingApiIntegrationTest - After restarting pax-logging-api (log1b)"));
         assertTrue("line from DEFAULT_PATTERN when pax-logging-api is started", lines2.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2RestartPaxLoggingApiIntegrationTest - After restarting pax-logging-api (log2)"));
         assertTrue("line from DEFAULT_PATTERN when pax-logging-api is started (log service)", lines2.contains("[main] INFO  PaxExam-Probe - After restarting pax-logging-api"));
     }
