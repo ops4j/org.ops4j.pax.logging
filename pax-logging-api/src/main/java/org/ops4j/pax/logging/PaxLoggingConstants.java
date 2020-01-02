@@ -62,9 +62,9 @@ public interface PaxLoggingConstants {
     String LOGGING_CFG_SKIP_JUL_RESET = "org.ops4j.pax.logging.skipJULReset";
 
     /**
-     * System or context (in that order) property that overrides the level at which framework/bundle/service events
-     * are logged
-     * according to OSGi Compendium 101.6 "Mapping of Events".
+     * System or context (in that order) property setting the <em>threshold</em> for framework/bundle/service events.
+     * OSGi Compendium R6, 101.6 "Mapping of Events" defines levels for standard events and with this property we
+     * can filter out some of them.
      */
     String LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL = "org.ops4j.pax.logging.service.frameworkEventsLogLevel";
 

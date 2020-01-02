@@ -112,7 +112,7 @@ public class DefaultLogIntegrationTest extends AbstractStdoutInterceptingIntegra
 
                 // every log with level higher or equal to DEBUG (i.e., not TRACE) will be logged
                 frameworkProperty(PaxLoggingConstants.LOGGING_CFG_DEFAULT_LOG_LEVEL).value("DEBUG"),
-                // level at which OSGi R6 Compendium 101.6 logging statements will be printed
+                // threshold for R6 Compendium 101.6 logging statements
                 frameworkProperty(PaxLoggingConstants.LOGGING_CFG_FRAMEWORK_EVENTS_LOG_LEVEL).value("DEBUG")
         );
     }
@@ -192,11 +192,10 @@ public class DefaultLogIntegrationTest extends AbstractStdoutInterceptingIntegra
         List<String> lines = readLines();
 
         // verification of logging BundleEvents
-        assertTrue(lines.contains("MySpecialBundleThatShouldTriggerBundleEventWhenInstalling [org.osgi.framework.BundleEvent] DEBUG : BundleEvent INSTALLED"));
-        assertFalse(lines.contains("MySpecialBundleThatShouldTriggerBundleEventWhenInstalling [org.osgi.framework.BundleEvent] DEBUG : BundleEvent RESOLVED"));
-        assertTrue(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] DEBUG : BundleEvent INSTALLED"));
-        assertTrue(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] DEBUG : BundleEvent RESOLVED"));
-        assertTrue(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] DEBUG : BundleEvent STARTED"));
+        assertTrue(lines.contains("MySpecialBundleThatShouldTriggerBundleEventWhenInstalling [org.osgi.framework.BundleEvent] INFO : BundleEvent INSTALLED"));
+        assertTrue(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] INFO : BundleEvent INSTALLED"));
+        assertTrue(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] INFO : BundleEvent RESOLVED"));
+        assertTrue(lines.contains("AnotherBundle [org.osgi.framework.BundleEvent] INFO : BundleEvent STARTED"));
     }
 
     @Test
@@ -210,8 +209,8 @@ public class DefaultLogIntegrationTest extends AbstractStdoutInterceptingIntegra
         List<String> lines = readLines();
 
         // verification of logging ServiceEvents
-        assertTrue(lines.contains("PaxExam-Probe [org.osgi.framework.ServiceEvent] DEBUG : ServiceEvent REGISTERED - [java.io.FilenameFilter, java.lang.Object]"));
-        assertTrue(lines.contains("PaxExam-Probe [org.osgi.framework.ServiceEvent] DEBUG : ServiceEvent UNREGISTERING - [java.io.FilenameFilter, java.lang.Object]"));
+        assertTrue(lines.contains("PaxExam-Probe [org.osgi.framework.ServiceEvent] INFO : ServiceEvent REGISTERED - [java.io.FilenameFilter, java.lang.Object]"));
+        assertTrue(lines.contains("PaxExam-Probe [org.osgi.framework.ServiceEvent] INFO : ServiceEvent UNREGISTERING - [java.io.FilenameFilter, java.lang.Object]"));
     }
 
 }
