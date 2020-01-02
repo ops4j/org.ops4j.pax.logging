@@ -130,7 +130,7 @@ public class Logger extends Category {
     Logger log4jlogger = new Logger(name, logger);
     if (m_paxLogging == null) {
       synchronized (Activator.m_loggers) {
-        Activator.m_loggers.put(name, log4jlogger);
+        Activator.m_loggers.add(log4jlogger);
       }
     }
     return log4jlogger;

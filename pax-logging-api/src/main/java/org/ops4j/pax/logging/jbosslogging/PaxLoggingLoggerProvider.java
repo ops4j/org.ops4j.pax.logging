@@ -58,7 +58,7 @@ public class PaxLoggingLoggerProvider implements LoggerProvider {
         if (paxLogging == null) {
             // just add the logger which PaxLoggingManager need to be replaced.
             synchronized (Activator.m_loggers) {
-                Activator.m_loggers.put(name, logger);
+                Activator.m_loggers.add(logger);
             }
         }
         return logger;

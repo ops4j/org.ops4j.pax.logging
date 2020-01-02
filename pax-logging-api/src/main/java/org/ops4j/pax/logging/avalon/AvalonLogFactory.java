@@ -57,7 +57,7 @@ public class AvalonLogFactory {
         AvalonLogger avalonLogger = new AvalonLogger(newName, logger);
         if (m_paxLogging == null) {
             synchronized (Activator.m_loggers) {
-                Activator.m_loggers.put(name, avalonLogger);
+                Activator.m_loggers.add(avalonLogger);
             }
         }
         return avalonLogger;

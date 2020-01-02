@@ -16,8 +16,8 @@
  */
 package org.ops4j.pax.logging.internal;
 
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
@@ -38,9 +38,10 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {
 
     /**
-     * This map will keep facade-specific loggers before {@link PaxLoggingManager} becomes available.
+     * This list will keep facade-specific loggers before {@link PaxLoggingManager} becomes available.
+     * Access to this list should be synchronized.
      */
-    public static final Map<String, PaxLoggingManagerAwareLogger> m_loggers = new WeakHashMap<String, PaxLoggingManagerAwareLogger>();
+    public static final List<PaxLoggingManagerAwareLogger> m_loggers = new LinkedList<>();
 
     private PaxLoggingManager manager;
 
@@ -57,6 +58,12 @@ public class Activator implements BundleActivator {
         String name = getClass().getName();
 
         // This class is effectively a tracker of PaxLoggingService services - there should be only one
+        // before this instance is created and before it's passed to setPaxLoggingManager() static method of
+        // logger factories, other bundles may already call logging factories to obtain loggers.
+        // all such obtained loggers (before pax-logging-api starts) have internal m_delegate set to default logger
+        // There's no caching at individual logger factory level.
+        // when pax-logging-api finally starts, all such loggers need to replace their m_delegate to real TrackingLogger
+        // obtained from this OSGIPaxLoggingManager.
         manager = new OSGIPaxLoggingManager(bundleContext);
 
         // Fallback PaxLogger configuration
@@ -134,13 +141,17 @@ public class Activator implements BundleActivator {
         log4j2Logger.info("Enabling Log4J v2 API support.");
 
         // after all the above facades are configured to get loggers from PaxLoggingManager (and further - from
-        // specific PaxLoggingService), we just have to reconfigure already created loggers
+        // specific PaxLoggingService), we just have to reconfigure already created loggers - the ones
+        // that use m_delegate obtained from FallbackLogFactory
         synchronized (m_loggers) {
             // We need to instruct all loggers to ensure they delegate to proper PaxLogger that delegates to
             // actual PaxLoggingService
-            for (PaxLoggingManagerAwareLogger logger : m_loggers.values()) {
+            for (PaxLoggingManagerAwareLogger logger : m_loggers) {
                 logger.setPaxLoggingManager(manager);
             }
+            // these loggers can be cleared now because they'll be using TrackingLogger forever
+            // and these are cached at OSGiPaxLoggingManager from now on
+            m_loggers.clear();
         }
 
         // handler that logs framework/bundle/service events, according to OSGi Compendium R6 101.6
@@ -190,7 +201,9 @@ public class Activator implements BundleActivator {
 
         synchronized (m_loggers) {
             // We need to instruct all loggers that they should again switch to fallback loggers
-            for (PaxLoggingManagerAwareLogger logger : m_loggers.values()) {
+            // this list should however be empty, because it was cleared after proper OSGiPaxLoggingManager
+            // was set in all logger factories. But lets leave this loop here.
+            for (PaxLoggingManagerAwareLogger logger : m_loggers) {
                 logger.setPaxLoggingManager(null);
             }
         }

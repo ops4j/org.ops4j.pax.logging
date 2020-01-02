@@ -185,7 +185,7 @@ public /* abstract */ class LogFactory {
         JuliLogger juliLogger = new JuliLogger(name, logger);
         if (m_paxLogging == null) {
             synchronized (Activator.m_loggers) {
-                Activator.m_loggers.put(name, juliLogger);
+                Activator.m_loggers.add(juliLogger);
             }
         }
         return juliLogger;

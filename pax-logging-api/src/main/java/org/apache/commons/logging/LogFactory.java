@@ -222,7 +222,7 @@ public class LogFactory {
         JclLogger jclLogger = new JclLogger(name, logger);
         if (m_paxLogging == null) {
             synchronized (Activator.m_loggers) {
-                Activator.m_loggers.put(name, jclLogger);
+                Activator.m_loggers.add(jclLogger);
             }
         }
         return jclLogger;

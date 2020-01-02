@@ -106,6 +106,11 @@ public class OSGIPaxLoggingManager
             m_logServiceRef = null;
         }
 
+        // clearing this global map (which keeps all loggers for all facades) is explicit decision
+        // and is a reason that loggers do NOT survive _restart_ of pax-logging-api bundle
+        // we could always think about storing this map as static and the loggers would survice the restart
+        // of pax-logging-api (though they'd naturally not survive refresh of pax-logging-api)
+        // see https://ops4j1.jira.com/browse/PAXLOGGING-307
         synchronized (m_loggers) {
             for (TrackingLogger logger : m_loggers.values()) {
                 logger.removed();
