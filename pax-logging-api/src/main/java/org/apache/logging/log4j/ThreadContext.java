@@ -224,6 +224,11 @@ public final class ThreadContext {
         } else {
             contextMap = new Log4jv2ThreadContextMap();
         }
+        if (contextMap instanceof ReadOnlyThreadContextMap) {
+            readOnlyContextMap = (ReadOnlyThreadContextMap) contextMap;
+        } else {
+            readOnlyContextMap = null;
+        }
     }
 
     /**
@@ -239,6 +244,24 @@ public final class ThreadContext {
      */
     public static void put(final String key, final String value) {
         contextMap.put(key, value);
+    }
+
+    /**
+     * Puts a context value (the <code>value</code> parameter) as identified with the <code>key</code> parameter into
+     * the current thread's context map if the key does not exist.
+     *
+     * <p>
+     * If the current thread does not have a context map it is created as a side effect.
+     * </p>
+     *
+     * @param key The key name.
+     * @param value The key value.
+     * @since 2.13.0
+     */
+    public static void putIfNull(final String key, final String value) {
+        if(!contextMap.containsKey(key)) {
+            contextMap.put(key, value);
+        }
     }
 
     /**
@@ -360,8 +383,8 @@ public final class ThreadContext {
      * @return the internal data structure used to store thread context key-value pairs or {@code null}
      * @see ThreadContextMapFactory
      * @see DefaultThreadContextMap
-     * @see {@code org.apache.logging.log4j.spi.CopyOnWriteSortedArrayThreadContextMap}
-     * @see {@code }org.apache.logging.log4j.spi.GarbageFreeSortedArrayThreadContextMap}
+     * @see org.apache.logging.log4j.spi.CopyOnWriteSortedArrayThreadContextMap
+     * @see org.apache.logging.log4j.spi.GarbageFreeSortedArrayThreadContextMap
      * @since 2.8
      */
     public static ReadOnlyThreadContextMap getThreadContextMap() {
