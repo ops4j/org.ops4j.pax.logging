@@ -66,7 +66,7 @@ import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
 
 public class PaxLoggingServiceImpl
-        implements PaxLoggingService, LogService, ManagedService, ServiceFactory {
+        implements PaxLoggingService, LogService, ManagedService, ServiceFactory<Object> {
 
     private static final String LOGGER_CONTEXT_NAME = "pax-logging";
 
@@ -247,7 +247,9 @@ public class PaxLoggingServiceImpl
         Object useLocks = configuration.get(PaxLoggingConstants.PID_CFG_USE_LOCKS);
         if (!"false".equalsIgnoreCase(String.valueOf(useLocks))) {
             // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
-            m_configLock = new ReentrantReadWriteLock();
+            if (m_configLock == null) {
+                m_configLock = new ReentrantReadWriteLock();
+            }
         } else {
             m_configLock = null;
         }
@@ -313,7 +315,7 @@ public class PaxLoggingServiceImpl
         }
     }
 
-    void handleEvents(Bundle bundle, ServiceReference sr, int level, String message, Throwable exception) {
+    void handleEvents(Bundle bundle, ServiceReference<?> sr, int level, String message, Throwable exception) {
         LogEntry entry = new LogEntryImpl(bundle, sr, level, message, exception);
         m_logReader.fireEvent(entry);
 
@@ -359,6 +361,7 @@ public class PaxLoggingServiceImpl
 
         if (file == null && configuration == null && !emptyConfiguration.compareAndSet(false, true)) {
             // no need to reconfigure default configuration
+            m_configNotifier.configurationDone();
             return;
         }
 
@@ -384,6 +387,7 @@ public class PaxLoggingServiceImpl
 
             if (props.size() == 0 && emptyConfiguration.get()) {
                 // no need to even stop current context
+                m_configNotifier.configurationDone();
                 return;
             }
         }
@@ -494,8 +498,8 @@ public class PaxLoggingServiceImpl
      * So we need to configure JUL loggers in order that log messages goes correctly to log Handlers.
      */
     private void setLevelToJavaLogging() {
-        for (Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements(); ) {
-            String name = (String) enum_.nextElement();
+        for (Enumeration<String> enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements(); ) {
+            String name = enum_.nextElement();
             java.util.logging.Logger.getLogger(name).setLevel(null);
         }
 
