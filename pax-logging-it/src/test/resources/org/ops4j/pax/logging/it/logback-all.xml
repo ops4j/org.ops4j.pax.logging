@@ -376,4 +376,19 @@
         </root>
     </configuration>
 
+    <!-- test for multithreading -->
+    <configuration id="threads">
+        <appender name="file" class="ch.qos.logback.core.FileAppender">
+            <file>target/logs-logback/threading.log</file>
+            <append>false</append>
+            <encoder>
+                <pattern>%d{HH:mm:ss.SSS} {%t} %logger/%class [%level] %message%n</pattern>
+            </encoder>
+        </appender>
+
+        <root level="info">
+            <appender-ref ref="file" />
+        </root>
+    </configuration>
+
 </all-configurations>

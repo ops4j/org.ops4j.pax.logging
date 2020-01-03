@@ -88,8 +88,8 @@ public class Log4J2WithConfigAdminIntegrationTest extends AbstractStdoutIntercep
         props = c.getProperties();
         c.update(props);
 
-        // there should be no reconfiguration when new properties are empty
-        assertFalse(latch.await(2, TimeUnit.SECONDS));
+        // there should always be an event, even if new properties are empty
+        assertTrue(latch.await(2, TimeUnit.SECONDS));
 
         // after the above update, we should keep the default configuration
         LoggerFactory.getLogger("defaultConfigurationButUsingConfigAdmin").info("After org.osgi.service.cm.Configuration.update()");

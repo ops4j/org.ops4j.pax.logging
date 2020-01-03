@@ -92,7 +92,7 @@ import org.slf4j.impl.StaticLoggerBinder;
  * @author Chris Dolan
  */
 public class PaxLoggingServiceImpl
-        implements PaxLoggingService, ManagedService, ServiceFactory { // if you add an interface here, add it to the ManagedService below too
+        implements PaxLoggingService, ManagedService, ServiceFactory<Object> { // if you add an interface here, add it to the ManagedService below too
 
     // pax-logging-logback-only key to find BundleContext
     public static final String LOGGER_CONTEXT_BUNDLECONTEXT_KEY = "org.ops4j.pax.logging.logback.bundlecontext";
@@ -343,7 +343,9 @@ public class PaxLoggingServiceImpl
         Object useLocks = configuration.get(PaxLoggingConstants.PID_CFG_USE_LOCKS);
         if (!"false".equalsIgnoreCase(String.valueOf(useLocks))) {
             // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
-            m_configLock = new ReentrantReadWriteLock();
+            if (m_configLock == null) {
+                m_configLock = new ReentrantReadWriteLock();
+            }
         } else {
             m_configLock = null;
         }
@@ -424,7 +426,7 @@ public class PaxLoggingServiceImpl
         }
     }
 
-    void handleEvents(String name, Bundle bundle, ServiceReference sr, LogLevel level, String message, Throwable exception) {
+    void handleEvents(String name, Bundle bundle, ServiceReference<?> sr, LogLevel level, String message, Throwable exception) {
         LogEntry entry = new LogEntryImpl(name, bundle, sr, level, message, exception);
         m_logReader.fireEvent(entry);
 
@@ -475,6 +477,7 @@ public class PaxLoggingServiceImpl
 
             if (file == null && !emptyConfiguration.compareAndSet(false, true)) {
                 // no need to reconfigure default configuration
+                m_configNotifier.configurationDone();
                 return;
             }
 
@@ -553,8 +556,8 @@ public class PaxLoggingServiceImpl
     }
 
     private void updateLevelsFromLog4J1Config(Dictionary<String, ?> config) {
-        for (Enumeration keys = config.keys(); keys.hasMoreElements(); ) {
-            String name = (String) keys.nextElement();
+        for (Enumeration<String> keys = config.keys(); keys.hasMoreElements(); ) {
+            String name = keys.nextElement();
             if (name.equals("log4j.rootLogger")) {
                 Level level = extractLevel((String) config.get(name));
                 m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).setLevel(level);
@@ -577,8 +580,8 @@ public class PaxLoggingServiceImpl
      * Uses current {@link LoggerContext} and updates JUL log levels
      */
     private void setLevelToJavaLogging() {
-        for (Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements(); ) {
-            String name = (String) enum_.nextElement();
+        for (Enumeration<String> enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements(); ) {
+            String name = enum_.nextElement();
             java.util.logging.Logger.getLogger(name).setLevel(null);
         }
 

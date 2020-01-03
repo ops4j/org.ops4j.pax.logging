@@ -56,7 +56,7 @@ import org.osgi.service.log.LogLevel;
  * bundle will get own instance of this service.
  */
 public class PaxLoggingServiceImpl
-        implements PaxLoggingService, ManagedService, ServiceFactory {
+        implements PaxLoggingService, ManagedService, ServiceFactory<Object> {
 
     private BundleContext m_bundleContext;
 
@@ -253,7 +253,9 @@ public class PaxLoggingServiceImpl
         Object useLocks = configuration.get(PaxLoggingConstants.PID_CFG_USE_LOCKS);
         if (!"false".equalsIgnoreCase(String.valueOf(useLocks))) {
             // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
-            m_configLock = new ReentrantReadWriteLock();
+            if (m_configLock == null) {
+                m_configLock = new ReentrantReadWriteLock();
+            }
         } else {
             m_configLock = null;
         }
@@ -378,12 +380,10 @@ public class PaxLoggingServiceImpl
 
     private Properties extractKeys(Dictionary<String, ?> configuration) {
         Properties extracted = new Properties();
-        Enumeration list = configuration.keys();
+        Enumeration<String> list = configuration.keys();
         while (list.hasMoreElements()) {
             Object obj = list.nextElement();
-            if (obj instanceof String) {
-                extractKey(extracted, configuration, obj);
-            }
+            extractKey(extracted, configuration, obj);
         }
         return extracted;
     }
@@ -410,6 +410,7 @@ public class PaxLoggingServiceImpl
      */
     private void configureDefaults() {
         if (!emptyConfiguration.compareAndSet(false, true)) {
+            m_configNotifier.configurationDone();
             return;
         }
         try {
@@ -553,13 +554,13 @@ public class PaxLoggingServiceImpl
      * @param configuration Properties coming from the configuration.
      */
     private static void setLevelToJavaLogging(final Dictionary<String, ?> configuration) {
-        for (Enumeration enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements(); ) {
-            String name = (String) enum_.nextElement();
+        for (Enumeration<String> enum_ = java.util.logging.LogManager.getLogManager().getLoggerNames(); enum_.hasMoreElements(); ) {
+            String name = enum_.nextElement();
             java.util.logging.Logger.getLogger(name).setLevel(null);
         }
 
-        for (Enumeration keys = configuration.keys(); keys.hasMoreElements(); ) {
-            String name = (String) keys.nextElement();
+        for (Enumeration<String> keys = configuration.keys(); keys.hasMoreElements(); ) {
+            String name = keys.nextElement();
             String value = (String) configuration.get(name);
             if (name.equals("log4j.rootLogger")) {
                 setJULLevel(java.util.logging.Logger.getGlobal(), value);
