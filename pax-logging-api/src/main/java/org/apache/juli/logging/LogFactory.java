@@ -35,6 +35,8 @@ package org.apache.juli.logging;
 
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.WeakHashMap;
@@ -151,11 +153,11 @@ public class LogFactory {
 
     private static LogFactory singleton;
     private static PaxLoggingManager m_paxLogging;
-    private static Map<String, JuliLogger> m_loggers;
+    private static Map<String, List<JuliLogger>> m_loggers;
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, JuliLogger>() );
+        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, List<JuliLogger>>() );
         singleton = new LogFactory();
     }
     /**
@@ -199,7 +201,12 @@ public class LogFactory {
             logger = m_paxLogging.getLogger( name, JuliLogger.JULI_FQCN );
         }
         JuliLogger juliLogger = new JuliLogger( logger );
-        m_loggers.put( name, juliLogger );
+        synchronized (m_loggers) {
+            if (!m_loggers.containsKey(name)) {
+                m_loggers.put(name, new LinkedList<JuliLogger>());
+            }
+            m_loggers.get(name).add(juliLogger);
+        }
         return juliLogger;
     }
 
@@ -377,13 +384,19 @@ public class LogFactory {
 
     public static void setBundleContext( BundleContext bundleContext )
     {
-        m_paxLogging = new OSGIPaxLoggingManager( bundleContext );
-        for (Map.Entry<String, JuliLogger> entry : m_loggers.entrySet()) {
-            String name = entry.getKey();
-            JuliLogger logger = entry.getValue();
-            logger.setPaxLoggingManager( m_paxLogging, name );
+        synchronized (m_loggers) {
+            m_paxLogging = new OSGIPaxLoggingManager( bundleContext );
+            for (Map.Entry<String, List<JuliLogger>> entry : m_loggers.entrySet()) {
+                String name = entry.getKey();
+                List<JuliLogger> loggers = entry.getValue();
+                if (loggers != null) {
+                    for (JuliLogger logger : loggers) {
+                        logger.setPaxLoggingManager( m_paxLogging, name );
+                    }
+                }
+            }
+            m_paxLogging.open();
         }
-        m_paxLogging.open();
     }
 
     /** Pax Logging internal method. Should never be used directly. */

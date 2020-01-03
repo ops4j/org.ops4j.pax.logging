@@ -18,6 +18,8 @@
 package org.apache.log4j;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
@@ -59,23 +61,29 @@ public class Logger extends Category
     private static final String LOG4J_FQCN = Logger.class.getName();
 
     private static PaxLoggingManager m_paxLogging;
-    private static Map<String, Logger> m_loggers;
+    private static Map<String, List<Logger>> m_loggers;
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, Logger>() );
+        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, List<Logger>>() );
     }
 
     public static void setBundleContext( BundleContext ctx )
     {
-        m_paxLogging = new OSGIPaxLoggingManager( ctx );
-        // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-        for (Entry<String, Logger> entry : m_loggers.entrySet()) {
-            String name = entry.getKey();
-            Logger logger = entry.getValue();
-            logger.setPaxLoggingManager( m_paxLogging, name );
+        synchronized (m_loggers) {
+            m_paxLogging = new OSGIPaxLoggingManager( ctx );
+            // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
+            for (Entry<String, List<Logger>> entry : m_loggers.entrySet()) {
+                String name = entry.getKey();
+                List<Logger> loggers = entry.getValue();
+                if (loggers != null) {
+                    for (Logger logger : loggers) {
+                        logger.setPaxLoggingManager( m_paxLogging, name );
+                    }
+                }
+            }
+            m_paxLogging.open();
         }
-        m_paxLogging.open();
     }
 
     private void setPaxLoggingManager( PaxLoggingManager loggingManager, String name )
@@ -130,7 +138,12 @@ public class Logger extends Category
             paxLogger = m_paxLogging.getLogger( name, LOG4J_FQCN );
         }
         Logger logger = new Logger( paxLogger );
-        m_loggers.put( name, logger );
+        synchronized (m_loggers) {
+            if (!m_loggers.containsKey(name)) {
+                m_loggers.put(name, new LinkedList<Logger>());
+            }
+            m_loggers.get(name).add(logger);
+        }
         return logger;
     }
 

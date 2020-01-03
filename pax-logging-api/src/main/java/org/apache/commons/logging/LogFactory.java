@@ -23,6 +23,8 @@
 
 package org.apache.commons.logging;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
@@ -89,22 +91,26 @@ public class LogFactory
 
     private static PaxLoggingManager m_paxLogging;
 
-    private static Map<String, JclLogger> m_loggers;
+    private static Map<String, List<JclLogger>> m_loggers;
 
     static
     {
         m_instance = new LogFactory();
-        m_loggers = new WeakHashMap<String, JclLogger>();
+        m_loggers = new WeakHashMap<String, List<JclLogger>>();
     }
 
     public static void setBundleContext(BundleContext ctx)
     {
         synchronized (m_loggers) {
             m_paxLogging = new OSGIPaxLoggingManager(ctx);
-            for (Entry<String, JclLogger> entry : m_loggers.entrySet()) {
+            for (Entry<String, List<JclLogger>> entry : m_loggers.entrySet()) {
                 String name = entry.getKey();
-                JclLogger logger = entry.getValue();
-                logger.setPaxLoggingManager(m_paxLogging, name);
+                List<JclLogger> loggers = entry.getValue();
+                if (loggers != null) {
+                    for (JclLogger logger : loggers) {
+                        logger.setPaxLoggingManager(m_paxLogging, name);
+                    }
+                }
             }
             m_paxLogging.open();
         }
@@ -248,7 +254,10 @@ public class LogFactory
         }
         JclLogger jclLogger = new JclLogger(logger);
         synchronized (m_loggers) {
-            m_loggers.put(name, jclLogger);
+            if (!m_loggers.containsKey(name)) {
+                m_loggers.put(name, new LinkedList<JclLogger>());
+            }
+            m_loggers.get(name).add(jclLogger);
         }
         return jclLogger;
     }

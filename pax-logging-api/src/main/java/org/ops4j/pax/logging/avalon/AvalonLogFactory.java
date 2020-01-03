@@ -18,6 +18,8 @@
 package org.ops4j.pax.logging.avalon;
 
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
@@ -32,22 +34,28 @@ public class AvalonLogFactory
 {
 
     private static PaxLoggingManager m_paxLogging;
-    private static Map<String, AvalonLogger> m_loggers;
+    private static Map<String, List<AvalonLogger>> m_loggers;
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, AvalonLogger>() );
+        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, List<AvalonLogger>>() );
     }
 
     public static void setBundleContext( BundleContext context )
     {
-        m_paxLogging = new OSGIPaxLoggingManager( context );
-        for (Entry<String, AvalonLogger> entry : m_loggers.entrySet()) {
-            String name = entry.getKey();
-            AvalonLogger logger = entry.getValue();
-            logger.setPaxLoggingManager( m_paxLogging, name );
+        synchronized (m_loggers) {
+            m_paxLogging = new OSGIPaxLoggingManager( context );
+            for (Entry<String, List<AvalonLogger>> entry : m_loggers.entrySet()) {
+                String name = entry.getKey();
+                List<AvalonLogger> loggers = entry.getValue();
+                if (loggers != null) {
+                    for (AvalonLogger logger : loggers) {
+                        logger.setPaxLoggingManager( m_paxLogging, name );
+                    }
+                }
+            }
+            m_paxLogging.open();
         }
-        m_paxLogging.open();
     }
 
     /**
@@ -75,7 +83,12 @@ public class AvalonLogFactory
         }
         PaxLogger logger = m_paxLogging.getLogger( newName, AvalonLogger.AVALON_FQCN );
         AvalonLogger avalonLogger = new AvalonLogger( logger );
-        m_loggers.put( newName, avalonLogger );
+        synchronized (m_loggers) {
+            if (!m_loggers.containsKey(newName)) {
+                m_loggers.put(newName, new LinkedList<AvalonLogger>());
+            }
+            m_loggers.get(newName).add(avalonLogger);
+        }
         return avalonLogger;
     }
 
