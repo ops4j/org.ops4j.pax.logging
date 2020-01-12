@@ -41,11 +41,12 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
- * <p>A {@link JdbcAppender} connection source that uses a {@link DataSource} to connect to the database.</p>
+ * A {@link JdbcAppender} connection source that uses a {@link DataSource} to connect to the database.
  *
- * <p>PaxLogging changes: more dynamic approach to JNDI.</p>
- * <p>The idea is to be able to configure JNDI datasource for Log4J2 JDBC appender in situations where
- * both JNDI (aries-jndi) and {@link DataSource} service itself may dynamically come and go to/from OSGi registry.</p>
+ * PaxLogging changes: more dynamic approach to JNDI.
+ *
+ * The idea is to be able to configure JNDI datasource for Log4J2 JDBC appender in situations where
+ * both JNDI (aries-jndi) and {@link DataSource} service itself may dynamically come and go to/from OSGi registry.
  */
 @Plugin(name = "DataSource", category = Core.CATEGORY_NAME, elementType = "connectionSource", printObject = true)
 public final class DataSourceConnectionSource extends AbstractConnectionSource {

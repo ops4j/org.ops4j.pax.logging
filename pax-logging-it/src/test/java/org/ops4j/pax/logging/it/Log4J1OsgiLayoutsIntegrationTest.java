@@ -41,8 +41,8 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
- * <p>Testing layouts that are registered as OSGi services of {@link PaxLayout}
- * interface.</p>
+ * Testing layouts that are registered as OSGi services of {@link PaxLayout}
+ * interface.
  */
 @RunWith(PaxExam.class)
 public class Log4J1OsgiLayoutsIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {

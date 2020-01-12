@@ -22,8 +22,10 @@ import org.ops4j.pax.logging.spi.PaxLevel;
 import org.osgi.service.log.LogLevel;
 
 /**
- * <p>A straightforward facade to make a Logback Level instance look like a PaxLevel.</p>
- * <p>Logback doesn't refer to Syslog like Log4J1, so we have to do it ourselves.</p>
+ * A straightforward facade to make a Logback Level instance look like a PaxLevel.
+ *
+ * Logback doesn't refer to Syslog like Log4J1, so we have to do it ourselves.
+ *
  * @author Chris Dolan
  */
 public class PaxLevelImpl implements PaxLevel {

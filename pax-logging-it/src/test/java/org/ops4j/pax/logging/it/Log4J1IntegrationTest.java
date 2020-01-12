@@ -51,8 +51,9 @@ import static org.junit.Assert.fail;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
- * <p>See org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest in pax-logging-api-test project.</p>
- * <p>This test doesn't work from IDE - it requires failsafe-maven-plugin configuration of classpath.</p>
+ * See org.ops4j.pax.logging.test.log4j1.Log4j1NativeApiTest in pax-logging-api-test project.
+ *
+ * This test doesn't work from IDE - it requires failsafe-maven-plugin configuration of classpath.
  */
 @RunWith(PaxExam.class)
 public class Log4J1IntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {

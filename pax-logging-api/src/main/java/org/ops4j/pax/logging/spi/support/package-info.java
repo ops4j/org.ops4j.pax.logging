@@ -18,10 +18,11 @@
  */
 
 /**
- * <p>This package may be Private-Packaged by particular pax-logging backends (thus doing a copy), so
+ * This package may be Private-Packaged by particular pax-logging backends (thus doing a copy), so
  * common functionality (like implementation of {@link org.osgi.service.log.LogReaderService})
- * is kept in one place. This package should <strong>not</strong> be exported.</p>
- * <p>Even default/fallback logger is here (to be Private-Packaged by backends), because there's no
- * requirement to have singleton instance of {@link org.ops4j.pax.logging.spi.support.DefaultServiceLog}.</p>
+ * is kept in one place. This package should <strong>not</strong> be exported.
+ *
+ * Even default/fallback logger is here (to be Private-Packaged by backends), because there's no
+ * requirement to have singleton instance of {@link org.ops4j.pax.logging.spi.support.DefaultServiceLog}.
  */
 package org.ops4j.pax.logging.spi.support;

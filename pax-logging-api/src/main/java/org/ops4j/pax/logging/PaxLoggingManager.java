@@ -23,7 +23,7 @@ import org.osgi.framework.Bundle;
  * <p>While {@link PaxLoggingService} represents implementation-specific logging service, this interface
  * acts as a bridge between logging API specific implementation (like SLF4J LoggerFactory) and
  * actual implementation of {@link PaxLoggingService}. When given service is gone, Logging switches immediately
- * to non-dynamic, fallback implementation of {@link PaxLoggingService}.</p>
+ * to non-dynamic, fallback implementation of {@link PaxLoggingService}.
  *
  * <p>{@code getLogger()} methods in this interface are generic, but low level methods that use 3 parameters to obtain
  * a logger:<ul>
@@ -33,26 +33,26 @@ import org.osgi.framework.Bundle;
  *     a class name in {@link StackTraceElement} of stack trace where application code enters logging infrastructure.
  *     This is used for example by Log4J1 to discover <em>a location</em> - class name, method name, file name
  *     and line number when pattern contains {@code %C} or {@code %F}.</li>
- * </ul></p>
+ * </ul>
  */
 public interface PaxLoggingManager {
 
     /**
-     * <p>Obtains a {@link PaxLogger} from this manager. Implementation delegates to {@link PaxLoggingService} or
-     * to fallback logger provider.</p>
+     * Obtains a {@link PaxLogger} from this manager. Implementation delegates to {@link PaxLoggingService} or
+     * to fallback logger provider.
      *
-     * <p>This is the main method called inside any facade/bridge method (like SLF4J's {@code LoggerFactory.getLogger()}).</p>
+     * This is the main method called inside any facade/bridge method (like SLF4J's {@code LoggerFactory.getLogger()}).
      *
-     * <p>{@code fqcn} parameter will be part of the returned {@link PaxLogger} to determine the <em>location</em>
-     * where logging method is invoked (by analyzing stack/class trace).</p>
+     * {@code fqcn} parameter will be part of the returned {@link PaxLogger} to determine the <em>location</em>
+     * where logging method is invoked (by analyzing stack/class trace).
      *
-     * <p>Each {@link PaxLogger} has associated {@link Bundle}, but {@code fqcn} <strong>won't be</strong> used
+     * Each {@link PaxLogger} has associated {@link Bundle}, but {@code fqcn} <strong>won't be</strong> used
      * to determine the bundle. Bundle is determined statically when obtaining the {@link PaxLogger logger}
      * as first bundle that's not pax-logging-api and represents a bundle that created the logger - not a place where
-     * this logger is used to log messages.</p>
+     * this logger is used to log messages.
      *
-     * <p>Note that for java.util.logging, the logger is not directly obtained by "client" code, but rather
-     * in pax-logging specific {@link java.util.logging.Handler}.</p>
+     * Note that for java.util.logging, the logger is not directly obtained by "client" code, but rather
+     * in pax-logging specific {@link java.util.logging.Handler}.
      *
      * @param category just name of the logger
      * @param fqcn fully qualified name for pax-logging-specific factory-like class to make it easy to mark where
@@ -64,16 +64,16 @@ public interface PaxLoggingManager {
     PaxLogger getLogger(String category, String fqcn);
 
     /**
-     * <p>Obtains a {@link PaxLogger} from this manager for a specific {@link Bundle}. Implementation delegates
-     * to {@link PaxLoggingService} or to fallback logger provider.</p>
+     * Obtains a {@link PaxLogger} from this manager for a specific {@link Bundle}. Implementation delegates
+     * to {@link PaxLoggingService} or to fallback logger provider.
      *
-     * <p>{@code fqcn} parameter will be part of the returned {@link PaxLogger} to determine the <em>location</em>
-     * where logging method is invoked (by analyzing stack/class trace).</p>
+     * {@code fqcn} parameter will be part of the returned {@link PaxLogger} to determine the <em>location</em>
+     * where logging method is invoked (by analyzing stack/class trace).
      *
-     * <p>This method passes a {@link Bundle} to associate with returned {@link PaxLogger}.</p>
+     * This method passes a {@link Bundle} to associate with returned {@link PaxLogger}.
      *
-     * <p>Note that for java.util.logging, the logger is not directly obtained by "client" code, but rather
-     * in pax-logging specific {@link java.util.logging.Handler}.</p>
+     * Note that for java.util.logging, the logger is not directly obtained by "client" code, but rather
+     * in pax-logging specific {@link java.util.logging.Handler}.
      *
      * @param bundle {@link Bundle} associated with returned {@link PaxLogger}
      * @param category just name of the logger

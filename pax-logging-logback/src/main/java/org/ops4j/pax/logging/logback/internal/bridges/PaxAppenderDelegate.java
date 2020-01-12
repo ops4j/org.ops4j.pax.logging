@@ -27,24 +27,22 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 /**
- * <p>
  * This is a Logback appender that forwards log messages to any services registered with OSGi with the interface
  * org.ops4j.pax.logging.spi.PaxAppender. That list of appender services is possibly filtered by the paxname setting.
- * </p>
- * <p>
+ *
  * For example, you can use it like this in your logback.xml file:
+ *
  * <pre>
  *   &lt;appender name="OSGI" class="org.ops4j.pax.logging.logback.appender.PaxAppenderDelegate"&gt;
  *       &lt;paxname&gt;*&lt;/paxname&gt;
  *   &lt;/appender&gt;
  * </pre>
+ *
  * The paxname argument is a filter for the bundle property "org.ops4j.pax.logging.appender.name". In this example,
- * the "*" means to accept all delegatees.
- * </p>
- * <p>
+ * the "*" means to accept all delegates.
+ *
  * This class is inspired by PaxLoggingConfigurator.parseAppender(), PaxAppenderProxy and AppenderBridgeImpl in the
  * log4j implementation.
- * </p>
  * 
  * @author Chris Dolan
  * @since 6/14/11 9:32 AM

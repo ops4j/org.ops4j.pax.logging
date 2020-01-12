@@ -18,9 +18,10 @@
  */
 
 /**
- * <p>Package with pax-logging specific classes supporting Avalon Framework Logging.</p>
- * <p>There are no <em>factory methods</em> in Avalon as we know from SLF4J or Commons Logging. Simply an
+ * Package with pax-logging specific classes supporting Avalon Framework Logging.
+ *
+ * There are no <em>factory methods</em> in Avalon as we know from SLF4J or Commons Logging. Simply an
  * implementation of {@link org.apache.avalon.framework.logger.Logger}.
- * {@link org.ops4j.pax.logging.avalon.AvalonLogFactory} is not a requirement from Avalon Framework itself.</p>
+ * {@link org.ops4j.pax.logging.avalon.AvalonLogFactory} is not a requirement from Avalon Framework itself.
  */
 package org.ops4j.pax.logging.avalon;

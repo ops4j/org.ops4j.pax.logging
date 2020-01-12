@@ -1134,11 +1134,12 @@ public class PaxLoggerImpl implements PaxLogger {
 
     /**
      * Most important pax-logging-logback log method that bridges pax-logging-api directly into Logback. EAch
-     * log invocation is wrapped with MDC configuration, where the following keys are always available:<ul>
+     * log invocation is wrapped with MDC configuration, where the following keys are always available:
+     * <ul>
      *     <li>{@code bundle.id} - from {@link Bundle#getBundleId()}</li>
      *     <li>{@code bundle.name} - from {@link Bundle#getSymbolicName()}</li>
      *     <li>{@code bundle.version} - from {@link Bundle#getVersion()}</li>
-     * </ul></p>
+     * </ul>
      *
      * @param marker
      * @param level int from {@link Level}

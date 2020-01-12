@@ -92,10 +92,9 @@ public class LogManager {
 
     /**
      * Returns the current LoggerContext.
-     * <p>
+     *
      * WARNING - The LoggerContext returned by this method may not be the LoggerContext used to create a Logger for the
      * calling class.
-     * </p>
      *
      * @return The current LoggerContext.
      */
@@ -395,11 +394,9 @@ factory.shutdown(FQCN, null, currentContext, false);
      * startup, but in certain environments, a LoggerContextFactory implementation may not be available at this point.
      * Thus, an alternative LoggerContextFactory can be set at runtime.
      *
-     * <p>
      * Note that any Logger or LoggerContext objects already created will still be valid, but they will no longer be
      * accessible through LogManager. Thus, <strong>it is a bad idea to use this method without a good reason</strong>!
      * Generally, this method should be used only during startup before any code starts caching Logger objects.
-     * </p>
      *
      * @param factory the LoggerContextFactory to use.
      */
@@ -410,9 +407,8 @@ factory.shutdown(FQCN, null, currentContext, false);
 
     /**
      * Returns a formatter Logger using the fully qualified name of the calling Class as the Logger name.
-     * <p>
+     *
      * This logger lets you use a {@link java.util.Formatter} string in the message to format parameters.
-     * </p>
      *
      * @return The Logger for the calling class.
      * @throws UnsupportedOperationException if the calling class cannot be determined.
@@ -424,12 +420,10 @@ factory.shutdown(FQCN, null, currentContext, false);
 
     /**
      * Returns a formatter Logger using the fully qualified name of the Class as the Logger name.
-     * <p>
+     *
      * This logger let you use a {@link java.util.Formatter} string in the message to format parameters.
-     * </p>
-     * <p>
+     *
      * Short-hand for {@code getLogger(clazz, StringFormatterMessageFactory.INSTANCE)}
-     * </p>
      *
      * @param clazz The Class whose name should be used as the Logger name.
      * @return The Logger, created with a {@link StringFormatterMessageFactory}
@@ -456,12 +450,10 @@ factory.shutdown(FQCN, null, currentContext, false);
 
     /**
      * Returns a formatter Logger using the fully qualified name of the value's Class as the Logger name.
-     * <p>
+     *
      * This logger let you use a {@link java.util.Formatter} string in the message to format parameters.
-     * </p>
-     * <p>
+     *
      * Short-hand for {@code getLogger(value, StringFormatterMessageFactory.INSTANCE)}
-     * </p>
      *
      * @param value The value's whose class name should be used as the Logger name.
      * @return The Logger, created with a {@link StringFormatterMessageFactory}
@@ -488,12 +480,10 @@ factory.shutdown(FQCN, null, currentContext, false);
 
     /**
      * Returns a formatter Logger with the specified name.
-     * <p>
+     *
      * This logger let you use a {@link java.util.Formatter} string in the message to format parameters.
-     * </p>
-     * <p>
+     *
      * Short-hand for {@code getLogger(name, StringFormatterMessageFactory.INSTANCE)}
-     * </p>
      *
      * @param name The logger name. If null it will default to the name of the calling class.
      * @return The Logger, created with a {@link StringFormatterMessageFactory}

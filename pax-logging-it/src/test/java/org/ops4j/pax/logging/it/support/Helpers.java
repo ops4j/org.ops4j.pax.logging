@@ -263,8 +263,9 @@ public class Helpers {
 
 
     /**
-     * <p>{@link #updateLoggingConfig(BundleContext, ConfigurationAdmin, Helpers.LoggingLibrary, String, Consumer)} without
-     * any properties processing callback.</p>
+     * {@link #updateLoggingConfig(BundleContext, ConfigurationAdmin, Helpers.LoggingLibrary, String, Consumer)} without
+     * any properties processing callback.
+     *
      * @param context
      * @param cm
      * @param library
@@ -275,14 +276,17 @@ public class Helpers {
     }
 
     /**
-     * <p>Helper method that does several things:<ul>
+     * Helper method that does several things:
+     * <ul>
      *     <li>gets current {@link org.ops4j.pax.logging.PaxLoggingConstants#LOGGING_CONFIGURATION_PID} config</li>
      *     <li>reads single properties configuration file and extracts properties prefixed with {@code prefix}</li>
      *     <li>registers {@link org.osgi.service.event.EventHandler} for configuration topic</li>
      *     <li>updates the configuration</li>
      *     <li>awaits for successful configuration change</li>
-     * </ul></p>
-     * <p>Simply - it synchronously changes logging configuration and waits for it to be effective.</p>
+     * </ul>
+     *
+     * Simply - it synchronously changes logging configuration and waits for it to be effective.
+     *
      * @param context
      * @param cm
      * @param library

@@ -22,33 +22,33 @@ import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LogService;
 
 /**
- * <p>This interface extends {@link org.osgi.service.log.LogService}.
- * It should be implemented by specific logging provider (Log4j, Logback, ...).</p>
- * <p>It's role is to provide methods to obtain {@link PaxLogger} and {@link PaxContext} that are specific to
- * one of pax-logging-* implementations.</p>
- * <p>Since OSGi </p>
+ * This interface extends {@link org.osgi.service.log.LogService}.
+ * It should be implemented by specific logging provider (Log4j, Logback, ...).
+ *
+ * It's role is to provide methods to obtain {@link PaxLogger} and {@link PaxContext} that are specific to
+ * one of pax-logging-* implementations.
+ *
+ * Since OSGi
  */
 public interface PaxLoggingService extends LogService {
 
     /**
-     * <p>Obtains {@link PaxLogger} instance - implementation-specific logger hidden under {@link PaxLogger} interface.
-     * This method is not used directly, but rather through {@link org.ops4j.pax.logging.PaxLoggingManager}</p>
-     * <p>Since R7 (Pax Logging 2.0.0), similar methods to obtain a logger come directly from {@link org.osgi.service.log.LoggerFactory}
+     * Obtains {@link PaxLogger} instance - implementation-specific logger hidden under {@link PaxLogger} interface.
+     * This method is not used directly, but rather through {@link org.ops4j.pax.logging.PaxLoggingManager}
+     *
+     * Since R7 (Pax Logging 2.0.0), similar methods to obtain a logger come directly from {@link org.osgi.service.log.LoggerFactory}
      * interface. Some of these methods may configure returned logger to use printf or Slf4J style of formatting. This
-     * methods returns loggers that use Slf4J formatting.</p>
-     * <p>This method should be called by framework-specific facades (like {@code org.ops4j.pax.logging.slf4j.Slf4jLogger})
-     * which pass proper {@code fqcn}.</p>
-     * @param bundle
-     * @param category
-     * @param fqcn
-     * @return
+     * methods returns loggers that use Slf4J formatting.
+     *
+     * This method should be called by framework-specific facades (like {@code org.ops4j.pax.logging.slf4j.Slf4jLogger})
+     * which pass proper {@code fqcn}.
      */
     PaxLogger getLogger(Bundle bundle, String category, String fqcn);
 
     /**
-     * <p>Returns R7 {@link LogLevel} (actually, a threahold) associated with entire logging service. Usually individual
-     * loggers may have different levels specified.</p>
-     * @return
+     * Returns R7 {@link LogLevel} (actually, a threahold) associated with entire logging service. Usually individual
+     * loggers may have different levels specified.
+     *
      * @since 2.0.0
      */
     LogLevel getLogLevel();

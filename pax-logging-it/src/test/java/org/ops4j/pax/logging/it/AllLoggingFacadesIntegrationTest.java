@@ -36,7 +36,7 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
- * <p>Test that proves that all facades use the same underlying logging service.</p>
+ * Test that proves that all facades use the same underlying logging service.
  */
 @RunWith(PaxExam.class)
 public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrationTestBase {

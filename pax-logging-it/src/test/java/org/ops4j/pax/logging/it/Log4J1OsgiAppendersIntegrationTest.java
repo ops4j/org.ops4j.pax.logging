@@ -42,8 +42,8 @@ import static org.junit.Assert.assertThat;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
- * <p>Testing appenders that are registered as OSGi services of {@link org.ops4j.pax.logging.spi.PaxAppender}
- * interface.</p>
+ * Testing appenders that are registered as OSGi services of {@link org.ops4j.pax.logging.spi.PaxAppender}
+ * interface.
  */
 @RunWith(PaxExam.class)
 public class Log4J1OsgiAppendersIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {

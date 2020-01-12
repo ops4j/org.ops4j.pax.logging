@@ -62,21 +62,30 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
 import static org.ops4j.pax.logging.it.support.Helpers.delegate;
 
 /**
- * <p>Test that installs only pax-logging-api bundle and checks different aspects of fallback mechanisms</p>
- * <p>Note: when using pax-exam-container-native, both surefire runner ({@link PaxExam}) and
- * the framework itself runs in the same JVM, so it's a bit hard to separate logging configuration.</p>
- * <p>First ever logging statement is executed in {@code org.ops4j.pax.exam.spi.DefaultExamSystem#create(org.ops4j.pax.exam.Option[])}
+ * Test that installs only pax-logging-api bundle and checks different aspects of fallback mechanisms.
+ *
+ * Note: when using pax-exam-container-native, both surefire runner ({@link PaxExam}) and
+ * the framework itself runs in the same JVM, so it's a bit hard to separate logging configuration.
+ *
+ * First ever logging statement is executed in {@code org.ops4j.pax.exam.spi.DefaultExamSystem#create(org.ops4j.pax.exam.Option[])}
  * which logs some information using SLF4J API. However, the classpath of this project includes both slf4j-api
- * and pax-logging-api. Inside pax-exam code, this snippet:<pre>
+ * and pax-logging-api. Inside pax-exam code, this snippet:
+ *
+ * <pre>
  * for (Enumeration e = LOG.getClass().getClassLoader().findResources("org/slf4j/Logger.class"); e.hasMoreElements(); ) {
  *     Object r = e.nextElement();
  *     System.out.println("r: " + r);
  * }
- * </pre> prints:<pre>
+ * </pre>
+ *
+ * prints:
+ *
+ * <pre>
  * r: jar:file:~/.m2/repository/org/ops4j/pax/logging/pax-logging-api/1.11.0-SNAPSHOT/pax-logging-api-1.11.0-SNAPSHOT.jar!/org/slf4j/Logger.class
  * r: jar:file:~/.m2/repository/org/slf4j/slf4j-api/1.7.29/slf4j-api-1.7.29.jar!/org/slf4j/Logger.class
  * </pre>
- * That's why even pax-exam logs go through pax-logging-api's {@link DefaultServiceLog}.</p>
+ *
+ * That's why even pax-exam logs go through pax-logging-api's {@link DefaultServiceLog}.
  */
 @RunWith(PaxExam.class)
 public class DefaultLogIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {

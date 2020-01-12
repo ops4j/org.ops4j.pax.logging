@@ -78,8 +78,6 @@ public class PropertyConfigurator implements Configurator {
     custom level value can be specified in the form
     level#classname. By default the repository-wide threshold is set
     to the lowest possible value, namely the level <code>ALL</code>.
-    </p>
-
 
     <h3>Appender configuration</h3>
 

@@ -39,8 +39,9 @@ import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
- * <p>Checking if we get proper location info (class/method/file/line) through different logging API.</p>
- * <p>It heavily depends on proper handling of Fully Qualified Class Name in loggers.</p>
+ * Checking if we get proper location info (class/method/file/line) through different logging API.
+ *
+ * It heavily depends on proper handling of Fully Qualified Class Name in loggers.
  */
 @RunWith(PaxExam.class)
 public class Log4J2LocationInfoIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {

@@ -25,14 +25,14 @@ package org.ops4j.pax.logging;
 public interface PaxLoggingManagerAwareLogger {
 
     /**
-     * <p>Configures a {@link PaxLoggingManager} that from now on can be used to
+     * Configures a {@link PaxLoggingManager} that from now on can be used to
      * {@link PaxLoggingManager#getLogger(String, String) obtain a non-fallback logger} that given logger
-     * is delegating to.</p>
-     * <p>This method is called in activator of pax-logging-api to ensure that loggers that may already been created
+     * is delegating to.
+     *
+     * This method is called in activator of pax-logging-api to ensure that loggers that may already been created
      * from pax-logging adjusted facades/factories actually delegate to real {@link PaxLoggingService}. This is
      * especially visible in pax-exam tests, where pax-logging-api's SLF4J classes are already used by pax-exam
-     * itself before even starting OSGi framework.</p>
-     * @param manager
+     * itself before even starting OSGi framework.
      */
     void setPaxLoggingManager(PaxLoggingManager manager);
 

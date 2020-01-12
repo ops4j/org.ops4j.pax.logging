@@ -36,7 +36,7 @@ import org.osgi.framework.FrameworkUtil;
    the string "log4j: ".
 
    <p>In pax-logging, this class is configured to always delegate to
-   {@link DefaultServiceLog}</p>
+   {@link DefaultServiceLog}
    
    @since 0.8.2
    @author Ceki G&uuml;lc&uuml;

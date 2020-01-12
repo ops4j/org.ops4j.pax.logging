@@ -23,11 +23,13 @@ import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
 /**
- * <p>Extension of Slf4J's class that helps with messages containing placeholders {@code {}}.</p>
- * <p>OSGi R7 logging adds {@link org.osgi.service.log.Logger} interface with methods that accept formatting arguments.
+ * Extension of Slf4J's class that helps with messages containing placeholders {@code {}}.
+ *
+ * OSGi R7 logging adds {@link org.osgi.service.log.Logger} interface with methods that accept formatting arguments.
  * These may be directly passed through Slf4J methods, or into Log4J2, but not when using Log4J1 backend. This class
- * helps with missing cases.</p>
- * <p>It's a <em>triple</em> because it holds optional {@link Throwable}, {@link ServiceReference} and arguments array.</p>
+ * helps with missing cases.
+ *
+ * It's a <em>triple</em> because it holds optional {@link Throwable}, {@link ServiceReference} and arguments array.
  */
 public class FormattingTriple {
 

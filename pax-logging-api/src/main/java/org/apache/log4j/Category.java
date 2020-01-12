@@ -336,9 +336,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
    * Log a message object with the <code>TRACE</code> level including the
    * stack trace of the {@link Throwable}<code>t</code> passed as parameter.
    *
-   * <p>
    * See {@link #debug(Object)} form for more detailed information.
-   * </p>
    *
    * @param message the message object to log.
    * @param t the exception to log, including its stack trace.

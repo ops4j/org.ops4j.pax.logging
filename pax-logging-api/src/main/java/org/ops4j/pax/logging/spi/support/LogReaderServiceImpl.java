@@ -32,9 +32,10 @@ import org.osgi.service.log.LogListener;
 import org.osgi.service.log.LogReaderService;
 
 /**
- * <p>Implementation of standard {@link LogReaderService} required by OSGi Compendium R6 "101.4 Log Reader Service".</p>
- * <p>This class was previously implemented in all backends (differently in each of them).
- * Now it's common in pax-logging-api bundle and may be reused by the backends (using {@link BackendSupport}).</p>
+ * Implementation of standard {@link LogReaderService} required by OSGi Compendium R6 "101.4 Log Reader Service".
+ *
+ * This class was previously implemented in all backends (differently in each of them).
+ * Now it's common in pax-logging-api bundle and may be reused by the backends (using {@link BackendSupport}).
  *
  * @since 1.11.0
  */

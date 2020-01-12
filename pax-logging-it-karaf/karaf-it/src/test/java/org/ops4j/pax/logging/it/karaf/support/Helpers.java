@@ -40,10 +40,9 @@ public class Helpers {
      *     <li>registers {@link org.osgi.service.event.EventHandler} for configuration topic</li>
      *     <li>updates the configuration using passed consumer</li>
      *     <li>awaits for successful configuration change</li>
-     * </ul></p>
-     * <p>Simply - it synchronously changes logging configuration and waits for it to be effective.</p>
-     * @param context
-     * @param cm
+     * </ul>
+     *
+     * <p>Simply - it synchronously changes logging configuration and waits for it to be effective.
      */
     public static void updateLoggingConfig(BundleContext context, ConfigurationAdmin cm, Consumer<Dictionary<String, Object>> consumer) {
         final Throwable[] pt = new Throwable[1];

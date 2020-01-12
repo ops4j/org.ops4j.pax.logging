@@ -25,9 +25,9 @@ import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
 
 /**
- * <p>pax-logging specific {@link org.apache.juli.logging.Log} that delegates to {@link PaxLogger} that is obtained from
+ * pax-logging specific {@link org.apache.juli.logging.Log} that delegates to {@link PaxLogger} that is obtained from
  * framework specific {@link org.ops4j.pax.logging.PaxLoggingService} and eventually delegates to logging
- * implementation.</p>
+ * implementation.
  */
 public class JuliLogger implements Log, PaxLoggingManagerAwareLogger {
 

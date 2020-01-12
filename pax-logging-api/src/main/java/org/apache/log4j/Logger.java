@@ -29,7 +29,7 @@ import org.osgi.framework.FrameworkUtil;
   operations, except configuration, are done through this class.
 
   <p>pax-logging-api has to treat this class both as a factory and as logger itself
-  - with all the configuration-related consequences.</p>
+  - with all the configuration-related consequences.
 
   @since log4j 1.2
 
@@ -109,12 +109,12 @@ public class Logger extends Category {
    * then the existing instance will be returned. Otherwise, a new
    * instance is created.  
    *
-   * <p>By default, loggers do not have a set level but inherit it
+   * By default, loggers do not have a set level but inherit it
    * from their neareast ancestor with a set level. This is one of the
    * central features of log4j.
    *
-   * <p>In pax-logging, loggers are obtained from current or fallback
-   * {@link PaxLoggingManager}</p>
+   * In pax-logging, loggers are obtained from current or fallback
+   * {@link PaxLoggingManager}
    *
    * @param name The name of the logger to retrieve.  
   */

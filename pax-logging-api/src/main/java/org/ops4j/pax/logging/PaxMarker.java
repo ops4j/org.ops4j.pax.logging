@@ -26,13 +26,13 @@ import org.slf4j.helpers.BasicMarkerFactory;
 import org.slf4j.impl.StaticMarkerBinder;
 
 /**
- * <p>Wrapper for either SLF4J {@code org.slf4j.Marker} or Log4J2 {@code org.apache.logging.log4j.Marker}. We can
+ * Wrapper for either SLF4J {@code org.slf4j.Marker} or Log4J2 {@code org.apache.logging.log4j.Marker}. We can
  * do it, because both are exported by pax-logging-api bundle. pax-logging-log4j2 and pax-logging-logback will
- * know which method to call to get actual <em>marker</em>.</p>
+ * know which method to call to get actual <em>marker</em>.
  *
- * <p>Of course, with pax-logging it's possible to use Log4J2 API to log through Log4J1 or use SLF4J to log through
+ * Of course, with pax-logging it's possible to use Log4J2 API to log through Log4J1 or use SLF4J to log through
  * Log4J2 (and many other combinations). If there's an attempt to get Log4J2 marker when only SLF4J is available,
- * proper marker has to be created.</p>
+ * proper marker has to be created.
  */
 public class PaxMarker {
 

@@ -45,9 +45,9 @@ import org.ops4j.pax.logging.spi.support.PaxAppenderProxy;
 import org.osgi.framework.BundleContext;
 
 /**
- * <p>OSGi-specific {@link PropertyConfigurator} that can parse {@code log4j.properties} file and
+ * OSGi-specific {@link PropertyConfigurator} that can parse {@code log4j.properties} file and
  * dynamically reference some log4j <em>services</em> (appenders, layouts, error handlers, filters) from OSGi
- * registry.</p>
+ * registry.
  *
  * @since 2007-10-26
  */
@@ -85,10 +85,11 @@ public class PaxLoggingConfigurator extends PropertyConfigurator {
     }
 
     /**
-     * <p>pax-logging adds proxies (that resolve to OSGi-registry services) for components
-     * (like appenders) if the names of the components start with {@link PaxLoggingConfigurator#OSGI_PREFIX osgi:}</p>
-     * <p>Superclass version is not easily extensible (see: template method pattern), so we had to copy it
-     * and adjust.</p>
+     * pax-logging adds proxies (that resolve to OSGi-registry services) for components
+     * (like appenders) if the names of the components start with {@link PaxLoggingConfigurator#OSGI_PREFIX osgi:}
+     *
+     * Superclass version is not easily extensible (see: template method pattern), so we had to copy it
+     * and adjust.
      *
      * @param props
      * @param appenderName

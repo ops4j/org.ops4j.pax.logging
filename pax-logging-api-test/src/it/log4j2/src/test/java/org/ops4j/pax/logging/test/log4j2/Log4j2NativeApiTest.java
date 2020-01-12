@@ -56,8 +56,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * <p>This unit test shows different log4j2 API usages. It's much easier than with Log4J1 because API separation
- * in Log4J2 is better.</p>
+ * This unit test shows different log4j2 API usages. It's much easier than with Log4J1 because API separation
+ * in Log4J2 is better.
  */
 public class Log4j2NativeApiTest {
 

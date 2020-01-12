@@ -27,7 +27,7 @@ import org.apache.log4j.spi.LoggingEvent;
 
   <p>The value of <b>KeyToMatch</b> property determines which
   key is used to match against in the MDC. The value of that
-  key is used to test against the <b>ValueToMatch</b property.
+  key is used to test against the <b>ValueToMatch</b> property.
   The <b>KeyToMatch</b> property must be set before this filter
   can function properly.
 

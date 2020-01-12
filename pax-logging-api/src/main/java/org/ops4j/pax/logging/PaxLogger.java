@@ -157,14 +157,13 @@ public interface PaxLogger extends FormatterLogger {
      *     <li>{@link PaxLogger#LEVEL_WARNING}</li>
      *     <li>{@link PaxLogger#LEVEL_ERROR}</li>
      *     <li>{@link PaxLogger#LEVEL_AUDIT}</li>
-     * </ul></p>
-     * @return
+     * </ul>
      */
     int getPaxLogLevel();
 
     /**
-     * <p>Returns R7 {@link LogLevel} for this logger.</p>
-     * @return
+     * Returns R7 {@link LogLevel} for this logger.
+     *
      * @since 2.0.0
      */
     LogLevel getLogLevel();

@@ -36,20 +36,15 @@ import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * The AsyncAppender lets users log events asynchronously.
- * <p/>
- * <p/>
+ *
  * The AsyncAppender will collect the events sent to it and then dispatch them
  * to all the appenders that are attached to it. You can attach multiple
  * appenders to an AsyncAppender.
- * </p>
- * <p/>
- * <p/>
+ *
  * The AsyncAppender uses a separate thread to serve the events in its buffer.
- * </p>
- * <p/>
+ *
  * <b>Important note:</b> The <code>AsyncAppender</code> can only be script
  * configured using the {@link org.apache.log4j.xml.DOMConfigurator}.
- * </p>
  *
  * @author Ceki G&uuml;lc&uuml;
  * @author Curt Arnold
@@ -350,11 +345,10 @@ public class AsyncAppender extends AppenderSkeleton
    * information related to the event. As a result, the event that will be
    * ultimately logged will likely to contain the wrong location information
    * (if present in the log format).
-   * <p/>
-   * <p/>
+   *
    * Location information extraction is comparatively very slow and should be
    * avoided unless performance is not a concern.
-   * </p>
+   *
    * @param flag true if location information should be extracted.
    */
   public void setLocationInfo(final boolean flag) {

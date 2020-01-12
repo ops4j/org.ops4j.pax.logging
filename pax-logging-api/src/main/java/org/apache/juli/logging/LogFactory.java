@@ -57,14 +57,14 @@ import org.osgi.framework.FrameworkUtil;
  * Original comment:
  * <p>Factory for creating {@link Log} instances, with discovery and
  * configuration features similar to that employed by standard Java APIs
- * such as JAXP.</p>
+ * such as JAXP.
  *
  * <p><strong>IMPLEMENTATION NOTE</strong> - This implementation is heavily
  * based on the SAXParserFactory and DocumentBuilderFactory implementations
- * (corresponding to the JAXP pluggability APIs) found in Apache Xerces.</p>
+ * (corresponding to the JAXP pluggability APIs) found in Apache Xerces.
  *
  * <p>pax-logging-api used source from org.apache.tomcat:juli:6.0.53 but ensures that it's API
- * compatible with 9.0.x</p>
+ * compatible with 9.0.x
  *
  * @author Niclas Hedhman (responsible for the OSGi adaptation.)
  * @author Craig R. McClanahan
@@ -103,38 +103,37 @@ public /* abstract */ class LogFactory {
             "commons-logging.properties";
 
     /**
-     * <p>Setting this system property value allows the <code>Hashtable</code> used to store
+     * Setting this system property value allows the <code>Hashtable</code> used to store
      * classloaders to be substituted by an alternative implementation.
-     * </p>
-     * <p>
+     *
      * <strong>Note:</strong> <code>LogFactory</code> will print:
-     * <code><pre>
-     * [ERROR] LogFactory: Load of custom hashtable failed</em>
-     * </code></pre>
+     *
+     * <code>
+     * [ERROR] LogFactory: Load of custom hashtable failed
+     * </code>
      * to system error and then continue using a standard Hashtable.
-     * </p>
-     * <p>
+     *
      * <strong>Usage:</strong> Set this property when Java is invoked
      * and <code>LogFactory</code> will attempt to load a new instance
      * of the given implementation class.
      * For example, running the following ant scriplet:
-     * <code><pre>
+     *
+     * <code>
      *  &lt;java classname="${test.runner}" fork="yes" failonerror="${test.failonerror}"&gt;
      *     ...
      *     &lt;sysproperty
      *        key="org.apache.commons.logging.LogFactory.HashtableImpl"
      *        value="org.apache.commons.logging.AltHashtable"/&gt;
      *  &lt;/java&gt;
-     * </pre></code>
+     * </code>
+     *
      * will mean that <code>LogFactory</code> will load an instance of
      * <code>org.apache.commons.logging.AltHashtable</code>.
-     * </p>
-     * <p>
+     *
      * A typical use case is to allow a custom
      * Hashtable implementation using weak references to be substituted.
      * This will allow classloaders to be garbage collected without
      * the need to release them (on 1.3+ JVMs only, of course ;)
-     * </p>
      */
     public static final String HASHTABLE_IMPLEMENTATION_PROPERTY =
             "org.apache.commons.logging.LogFactory.HashtableImpl";
@@ -159,13 +158,13 @@ public /* abstract */ class LogFactory {
 
     /**
      * <p>Construct (if necessary) and return a <code>Log</code> instance,
-     * using the factory's current set of configuration attributes.</p>
+     * using the factory's current set of configuration attributes.
      *
      * <p><strong>NOTE</strong> - Depending upon the implementation of
      * the <code>LogFactory</code> you are using, the <code>Log</code>
      * instance you are returned may or may not be local to the current
      * application, and may or may not be returned again on a subsequent
-     * call with the same name argument.</p>
+     * call with the same name argument.
      *
      * @param name Logical name of the <code>Log</code> instance to be
      *  returned (the meaning of this name is only known to the underlying
@@ -273,7 +272,8 @@ public /* abstract */ class LogFactory {
     /**
      * <p>Construct (if necessary) and return a <code>LogFactory</code>
      * instance, using the following ordered lookup procedure to determine
-     * the name of the implementation class to be loaded.</p>
+     * the name of the implementation class to be loaded.
+     *
      * <ul>
      * <li>The <code>org.apache.commons.logging.LogFactory</code> system
      *     property.</li>
@@ -290,7 +290,7 @@ public /* abstract */ class LogFactory {
      * <p><em>NOTE</em> - If the properties file method of identifying the
      * <code>LogFactory</code> implementation class is utilized, all of the
      * properties defined in this file will be set as configuration attributes
-     * on the corresponding <code>LogFactory</code> instance.</p>
+     * on the corresponding <code>LogFactory</code> instance.
      *
      * @exception LogConfigurationException if the implementation class is not
      *  available or cannot be instantiated.

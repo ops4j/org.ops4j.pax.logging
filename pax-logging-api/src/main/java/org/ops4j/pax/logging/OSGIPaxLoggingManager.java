@@ -29,9 +29,10 @@ import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
- * <p>{@link PaxLoggingManager} that acts as a singleton that delegates to tracked instance of {@link PaxLoggingService}</p>
- * <p>More precisely - it returns instances of {@link PaxLogger} that internally delegate to loggers obtained from
- * available {@link PaxLoggingService} or from fallback service when there's no implementation available.</p>
+ * {@link PaxLoggingManager} that acts as a singleton that delegates to tracked instance of {@link PaxLoggingService}
+ *
+ * More precisely - it returns instances of {@link PaxLogger} that internally delegate to loggers obtained from
+ * available {@link PaxLoggingService} or from fallback service when there's no implementation available.
  */
 public class OSGIPaxLoggingManager
         implements PaxLoggingManager, ServiceTrackerCustomizer<PaxLoggingService, PaxLoggingService> {

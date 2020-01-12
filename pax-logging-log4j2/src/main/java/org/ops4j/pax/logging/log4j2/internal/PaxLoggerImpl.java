@@ -1100,8 +1100,10 @@ public class PaxLoggerImpl implements PaxLogger {
     }
 
     /**
-     * <p>Most important pax-logging-log4j2 log method that bridges pax-logging-api directly into Log4J2.</p>
-     * <p>This method should be called only within {@code isXXXEnabled()} check, as it calls some heavy operations.</p>
+     * Most important pax-logging-log4j2 log method that bridges pax-logging-api directly into Log4J2.
+     *
+     * This method should be called only within {@code isXXXEnabled()} check, as it calls some heavy operations.
+     *
      * @param marker
      * @param level
      * @param fqcn

@@ -41,10 +41,11 @@ public final class BundleHelper {
     }
 
     /**
-     * <p>Gets a {@link Bundle} invoking logging method which is the first bundle different than
-     * pax-logging-api. If no bundle can't be found, {@code defaultBundle} is returned.</p>
-     * <p>This method analyzes class context top down (skipping two topmost classes, as they're known to
-     * come from pax-logging-api bundle). Also, {@code java.util.logging} packages are skipped.</p>
+     * Gets a {@link Bundle} invoking logging method which is the first bundle different than
+     * pax-logging-api. If no bundle can't be found, {@code defaultBundle} is returned.
+     *
+     * This method analyzes class context top down (skipping two topmost classes, as they're known to
+     * come from pax-logging-api bundle). Also, {@code java.util.logging} packages are skipped.
      *
      * @param defaultBundle
      * @return
@@ -54,8 +55,10 @@ public final class BundleHelper {
     }
 
     /**
-     * <p>Gets a {@link Bundle} with configurable number of top-most classes from context.</p>
-     * <p>To be called from places where the class context stack is known. Be careful!</p>
+     * Gets a {@link Bundle} with configurable number of top-most classes from context.
+     *
+     * To be called from places where the class context stack is known. Be careful!
+     *
      * @param defaultBundle
      * @param skip
      * @return
@@ -91,9 +94,9 @@ public final class BundleHelper {
     }
 
     /**
-     * <p>Gets a {@link Bundle} invoking logging method which is the first bundle before the class matching
+     * Gets a {@link Bundle} invoking logging method which is the first bundle before the class matching
      * {@code fqcn} argument. Checking is done bottom-up the stack trace. If no bundle can't be found,
-     * {@code defaultBundle} is returned.</p>
+     * {@code defaultBundle} is returned.
      *
      * @param defaultBundle
      * @return

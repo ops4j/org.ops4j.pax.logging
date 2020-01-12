@@ -24,7 +24,7 @@ import java.util.Stack;
 
 /**
    <p>NOTE: This class is added to Pax Logging ONLY TO PROVIDE THE API.
-   There is NO SUPPORT for NDC in Pax Logging.</p>
+   There is NO SUPPORT for NDC in Pax Logging.
 
    The NDC class implements <i>nested diagnostic contexts</i> as
    defined by Neil Harrison in the article "Patterns for Logging

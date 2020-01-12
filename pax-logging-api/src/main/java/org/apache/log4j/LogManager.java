@@ -28,13 +28,13 @@ import org.apache.log4j.spi.RepositorySelector;
 /**
  * <p>In pax-logging-api, this class is part of Log4j1 API, but it doesn't
  * perform any discovery. It can be used to access some internal information
- * from Log4j1.</p>
+ * from Log4j1.
  *
- * Use the <code>LogManager</code> class to retreive {@link Logger}
+ * <p>Use the <code>LogManager</code> class to retreive {@link Logger}
  * instances or to operate on the current {@link
  * LoggerRepository}. When the <code>LogManager</code> class is loaded
  * into memory the default initalzation procedure is inititated. The
- * default intialization procedure</a> is described in the <a
+ * default initialization procedure is described in the <a
  * href="../../../../manual.html#defaultInit">short log4j manual</a>.
  *
  * @author Ceki G&uuml;lc&uuml; */

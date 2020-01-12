@@ -807,13 +807,15 @@ public class PaxLoggerImpl implements PaxLogger {
     }
 
     /**
-     * <p>Most important pax-logging-log4j1 log method that bridges pax-logging-api directly into Log4J1. Each
-     * log invocation is wrapped with MDC configuration, where the following keys are always available:<ul>
+     * Most important pax-logging-log4j1 log method that bridges pax-logging-api directly into Log4J1. Each
+     * log invocation is wrapped with MDC configuration, where the following keys are always available:
+     * <ul>
      *     <li>{@code bundle.id} - from {@link Bundle#getBundleId()}</li>
      *     <li>{@code bundle.name} - from {@link Bundle#getSymbolicName()}</li>
      *     <li>{@code bundle.version} - from {@link Bundle#getVersion()}</li>
-     * </ul></p>
-     * <p>This method should be called only within {@code isXXXEnabled()} check, as it calls some heavy operations.</p>
+     * </ul>
+     *
+     * This method should be called only within {@code isXXXEnabled()} check, as it calls some heavy operations.
      *
      * @param level
      * @param fqcn

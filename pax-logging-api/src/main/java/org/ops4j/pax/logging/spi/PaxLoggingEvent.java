@@ -20,10 +20,11 @@ package org.ops4j.pax.logging.spi;
 import java.util.Map;
 
 /**
- * <p>Framework library agnostic representation of <em>logging event</em> that may be filtered
- * and/or directed to an {@link PaxAppender appender}.</p>
- * <p>The methods are inspired by Log4J1 equivalents. Other frameworks don't necessarily have
- * all the information.</p>
+ * Framework library agnostic representation of <em>logging event</em> that may be filtered
+ * and/or directed to an {@link PaxAppender appender}.
+ *
+ * The methods are inspired by Log4J1 equivalents. Other frameworks don't necessarily have
+ * all the information.
  */
 public interface PaxLoggingEvent {
 

@@ -41,10 +41,10 @@ import org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextStack;
 
 /**
  * The ThreadContext allows applications to store information either in a Map or a Stack.
- * <p>
+ *
  * <b><em>The MDC is managed on a per thread basis</em></b>. To enable automatic inheritance of <i>copies</i> of the MDC
  * to newly created threads, enable the {@value DefaultThreadContextMap#INHERITABLE_MAP} Log4j system property.
- * </p>
+ *
  * @see <a href="https://logging.apache.org/log4j/2.x/manual/thread-context.html">Thread Context Manual</a>
  */
 public final class ThreadContext {
@@ -235,9 +235,7 @@ public final class ThreadContext {
      * Puts a context value (the <code>value</code> parameter) as identified with the <code>key</code> parameter into
      * the current thread's context map.
      *
-     * <p>
      * If the current thread does not have a context map it is created as a side effect.
-     * </p>
      *
      * @param key The key name.
      * @param value The key value.
@@ -250,9 +248,7 @@ public final class ThreadContext {
      * Puts a context value (the <code>value</code> parameter) as identified with the <code>key</code> parameter into
      * the current thread's context map if the key does not exist.
      *
-     * <p>
      * If the current thread does not have a context map it is created as a side effect.
-     * </p>
      *
      * @param key The key name.
      * @param value The key value.
@@ -268,8 +264,9 @@ public final class ThreadContext {
      * Puts all given context map entries into the current thread's
      * context map.
      *
-     * <p>If the current thread does not have a context map it is
-     * created as a side effect.</p>
+     * If the current thread does not have a context map it is
+     * created as a side effect.
+     *
      * @param m The map.
      * @since 2.7
      */
@@ -288,9 +285,7 @@ public final class ThreadContext {
     /**
      * Gets the context value identified by the <code>key</code> parameter.
      *
-     * <p>
      * This method has no side effects.
-     * </p>
      *
      * @param key The key to locate.
      * @return The value associated with the key or null.
@@ -375,16 +370,13 @@ public final class ThreadContext {
      * Returns a read-only view of the internal data structure used to store thread context key-value pairs,
      * or {@code null} if the internal data structure does not implement the
      * {@code ReadOnlyThreadContextMap} interface.
-     * <p>
+     *
      * The {@link DefaultThreadContextMap} implementation does not implement {@code ReadOnlyThreadContextMap}, so by
      * default this method returns {@code null}.
-     * </p>
      *
      * @return the internal data structure used to store thread context key-value pairs or {@code null}
      * @see ThreadContextMapFactory
      * @see DefaultThreadContextMap
-     * @see org.apache.logging.log4j.spi.CopyOnWriteSortedArrayThreadContextMap
-     * @see org.apache.logging.log4j.spi.GarbageFreeSortedArrayThreadContextMap
      * @since 2.8
      */
     public static ReadOnlyThreadContextMap getThreadContextMap() {
@@ -453,10 +445,8 @@ public final class ThreadContext {
     /**
      * Returns the value of the last item placed on the stack.
      *
-     * <p>
      * The returned value is the value that was pushed last. If no context is available, then the empty string "" is
      * returned.
-     * </p>
      *
      * @return String The innermost diagnostic context.
      */
@@ -467,10 +457,8 @@ public final class ThreadContext {
     /**
      * Looks at the last diagnostic context at the top of this NDC without removing it.
      *
-     * <p>
      * The returned value is the value that was pushed last. If no context is available, then the empty string "" is
      * returned.
-     * </p>
      *
      * @return String The innermost diagnostic context.
      */
@@ -481,9 +469,7 @@ public final class ThreadContext {
     /**
      * Pushes new diagnostic context information for the current thread.
      *
-     * <p>
      * The contents of the <code>message</code> parameter is determined solely by the client.
-     * </p>
      *
      * @param message The new diagnostic context information.
      */
@@ -494,11 +480,9 @@ public final class ThreadContext {
     /**
      * Pushes new diagnostic context information for the current thread.
      *
-     * <p>
      * The contents of the <code>message</code> and args parameters are determined solely by the client. The message
      * will be treated as a format String and tokens will be replaced with the String value of the arguments in
      * accordance with ParameterizedMessage.
-     * </p>
      *
      * @param message The new diagnostic context information.
      * @param args Parameters for the message.
@@ -510,18 +494,14 @@ public final class ThreadContext {
     /**
      * Removes the diagnostic context for this thread.
      *
-     * <p>
      * Each thread that created a diagnostic context by calling {@link #push} should call this method before exiting.
      * Otherwise, the memory used by the <b>thread</b> cannot be reclaimed by the VM.
-     * </p>
      *
-     * <p>
      * As this is such an important problem in heavy duty systems and because it is difficult to always guarantee that
      * the remove method is called before exiting a thread, this method has been augmented to lazily remove references
      * to dead threads. In practice, this means that you can be a little sloppy and occasionally forget to call
      * {@link #remove} before exiting a thread. However, you must call <code>remove</code> sometime. If you never call
      * it, then your application is sure to run out of memory.
-     * </p>
      */
     public static void removeStack() {
         contextStack.clear();
@@ -532,15 +512,11 @@ public final class ThreadContext {
      * then no action is taken. If the current depth is larger than newDepth then all elements at maxDepth or higher are
      * discarded.
      *
-     * <p>
      * This method is a convenient alternative to multiple {@link #pop} calls. Moreover, it is often the case that at
      * the end of complex call sequences, the depth of the ThreadContext is unpredictable. The <code>trim</code> method
      * circumvents this problem.
-     * </p>
      *
-     * <p>
      * For example, the combination
-     * </p>
      *
      * <pre>
      * void foo() {
@@ -552,9 +528,7 @@ public final class ThreadContext {
      * }
      * </pre>
      *
-     * <p>
      * ensures that between the entry and exit of {@code foo} the depth of the diagnostic stack is conserved.
-     * </p>
      *
      * @see #getDepth
      * @param depth The number of elements to keep.

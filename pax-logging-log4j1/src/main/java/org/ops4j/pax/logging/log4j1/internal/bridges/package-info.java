@@ -17,31 +17,34 @@
  * under the License.
  */
 /**
- * <p>pax-logging-log4j1 (Log4J1) may be extended in two ways:<ol>
+ * pax-logging-log4j1 (Log4J1) may be extended in two ways:
+ * <ol>
  *     <li>using fragment bundle, so we have access to entire Log4J1</li>
  *     <li>using <em>whiteboard</em> approach, where we register services implementing interfaces
  *     from {@code org.ops4j.pax.logging.spi} package.</li>
- * </ol></p>
+ * </ol>
  *
- * <p>When using <em>whiteboard</em> approach, we can provide these 4 extensions:<ul>
+ * When using <em>whiteboard</em> approach, we can provide these 4 extensions:
+ * <ul>
  *     <li>appenders - by registering {@link org.ops4j.pax.logging.spi.PaxAppender} service</li>
  *     <li>filters - by registering {@link org.ops4j.pax.logging.spi.PaxFilter} service</li>
  *     <li>layouts - by registering {@link org.ops4j.pax.logging.spi.PaxLayout} service</li>
  *     <li>error handlers - by registering {@link org.ops4j.pax.logging.spi.PaxErrorHandler} service</li>
- * </ul></p>
+ * </ul>
  *
- * <p>In configuration (for PID {@code org.ops4j.pax.logging}) when encountering appender/filter/layout/errorHandler
+ * In configuration (for PID {@code org.ops4j.pax.logging}) when encountering appender/filter/layout/errorHandler
  * prefixed with {@link org.apache.log4j.PaxLoggingConfigurator#OSGI_PREFIX osgi:}, a <em>bridge</em> is created
- * and passed to Log4J1. The responsibility of this bridge is to:<ul>
+ * and passed to Log4J1. The responsibility of this bridge is to:
+ * <ul>
  *     <li>be called by Log4j1</li>
  *     <li>in case of filter/layout/errorHandler, pass the call to single tracked service <strong>or</strong>
- *     fallback filter/layout/errorHandler</li> when the service is not found. filter/layout/errorHandler bridges
- *     themselves use {@link org.osgi.util.tracker.ServiceTracker service trackers}
+ *     fallback filter/layout/errorHandler when the service is not found. filter/layout/errorHandler bridges
+ *     themselves use {@link org.osgi.util.tracker.ServiceTracker service trackers}</li>
  *     <li>in case of appender, pass the call to all tracked services without fallback appender(s) when OSGi
  *     appenders are not available. Appender bridge doesn't use a
  *     {@link org.osgi.util.tracker.ServiceTracker service tracker}. Instead, appender bridge delegates to
  *     {@link org.ops4j.pax.logging.spi.support.PaxAppenderProxy} which is
  *     {@link org.osgi.util.tracker.ServiceTracker service tracker}.</li>
- * </ul></p>
+ * </ul>
  */
 package org.ops4j.pax.logging.log4j1.internal.bridges;

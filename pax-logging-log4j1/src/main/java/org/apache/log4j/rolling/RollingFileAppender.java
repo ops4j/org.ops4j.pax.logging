@@ -44,7 +44,7 @@ import java.util.Properties;
 /**
  * <code>RollingFileAppender</code> extends {@link FileAppender} to backup the log files
  * depending on {@link RollingPolicy} and {@link TriggeringPolicy}.
- * <p>
+ *
  * To be of any use, a <code>RollingFileAppender</code> instance must have both
  * a <code>RollingPolicy</code> and a <code>TriggeringPolicy</code> set up.
  * However, if its <code>RollingPolicy</code> also implements the
@@ -52,34 +52,34 @@ import java.util.Properties;
  * set up. For example, {@link TimeBasedRollingPolicy} acts both as a
  * <code>RollingPolicy</code> and a <code>TriggeringPolicy</code>.
  *
- * <p><code>RollingFileAppender</code> can be configured programattically or
+ * <code>RollingFileAppender</code> can be configured programattically or
  * using {@link org.apache.log4j.extras.DOMConfigurator} or
  * {@link org.apache.log4j.xml.DOMConfigurator} in log4j 1.2.15 or later. Here is a sample
  * configration file:
 
-<pre>&lt;?xml version="1.0" encoding="UTF-8" ?>
-&lt;!DOCTYPE log4j:configuration>
+<pre>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;!DOCTYPE log4j:configuration&gt;
 
-&lt;log4j:configuration debug="true">
+&lt;log4j:configuration debug="true"&gt;
 
-  &lt;appender name="ROLL" class="org.apache.log4j.rolling.RollingFileAppender">
-    <b>&lt;rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
-      &lt;param name="FileNamePattern" value="/wombat/foo.%d{yyyy-MM}.gz"/>
-    &lt;/rollingPolicy></b>
+  &lt;appender name="ROLL" class="org.apache.log4j.rolling.RollingFileAppender"&gt;
+    &lt;rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy"&gt;
+      &lt;param name="FileNamePattern" value="/wombat/foo.%d{yyyy-MM}.gz"/&gt;
+    &lt;/rollingPolicy&gt;
 
-    &lt;layout class="org.apache.log4j.PatternLayout">
-      &lt;param name="ConversionPattern" value="%c{1} - %m%n"/>
-    &lt;/layout>
-  &lt;/appender>
+    &lt;layout class="org.apache.log4j.PatternLayout"&gt;
+      &lt;param name="ConversionPattern" value="%c{1} - %m%n"/&gt;
+    &lt;/layout&gt;
+  &lt;/appender&gt;
 
-  &lt;root">
-    &lt;appender-ref ref="ROLL"/>
-  &lt;/root>
+  &lt;root"&gt;
+    &lt;appender-ref ref="ROLL"/&gt;
+  &lt;/root&gt;
 
-&lt;/log4j:configuration>
+&lt;/log4j:configuration&gt;
 </pre>
 
- *<p>This configuration file specifies a monthly rollover schedule including
+ * This configuration file specifies a monthly rollover schedule including
  * automatic compression of the archived files. See
  * {@link TimeBasedRollingPolicy} for more details.
  *

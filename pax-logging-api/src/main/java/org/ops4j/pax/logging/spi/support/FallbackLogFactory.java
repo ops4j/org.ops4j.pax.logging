@@ -35,11 +35,12 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 /**
- * <p>This factory creates the fallback strategy when Pax Logging Service is not (yet) available.</p>
- * <p>This class is not part of pax-logging-api, it's in package that's supposed to be Private-Packaged by
+ * This factory creates the fallback strategy when Pax Logging Service is not (yet) available.
+ *
+ * This class is not part of pax-logging-api, it's in package that's supposed to be Private-Packaged by
  * pax-logging backends. This special care has to be taken when dealing with singletons that can be produced
  * by this factory. The singleton is implemented for {@link FileServiceLog} which is a default/fallback {@link PaxLogger}
- * that writes to single {@link FileOutputStream}.</p>
+ * that writes to single {@link FileOutputStream}.
  */
 public class FallbackLogFactory {
 

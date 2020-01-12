@@ -33,10 +33,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
 /**
- * <p>
  * This is a Log4J2 appender that forwards log messages to any services registered with OSGi with the interface
  * {@link org.ops4j.pax.logging.spi.PaxAppender}. That list of appender services is possibly filtered by the filter setting.
- * </p>
  */
 @Plugin(name = "PaxOsgi", category = "Core", elementType = "appender", printObject = true)
 public class PaxOsgiAppender extends AbstractAppender {

@@ -21,12 +21,13 @@ package org.ops4j.pax.logging;
 import java.util.logging.LogManager;
 
 /**
- * <p>Different constants used across Pax Logging.</p>
+ * <p>Different constants used across Pax Logging.
+ *
  * <p>Constants names use the following prefixes:<ul>
  *     <li>{@code LOGGING_CFG_} - for system or context property names</li>
  *     <li>{@code PID_CFG_} - for property names found in {@code org.ops4j.pax.logging} PID</li>
  *     <li>{@code SERVICE_PROPERTY_} - for names of OSGi service properties</li>
- * </ul></p>
+ * </ul>
  */
 public interface PaxLoggingConstants {
 
@@ -138,16 +139,17 @@ public interface PaxLoggingConstants {
     String LOGGING_CFG_LOGBACK_CONFIGURATION_FILE = "org.ops4j.pax.logging.StaticLogbackFile";
 
     /**
-     * <p>System or context property that can indicate alternative file with properties used instead of
-     * the properties from Configuration Admin. Useful in tests probably.</p>
-     * <p>Currently this is handled only by pax-logging-log4j2.</p>
+     * System or context property that can indicate alternative file with properties used instead of
+     * the properties from Configuration Admin. Useful in tests probably.
+     *
+     * Currently this is handled only by pax-logging-log4j2.
      */
     String LOGGING_CFG_PROPERTY_FILE = "org.ops4j.pax.logging.property.file";
 
     /**
-     * <p>System or context property that can indicate whether to throw exceptions from log4j2 configuration
+     * System or context property that can indicate whether to throw exceptions from log4j2 configuration
      * methods when ERROR occurs. Normally ERRORs are only printed to org.apache.logging.log4j.status.StatusLogger
-     * so by default this value is {@code false}.</p>
+     * so by default this value is {@code false}.
      */
     String LOGGING_CFG_LOG4J2_ERRORS_AS_EXCEPTION = "org.ops4j.pax.logging.log4j2.errorsAsExceptions";
 
@@ -184,12 +186,12 @@ public interface PaxLoggingConstants {
     String PID_CFG_USE_LOCKS = "org.ops4j.pax.logging.useLocks";
 
     /**
-     * <p>System or context property to configure locking just like {@link #PID_CFG_USE_LOCKS}.</p>
+     * System or context property to configure locking just like {@link #PID_CFG_USE_LOCKS}.
      */
     String LOGGING_CFG_USE_LOCKS = PID_CFG_USE_LOCKS;
 
     /**
-     * <p>System property to disable (because its enabled by default) thread map inheritance in {@link PaxContext}</p>
+     * System property to disable (because its enabled by default) thread map inheritance in {@link PaxContext}
      */
     String LOGGING_CFG_INHERIT_THREAD_CONTEXT_MAP = "org.ops4j.pax.logging.threadContextMapInheritable";
 

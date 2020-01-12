@@ -18,16 +18,16 @@
  */
 
 /**
- * <p>While pax-logging-api bundle exports {@code org.apache.log4j} package (and makes some methods no-op),
- * pax-logging-log4j1 bundle <strong>has to</strong> Private-Package some of the classes from the same package.</p>
+ * While pax-logging-api bundle exports {@code org.apache.log4j} package (and makes some methods no-op),
+ * pax-logging-log4j1 bundle <strong>has to</strong> Private-Package some of the classes from the same package.
  *
- * <p>Normally classes from this package will be loaded using OSGi import from pax-logging-api bundle,
- * but when needed, some classes from original log4j:log4j JAR have to be shaded here (and not exported).</p>
+ * Normally classes from this package will be loaded using OSGi import from pax-logging-api bundle,
+ * but when needed, some classes from original log4j:log4j JAR have to be shaded here (and not exported).
  *
- * <p>This is especially important for {@code org.apache.log4j.Logger} class itself - pax-logging-api exports
+ * This is especially important for {@code org.apache.log4j.Logger} class itself - pax-logging-api exports
  * this class to be used as API of Log4J1, but pax-logging-log4j1 has to use own (and unchanged - except when
  * fixing some performance/synchronization issues) copy from log4j:log4j. But also other classes from this package
  * have to be shaded. General rule is - if pax-logging-api changes some class from Log4J1 (usually to no-op some
- * methods), pax-logging-log4j1 should use own copy.</p>
+ * methods), pax-logging-log4j1 should use own copy.
  */
 package org.apache.log4j;

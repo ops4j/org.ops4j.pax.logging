@@ -47,15 +47,17 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
- * <p>This unit test shows different log4j1 API usages. It's hard to distinguish public vs non public API with log4j1.
+ * This unit test shows different log4j1 API usages. It's hard to distinguish public vs non public API with log4j1.
  * OSGi manifest of original bundle may provide some hints, but comments in source code itself shows that some classes,
- * even in {@code org.apache.log4j} package (the main one) should rather not be used directly.</p>
- * <p>{@link Logger} class is the most commonly used, but it has generally 3 responsibilities:<ul>
+ * even in {@code org.apache.log4j} package (the main one) should rather not be used directly.
+ *
+ * {@link Logger} class is the most commonly used, but it has generally 3 responsibilities:
+ * <ul>
  *     <li>{@link Logger#getLogger(String)} and similar static methods used as factory methods</li>
  *     <li>{@link Logger#info(Object)} and similar instance methods used to log messages/throwables</li>
  *     <li>Methods related to setting level, priority, additivity and appenders, which should be rarely used or rather
  *     not through {@link Logger} <em>interface</em>...</li>
- * </ul></p>
+ * </ul>
  */
 public class Log4j1NativeApiTest {
 

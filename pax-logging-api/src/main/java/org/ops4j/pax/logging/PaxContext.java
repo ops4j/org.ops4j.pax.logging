@@ -20,20 +20,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>The MDC class that provides <em>mapped diagnostic contexts</em>.</p>
+ * The MDC class that provides <em>mapped diagnostic contexts</em>.
  *
- * <p>A <em>Mapped Diagnostic Context</em>, or MDC in short, is an instrument for distinguishing
+ * A <em>Mapped Diagnostic Context</em>, or MDC in short, is an instrument for distinguishing
  * interleaved log output from different sources. Log output is typically interleaved
- * when a server handles multiple clients near-simultaneously.</p>
+ * when a server handles multiple clients near-simultaneously.
  *
- * <p><b><em>The MDC is managed on a per thread basis</em></b>. A child thread automatically
+ * <b><em>The MDC is managed on a per thread basis</em></b>. A child thread automatically
  * inherits a <em>copy</em> of the mapped diagnostic context of its parent (with normal
  * {@link InheritableThreadLocal} child inherits the same references). That behavior can be switched 
- * off by setting the system property <em>org.ops4j.pax.logging.threadContextMapInheritable<em> to 
- * <em>false</em> (default is <em>true</em>).</p>
+ * off by setting the system property <em>org.ops4j.pax.logging.threadContextMapInheritable</em> to
+ * <em>false</em> (default is <em>true</em>).
  *
- * <p>The MDC class requires JDK 1.2 or above. Under JDK 1.1 the MDC will always return empty
- * values but otherwise will not affect or harm your application.</p>
+ * The MDC class requires JDK 1.2 or above. Under JDK 1.1 the MDC will always return empty
+ * values but otherwise will not affect or harm your application.
  *
  * @author Ceki G&uuml;lc&uuml;
  * @since 1.2

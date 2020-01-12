@@ -31,15 +31,15 @@ import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 //                 Anders Kristensen <akristensen@dynamicsoft.com>
 
 /**
- * <p>The internal representation of logging events. When an affirmative
+ * The internal representation of logging events. When an affirmative
  * decision is made to log then a <code>LoggingEvent</code> instance
  * is created. This instance is passed around to the different log4j
- * components.</p>
+ * components.
  *
- * <p>This class is of concern to those wishing to extend log4j.</p>
+ * This class is of concern to those wishing to extend log4j.
  *
- * <p>Log4J1 delegated {@link PaxLoggingEvent}. It's the easiest implementation, because {@link PaxLoggingEvent}
- * was inspired by Log4J1 itself.</p>
+ * Log4J1 delegated {@link PaxLoggingEvent}. It's the easiest implementation, because {@link PaxLoggingEvent}
+ * was inspired by Log4J1 itself.
  *
  * @author Ceki G&uuml;lc&uuml;
  * @author James P. Cakalic

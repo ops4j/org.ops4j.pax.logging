@@ -26,11 +26,12 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 
 /**
- * <p>JUL {@link Handler} that bridges {@link LogRecord log records} to Pax Logging loggers.</p>
- * <p>Even if {@link SimpleFormatter} is used, we only call its
+ * JUL {@link Handler} that bridges {@link LogRecord log records} to Pax Logging loggers.
+ *
+ * Even if {@link SimpleFormatter} is used, we only call its
  * {@link java.util.logging.Formatter#formatMessage(LogRecord)} which only uses
  * {@link java.text.MessageFormat#format(String, Object...)} method on log record's message.
- * It doesn't do anything with remaining fields of {@link LogRecord}.</p>
+ * It doesn't do anything with remaining fields of {@link LogRecord}.
  */
 public class JdkHandler extends Handler {
 

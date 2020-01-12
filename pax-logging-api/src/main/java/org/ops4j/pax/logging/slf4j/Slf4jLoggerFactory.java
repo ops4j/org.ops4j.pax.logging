@@ -26,7 +26,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
 /**
- * <p>pax-logging specific {@link ILoggerFactory} returned from {@link org.slf4j.impl.StaticLoggerBinder}</p>
+ * pax-logging specific {@link ILoggerFactory} returned from {@link org.slf4j.impl.StaticLoggerBinder}
  */
 public class Slf4jLoggerFactory implements ILoggerFactory {
 
@@ -37,8 +37,9 @@ public class Slf4jLoggerFactory implements ILoggerFactory {
     }
 
     /**
-     * <p>Return an appropriate {@link org.slf4j.Logger} instance as specified by the <code>name</code> parameter.</p>
-     * <p>Null-valued name arguments are considered invalid.</p>
+     * Return an appropriate {@link org.slf4j.Logger} instance as specified by the <code>name</code> parameter.
+     *
+     * Null-valued name arguments are considered invalid.
      *
      * @param name the name of the Logger to return
      */

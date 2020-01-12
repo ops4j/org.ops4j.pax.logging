@@ -31,15 +31,18 @@ import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
 
 /**
- * <p>This is an adaptation of the Jakarta Commons Logging API for OSGi usage.</p>
+ * <p>This is an adaptation of the Jakarta Commons Logging API for OSGi usage.
+ *
  * <p>This is the only class from {@code org.apache.commons.logging} package that is adjusted. Other
- * commons-logging classes are simply repackaged from original jar.</p>
- * <p>There's no need for discovery code that's constituting most of original version's functionalty</p>
+ * commons-logging classes are simply repackaged from original jar.
+ *
+ * <p>There's no need for discovery code that's constituting most of original version's functionality.
+ *
  * <p>Original {@code org.apache.commons.logging.LogFactory} is abstract. In pax-logging-api,
  * this class is concrete. All public methods and fields are preserved. Unnecessary private and protected methods
- * and fields are removed.</p>
+ * and fields are removed.
  *
- * <p>pax-logging-api used source from commons-logging:commons-logging:1.2</p>
+ * <p>pax-logging-api used source from commons-logging:commons-logging:1.2
  *
  * @author Niclas Hedhman (responsible for the OSGi adaptation.)
  * @author Craig R. McClanahan
@@ -195,15 +198,15 @@ public class LogFactory {
     /**
      * Construct (if necessary) and return a <code>Log</code> instance,
      * using the factory's current set of configuration attributes.
-     * <p>
+     *
      * <strong>NOTE</strong> - Depending upon the implementation of
      * the <code>LogFactory</code> you are using, the <code>Log</code>
      * instance you are returned may or may not be local to the current
      * application, and may or may not be returned again on a subsequent
      * call with the same name argument.
      *
-     * <p>In pax-logging, loggers are obtained from current or fallback
-     * {@link PaxLoggingManager}</p>
+     * In pax-logging, loggers are obtained from current or fallback
+     * {@link PaxLoggingManager}
      *
      * @param name Logical name of the <code>Log</code> instance to be
      *  returned (the meaning of this name is only known to the underlying

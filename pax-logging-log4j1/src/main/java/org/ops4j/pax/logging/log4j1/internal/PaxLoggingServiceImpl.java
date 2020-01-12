@@ -458,9 +458,10 @@ public class PaxLoggingServiceImpl
     // org.osgi.framework.ServiceFactory
 
     /**
-     * <p>Use local class to delegate calls to underlying instance while keeping bundle reference.</p>
-     * <p>We don't need anything special from bundle-scoped service ({@link ServiceFactory}) except the
-     * reference to client bundle.</p>
+     * Use local class to delegate calls to underlying instance while keeping bundle reference.
+     *
+     * We don't need anything special from bundle-scoped service ({@link ServiceFactory}) except the
+     * reference to client bundle.
      */
     @Override
     public Object getService(final Bundle bundle, ServiceRegistration registration) {

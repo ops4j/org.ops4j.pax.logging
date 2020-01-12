@@ -63,12 +63,10 @@ import org.slf4j.impl.StaticLoggerBinder;
 /**
  * An implementation of PaxLoggingService that delegates to Logback.
  *
- * <p>
  * This implementation is registered with the
  * OSGi ConfigAdmin with a configuration PID of "org.ops4j.pax.logging". That configuration should have a property
  * "org.ops4j.pax.logging.logback.config.file" which should be a path to a Logback Joran XML configuration file.
  *
- * <p>
  * This class has a fair bit of code copied from from org.ops4j.pax.logging.service.internal.PaxLoggingServiceImpl v1.6.0.
  * Changes include:
  * <ul>
@@ -79,15 +77,13 @@ import org.slf4j.impl.StaticLoggerBinder;
  *     <li>Unification of logging backends in 1.11+</li>
  * </ul>
  *
- * <p>
  * To sync java.util.logging logger levels with Logback logger levels, be sure to include this in your logback.xml:
  * <pre>
  *    &lt;contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"&gt;
  *        &lt;resetJUL&gt;true&lt;/resetJUL&gt;
  *    &lt;/contextListener&gt;
  * </pre>
- * This is an important performance optimization, as discussed in the <a href="http://logback.qos.ch/manual/configuration.html#LevelChangePropagator"></a>Logback docs</a>
- * </p>
+ * This is an important performance optimization, as discussed in the <a href="http://logback.qos.ch/manual/configuration.html#LevelChangePropagator">Logback docs</a>
  *
  * @author Chris Dolan
  */
@@ -660,9 +656,10 @@ public class PaxLoggingServiceImpl
     // org.osgi.framework.ServiceFactory
 
     /**
-     * <p>Use local class to delegate calls to underlying instance while keeping bundle reference.</p>
-     * <p>We don't need anything special from bundle-scoped service ({@link ServiceFactory}) except the
-     * reference to client bundle.</p>
+     * Use local class to delegate calls to underlying instance while keeping bundle reference.
+     *
+     * We don't need anything special from bundle-scoped service ({@link ServiceFactory}) except the
+     * reference to client bundle.
      */
     @Override
     public Object getService(final Bundle bundle, ServiceRegistration registration) {

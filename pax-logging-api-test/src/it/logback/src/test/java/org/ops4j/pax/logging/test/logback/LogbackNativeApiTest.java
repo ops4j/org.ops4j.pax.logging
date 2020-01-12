@@ -31,8 +31,8 @@ import ch.qos.logback.core.util.StatusPrinter;
 import org.junit.Test;
 
 /**
- * <p>This unit test shows different Logback API usages. Logback should generally be used via SLF4J, but we
- * need some canonical examples.</p>
+ * This unit test shows different Logback API usages. Logback should generally be used via SLF4J, but we
+ * need some canonical examples.
  */
 public class LogbackNativeApiTest {
 

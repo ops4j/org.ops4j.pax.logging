@@ -42,8 +42,8 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
- * <p>Testing error handlers that are registered as OSGi services of {@link PaxErrorHandler}
- * interface.</p>
+ * Testing error handlers that are registered as OSGi services of {@link PaxErrorHandler}
+ * interface.
  */
 @RunWith(PaxExam.class)
 public class Log4J1OsgiErrorHandlersIntegrationTest extends AbstractStdoutInterceptingIntegrationTestBase {

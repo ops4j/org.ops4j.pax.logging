@@ -33,10 +33,11 @@ import org.osgi.service.log.LogLevel;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * <p>This ServiceTracker is designed to implement the Event Admin service, but delegate
- * to the actual service if available.</p>
- * <p>If the Event Admin service is not available, this tracker will queue the Events until
- * the service becomes available.</p>
+ * This ServiceTracker is designed to implement the Event Admin service, but delegate
+ * to the actual service if available.
+ *
+ * If the Event Admin service is not available, this tracker will queue the Events until
+ * the service becomes available.
  */
 public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
         implements EventAdminPoster {

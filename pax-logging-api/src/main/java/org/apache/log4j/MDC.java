@@ -58,11 +58,12 @@ public class MDC {
   /**
    * <p>For all the methods that use the context, default, static, {@link PaxContext} may be used (tied to pax-logging-api
    * bundle) if there's no available {@link PaxLoggingManager} or {@link PaxLoggingService}. If the service is
-   * available, it is <strong>always</strong> used to get service specific {@link PaxContext}.</p>
-   * <p>Refering <strong>always</strong> to {@link PaxLoggingService#getPaxContext()} is cheap operation, as it's
-   * only reference to fields.</p>
+   * available, it is <strong>always</strong> used to get service specific {@link PaxContext}.
    *
-   * <p>See: https://ops4j1.jira.com/browse/PAXLOGGING-247</p>
+   * <p>Refering <strong>always</strong> to {@link PaxLoggingService#getPaxContext()} is cheap operation, as it's
+   * only reference to fields.
+   *
+   * <p>See: https://ops4j1.jira.com/browse/PAXLOGGING-247
    *
    * @return m_context if the MDC should use the PaxContext object from the PaxLoggingManager,
    *      or m_defaultContext if the logging manager is not set, or does not have its context available yet.

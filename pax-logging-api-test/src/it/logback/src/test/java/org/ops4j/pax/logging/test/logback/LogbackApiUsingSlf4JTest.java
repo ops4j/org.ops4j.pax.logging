@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.impl.StaticLoggerBinder;
 
 /**
- * <p>This unit test shows different Logback API usages. Logback should generally be used via SLF4J, but we
- * need some canonical examples.</p>
+ * This unit test shows different Logback API usages. Logback should generally be used via SLF4J, but we
+ * need some canonical examples.
  */
 public class LogbackApiUsingSlf4JTest {
 

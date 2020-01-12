@@ -27,13 +27,13 @@ import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LoggerConsumer;
 
 /**
- * <p>This Logger will be used when the Pax Logging Service is not (yet) available.</p>
+ * This Logger will be used when the Pax Logging Service is not (yet) available.
  *
- * <p>Default threshold is DEBUG but can be changed if the {@link org.ops4j.pax.logging.PaxLoggingConstants#LOGGING_CFG_DEFAULT_LOG_LEVEL}
+ * Default threshold is DEBUG but can be changed if the {@link org.ops4j.pax.logging.PaxLoggingConstants#LOGGING_CFG_DEFAULT_LOG_LEVEL}
  * system or context property is set to on of the following: TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or NONE,
- * by calling the static method {@link #setLogLevel(String)}, where <b>threshold</b> is one of the same strings.</p>
+ * by calling the static method {@link #setLogLevel(String)}, where <b>threshold</b> is one of the same strings.
  *
- * <p>Since R7, This logger always uses Slf4J kind of formatting.</p>
+ * Since R7, This logger always uses Slf4J kind of formatting.
  */
 public class DefaultServiceLog implements PaxLogger {
 
@@ -721,9 +721,11 @@ public class DefaultServiceLog implements PaxLogger {
     }
 
     /**
-     * <p>Sets the threshold for this default/fallback logger. Events with level lower than given threshold
-     * won't be logged.</p>
-     * <p>Karaf sets this threshold to {@code ERROR} (in {@code etc/system.properties}).</p>
+     * Sets the threshold for this default/fallback logger. Events with level lower than given threshold
+     * won't be logged.
+     *
+     * Karaf sets this threshold to {@code ERROR} (in {@code etc/system.properties}).
+     *
      * @param level
      */
     public static void setLogLevel(String level) {

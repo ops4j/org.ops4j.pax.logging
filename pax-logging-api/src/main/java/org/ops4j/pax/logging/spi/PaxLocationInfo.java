@@ -25,7 +25,8 @@ public interface PaxLocationInfo {
 
     /**
      * Return the file name of the caller.
-     * <p>This information is not always available.</p>
+     *
+     * This information is not always available.
      *
      * @return the file name of the caller.
      */
@@ -41,7 +42,8 @@ public interface PaxLocationInfo {
 
     /**
      * Returns the line number of the caller.
-     * <p>This information is not always available.</p>
+     *
+     * This information is not always available.
      *
      * @return the line number of the caller.
      */

@@ -30,9 +30,9 @@ import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.spi.LocationAwareLogger;
 
 /**
- * <p>pax-logging specific {@link org.slf4j.Logger} that delegates to {@link PaxLogger} that is obtained from
+ * pax-logging specific {@link org.slf4j.Logger} that delegates to {@link PaxLogger} that is obtained from
  * framework specific {@link org.ops4j.pax.logging.PaxLoggingService} and eventually delegates to logging
- * implementation.</p>
+ * implementation.
  */
 public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareLogger {
 
@@ -92,8 +92,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the TRACE level according to the specified format
      * and argument.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the TRACE level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the TRACE level.
      *
      * @param format the format string
      * @param arg    the argument
@@ -110,8 +110,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the TRACE level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the TRACE level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the TRACE level.
      *
      * @param format the format string
      * @param arg1   the first argument
@@ -129,8 +129,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the TRACE level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the TRACE level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the TRACE level.
      *
      * @param format   the format string
      * @param argArray an array of arguments
@@ -308,8 +308,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the DEBUG level according to the specified format
      * and argument.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the DEBUG level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the DEBUG level.
      *
      * @param format the format string
      * @param arg    the argument
@@ -326,8 +326,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the DEBUG level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the DEBUG level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the DEBUG level.
      *
      * @param format the format string
      * @param arg1   the first argument
@@ -345,8 +345,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the DEBUG level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the DEBUG level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the DEBUG level.
      *
      * @param format   the format string
      * @param argArray an array of arguments
@@ -524,8 +524,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the INFO level according to the specified format
      * and argument.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the INFO level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the INFO level.
      *
      * @param format the format string
      * @param arg    the argument
@@ -542,8 +542,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the INFO level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the INFO level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the INFO level.
      *
      * @param format the format string
      * @param arg1   the first argument
@@ -561,8 +561,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the INFO level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the INFO level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the INFO level.
      *
      * @param format   the format string
      * @param argArray an array of arguments
@@ -740,8 +740,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the WARN level according to the specified format
      * and argument.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the WARN level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the WARN level.
      *
      * @param format the format string
      * @param arg    the argument
@@ -758,8 +758,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the WARN level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the WARN level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the WARN level.
      *
      * @param format   the format string
      * @param argArray an array of arguments
@@ -776,8 +776,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the WARN level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the WARN level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the WARN level.
      *
      * @param format the format string
      * @param arg1   the first argument
@@ -956,8 +956,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the ERROR level according to the specified format
      * and argument.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the ERROR level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the ERROR level.
      *
      * @param format the format string
      * @param arg    the argument
@@ -974,8 +974,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the ERROR level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the ERROR level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the ERROR level.
      *
      * @param format the format string
      * @param arg1   the first argument
@@ -993,8 +993,8 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
      * Log a message at the ERROR level according to the specified format
      * and arguments.
      *
-     * <p>This form avoids superfluous object creation when the logger
-     * is disabled for the ERROR level. </p>
+     * This form avoids superfluous object creation when the logger
+     * is disabled for the ERROR level.
      *
      * @param format   the format string
      * @param argArray an array of arguments

@@ -48,21 +48,17 @@ public class Loader  {
      places. The search order is as follows:
 
      <ol>
-
-     <p><li>Search for <code>resource</code> using the thread context
+     <li>Search for <code>resource</code> using the thread context
      class loader under Java2. If that fails, search for
      <code>resource</code> using the class loader that loaded this
      class (<code>Loader</code>). Under JDK 1.1, only the the class
-     loader that loaded this class (<code>Loader</code>) is used.
-
-     <p><li>in pax-logging, {@link org.osgi.framework.Bundle#getResource(String)}
-     is then checked</li></p>
-
-     <p><li>Try one last time with
+     loader that loaded this class (<code>Loader</code>) is used.</li>
+     <li>in pax-logging, {@link org.osgi.framework.Bundle#getResource(String)}
+     is then checked</li>
+     <li>Try one last time with
      <code>ClassLoader.getSystemResource(resource)</code>, that is is
      using the system class loader in JDK 1.2 and virtual machine's
-     built-in class loader in JDK 1.1.
-
+     built-in class loader in JDK 1.1.</li>
      </ol>
   */
   static public URL getResource(String resource) {

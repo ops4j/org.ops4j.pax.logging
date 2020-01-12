@@ -368,7 +368,7 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
      <p>Existing categories are not removed. They are just reset.
 
      <p>This method should be used sparingly and with care as it will
-     block all logging until it is completed.</p>
+     block all logging until it is completed.
 
      @since 0.8.5 */
   public

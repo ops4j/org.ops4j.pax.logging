@@ -32,8 +32,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * <p>This unit test shows different log4j2 API usages. It's much easier than with Log4J1 because API separation
- * in Log4J2 is better.</p>
+ * This unit test shows different log4j2 API usages. It's much easier than with Log4J1 because API separation
+ * in Log4J2 is better.
  */
 public class Log4j2ContextsTest {
 

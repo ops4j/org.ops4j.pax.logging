@@ -20,27 +20,31 @@ package org.ops4j.pax.logging.spi;
 import org.osgi.service.log.LogLevel;
 
 /**
- * <p>Framework library agnostic representation of <em>logging level</em>. There are two uses of <em>level</em>
- * concept:<ul>
+ * Framework library agnostic representation of <em>logging level</em>. There are two uses of <em>level</em>
+ * concept:
+ * <ul>
  *     <li>detail level or <em>importance</em> of <em>logging event</em></li>
  *     <li>threshold of the logging service, appender or destination, that allows to process or reject logging events
  *     with some level</li>
- * </ul></p>
- * <p>Terms like <em>higher</em> or <em>lower</em> may be confusing at first glance. Each framework may use different
+ * </ul>
+ *
+ * Terms like <em>higher</em> or <em>lower</em> may be confusing at first glance. Each framework may use different
  * numerical levels than other. Syslog and {@link org.osgi.service.log.LogService} use higher numerical values for less
- * important logging events. Log4J1 and {@code java.util.logging} use higher numerical values for more important events.</p>
- * <p>This interface is based on Log4J1 and:<ul>
+ * important logging events. Log4J1 and {@code java.util.logging} use higher numerical values for more important events.
+ *
+ * This interface is based on Log4J1 and:
+ * <ul>
  *     <li>the higher value (numerically) the more important the event is (higher severity)</li>
  *     <li>{@code INFO} is <em>higher</em> than {@code DEBUG}</li>
  *     <li>when used as <em>threshold</em>, PaxLevel=INFO rejects events with level=DEBUG and level=TRACE.</li>
  *     <li>also, the higher the <em>threshold</em> the more events are rejected (less are processed).</li>
- * </ul></p>
+ * </ul>
  */
 public interface PaxLevel {
 
     /**
-     * <p>Returns <code>true</code> if this level has a higher or equal level (is more important,
-     * has bigger severity) than the level passed as argument, <code>false</code> otherwise.</p>
+     * Returns <code>true</code> if this level has a higher or equal level (is more important,
+     * has bigger severity) than the level passed as argument, <code>false</code> otherwise.
      *
      * @param r the PaxLevel to compare with.
      * @return true if this level has a higher or equal level than the level passed as argument, <code>false</code> otherwise.
@@ -48,11 +52,10 @@ public interface PaxLevel {
     boolean isGreaterOrEqual(PaxLevel r);
 
     /**
-     * <p>Returns {@link LogLevel} representation of this level. In {@link LogLevel} enum, the higher the numerical
+     * Returns {@link LogLevel} representation of this level. In {@link LogLevel} enum, the higher the numerical
      * value (ordinal of the enum), the less <em>important</em> is the logging event with given level. When used as
      * <em>threshold</em>, the higher the numerical value, the less events are rejected (i.e., high <em>threshold</em>
-     * means <em>process even less important events</em>).</p>
-     * @return
+     * means <em>process even less important events</em>).
      */
     LogLevel toLevel();
 

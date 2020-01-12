@@ -27,10 +27,11 @@ import org.osgi.service.log.LogLevel;
 import org.osgi.service.log.LoggerConsumer;
 
 /**
- * <p>A {@link PaxLogger} that's delegating to real {@link PaxLoggingService} when one's available and falls back
- * to {@link FallbackLogFactory} when the service is gone.</p>
- * <p>This class itself doesn't track {@link PaxLoggingService} - {@link org.ops4j.pax.logging.OSGIPaxLoggingManager}
- * does that and calls {@link #added(PaxLoggingService)} and {@link #removed()} methods.</p>
+ * A {@link PaxLogger} that's delegating to real {@link PaxLoggingService} when one's available and falls back
+ * to {@link FallbackLogFactory} when the service is gone.
+ *
+ * This class itself doesn't track {@link PaxLoggingService} - {@link org.ops4j.pax.logging.OSGIPaxLoggingManager}
+ * does that and calls {@link #added(PaxLoggingService)} and {@link #removed()} methods.
  */
 public class TrackingLogger implements PaxLogger {
 
