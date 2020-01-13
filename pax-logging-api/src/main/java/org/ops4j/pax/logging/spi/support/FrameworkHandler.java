@@ -182,7 +182,7 @@ public class FrameworkHandler
     }
 
     private void doLog(LogLevel loggingLevel, Bundle bundle, String category, String message, Object... args) {
-        if (loggingLevel == null) {
+        if (loggingThreshold == null || (loggingLevel != LogLevel.AUDIT && loggingLevel.ordinal() > loggingThreshold.ordinal())) {
             // OFF or NONE specified as logging level
             return;
         }
