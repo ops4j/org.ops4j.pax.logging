@@ -134,9 +134,9 @@ public class LogbackFrameworkEventsIntegrationTest extends AbstractStdoutInterce
         // we should see start of pax-logging-log4j2 bundle
         assertTrue(lines3.contains("[main] INFO org.osgi.framework.BundleEvent - BundleEvent STARTED"));
         // we should see registration of our java.util.List service
-        assertTrue(lines1.contains("{main} org.osgi.framework.ServiceEvent/? [INFO] ServiceEvent REGISTERED - [java.util.List]"));
+        assertTrue(lines1.contains("{main} org.osgi.framework.ServiceEvent [INFO] ServiceEvent REGISTERED - [java.util.List]"));
         // we should also see error event with stack trace
-        int l = lines1.indexOf("{FelixDispatchQueue} org.osgi.framework.FrameworkEvent/? [ERROR] FrameworkEvent ERROR");
+        int l = lines1.indexOf("{FelixDispatchQueue} org.osgi.framework.FrameworkEvent [ERROR] FrameworkEvent ERROR");
         assertThat(lines1.get(l + 1), equalTo("java.lang.RuntimeException: Fake Exception"));
     }
 

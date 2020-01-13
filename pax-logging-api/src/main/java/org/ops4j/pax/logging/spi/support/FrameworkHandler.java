@@ -45,6 +45,8 @@ public class FrameworkHandler
 
     private final PaxLoggingManager m_manager;
 
+    private String m_fqcn = FrameworkHandler.class.getName();
+
     /**
      * Threshold to filter framework/bundle/service events according to 101.6 chapter of OSGi Cmpn specification.
      */
@@ -184,16 +186,16 @@ public class FrameworkHandler
 
         switch (loggingLevel) {
             case LogService.LOG_ERROR:
-                m_manager.getLogger(bundle, category, "").error(message, exception);
+                m_manager.getLogger(bundle, category, m_fqcn).error(message, exception);
                 break;
             case LogService.LOG_WARNING:
-                m_manager.getLogger(bundle, category, "").warn(message, exception);
+                m_manager.getLogger(bundle, category, m_fqcn).warn(message, exception);
                 break;
             case LogService.LOG_INFO:
-                m_manager.getLogger(bundle, category, "").inform(message, exception);
+                m_manager.getLogger(bundle, category, m_fqcn).inform(message, exception);
                 break;
             case LogService.LOG_DEBUG:
-                m_manager.getLogger(bundle, category, "").debug(message, exception);
+                m_manager.getLogger(bundle, category, m_fqcn).debug(message, exception);
                 break;
             default:
                 break;
