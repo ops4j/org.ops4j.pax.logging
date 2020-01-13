@@ -319,8 +319,8 @@
     <!-- test for JUL reconfiguration -->
     <configuration id="jul">
         <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-                <layout class="ch.qos.logback.classic.layout.TTLLLayout" />
+            <encoder>
+                <pattern>LOGBACK> [%thread] %-5level %logger{36} - %msg%n</pattern>
             </encoder>
         </appender>
 

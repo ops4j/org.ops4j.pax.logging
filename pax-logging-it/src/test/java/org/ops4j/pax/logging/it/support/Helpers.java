@@ -290,6 +290,7 @@ public class Helpers {
      */
     public static void updateLoggingConfig(BundleContext context, ConfigurationAdmin cm, LoggingLibrary library, String prefix, Consumer<Dictionary<String, Object>> consumer) {
         final Throwable[] pt = new Throwable[1];
+        ServiceRegistration<EventHandler> reg = null;
         try {
             Configuration c = cm.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, "?");
 
@@ -302,7 +303,7 @@ public class Helpers {
             };
             Dictionary<String, Object> props = new Hashtable<>();
             props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
-            context.registerService(EventHandler.class, handler, props);
+            reg = context.registerService(EventHandler.class, handler, props);
 
             Dictionary<String, Object> configuration = readPrefixedProperties(library, prefix);
 
@@ -315,6 +316,10 @@ public class Helpers {
             assertTrue(latch.await(5, TimeUnit.SECONDS));
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            if (reg != null) {
+                reg.unregister();
+            }
         }
 
         if (pt[0] != null) {
@@ -379,6 +384,28 @@ public class Helpers {
             }
         }
         return null;
+    }
+
+    /**
+     * Do some action that should lead to "configuration done" EventAdmin event
+     * @param waits
+     * @param context
+     * @param action
+     * @throws InterruptedException
+     */
+    public static void awaitingConfigurationDone(int waits, BundleContext context, Runnable action) throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(waits);
+        EventHandler handler = event -> {
+            latch.countDown();
+        };
+        Dictionary<String, Object> props = new Hashtable<>();
+        props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
+        ServiceRegistration<EventHandler> reg = context.registerService(EventHandler.class, handler, props);
+
+        action.run();
+
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        reg.unregister();
     }
 
     public enum LoggingLibrary {
