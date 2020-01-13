@@ -187,7 +187,7 @@ public class FrameworkHandler
             return;
         }
 
-        PaxLogger logger = m_manager.getLogger(bundle, category, "");
+        PaxLogger logger = m_manager.getLogger(bundle, category, FrameworkHandler.class.getName());
 
         switch (loggingLevel) {
             case AUDIT:

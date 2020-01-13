@@ -367,7 +367,7 @@
             <file>target/logs-logback/framework-events.log</file>
             <append>false</append>
             <encoder>
-                <pattern>{%t} %logger/%class [%level] %message%n</pattern>
+                <pattern>{%t} %logger [%level] %message%n</pattern>
             </encoder>
         </appender>
 

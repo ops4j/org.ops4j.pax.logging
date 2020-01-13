@@ -134,9 +134,9 @@ public class Log4J1FrameworkEventsIntegrationTest extends AbstractStdoutIntercep
         // we should see start of pax-logging-log4j2 bundle
         assertTrue(lines2.contains("[main] INFO Events.Bundle - BundleEvent STARTED"));
         // we should see registration of our java.util.List service
-        assertTrue(lines1.contains("{main} Events.Service/? [INFO] ServiceEvent REGISTERED - [java.util.List]"));
+        assertTrue(lines1.contains("{main} Events.Service [INFO] ServiceEvent REGISTERED - [java.util.List]"));
         // we should also see error event with stack trace
-        int l = lines1.indexOf("{FelixDispatchQueue} Events.Framework/? [ERROR] FrameworkEvent ERROR");
+        int l = lines1.indexOf("{FelixDispatchQueue} Events.Framework [ERROR] FrameworkEvent ERROR");
         assertThat(lines1.get(l + 1), equalTo("java.lang.RuntimeException: Fake Exception"));
     }
 
