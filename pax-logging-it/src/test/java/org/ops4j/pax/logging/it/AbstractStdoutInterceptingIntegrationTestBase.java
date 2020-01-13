@@ -33,8 +33,8 @@ import org.osgi.framework.BundleException;
  */
 public class AbstractStdoutInterceptingIntegrationTestBase extends AbstractControlledIntegrationTestBase {
 
-    private PrintStream stdout;
-    private ByteArrayOutputStream buffer;
+    protected PrintStream stdout;
+    protected ByteArrayOutputStream buffer;
 
     @Before
     public void hijackStdout() throws BundleException {
