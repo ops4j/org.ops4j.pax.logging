@@ -46,7 +46,6 @@ import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
 import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
-import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.ops4j.pax.logging.spi.support.LogEntryImpl;
 import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
 import org.ops4j.pax.logging.spi.support.OsgiUtil;
@@ -55,8 +54,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
 import org.slf4j.impl.StaticLoggerBinder;
 
@@ -92,7 +89,7 @@ import org.slf4j.impl.StaticLoggerBinder;
  * @author Chris Dolan
  */
 public class PaxLoggingServiceImpl
-        implements PaxLoggingService, LogService, ManagedService, ServiceFactory<Object> { // if you add an interface here, add it to the ManagedService below too
+        implements PaxLoggingService, LogService, ServiceFactory<Object> { // if you add an interface here, add it to the ManagedService below too
 
     // pax-logging-logback-only key to find BundleContext
     public static final String LOGGER_CONTEXT_BUNDLECONTEXT_KEY = "org.ops4j.pax.logging.logback.bundlecontext";
@@ -136,17 +133,24 @@ public class PaxLoggingServiceImpl
 
     private final String fqcn = getClass().getName();
 
-    public PaxLoggingServiceImpl(BundleContext bundleContext, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin, ConfigurationNotifier configNotifier) {
+    public PaxLoggingServiceImpl(BundleContext bundleContext, LogReaderServiceImpl logReader,
+                                 EventAdminPoster eventAdmin, ConfigurationNotifier configNotifier,
+                                 PaxLogger logLog) {
         if (bundleContext == null)
             throw new IllegalArgumentException("bundleContext cannot be null");
         m_bundleContext = bundleContext;
+
         if (logReader == null)
             throw new IllegalArgumentException("logReader cannot be null");
         m_logReader = logReader;
+
         if (eventAdmin == null)
             throw new IllegalArgumentException("eventAdmin cannot be null");
         m_eventAdmin = eventAdmin;
+
         m_configNotifier = configNotifier;
+
+        this.logLog = logLog;
 
         m_paxContext = new PaxContext();
 
@@ -155,8 +159,6 @@ public class PaxLoggingServiceImpl
             // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
             m_configLock = new ReentrantReadWriteLock();
         }
-
-        logLog = FallbackLogFactory.createFallbackLog(bundleContext.getBundle(), "logback");
 
         m_useStaticContext = Boolean.parseBoolean(bundleContext.getProperty(PaxLoggingConstants.LOGGING_CFG_LOGBACK_USE_STATIC_CONTEXT));
         if (m_useStaticContext) {
@@ -169,15 +171,6 @@ public class PaxLoggingServiceImpl
         }
 
         m_staticConfigFile = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_LOGBACK_CONFIGURATION_FILE);
-
-        // not strictly necessary because org.apache.felix.cm.impl.ConfigurationManager will configure us, but this
-        // is a safe precaution. In a typical run, we will reset the logback configuration four times:
-        //  1) here, in the constructor
-        //  2) via Felix when the service is added: updated(null)
-        //  3) again from Felix when the config file is discovered: updated(non-null)
-        //  4) from stop()
-        // there's optimization to not reconfigure several times with empty/default configuration
-        configureDefaults();
     }
 
     // org.ops4j.pax.logging.PaxLoggingService
@@ -279,10 +272,11 @@ public class PaxLoggingServiceImpl
         return m_paxContext;
     }
 
-    // org.osgi.service.cm.ManagedService
-
-    @Override
-    public void updated(Dictionary<String, ?> configuration) throws ConfigurationException {
+    /**
+     * ManagedService-like method but not requiring Configuration Admin
+     * @param configuration
+     */
+    public void updated(Dictionary<String, ?> configuration) {
         if (configuration == null) {
             // maintain the existing configuration if there's such file set
             if (m_staticConfigFile == null) {
@@ -368,7 +362,7 @@ public class PaxLoggingServiceImpl
      * Default configuration, when Configuration Admin is not (yet) available. May choose
      * staticly configured Logback XML file or just plain defaults (which are used if file is not accessible).
      */
-    private void configureDefaults() {
+    void configureDefaults() {
         String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
         java.util.logging.Level julLevel = BackendSupport.toJULLevel(levelName);
 
@@ -580,8 +574,7 @@ public class PaxLoggingServiceImpl
      */
     @Override
     public Object getService(final Bundle bundle, ServiceRegistration registration) {
-        class ManagedPaxLoggingService
-                implements PaxLoggingService, LogService, ManagedService {
+        class ManagedPaxLoggingService implements PaxLoggingService, LogService {
 
             private final String FQCN = ManagedPaxLoggingService.class.getName();
 
@@ -615,12 +608,6 @@ public class PaxLoggingServiceImpl
             @Override
             public PaxLogger getLogger(Bundle myBundle, String category, String fqcn) {
                 return PaxLoggingServiceImpl.this.getLogger(myBundle, category, fqcn);
-            }
-
-            @Override
-            public void updated(Dictionary<String, ?> configuration)
-                    throws ConfigurationException {
-                PaxLoggingServiceImpl.this.updated(configuration);
             }
 
             @Override

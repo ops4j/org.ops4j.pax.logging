@@ -235,4 +235,18 @@ public class BackendSupport {
         return category;
     }
 
+    public static boolean isConfigurationAdminAvailable() {
+        try {
+            BackendSupport.class.getClassLoader().loadClass("org.osgi.service.cm.ConfigurationAdmin");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    public static String externalFile(BundleContext bundleContext, String defaultFile) {
+        String property = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_PROPERTY_FILE);
+        return property == null ? defaultFile : property;
+    }
+
 }

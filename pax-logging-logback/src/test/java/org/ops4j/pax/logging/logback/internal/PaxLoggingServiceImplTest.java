@@ -45,21 +45,23 @@ public class PaxLoggingServiceImplTest {
     /**
      * Tests the main functionality of the logging service.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void test() {
         BundleContext bundleContext = mock(BundleContext.class);
         EventAdminPoster eventPoster = mock(EventAdminPoster.class);
 
         final Bundle mockBundle = makeBundle();
-        ServiceReference serviceReference = mock(ServiceReference.class);
+        ServiceReference<?> serviceReference = mock(ServiceReference.class);
         when(serviceReference.getBundle()).thenReturn(mockBundle);
 
         ConfigurationNotifier notifier = mock(ConfigurationNotifier.class);
 
+        final PaxLogger logger0 = mock(PaxLogger.class);
         final PaxLogger logger1 = mock(PaxLogger.class);
         final PaxLogger logger2 = mock(PaxLogger.class);
 
-        PaxLoggingServiceImpl service = new PaxLoggingServiceImpl(bundleContext, new LogReaderServiceImpl(0, null), eventPoster, notifier) {
+        PaxLoggingServiceImpl service = new PaxLoggingServiceImpl(bundleContext, new LogReaderServiceImpl(0, null), eventPoster, notifier, logger0) {
             public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
                 assertEquals(getClass().getName(), fqcn);
                 if (bundle == null && "undefined".equals(category))
@@ -99,6 +101,7 @@ public class PaxLoggingServiceImplTest {
     /**
      * Tests the ManagedService inner class.
      */
+    @SuppressWarnings("deprecation")
     @Test
     public void testInner() {
         BundleContext bundleContext = mock(BundleContext.class);
@@ -108,9 +111,10 @@ public class PaxLoggingServiceImplTest {
 
         ConfigurationNotifier notifier = mock(ConfigurationNotifier.class);
 
+        final PaxLogger logger0 = mock(PaxLogger.class);
         final PaxLogger logger = mock(PaxLogger.class);
 
-        PaxLoggingServiceImpl service = new PaxLoggingServiceImpl(bundleContext, new LogReaderServiceImpl(0, null), eventPoster, notifier) {
+        PaxLoggingServiceImpl service = new PaxLoggingServiceImpl(bundleContext, new LogReaderServiceImpl(0, null), eventPoster, notifier, logger0) {
             public PaxLogger getLogger(Bundle bundle, String category, String fqcn) {
                 assertEquals(PaxLoggingServiceImpl.class.getName() + "$1ManagedPaxLoggingService", fqcn);
                 if (bundle == mockBundle && "bundle1".equals(category))
@@ -148,17 +152,17 @@ public class PaxLoggingServiceImplTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullBundleContext() {
-        new PaxLoggingServiceImpl(null, mock(LogReaderServiceImpl.class), mock(EventAdminPoster.class), mock(ConfigurationNotifier.class));
+        new PaxLoggingServiceImpl(null, mock(LogReaderServiceImpl.class), mock(EventAdminPoster.class), mock(ConfigurationNotifier.class), mock(PaxLogger.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullLogReader() {
-        new PaxLoggingServiceImpl(mock(BundleContext.class), null, mock(EventAdminPoster.class), mock(ConfigurationNotifier.class));
+        new PaxLoggingServiceImpl(mock(BundleContext.class), null, mock(EventAdminPoster.class), mock(ConfigurationNotifier.class), mock(PaxLogger.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullEventPoster() {
-        new PaxLoggingServiceImpl(mock(BundleContext.class), mock(LogReaderServiceImpl.class), null, mock(ConfigurationNotifier.class));
+        new PaxLoggingServiceImpl(mock(BundleContext.class), mock(LogReaderServiceImpl.class), null, mock(ConfigurationNotifier.class), mock(PaxLogger.class));
     }
 
 }

@@ -30,6 +30,11 @@ public class PaxPropertySource implements PropertySource {
     public static boolean debug;
     public static String defaultLevel;
 
+    // PAXLOGGING-308: external file may be passed here (can be comma-separated). It'll be picked
+    // up by org.apache.logging.log4j.core.config.ConfigurationFactory.Factory.getConfiguration()
+    // using org.apache.logging.log4j.core.config.ConfigurationFactory.CONFIGURATION_FILE_PROPERTY
+    public static String fileConfiguration = null;
+
     @Override
     public int getPriority() {
         // higher than org.apache.logging.log4j.util.SystemPropertiesPropertySource.DEFAULT_PRIORITY
@@ -45,6 +50,9 @@ public class PaxPropertySource implements PropertySource {
         action.accept("log4j2.level", defaultLevel);
         action.accept("log4j2.disableJmx", Boolean.TRUE.toString());
         action.accept("log4j2.skipJansi", Boolean.TRUE.toString());
+        if (fileConfiguration != null) {
+            action.accept("log4j.configurationFile", fileConfiguration);
+        }
         // log4j2.isThreadContextMapInheritable - https://github.com/ops4j/org.ops4j.pax.logging/pull/38
     }
 

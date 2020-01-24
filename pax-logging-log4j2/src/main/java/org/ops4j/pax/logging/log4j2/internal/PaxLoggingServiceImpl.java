@@ -43,6 +43,7 @@ import org.apache.logging.log4j.core.config.plugins.util.PluginManager;
 import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory;
 import org.apache.logging.log4j.status.StatusData;
 import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.PaxPropertySource;
 import org.apache.logging.log4j.util.PropertiesUtil;
 import org.knopflerfish.service.log.LogService;
 import org.ops4j.pax.logging.EventAdminPoster;
@@ -61,12 +62,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
 
 public class PaxLoggingServiceImpl
-        implements PaxLoggingService, LogService, ManagedService, ServiceFactory<Object> {
+        implements PaxLoggingService, LogService, ServiceFactory<Object> {
 
     private static final String LOGGER_CONTEXT_NAME = "pax-logging";
 
@@ -117,12 +116,15 @@ public class PaxLoggingServiceImpl
         if (bundleContext == null)
             throw new IllegalArgumentException("bundleContext cannot be null");
         m_bundleContext = bundleContext;
+
         if (logReader == null)
             throw new IllegalArgumentException("logReader cannot be null");
         m_logReader = logReader;
+
         if (eventAdmin == null)
             throw new IllegalArgumentException("eventAdmin cannot be null");
         m_eventAdmin = eventAdmin;
+
         m_configNotifier = configNotifier;
 
         m_paxContext = new PaxContext();
@@ -137,8 +139,6 @@ public class PaxLoggingServiceImpl
         if ("true".equalsIgnoreCase(errorsAsExceptionValue)) {
             errorsAsException = true;
         }
-
-        configureDefaults();
     }
 
     // org.ops4j.pax.logging.PaxLoggingService
@@ -232,10 +232,11 @@ public class PaxLoggingServiceImpl
         return m_paxContext;
     }
 
-    // org.osgi.service.cm.ManagedService
-
-    @Override
-    public synchronized void updated(Dictionary<String, ?> configuration) throws ConfigurationException {
+    /**
+     * ManagedService-like method but not requiring Configuration Admin
+     * @param configuration
+     */
+    synchronized void updated(Dictionary<String, ?> configuration) {
         if (closed) {
             return;
         }
@@ -328,7 +329,7 @@ public class PaxLoggingServiceImpl
     /**
      * Default configuration, when Configuration Admin is not (yet) available.
      */
-    private void configureDefaults() {
+    void configureDefaults() {
         String levelName = BackendSupport.defaultLogLevel(m_bundleContext);
         java.util.logging.Level julLevel = BackendSupport.toJULLevel(levelName);
 
@@ -355,11 +356,17 @@ public class PaxLoggingServiceImpl
             file = new File(configFileName);
         }
         if (file != null && !file.isFile()) {
-            StatusLogger.getLogger().warn("Configuration file '" + file + "' is not available. Default configuration will be used.");
-            file = null;
+            if (configFileName.contains(",")) {
+                // PAXLOGGING-308 can be explicitly set to multiple files
+                file = null;
+            } else {
+                StatusLogger.getLogger().warn("Configuration file '" + file + "' is not available. Default configuration will be used.");
+                file = null;
+                configFileName = null;
+            }
         }
 
-        if (file == null && configuration == null && !emptyConfiguration.compareAndSet(false, true)) {
+        if (configFileName == null && configuration == null && !emptyConfiguration.compareAndSet(false, true)) {
             // no need to reconfigure default configuration
             m_configNotifier.configurationDone();
             return;
@@ -424,8 +431,8 @@ public class PaxLoggingServiceImpl
 
                     m_log4jContext.start(config);
 
-                    StatusLogger.getLogger().info("Log4J2 configured using configuration from " + PaxLoggingConstants.LOGGING_CONFIGURATION_PID + " PID.");
-                } else if (file != null) {
+                    StatusLogger.getLogger().info("Log4J2 configured using configuration from passed properties");
+                } else if (configFileName != null) {
                     // configuration using externally specified file. This is the way to make Karaf's
                     // etc/org.ops4j.pax.logging.cfg much simpler without this cumbersome properties
                     // file format.
@@ -438,11 +445,17 @@ public class PaxLoggingServiceImpl
                     // ".properties": org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory
                     // ".xml", "*": org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory
                     // ".yml", ".yaml": org.apache.logging.log4j.core.config.yaml.YamlConfigurationFactory
-                    Configuration config = factory.getConfiguration(m_log4jContext, LOGGER_CONTEXT_NAME, file.toURI());
+
+                    // File name (or comma-separated file names) is not passed to getConfiguration, but is made
+                    // available in high-priority org.apache.logging.log4j.util.PropertySource
+                    PaxPropertySource.fileConfiguration = configFileName;
+                    // reload() is needed to let the source apply the settings
+                    PropertiesUtil.getProperties().reload();
+                    Configuration config = factory.getConfiguration(m_log4jContext, LOGGER_CONTEXT_NAME, null);
 
                     m_log4jContext.start(config);
 
-                    StatusLogger.getLogger().info("Log4J2 configured using file '" + file + "'.");
+                    StatusLogger.getLogger().info("Log4J2 configured using file '" + configFileName + "'.");
                 } else {
                     // default configuration - Log4J2 specific.
                     // even if LoggerContext by default has DefaultConfiguration set, it's necessary to pass
@@ -542,8 +555,7 @@ public class PaxLoggingServiceImpl
      */
     @Override
     public Object getService(final Bundle bundle, ServiceRegistration registration) {
-        class ManagedPaxLoggingService
-                implements PaxLoggingService, LogService, ManagedService {
+        class ManagedPaxLoggingService implements PaxLoggingService, LogService {
 
             private final String FQCN = ManagedPaxLoggingService.class.getName();
 
@@ -577,12 +589,6 @@ public class PaxLoggingServiceImpl
             @Override
             public PaxLogger getLogger(Bundle myBundle, String category, String fqcn) {
                 return PaxLoggingServiceImpl.this.getLogger(myBundle, category, fqcn);
-            }
-
-            @Override
-            public void updated(Dictionary<String, ?> configuration)
-                    throws ConfigurationException {
-                PaxLoggingServiceImpl.this.updated(configuration);
             }
 
             @Override

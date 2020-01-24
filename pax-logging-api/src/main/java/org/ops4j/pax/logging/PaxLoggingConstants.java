@@ -41,8 +41,7 @@ public interface PaxLoggingConstants {
     String[] LOGGING_LOGSERVICE_NAMES = {
             org.osgi.service.log.LogService.class.getName(),
             org.knopflerfish.service.log.LogService.class.getName(),
-            PaxLoggingService.class.getName(),
-            "org.osgi.service.cm.ManagedService"
+            PaxLoggingService.class.getName()
     };
 
     /**
@@ -70,8 +69,7 @@ public interface PaxLoggingConstants {
 
     /**
      * System or context (in that order) property that specifies threshold for fallback logger used behind all
-     * facades
-     * handled by pax-logging-api.
+     * facades, handled by pax-logging-api.
      */
     String LOGGING_CFG_DEFAULT_LOG_LEVEL = "org.ops4j.pax.logging.DefaultServiceLog.level";
 
@@ -138,9 +136,14 @@ public interface PaxLoggingConstants {
     String LOGGING_CFG_LOGBACK_CONFIGURATION_FILE = "org.ops4j.pax.logging.StaticLogbackFile";
 
     /**
+<<<<<<< HEAD
      * <p>System or context property that can indicate alternative file with properties used instead of
      * the properties from Configuration Admin. Useful in tests probably.</p>
      * <p>Currently this is handled only by pax-logging-log4j2.</p>
+=======
+     * System or context property that can indicate alternative file in format specific to the backend used instead of
+     * the properties from Configuration Admin. Useful in tests or in environment without Configuration Admin.
+>>>>>>> 49f9846b... [PAXLOGGING-308] Allow to use logging backends without Configuration Admin
      */
     String LOGGING_CFG_PROPERTY_FILE = "org.ops4j.pax.logging.property.file";
 
@@ -157,7 +160,8 @@ public interface PaxLoggingConstants {
     String PID_CFG_LOGBACK_CONFIG_FILE = "org.ops4j.pax.logging.logback.config.file";
 
     /**
-     * {@code org.osp4j.pax.logging} PID property to specify XML file with Log4J2 configuration
+     * {@code org.osp4j.pax.logging} PID property to specify XML (or any supported) file (not URL)
+     * with Log4J2 configuration. Can be comma-separated and compliant to Log4J2's {@code log4j.configurationFile}
      */
     String PID_CFG_LOG4J2_CONFIG_FILE = "org.ops4j.pax.logging.log4j2.config.file";
 
@@ -198,4 +202,10 @@ public interface PaxLoggingConstants {
      * if it's going to be used by Log4j2 backend (see https://ops4j1.jira.com/browse/PAXLOGGING-302)
      */
     String _LOG4J2_MESSAGE = ".log4j2_message";
+
+    /**
+     * Default file looked up during startup to override Configuration Admin config
+     */
+    String PAX_LOGGING_PROPERTY_FILE = "pax-logging.properties";
+
 }

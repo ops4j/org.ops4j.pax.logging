@@ -70,7 +70,7 @@ public class Log4J2MetaIntegrationTest extends AbstractStdoutInterceptingIntegra
         List<String> linesStdout = readLines(13);
 
         assertTrue(linesStdout.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2MetaIntegrationTest - Checking Log4J2 almost empty configuration"));
-        assertTrue(linesFile.stream().anyMatch(l -> l.startsWith("org.ops4j.pax.logging.pax-logging-api [log4j2] INFO : Log4J2 configured using configuration from org.ops4j.pax.logging PID.")));
+        assertTrue(linesFile.stream().anyMatch(l -> l.startsWith("org.ops4j.pax.logging.pax-logging-api [log4j2] INFO : Log4J2 configured using configuration from passed properties")));
         assertTrue(linesFile.stream().anyMatch(l -> l.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] WARN : No Root logger was configured, creating default ERROR-level Root logger with Console appender")));
 
         // Now let's change the configuration to one where status=warn.
