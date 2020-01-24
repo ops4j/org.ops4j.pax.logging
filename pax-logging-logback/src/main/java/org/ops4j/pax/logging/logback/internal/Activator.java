@@ -18,6 +18,8 @@
  */
 package org.ops4j.pax.logging.logback.internal;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -25,6 +27,7 @@ import ch.qos.logback.core.status.ErrorStatus;
 import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.status.WarnStatus;
 import org.ops4j.pax.logging.EventAdminPoster;
+import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
@@ -64,6 +67,8 @@ public class Activator implements BundleActivator {
     private RegisteredService<EventAdminPoster, EventAdminPoster> eventAdminInfo;
     private RegisteredService<ConfigurationNotifier, ConfigurationNotifier> eventAdminConfigurationNotifierInfo;
 
+    private PaxLogger logLog;
+
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         sanityCheck();
@@ -82,14 +87,50 @@ public class Activator implements BundleActivator {
         // EventAdmin (or mock) service to notify about configuration changes
         eventAdminConfigurationNotifierInfo = BackendSupport.eventAdminConfigurationNotifier(bundleContext);
 
+        logLog = FallbackLogFactory.createFallbackLog(bundleContext.getBundle(), "logback");
+
+        boolean cm = BackendSupport.isConfigurationAdminAvailable();
+
+        if (!cm) {
+            logLog.info("Configuration Admin is not available.");
+        }
+
         // OSGi Compendium 101.2: The Log Service Interface - register Logback specific Pax Logging service
+        // it's not configured by default
         m_paxLogging = new PaxLoggingServiceImpl(bundleContext,
                 logReaderInfo.getService(), eventAdminInfo.getService(),
-                eventAdminConfigurationNotifierInfo.getService());
+                eventAdminConfigurationNotifierInfo.getService(), logLog);
 
-        // registration of log service and CM ManagedService for org.ops4j.pax.logging PID
+        // PAXLOGGING-308 Check if there's external file specified to use instead of Configuration Admin PID
+        // or when there's no Configuration Admin at all
+        String externalFile = BackendSupport.externalFile(bundleContext, null);
+        final Path configFilePath = externalFile == null ? null : Paths.get(externalFile);
+
+        if (configFilePath == null || !configFilePath.toFile().isFile()) {
+            // file is not available
+            logLog.info("Initializing Logback using default configuration");
+
+            m_paxLogging.configureDefaults();
+        } else {
+            logLog.info("Initializing Logback using " + configFilePath.toAbsolutePath());
+
+            // in Logback, this is always native XML configuration
+            Dictionary<String, String> config = new Hashtable<>();
+            config.put(PaxLoggingConstants.PID_CFG_LOGBACK_CONFIG_FILE, configFilePath.toAbsolutePath().toString());
+
+            m_paxLogging.updated(config);
+        }
+
+        if (cm) {
+            // registration of CM ManagedService for org.ops4j.pax.logging PID
+            Dictionary<String, Object> serviceProperties = new Hashtable<>();
+            serviceProperties.put(Constants.SERVICE_PID, PaxLoggingConstants.LOGGING_CONFIGURATION_PID);
+            m_RegistrationPaxLogging = bundleContext.registerService("org.osgi.service.cm.ManagedService",
+                    new LoggingManagedService(m_paxLogging), serviceProperties);
+        }
+
+        // registration of log service itself
         Dictionary<String, Object> serviceProperties = new Hashtable<>();
-        serviceProperties.put(Constants.SERVICE_PID, PaxLoggingConstants.LOGGING_CONFIGURATION_PID);
         serviceProperties.put(Constants.SERVICE_RANKING, BackendSupport.paxLoggingServiceRanking(bundleContext));
         m_RegistrationPaxLogging = bundleContext.registerService(PaxLoggingConstants.LOGGING_LOGSERVICE_NAMES,
                 m_paxLogging, serviceProperties);

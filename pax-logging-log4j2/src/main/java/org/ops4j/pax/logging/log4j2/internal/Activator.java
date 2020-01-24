@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.logging.log4j.core.lookup.StrSubstitutor;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
@@ -35,26 +36,19 @@ import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
 import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.ops4j.pax.logging.spi.support.LogReaderServiceImpl;
-import org.ops4j.pax.logging.spi.support.OsgiUtil;
 import org.ops4j.pax.logging.spi.support.RegisteredService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.log.LogReaderService;
 
 /**
  * Starts the Log4j log services.
  */
 public class Activator implements BundleActivator {
-
-    /** Default file looked up during startup to override Configuration Admin config */
-    private static final String PAX_LOGGING_PROPERTY_FILE = "pax-logging.properties";
 
     // PaxLoggingService implementation backed by Log4J1 and its registration
     private ServiceRegistration<?> m_RegistrationPaxLogging;
@@ -86,44 +80,94 @@ public class Activator implements BundleActivator {
         // EventAdmin (or mock) service to notify about configuration changes
         eventAdminConfigurationNotifierInfo = BackendSupport.eventAdminConfigurationNotifier(bundleContext);
 
-        // OSGi Compendium 101.2: The Log Service Interface - register Log4J1 specific Pax Logging service
+        boolean cm = BackendSupport.isConfigurationAdminAvailable();
+
+        if (!cm) {
+            StatusLogger.getLogger().info("Configuration Admin is not available.");
+        }
+
+        // OSGi Compendium 101.2: The Log Service Interface - register Log4J2 specific Pax Logging service
+        // it's not configured by default
         m_PaxLogging = new PaxLoggingServiceImpl(bundleContext,
                 logReaderInfo.getService(), eventAdminInfo.getService(),
                 eventAdminConfigurationNotifierInfo.getService());
 
-        // Special case (no PAXLOGGING Jira for that...) to ensure that we can override etc/org.ops4j.pax.logging.cfg
-        // file with one specified via system properties.
-        final Path configFilePath = Paths.get(externalFile());
+        // PAXLOGGING-308 Check if there's external file specified to use instead of Configuration Admin PID
+        // or when there's no Configuration Admin at all
+        String externalFile = BackendSupport.externalFile(bundleContext, PaxLoggingConstants.PAX_LOGGING_PROPERTY_FILE);
+        final Path configFilePath = Paths.get(externalFile);
 
-        if (configFilePath.toFile().isFile()) {
-            try (InputStream inputStream = new FileInputStream(configFilePath.toFile())) {
-                Properties properties = new Properties();
-                properties.load(inputStream);
-                // This configuration will be used instead of what's in Configuration Admin
-                final Dictionary<String, String> config = new Hashtable<>();
-                StrSubstitutor strSubstitutor = new StrSubstitutor(System.getProperties());
-                for (Map.Entry<Object, Object> entry : properties.entrySet()) {
-                    String propValue = (String) entry.getValue();
-                    propValue = strSubstitutor.replace(propValue);
-                    config.put((String) entry.getKey(), propValue);
-                }
+        if (!configFilePath.toFile().isFile() && !externalFile.contains(",")) {
+            // file is not available
+            StatusLogger.getLogger().info("Initializing Log4j2 using default configuration");
 
-                ServiceReference<ConfigurationAdmin> sr = bundleContext.getServiceReference(ConfigurationAdmin.class);
-                if (sr != null) {
-                    ConfigurationAdmin configurationAdmin = bundleContext.getService(sr);
-                    if (configurationAdmin != null) {
-                        Configuration configuration = configurationAdmin.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, "?");
-                        configuration.update(config);
+            m_PaxLogging.configureDefaults();
+        } else {
+            // could be one or more (comma-separated) files
+            StatusLogger.getLogger().info("Initializing Log4j2 using " + configFilePath.toAbsolutePath());
+
+            boolean nativeConfiguration = true;
+            // This configuration will be used instead of what could be found (or not) in Concifuration Admin
+            final Dictionary<String, String> config = new Hashtable<>();
+
+            if (configFilePath.toFile().isFile() && (
+                    configFilePath.toFile().getName().endsWith(".properties")
+                    || configFilePath.toFile().getName().endsWith(".config")
+                    || configFilePath.toFile().getName().endsWith(".cfg"))) {
+                // this may be either ConfigurationAdmin/FileInstall/Karaf properties file with properties
+                // prefixed with "log4j2." or just properties file to be used directly by Log4j2 itself
+                try (InputStream inputStream = new FileInputStream(configFilePath.toFile())) {
+                    Properties properties = new Properties();
+                    properties.load(inputStream);
+
+                    boolean nonNative = properties.stringPropertyNames().stream().anyMatch(key -> key.startsWith("log4j2."));
+
+                    if (nonNative) {
+                        // there's at least one property with such prefix - so it's a file to be processed further
+                        // it still may contain single property "org.ops4j.pax.logging.log4j2.config.file"
+                        // pointing to native file though...
+                        nativeConfiguration = false;
+
+                        StrSubstitutor strSubstitutor = new StrSubstitutor(System.getProperties());
+                        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+                            String propValue = (String) entry.getValue();
+                            propValue = strSubstitutor.replace(propValue);
+                            config.put((String) entry.getKey(), propValue);
+                        }
                     }
-                }
 
-                m_PaxLogging.updated(config);
+                    // let's not put this configuration to Configuration Admin (which may not be available)
+//                    ServiceReference<ConfigurationAdmin> sr = bundleContext.getServiceReference(ConfigurationAdmin.class);
+//                    if (sr != null) {
+//                        ConfigurationAdmin configurationAdmin = bundleContext.getService(sr);
+//                        if (configurationAdmin != null) {
+//                            Configuration configuration = configurationAdmin.getConfiguration(PaxLoggingConstants.LOGGING_CONFIGURATION_PID, "?");
+//                            configuration.update(config);
+//                        }
+//                    }
+                }
             }
+
+            if (nativeConfiguration) {
+                // this file has to be passed directly to Log4j2 - it may contain comma or simply we let Log4j2
+                // fail when file is not found.
+                StatusLogger.getLogger().info("Passing " + configFilePath.toAbsolutePath() + " to Log4j2");
+                config.put(PaxLoggingConstants.PID_CFG_LOG4J2_CONFIG_FILE, configFilePath.toAbsolutePath().toString());
+            }
+
+            m_PaxLogging.updated(config);
         }
 
-        // registration of log service and CM ManagedService for org.ops4j.pax.logging PID
+        if (cm) {
+            // registration of CM ManagedService for org.ops4j.pax.logging PID
+            Dictionary<String, Object> serviceProperties = new Hashtable<>();
+            serviceProperties.put(Constants.SERVICE_PID, PaxLoggingConstants.LOGGING_CONFIGURATION_PID);
+            m_RegistrationPaxLogging = bundleContext.registerService("org.osgi.service.cm.ManagedService",
+                    new LoggingManagedService(m_PaxLogging), serviceProperties);
+        }
+
+        // registration of log service itself
         Dictionary<String, Object> serviceProperties = new Hashtable<>();
-        serviceProperties.put(Constants.SERVICE_PID, PaxLoggingConstants.LOGGING_CONFIGURATION_PID);
         serviceProperties.put(Constants.SERVICE_RANKING, BackendSupport.paxLoggingServiceRanking(bundleContext));
         m_RegistrationPaxLogging = bundleContext.registerService(PaxLoggingConstants.LOGGING_LOGSERVICE_NAMES,
                 m_PaxLogging, serviceProperties);
@@ -160,11 +204,6 @@ public class Activator implements BundleActivator {
     private void sanityCheck() {
         Bundle paxLoggingApi = FrameworkUtil.getBundle(PaxLoggingService.class);
         Bundle paxLoggingLog4J2 = FrameworkUtil.getBundle(this.getClass());
-    }
-
-    private String externalFile() {
-        String property = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_PROPERTY_FILE);
-        return property == null ? PAX_LOGGING_PROPERTY_FILE : property;
     }
 
 }

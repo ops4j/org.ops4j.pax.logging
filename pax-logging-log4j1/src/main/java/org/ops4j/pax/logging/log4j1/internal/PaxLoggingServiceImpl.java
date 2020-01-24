@@ -46,8 +46,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.ConfigurationException;
-import org.osgi.service.cm.ManagedService;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogLevel;
 
@@ -55,8 +53,7 @@ import org.osgi.service.log.LogLevel;
  * Log4J1 specific implementation of {@link PaxLoggingService}. It's a {@link ServiceFactory}, so each
  * bundle will get own instance of this service.
  */
-public class PaxLoggingServiceImpl
-        implements PaxLoggingService, ManagedService, ServiceFactory<Object> {
+public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<Object> {
 
     private BundleContext m_bundleContext;
 
@@ -84,10 +81,20 @@ public class PaxLoggingServiceImpl
     private AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
 
     public PaxLoggingServiceImpl(BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin, ConfigurationNotifier configNotifier) {
+        if (context == null)
+            throw new IllegalArgumentException("bundleContext cannot be null");
         m_bundleContext = context;
+
+        if (logReader == null)
+            throw new IllegalArgumentException("logReader cannot be null");
         m_logReader = logReader;
+
+        if (eventAdmin == null)
+            throw new IllegalArgumentException("eventAdmin cannot be null");
         m_eventAdmin = eventAdmin;
+
         m_configNotifier = configNotifier;
+
         m_context = new PaxContext();
 
         String useLocks = OsgiUtil.systemOrContextProperty(context, PaxLoggingConstants.LOGGING_CFG_USE_LOCKS);
@@ -95,8 +102,6 @@ public class PaxLoggingServiceImpl
             // do not use locks ONLY if the property is "false". Otherwise (or if not set at all), use the locks
             m_configLock = new ReentrantReadWriteLock();
         }
-
-        configureDefaults();
     }
 
     /**
@@ -240,10 +245,11 @@ public class PaxLoggingServiceImpl
         return new PaxLoggerImpl(bundle, log4jLogger, fqcn, this, printfFormatting);
     }
 
-    // org.osgi.service.cm.ManagedService
-
-    @Override
-    public void updated(Dictionary<String, ?> configuration) throws ConfigurationException {
+    /**
+     * ManagedService-like method but not requiring Configuration Admin
+     * @param configuration
+     */
+    public void updated(Dictionary<String, ?> configuration) {
         if (configuration == null) {
             // mind that there's no synchronization here
             configureDefaults();
@@ -319,6 +325,7 @@ public class PaxLoggingServiceImpl
      * @param exception
      * @param fqcn
      */
+    @SuppressWarnings("deprecation")
     private void logImpl(Bundle bundle, int level, String message, Throwable exception, String fqcn) {
         String category = BackendSupport.category(bundle);
 
@@ -408,7 +415,7 @@ public class PaxLoggingServiceImpl
     /**
      * Default configuration, when Configuration Admin is not (yet) available.
      */
-    private void configureDefaults() {
+    void configureDefaults() {
         if (!emptyConfiguration.compareAndSet(false, true)) {
             m_configNotifier.configurationDone();
             return;
@@ -465,8 +472,7 @@ public class PaxLoggingServiceImpl
      */
     @Override
     public Object getService(final Bundle bundle, ServiceRegistration registration) {
-        class ManagedPaxLoggingService
-                implements PaxLoggingService, ManagedService {
+        class ManagedPaxLoggingService implements PaxLoggingService {
 
             private final String FQCN = ManagedPaxLoggingService.class.getName();
 
@@ -498,12 +504,6 @@ public class PaxLoggingServiceImpl
             @Override
             public PaxLogger getLogger(Bundle myBundle, String category, String fqcn) {
                 return PaxLoggingServiceImpl.this.getLogger(myBundle, category, fqcn);
-            }
-
-            @Override
-            public void updated(Dictionary<String, ?> configuration)
-                    throws ConfigurationException {
-                PaxLoggingServiceImpl.this.updated(configuration);
             }
 
             @Override
