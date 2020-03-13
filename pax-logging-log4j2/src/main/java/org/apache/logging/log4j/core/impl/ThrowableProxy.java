@@ -34,13 +34,18 @@ import org.apache.logging.log4j.util.Strings;
 /**
  * Wraps a Throwable to add packaging information about each stack trace element.
  *
+ * <p>
  * A proxy is used to represent a throwable that may not exist in a different class loader or JVM. When an application
  * deserializes a ThrowableProxy, the throwable may not be set, but the throwable's information is preserved in other
  * fields of the proxy like the message and stack trace.
+ * </p>
  *
+ * <p>
  * TODO: Move this class to org.apache.logging.log4j.core because it is used from LogEvent.
- *
+ * </p>
+ * <p>
  * TODO: Deserialize: Try to rebuild Throwable if the target exception is in this class loader?
+ * </p>
  */
 public class ThrowableProxy implements Serializable {
 

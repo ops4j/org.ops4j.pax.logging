@@ -42,7 +42,7 @@ for (String l : lines) {
   if (l.contains("MAP> <Map>")) {
     ok++
   }
-  if (l.contains("MAP> {\"k1\":\"v2\", \"k2\":\"v2\"}")) {
+  if (l.contains("MAP> {\"k1\":\"v2\",\"k2\":\"v2\"}")) {
     ok++
   }
   if (l.contains("SD> sd-test [1 k1=\"v1\" k2=\"v2\"] hello10")) {
