@@ -336,8 +336,7 @@ public class LogManager {
      * @since 2.6
      */
     public static void shutdown(final boolean currentContext) {
-//        shutdown(getContext(currentContext));
-factory.shutdown(FQCN, null, currentContext, false);
+        factory.shutdown(FQCN, null, currentContext, false);
     }
 
     /**
