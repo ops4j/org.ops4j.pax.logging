@@ -27,10 +27,13 @@
 
 package org.apache.log4j;
 
-
+import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Vector;
+import java.util.WeakHashMap;
 
 import org.apache.log4j.spi.LoggerFactory;
 import org.apache.log4j.spi.HierarchyEventListener;
@@ -68,7 +71,7 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
   private LoggerFactory defaultFactory;
   private Vector listeners;
 
-  Hashtable ht;
+  Map<CategoryKey, Object> ht;
   Logger root;
   RendererMap rendererMap;
 
@@ -88,7 +91,7 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
    */
   public
   Hierarchy(Logger root) {
-    ht = new Hashtable();
+    ht = new WeakHashMap<>();
     listeners = new Vector(1);
     this.root = root;
     // Enable all level levels by default.
@@ -154,6 +157,8 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
     Object o = ht.get(new CategoryKey(name));
     if(o instanceof Logger) {
       return (Logger) o;
+    } else if (o instanceof WeakReference) {
+        return ((WeakReference<Logger>) o).get();
     } else {
       return null;
     }
@@ -271,10 +276,11 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
 
     synchronized(ht) {
       Object o = ht.get(key);
+      o = o instanceof WeakReference ? ((WeakReference<Logger>)o).get() : o;
       if(o == null) {
 	logger = factory.makeNewLoggerInstance(name);
 	logger.setHierarchy(this);
-	ht.put(key, logger);
+	ht.put(key, new WeakReference<>(logger));
 	updateParents(logger);
 	return logger;
       } else if(o instanceof Logger) {
@@ -283,7 +289,7 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
 	//System.out.println("("+name+") ht.get(this) returned ProvisionNode");
 	logger = factory.makeNewLoggerInstance(name);
 	logger.setHierarchy(this);
-	ht.put(key, logger);
+	ht.put(key, new WeakReference<>(logger));
 	updateChildren((ProvisionNode) o, logger);
 	updateParents(logger);
 	return logger;
@@ -308,11 +314,16 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
     // as well.
     Vector v = new Vector(ht.size());
 
-    Enumeration elems = ht.elements();
+    Enumeration elems = Collections.enumeration(ht.values());
     while(elems.hasMoreElements()) {
       Object o = elems.nextElement();
       if(o instanceof Logger) {
 	v.addElement(o);
+      } else if (o instanceof WeakReference) {
+          o = ((WeakReference<Logger>) o).get();
+          if (o != null) {
+              v.addElement(o);
+          }
       }
     }
     return v.elements();
@@ -515,6 +526,7 @@ public class Hierarchy implements LoggerRepository, RendererSupport, ThrowableRe
       //System.out.println("Updating parent : " + substr);
       CategoryKey key = new CategoryKey(substr); // simple constructor
       Object o = ht.get(key);
+      o = o instanceof WeakReference ? ((WeakReference<Logger>)o).get() : o;
       // Create a provision node for a future parent.
       if(o == null) {
 	//System.out.println("No parent "+substr+" found. Creating ProvisionNode.");

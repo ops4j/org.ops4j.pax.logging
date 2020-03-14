@@ -85,7 +85,8 @@ public class LoggerContext extends AbstractLifeCycle
 
     private static final Configuration NULL_CONFIGURATION = new NullConfiguration();
 
-    private final LoggerRegistry<Logger> loggerRegistry = new LoggerRegistry<>();
+    // PAXLOGGING-311 - this map should be weak
+    private final LoggerRegistry<Logger> loggerRegistry = new LoggerRegistry<>(new LoggerRegistry.WeakMapFactory<>());
     private final CopyOnWriteArrayList<PropertyChangeListener> propertyChangeListeners = new CopyOnWriteArrayList<>();
     private volatile List<LoggerContextShutdownAware> listeners = null;
 

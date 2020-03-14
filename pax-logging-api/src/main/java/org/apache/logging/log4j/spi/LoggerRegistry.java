@@ -16,6 +16,7 @@
  */
 package org.apache.logging.log4j.spi;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -32,18 +33,18 @@ import org.apache.logging.log4j.message.MessageFactory;
 public class LoggerRegistry<T extends ExtendedLogger> {
     private static final String DEFAULT_FACTORY_KEY = AbstractLogger.DEFAULT_MESSAGE_FACTORY_CLASS.getName();
     private final MapFactory<T> factory;
-    private final Map<String, Map<String, T>> map;
+    private final Map<String, Map<String, WeakReference<T>>> map;
 
     /**
      * Interface to control the data structure used by the registry to store the Loggers.
      * @param <T> subtype of {@code ExtendedLogger}
      */
     public interface MapFactory<T extends ExtendedLogger> {
-        Map<String, T> createInnerMap();
+        Map<String, WeakReference<T>> createInnerMap();
 
-        Map<String, Map<String, T>> createOuterMap();
+        Map<String, Map<String, WeakReference<T>>> createOuterMap();
 
-        void putIfAbsent(Map<String, T> innerMap, String name, T logger);
+        void putIfAbsent(Map<String, WeakReference<T>> innerMap, String name, T logger);
     }
 
     /**
@@ -52,18 +53,18 @@ public class LoggerRegistry<T extends ExtendedLogger> {
      */
     public static class ConcurrentMapFactory<T extends ExtendedLogger> implements MapFactory<T> {
         @Override
-        public Map<String, T> createInnerMap() {
+        public Map<String, WeakReference<T>> createInnerMap() {
             return new ConcurrentHashMap<>();
         }
 
         @Override
-        public Map<String, Map<String, T>> createOuterMap() {
+        public Map<String, Map<String, WeakReference<T>>> createOuterMap() {
             return new ConcurrentHashMap<>();
         }
 
         @Override
-        public void putIfAbsent(final Map<String, T> innerMap, final String name, final T logger) {
-            ((ConcurrentMap<String, T>) innerMap).putIfAbsent(name, logger);
+        public void putIfAbsent(final Map<String, WeakReference<T>> innerMap, final String name, final T logger) {
+            ((ConcurrentMap<String, WeakReference<T>>) innerMap).putIfAbsent(name, new WeakReference<>(logger));
         }
     }
 
@@ -73,18 +74,18 @@ public class LoggerRegistry<T extends ExtendedLogger> {
      */
     public static class WeakMapFactory<T extends ExtendedLogger> implements MapFactory<T> {
         @Override
-        public Map<String, T> createInnerMap() {
+        public Map<String, WeakReference<T>> createInnerMap() {
             return new WeakHashMap<>();
         }
 
         @Override
-        public Map<String, Map<String, T>> createOuterMap() {
+        public Map<String, Map<String, WeakReference<T>>> createOuterMap() {
             return new WeakHashMap<>();
         }
 
         @Override
-        public void putIfAbsent(final Map<String, T> innerMap, final String name, final T logger) {
-            innerMap.put(name, logger);
+        public void putIfAbsent(final Map<String, WeakReference<T>> innerMap, final String name, final T logger) {
+            innerMap.put(name, new WeakReference<>(logger));
         }
     }
 
@@ -111,7 +112,9 @@ public class LoggerRegistry<T extends ExtendedLogger> {
      * @return The logger with the specified name.
      */
     public T getLogger(final String name) {
-        return getOrCreateInnerMap(DEFAULT_FACTORY_KEY).get(name);
+        WeakReference<T> ref = getOrCreateInnerMap(DEFAULT_FACTORY_KEY).get(name);
+        T logger = ref == null ? null : ref.get();
+        return logger;
     }
 
     /**
@@ -122,7 +125,9 @@ public class LoggerRegistry<T extends ExtendedLogger> {
      * @return The logger with the specified name.
      */
     public T getLogger(final String name, final MessageFactory messageFactory) {
-        return getOrCreateInnerMap(factoryKey(messageFactory)).get(name);
+        WeakReference<T> ref = getOrCreateInnerMap(factoryKey(messageFactory)).get(name);
+        T logger = ref == null ? null : ref.get();
+        return logger;
     }
 
     public Collection<T> getLoggers() {
@@ -130,14 +135,19 @@ public class LoggerRegistry<T extends ExtendedLogger> {
     }
 
     public Collection<T> getLoggers(final Collection<T> destination) {
-        for (final Map<String, T> inner : map.values()) {
-            destination.addAll(inner.values());
+        for (final Map<String, WeakReference<T>> inner : map.values()) {
+            for (WeakReference<T> ref : inner.values()) {
+                T v = ref.get();
+                if (v != null) {
+                    destination.add(v);
+                }
+            }
         }
         return destination;
     }
 
-    private Map<String, T> getOrCreateInnerMap(final String factoryName) {
-        Map<String, T> inner = map.get(factoryName);
+    private Map<String, WeakReference<T>> getOrCreateInnerMap(final String factoryName) {
+        Map<String, WeakReference<T>> inner = map.get(factoryName);
         if (inner == null) {
             inner = factory.createInnerMap();
             map.put(factoryName, inner);
