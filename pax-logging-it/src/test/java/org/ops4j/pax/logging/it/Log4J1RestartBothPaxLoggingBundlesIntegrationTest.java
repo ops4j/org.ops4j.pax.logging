@@ -128,7 +128,6 @@ public class Log4J1RestartBothPaxLoggingBundlesIntegrationTest extends AbstractS
         assertTrue("TTCCLayout", lines.contains("[main] INFO org.ops4j.pax.logging.internal.Activator - Disabling SLF4J API support."));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartBothPaxLoggingBundlesIntegrationTest] INFO : When bundles are stopped"));
         assertFalse("old LogService reference should not work", lines.contains("When pax-logging-log4j1 is stopped (log service)"));
-        assertTrue("old LogService reference should not work", lines.contains("org.ops4j.pax.logging.pax-logging-log4j1 [log4j] WARN : No appenders could be found for logger (PaxExam-Probe)."));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RestartBothPaxLoggingBundlesIntegrationTest] INFO : When bundles are stopped (log1)"));
         assertTrue("Reconfiguration", lines.contains("org.ops4j.pax.logging.pax-logging-log4j1 [log4j] DEBUG : Finished configuring."));
         assertTrue("TTCCLayout, startup of pax-logging-api", lines.contains("[main] INFO org.ops4j.pax.logging.internal.Activator - Enabling Java Util Logging API support."));

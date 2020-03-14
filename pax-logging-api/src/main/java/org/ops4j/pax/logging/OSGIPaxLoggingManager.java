@@ -17,8 +17,8 @@
  */
 package org.ops4j.pax.logging;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.ops4j.pax.logging.internal.TrackingLogger;
 import org.ops4j.pax.logging.spi.support.BundleHelper;
@@ -52,7 +52,7 @@ public class OSGIPaxLoggingManager
     public OSGIPaxLoggingManager(BundleContext context) {
         tracker = new ServiceTracker<>(context, PaxLoggingService.class.getName(), this);
 
-        m_loggers = new HashMap<String, TrackingLogger>();
+        m_loggers = new WeakHashMap<String, TrackingLogger>();
         m_context = context;
 
         // only now tracker can be opened, because when pax-logging-api bundle is restarted while

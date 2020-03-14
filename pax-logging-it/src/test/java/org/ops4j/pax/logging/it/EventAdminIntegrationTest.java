@@ -21,7 +21,6 @@ package org.ops4j.pax.logging.it;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -100,6 +99,8 @@ public class EventAdminIntegrationTest extends AbstractControlledIntegrationTest
 
         logger.info("when log4j2 available (info)");
         logger.error("when log4j2 available (error)", new Exception("exception 3"));
+
+        paxLoggingLog4J2.stop();
 
         Event e12 = ev(events, "when log4j1 available (info)");
         Event e13 = ev(events, "when log4j1 available (error)");

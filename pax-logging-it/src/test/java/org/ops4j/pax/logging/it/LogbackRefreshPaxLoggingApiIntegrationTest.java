@@ -150,7 +150,6 @@ public class LogbackRefreshPaxLoggingApiIntegrationTest extends AbstractStdoutIn
         assertTrue("Cascade refresh", lines.contains("org.ops4j.pax.logging.pax-logging-logback [logback] INFO : Logback configured using default configuration."));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api"));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api (log1)"));
-        assertTrue("old reference", lines.contains("org.ops4j.pax.logging.pax-logging-logback [logback] WARN : No appenders present in context [default] for logger [PaxExam-Probe]."));
         assertTrue("new reference", lines2.contains("[main] INFO PaxExam-Probe - After refreshing pax-logging-logback (log service new ref)"));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api (log2)"));
         assertTrue("TTLLLayout because new class", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRefreshPaxLoggingApiIntegrationTest - After refreshing pax-logging-api (log3)"));

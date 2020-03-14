@@ -143,7 +143,6 @@ public class Log4J1RefreshPaxLoggingApiIntegrationTest extends AbstractStdoutInt
         assertTrue("Cascade refresh", lines.contains("org.ops4j.pax.logging.pax-logging-log4j1 [log4j] DEBUG : Finished configuring."));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api"));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api (log1)"));
-        assertTrue("old reference", lines.contains("org.ops4j.pax.logging.pax-logging-log4j1 [log4j] WARN : No appenders could be found for logger (PaxExam-Probe)."));
         assertTrue("new reference", lines.contains("[main] INFO PaxExam-Probe - After refreshing pax-logging-log4j1 (log service new ref)"));
         assertTrue("default layout because old class", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.Log4J1RefreshPaxLoggingApiIntegrationTest] INFO : After refreshing pax-logging-api (log2)"));
         assertTrue("TTCCLayout because new class", lines.contains("[main] INFO org.ops4j.pax.logging.it.Log4J1RefreshPaxLoggingApiIntegrationTest - After refreshing pax-logging-api (log3)"));
