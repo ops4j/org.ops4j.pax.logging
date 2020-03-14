@@ -40,6 +40,18 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <!-- to configure pax-exam with pax.exam.system=default which gives us more control over installed bundles -->
+            <pax.exam.configuration>file:./src/test/resources/controlled-exam.properties</pax.exam.configuration>
+            <version.pax-logging>${project.version}</version.pax-logging>
+          </systemPropertyVariables>
+          <argLine>-Xmx64M -XX:+HeapDumpOnOutOfMemoryError</argLine>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -77,6 +89,10 @@
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.apache.felix.framework</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.apache.felix.configadmin</artifactId>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>

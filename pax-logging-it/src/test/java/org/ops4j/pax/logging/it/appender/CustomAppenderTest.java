@@ -28,6 +28,7 @@ import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.ops4j.pax.logging.it.AbstractControlledIntegrationTestBase;
 import org.ops4j.pax.logging.spi.PaxAppender;
 import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 import org.osgi.framework.BundleContext;
@@ -46,6 +47,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.OptionUtils.combine;
 
 /**
  * Integration tests for custom appender.
@@ -55,7 +57,7 @@ import static org.ops4j.pax.exam.CoreOptions.options;
  * @author Toni Menzel
  */
 @RunWith(PaxExam.class)
-public class CustomAppenderTest 
+public class CustomAppenderTest extends AbstractControlledIntegrationTestBase
    
 {
 
@@ -70,8 +72,8 @@ public class CustomAppenderTest
     @Configuration
     public Option[] configure()
     {
-        return options(
-            CoreOptions.junitBundles(),
+        return combine(
+            combine(baseConfigure(), configAdmin()),
             mavenBundle().artifactId( "pax-logging-api" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject(),
             mavenBundle().artifactId( "pax-logging-service" ).groupId( "org.ops4j.pax.logging" ).versionAsInProject()
         );
