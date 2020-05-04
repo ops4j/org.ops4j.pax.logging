@@ -26,8 +26,6 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
@@ -57,21 +55,39 @@ public class Log4J2MemoryTest extends AbstractControlledIntegrationTestBase {
                 LOG.info("iteration {}", i);
                 System.gc();
             }
-            new Log4J2MemoryTest.MyClass(loggerNames[i % 10000]).run();
+            new MyClass(loggerNames[i % 10000]).run();
         }
         LOG.info("Done");
     }
 
     private static class MyClass {
-        private Logger nonStaticLogger;
+        private String name;
 
         public MyClass(String name) {
-            this.nonStaticLogger = LoggerFactory.getLogger(name);
+            this.name = name;
         }
 
         public void run() {
-            // running a method
-            nonStaticLogger.trace("Hello!");
+            org.slf4j.Logger slf4jLogger = org.slf4j.LoggerFactory.getLogger(name);
+            slf4jLogger.trace("TRACE through SLF4J");
+
+            org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog(name);
+            commonsLogger.trace("TRACE through Apache Commons Logging");
+
+            org.apache.juli.logging.Log juliLogger = org.apache.juli.logging.LogFactory.getLog(name);
+            juliLogger.trace("TRACE through JULI Logging");
+
+            org.apache.avalon.framework.logger.Logger avalonLogger = org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger(name);
+            avalonLogger.debug("DEBUG through Avalon Logger API");
+
+            org.jboss.logging.Logger jbossLogger = org.jboss.logging.Logger.getLogger(name);
+            jbossLogger.trace("TRACE through JBoss Logging Logger API");
+
+            org.apache.log4j.Logger log4j1Logger = org.apache.log4j.Logger.getLogger(name);
+            log4j1Logger.trace("TRACE through Log41 v2 API");
+
+            org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(name);
+            log4j2Logger.trace("TRACE through Log4J v2 API");
         }
     }
 
