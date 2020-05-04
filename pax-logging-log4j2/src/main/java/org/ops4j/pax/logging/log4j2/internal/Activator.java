@@ -26,6 +26,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.logging.log4j.core.impl.ThreadContextDataInjector;
+import org.apache.logging.log4j.core.impl.ThreadContextDataProvider;
 import org.apache.logging.log4j.core.lookup.StrSubstitutor;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.ops4j.pax.logging.EventAdminPoster;
@@ -81,6 +83,9 @@ public class Activator implements BundleActivator {
         eventAdminConfigurationNotifierInfo = BackendSupport.eventAdminConfigurationNotifier(bundleContext);
 
         boolean cm = BackendSupport.isConfigurationAdminAvailable();
+
+        ThreadContextDataInjector.contextDataProviders.clear();
+        ThreadContextDataInjector.contextDataProviders.add(new ThreadContextDataProvider());
 
         if (!cm) {
             StatusLogger.getLogger().info("Configuration Admin is not available.");
