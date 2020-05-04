@@ -113,6 +113,7 @@ public class LogFactory
                 }
             }
             m_paxLogging.open();
+            m_loggers.clear();
         }
     }
 
@@ -253,9 +254,12 @@ public class LogFactory
             logger = m_paxLogging.getLogger(name, JclLogger.JCL_FQCN);
         }
         JclLogger jclLogger = new JclLogger(logger);
-        synchronized (m_loggers) {
-            if (!m_loggers.containsKey(name)) {
-                m_loggers.put(name, new LinkedList<JclLogger>());
+        if (m_paxLogging == null) {
+            synchronized (m_loggers) {
+                if (!m_loggers.containsKey(name)) {
+                    m_loggers.put(name, new LinkedList<JclLogger>());
+                }
+                m_loggers.get(name).add(jclLogger);
             }
             m_loggers.get(name).add(jclLogger);
         }

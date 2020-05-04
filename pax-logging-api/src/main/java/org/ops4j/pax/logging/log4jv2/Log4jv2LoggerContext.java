@@ -16,11 +16,12 @@
  */
 package org.ops4j.pax.logging.log4jv2;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.apache.logging.log4j.message.MessageFactory;
-import org.apache.logging.log4j.spi.AbstractLogger;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.apache.logging.log4j.spi.LoggerContext;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
@@ -32,15 +33,21 @@ import org.osgi.framework.BundleContext;
  */
 public class Log4jv2LoggerContext implements LoggerContext {
 
-    private static final ConcurrentMap<String, Log4jv2Logger> loggers = new ConcurrentHashMap<String, Log4jv2Logger>();
+    private static final Map<String, List<Log4jv2Logger>> m_loggers = new WeakHashMap<String, List<Log4jv2Logger>>();
 
-    private static PaxLoggingManager paxLogging;
+    static PaxLoggingManager paxLogging;
 
     public static void setBundleContext( BundleContext ctx )
     {
-        paxLogging = new OSGIPaxLoggingManager( ctx );
-        for (Log4jv2Logger logger : loggers.values()) {
-            logger.setPaxLoggingManager(paxLogging);
+        synchronized (m_loggers) {
+            paxLogging = new OSGIPaxLoggingManager( ctx );
+            for (List<Log4jv2Logger> loggers : m_loggers.values()) {
+                for (Log4jv2Logger logger : loggers) {
+                    logger.setPaxLoggingManager(paxLogging);
+                }
+            }
+            paxLogging.open();
+            m_loggers.clear();
         }
         paxLogging.open();
     }
@@ -59,18 +66,25 @@ public class Log4jv2LoggerContext implements LoggerContext {
 
     @Override
     public ExtendedLogger getLogger(final String name, final MessageFactory messageFactory) {
-        final ExtendedLogger extendedLogger = loggers.get(name);
-        if (extendedLogger != null) {
-            AbstractLogger.checkMessageFactory(extendedLogger, messageFactory);
-            return extendedLogger;
+        Log4jv2Logger log4jv2Logger = new Log4jv2Logger(name, messageFactory, paxLogging);
+        if (paxLogging == null) {
+            // just add the logger which PaxLoggingManager need to be replaced.
+            synchronized (m_loggers) {
+                if (!m_loggers.containsKey(name)) {
+                    m_loggers.put(name, new LinkedList<Log4jv2Logger>());
+                }
+                m_loggers.get(name).add(log4jv2Logger);
+            }
         }
-        loggers.putIfAbsent(name, new Log4jv2Logger(name, messageFactory, paxLogging));
-        return loggers.get(name);
+        return log4jv2Logger;
     }
 
     @Override
     public boolean hasLogger(final String name) {
-        return loggers.containsKey(name);
+        // we don't know in pax-logging... Because org.apache.logging.log4j.spi.LoggerContext.hasLogger()
+        // API may actually be bridged to Logback or Log4j1 or no backend at all.
+        // also, same "name" may be related to different loggers (associated with different bundles)
+        throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     @Override

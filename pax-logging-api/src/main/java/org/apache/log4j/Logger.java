@@ -65,7 +65,7 @@ public class Logger extends Category
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, List<Logger>>() );
+        m_loggers = new WeakHashMap<String, List<Logger>>();
     }
 
     public static void setBundleContext( BundleContext ctx )
@@ -83,6 +83,7 @@ public class Logger extends Category
                 }
             }
             m_paxLogging.open();
+            m_loggers.clear();
         }
     }
 
@@ -138,9 +139,12 @@ public class Logger extends Category
             paxLogger = m_paxLogging.getLogger( name, LOG4J_FQCN );
         }
         Logger logger = new Logger( paxLogger );
-        synchronized (m_loggers) {
-            if (!m_loggers.containsKey(name)) {
-                m_loggers.put(name, new LinkedList<Logger>());
+        if (m_paxLogging == null) {
+            synchronized (m_loggers) {
+                if (!m_loggers.containsKey(name)) {
+                    m_loggers.put(name, new LinkedList<Logger>());
+                }
+                m_loggers.get(name).add(logger);
             }
             m_loggers.get(name).add(logger);
         }

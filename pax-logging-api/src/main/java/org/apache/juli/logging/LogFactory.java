@@ -157,7 +157,7 @@ public class LogFactory {
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, List<JuliLogger>>() );
+        m_loggers = new WeakHashMap<String, List<JuliLogger>>();;
         singleton = new LogFactory();
     }
     /**
@@ -201,9 +201,12 @@ public class LogFactory {
             logger = m_paxLogging.getLogger( name, JuliLogger.JULI_FQCN );
         }
         JuliLogger juliLogger = new JuliLogger( logger );
-        synchronized (m_loggers) {
-            if (!m_loggers.containsKey(name)) {
-                m_loggers.put(name, new LinkedList<JuliLogger>());
+        if (m_paxLogging == null) {
+            synchronized (m_loggers) {
+                if (!m_loggers.containsKey(name)) {
+                    m_loggers.put(name, new LinkedList<JuliLogger>());
+                }
+                m_loggers.get(name).add(juliLogger);
             }
             m_loggers.get(name).add(juliLogger);
         }
@@ -396,6 +399,7 @@ public class LogFactory {
                 }
             }
             m_paxLogging.open();
+            m_loggers.clear();
         }
     }
 

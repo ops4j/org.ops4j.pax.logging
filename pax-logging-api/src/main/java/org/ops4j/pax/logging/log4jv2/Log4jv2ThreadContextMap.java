@@ -24,10 +24,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.spi.ThreadContextMap;
-import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLoggingManager;
-import org.osgi.framework.BundleContext;
+import org.ops4j.pax.logging.PaxLoggingService;
 
 /**
  * The actual ThreadContext Map. A new ThreadContext Map is created each time it is updated and the Map stored is always
@@ -37,17 +36,11 @@ import org.osgi.framework.BundleContext;
  */
 public class Log4jv2ThreadContextMap implements ThreadContextMap {
 
-    private static PaxContext m_context;
+    /** {@link PaxContext} used when {@link org.ops4j.pax.logging.PaxLoggingService} is not available */
     private static PaxContext m_defaultContext = new PaxContext();
 
-    private static PaxLoggingManager m_paxLogging;
-
-    public static void setBundleContext( BundleContext ctx )
-    {
-        m_paxLogging = new OSGIPaxLoggingManager( ctx );
-        // We need to instruct all loggers to ensure the SimplePaxLoggingManager is replaced.
-        m_paxLogging.open();
-    }
+    /** {@link PaxContext} obtained from {@link org.ops4j.pax.logging.PaxLoggingService} */
+    private static PaxContext m_context;
 
     public static void dispose()
     {
@@ -60,8 +53,12 @@ public class Log4jv2ThreadContextMap implements ThreadContextMap {
      * or m_defaultContext if the logging manager is not set, or does not have its context available yet.
      */
     private static PaxContext getContext() {
-        if( m_context==null && m_paxLogging!=null ){
-            m_context=(m_paxLogging.getPaxLoggingService()!=null)?m_paxLogging.getPaxLoggingService().getPaxContext():null;
+        PaxLoggingManager manager = Log4jv2LoggerContext.paxLogging;
+        if (manager != null) {
+            synchronized (Log4jv2ThreadContextMap.class) {
+                PaxLoggingService service = manager.getPaxLoggingService();
+                m_context = service != null ? service.getPaxContext() : null;
+            }
         }
         return m_context!=null?m_context:m_defaultContext;
     }

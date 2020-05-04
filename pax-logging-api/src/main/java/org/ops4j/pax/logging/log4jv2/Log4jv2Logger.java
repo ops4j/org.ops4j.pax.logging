@@ -31,7 +31,7 @@ import org.ops4j.pax.logging.internal.FallbackLogFactory;
  */
 public class Log4jv2Logger extends AbstractLogger {
 
-    private static final String LOG4J_FQCN = Logger.class.getName();
+    static final String LOG4J_FQCN = Logger.class.getName();
 
     private volatile PaxLogger delegate;
 

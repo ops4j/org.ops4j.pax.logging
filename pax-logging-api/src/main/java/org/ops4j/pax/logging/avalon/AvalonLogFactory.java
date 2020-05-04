@@ -28,6 +28,7 @@ import org.apache.avalon.framework.logger.Logger;
 import org.ops4j.pax.logging.OSGIPaxLoggingManager;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.internal.FallbackLogFactory;
 import org.osgi.framework.BundleContext;
 
 public class AvalonLogFactory
@@ -38,7 +39,7 @@ public class AvalonLogFactory
 
     static
     {
-        m_loggers = Collections.synchronizedMap( new WeakHashMap<String, List<AvalonLogger>>() );
+        m_loggers = new WeakHashMap<String, List<AvalonLogger>>();
     }
 
     public static void setBundleContext( BundleContext context )
@@ -55,6 +56,7 @@ public class AvalonLogFactory
                 }
             }
             m_paxLogging.open();
+            m_loggers.clear();
         }
     }
 
@@ -81,11 +83,23 @@ public class AvalonLogFactory
         {
             newName = parent.getName() + "." + name;
         }
+        PaxLogger paxLogger;
+        if( m_paxLogging == null )
+        {
+            paxLogger = FallbackLogFactory.createFallbackLog( null, name );
+        }
+        else
+        {
+            paxLogger = m_paxLogging.getLogger( name, AvalonLogger.AVALON_FQCN );
+        }
         PaxLogger logger = m_paxLogging.getLogger( newName, AvalonLogger.AVALON_FQCN );
         AvalonLogger avalonLogger = new AvalonLogger( logger );
-        synchronized (m_loggers) {
-            if (!m_loggers.containsKey(newName)) {
-                m_loggers.put(newName, new LinkedList<AvalonLogger>());
+        if (m_paxLogging == null) {
+            synchronized (m_loggers) {
+                if (!m_loggers.containsKey(newName)) {
+                    m_loggers.put(newName, new LinkedList<AvalonLogger>());
+                }
+                m_loggers.get(newName).add(avalonLogger);
             }
             m_loggers.get(newName).add(avalonLogger);
         }
