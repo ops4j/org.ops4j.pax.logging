@@ -751,7 +751,20 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
      * Sets the given Object in the prepared statement. The value is truncated if needed.
      */
     private void setStatementObject(final int j, final String nameKey, final Object value) throws SQLException {
-        statement.setObject(j, truncate(nameKey, value));
+        if (statement == null) {
+            throw new AppenderLoggingException("Cannot set a value when the PreparedStatement is null.");
+        }
+        if (value == null) {
+            if (columnMetaData == null) {
+                throw new AppenderLoggingException("Cannot set a value when the column metadata is null.");
+            }
+            // [LOG4J2-2762] [JDBC] MS-SQL Server JDBC driver throws SQLServerException when
+            // inserting a null value for a VARBINARY column.
+            // Calling setNull() instead of setObject() for null values fixes [LOG4J2-2762].
+            this.statement.setNull(j, columnMetaData.get(nameKey).getType());
+        } else {
+            statement.setObject(j, truncate(nameKey, value));
+        }
     }
 
     @Override
@@ -822,13 +835,7 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
                             } else {
                                 final Object value = TypeConverters.convert(layout.toSerializable(event),
                                         mapping.getType(), null);
-                                if (value == null) {
-                                    // TODO We might need to always initialize the columnMetaData to specify the
-                                    // type.
-                                    this.statement.setNull(j++, Types.NULL);
-                                } else {
-                                    setStatementObject(j++, mapping.getNameKey(), value);
-                                }
+                                setStatementObject(j++, mapping.getNameKey(), value);
                             }
                         }
                     }
@@ -854,10 +861,15 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
             }
 
             if (isBuffered() && this.isBatchSupported) {
+                logger().debug("addBatch for {}", this.statement);
                 this.statement.addBatch();
-            } else if (this.statement.executeUpdate() == 0) {
-                throw new AppenderLoggingException(
-                        "No records inserted in database table for log event in JDBC manager [%s].", fieldsToString());
+            } else {
+                final int executeUpdate = this.statement.executeUpdate();
+                logger().debug("executeUpdate = {} for {}", executeUpdate, this.statement);
+                if (executeUpdate == 0) {
+                    throw new AppenderLoggingException(
+                            "No records inserted in database table for log event in JDBC manager [%s].", fieldsToString());
+                }
             }
         } catch (final SQLException e) {
             throw new DbAppenderLoggingException(e, "Failed to insert record for log event in JDBC manager: %s [%s]", e,
