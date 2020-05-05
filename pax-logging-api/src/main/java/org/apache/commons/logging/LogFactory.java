@@ -261,7 +261,6 @@ public class LogFactory
                 }
                 m_loggers.get(name).add(jclLogger);
             }
-            m_loggers.get(name).add(jclLogger);
         }
         return jclLogger;
     }

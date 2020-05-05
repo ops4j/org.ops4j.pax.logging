@@ -17,7 +17,6 @@
 
 package org.apache.log4j;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +145,6 @@ public class Logger extends Category
                 }
                 m_loggers.get(name).add(logger);
             }
-            m_loggers.get(name).add(logger);
         }
         return logger;
     }

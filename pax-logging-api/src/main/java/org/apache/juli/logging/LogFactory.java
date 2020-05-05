@@ -34,7 +34,6 @@
 package org.apache.juli.logging;
 
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +156,7 @@ public class LogFactory {
 
     static
     {
-        m_loggers = new WeakHashMap<String, List<JuliLogger>>();;
+        m_loggers = new WeakHashMap<String, List<JuliLogger>>();
         singleton = new LogFactory();
     }
     /**
@@ -208,7 +207,6 @@ public class LogFactory {
                 }
                 m_loggers.get(name).add(juliLogger);
             }
-            m_loggers.get(name).add(juliLogger);
         }
         return juliLogger;
     }

@@ -17,7 +17,6 @@
  */
 package org.ops4j.pax.logging.avalon;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -86,14 +85,13 @@ public class AvalonLogFactory
         PaxLogger paxLogger;
         if( m_paxLogging == null )
         {
-            paxLogger = FallbackLogFactory.createFallbackLog( null, name );
+            paxLogger = FallbackLogFactory.createFallbackLog( null, newName );
         }
         else
         {
-            paxLogger = m_paxLogging.getLogger( name, AvalonLogger.AVALON_FQCN );
+            paxLogger = m_paxLogging.getLogger( newName, AvalonLogger.AVALON_FQCN );
         }
-        PaxLogger logger = m_paxLogging.getLogger( newName, AvalonLogger.AVALON_FQCN );
-        AvalonLogger avalonLogger = new AvalonLogger( logger );
+        AvalonLogger avalonLogger = new AvalonLogger( paxLogger );
         if (m_paxLogging == null) {
             synchronized (m_loggers) {
                 if (!m_loggers.containsKey(newName)) {
@@ -101,7 +99,6 @@ public class AvalonLogFactory
                 }
                 m_loggers.get(newName).add(avalonLogger);
             }
-            m_loggers.get(newName).add(avalonLogger);
         }
         return avalonLogger;
     }

@@ -49,7 +49,6 @@ public class Log4jv2LoggerContext implements LoggerContext {
             paxLogging.open();
             m_loggers.clear();
         }
-        paxLogging.open();
     }
 
     public static void dispose() {

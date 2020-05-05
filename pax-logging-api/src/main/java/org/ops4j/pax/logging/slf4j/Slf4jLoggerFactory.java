@@ -35,7 +35,7 @@ public class Slf4jLoggerFactory
         implements ILoggerFactory
 {
 
-    static PaxLoggingManager m_paxLogging;
+    private static PaxLoggingManager m_paxLogging;
     private static Map<String, List<Slf4jLogger>> m_loggers;
 
     static

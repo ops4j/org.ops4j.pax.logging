@@ -127,7 +127,9 @@ public class PaxLoggerImpl
 
     private void clearDelegateContext()
     {
-        ThreadContext.clearMap();
+        ThreadContext.remove("bundle.id");
+        ThreadContext.remove("bundle.name");
+        ThreadContext.remove("bundle.version");
     }
 
     private void doLog(final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t ) {
