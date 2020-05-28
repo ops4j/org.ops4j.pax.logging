@@ -1,0 +1,3 @@
+= org.ops4j.pax.logging
+
+Hello World of Logging!
