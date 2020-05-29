@@ -19,4 +19,4 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - run: mvn -B verify -f pom.xml
+    - run: mvn clean install -f pom.xml -Dinvoker.skip=true
