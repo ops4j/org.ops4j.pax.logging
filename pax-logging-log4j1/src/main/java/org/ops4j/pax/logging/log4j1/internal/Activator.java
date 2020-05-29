@@ -121,8 +121,6 @@ public class Activator implements BundleActivator {
             // This configuration will be used instead of what could be found (or not) in Concifuration Admin
             final Dictionary<String, String> config = new Hashtable<>();
 
-            // this may be either ConfigurationAdmin/FileInstall/Karaf properties file with properties
-            // prefixed with "log4j2." or just properties file to be used directly by Log4j2 itself
             try (InputStream inputStream = new FileInputStream(configFilePath.toFile())) {
                 Properties properties = new Properties();
                 properties.load(inputStream);
