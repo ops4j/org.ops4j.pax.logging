@@ -126,12 +126,14 @@ public class PaxLoggingServiceImpl
     // there's no need to run configureDefaults() more than once. That was happening in constructor
     // and millisecond later during registration of ManagedService, upon receiving empty org.ops4j.pax.logging
     // configuration
-    private AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
+    private final AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
 
     // pax-logging-service uses org.apache.log4j.helpers.LogLog, here we'll directly use fallback logger
     private final PaxLogger logLog;
 
     private final String fqcn = getClass().getName();
+
+    private Dictionary<String, String> defaultConfiguration = null;
 
     public PaxLoggingServiceImpl(BundleContext bundleContext, LogReaderServiceImpl logReader,
                                  EventAdminPoster eventAdmin, ConfigurationNotifier configNotifier,
@@ -273,16 +275,29 @@ public class PaxLoggingServiceImpl
     }
 
     /**
+     * When there's system/context property specified using {@link PaxLoggingConstants#LOGGING_CFG_PROPERTY_FILE},
+     * and ConfigurationAdmin is available, Pax Logging may first get null configuration. When "default configuration"
+     * is set before that, we'll use it instead of empty configuration.
+     * @param config
+     */
+    public void setDefaultConfiguration(Dictionary<String, String> config) {
+        this.defaultConfiguration = config;
+    }
+
+    /**
      * ManagedService-like method but not requiring Configuration Admin
      * @param configuration
      */
     public void updated(Dictionary<String, ?> configuration) {
-        if (configuration == null) {
+        if (configuration == null && defaultConfiguration == null) {
             // maintain the existing configuration if there's such file set
             if (m_staticConfigFile == null) {
                 configureDefaults();
             }
             return;
+        }
+        if (configuration == null) {
+            configuration = defaultConfiguration;
         }
 
         Object useLocks = configuration.get(PaxLoggingConstants.PID_CFG_USE_LOCKS);

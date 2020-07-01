@@ -102,7 +102,7 @@ public class PaxLoggingServiceImpl
     // there's no need to run configureDefaults() more than once. That was happening in constructor
     // and millisecond later during registration of ManagedService, upon receiving empty org.ops4j.pax.logging
     // configuration
-    private AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
+    private final AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
 
     private volatile boolean closed;
 
@@ -111,6 +111,7 @@ public class PaxLoggingServiceImpl
     private final String fqcn = getClass().getName();
 
     private boolean m_async;
+    private Dictionary<String, String> defaultConfiguration = null;
 
     public PaxLoggingServiceImpl(BundleContext bundleContext, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin, ConfigurationNotifier configNotifier) {
         if (bundleContext == null)
@@ -233,6 +234,16 @@ public class PaxLoggingServiceImpl
     }
 
     /**
+     * When there's system/context property specified using {@link PaxLoggingConstants#LOGGING_CFG_PROPERTY_FILE},
+     * and ConfigurationAdmin is available, Pax Logging may first get null configuration. When "default configuration"
+     * is set before that, we'll use it instead of empty configuration.
+     * @param config
+     */
+    public void setDefaultConfiguration(Dictionary<String, String> config) {
+        this.defaultConfiguration = config;
+    }
+
+    /**
      * ManagedService-like method but not requiring Configuration Admin
      * @param configuration
      */
@@ -240,9 +251,12 @@ public class PaxLoggingServiceImpl
         if (closed) {
             return;
         }
-        if (configuration == null) {
+        if (configuration == null && defaultConfiguration == null) {
             configureDefaults();
             return;
+        }
+        if (configuration == null) {
+            configuration = defaultConfiguration;
         }
 
         Object useLocks = configuration.get(PaxLoggingConstants.PID_CFG_USE_LOCKS);

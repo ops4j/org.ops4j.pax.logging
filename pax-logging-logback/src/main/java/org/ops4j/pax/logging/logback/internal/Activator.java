@@ -118,7 +118,8 @@ public class Activator implements BundleActivator {
             Dictionary<String, String> config = new Hashtable<>();
             config.put(PaxLoggingConstants.PID_CFG_LOGBACK_CONFIG_FILE, configFilePath.toAbsolutePath().toString());
 
-            m_paxLogging.updated(config);
+            m_paxLogging.setDefaultConfiguration(config);
+            m_paxLogging.updated(null);
         }
 
         if (cm) {
