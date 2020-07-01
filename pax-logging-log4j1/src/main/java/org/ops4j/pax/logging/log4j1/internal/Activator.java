@@ -130,7 +130,8 @@ public class Activator implements BundleActivator {
                 }
             }
 
-            m_PaxLogging.updated(config);
+            m_PaxLogging.setDefaultConfiguration(config);
+            m_PaxLogging.updated(null);
         }
 
         if (cm) {
