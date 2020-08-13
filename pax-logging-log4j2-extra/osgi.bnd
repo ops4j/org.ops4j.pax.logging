@@ -61,6 +61,7 @@ Import-Package: \
  org.apache.commons.compress.utils ;resolution:=optional, \
  org.apache.commons.csv ;resolution:=optional, \
  org.apache.kafka.clients.producer ;resolution:=optional, \
+ org.apache.kafka.common.serialization ;resolution:=optional, \
  org.codehaus.stax2 ;resolution:=optional, \
  org.fusesource.jansi ;resolution:=optional, \
  org.jctools.queues ;resolution:=optional, \
