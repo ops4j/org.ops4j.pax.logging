@@ -960,84 +960,84 @@ public class PaxLoggerImpl implements PaxLogger {
     @Override
     public void fqtrace(String fqcn, String message, Throwable t) {
         if (isTraceEnabled()) {
-            doLog(null, LocationAwareLogger.TRACE_INT, fqcn, message, null, null);
+            doLog(null, LocationAwareLogger.TRACE_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqdebug(String fqcn, String message, Throwable t) {
         if (isDebugEnabled()) {
-            doLog(null, LocationAwareLogger.DEBUG_INT, fqcn, message, null, null);
+            doLog(null, LocationAwareLogger.DEBUG_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqinfo(String fqcn, String message, Throwable t) {
         if (isInfoEnabled()) {
-            doLog(null, LocationAwareLogger.INFO_INT, fqcn, message, null, null);
+            doLog(null, LocationAwareLogger.INFO_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqwarn(String fqcn, String message, Throwable t) {
         if (isWarnEnabled()) {
-            doLog(null, LocationAwareLogger.WARN_INT, fqcn, message, null, null);
+            doLog(null, LocationAwareLogger.WARN_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqerror(String fqcn, String message, Throwable t) {
         if (isErrorEnabled()) {
-            doLog(null, LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+            doLog(null, LocationAwareLogger.ERROR_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqfatal(String fqcn, String message, Throwable t) {
         if (isFatalEnabled()) {
-            doLog(null, LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+            doLog(null, LocationAwareLogger.ERROR_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqtrace(String fqcn, PaxMarker marker, String message, Throwable t) {
         if (isTraceEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, fqcn, message, null, null);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.TRACE_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqdebug(String fqcn, PaxMarker marker, String message, Throwable t) {
         if (isDebugEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, fqcn, message, null, null);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.DEBUG_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqinfo(String fqcn, PaxMarker marker, String message, Throwable t) {
         if (isInfoEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, fqcn, message, null, null);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.INFO_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqwarn(String fqcn, PaxMarker marker, String message, Throwable t) {
         if (isWarnEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, fqcn, message, null, null);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.WARN_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqerror(String fqcn, PaxMarker marker, String message, Throwable t) {
         if (isErrorEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, fqcn, message, t, null);
         }
     }
 
     @Override
     public void fqfatal(String fqcn, PaxMarker marker, String message, Throwable t) {
         if (isFatalEnabled(marker)) {
-            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, fqcn, message, null, null);
+            doLog(marker.slf4jMarker(), LocationAwareLogger.ERROR_INT, fqcn, message, t, null);
         }
     }
 
