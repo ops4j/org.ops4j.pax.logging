@@ -44,7 +44,8 @@ import org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextStack;
  * The ThreadContext allows applications to store information either in a Map or a Stack.
  * <p>
  * <b><em>The MDC is managed on a per thread basis</em></b>. To enable automatic inheritance of <i>copies</i> of the MDC
- * to newly created threads, enable the {@value DefaultThreadContextMap#INHERITABLE_MAP} Log4j system property.
+ * to newly created threads, enable the {@value org.apache.logging.log4j.spi.DefaultThreadContextMap#INHERITABLE_MAP}
+ * Log4j system property.
  * </p>
  * @see <a href="https://logging.apache.org/log4j/2.x/manual/thread-context.html">Thread Context Manual</a>
  */
@@ -194,8 +195,6 @@ public final class ThreadContext {
     private static final String DISABLE_STACK = "disableThreadContextStack";
     private static final String DISABLE_ALL = "disableThreadContext";
 
-    private static boolean disableAll;
-    private static boolean useMap;
     private static boolean useStack;
     private static ThreadContextMap contextMap;
     private static ThreadContextStack contextStack;
@@ -215,9 +214,9 @@ public final class ThreadContext {
     static void init() {
         contextMap = null;
         final PropertiesUtil managerProps = PropertiesUtil.getProperties();
-        disableAll = managerProps.getBooleanProperty(DISABLE_ALL);
+        boolean disableAll = managerProps.getBooleanProperty(DISABLE_ALL);
         useStack = !(managerProps.getBooleanProperty(DISABLE_STACK) || disableAll);
-        useMap = !(managerProps.getBooleanProperty(DISABLE_MAP) || disableAll);
+        boolean useMap = !(managerProps.getBooleanProperty(DISABLE_MAP) || disableAll);
 
         contextStack = new Log4jv2ThreadContextStack(useStack);
         if (!useMap) {
