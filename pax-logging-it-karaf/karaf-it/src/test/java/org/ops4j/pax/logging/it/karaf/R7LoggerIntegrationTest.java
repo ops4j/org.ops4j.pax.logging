@@ -82,6 +82,7 @@ public class R7LoggerIntegrationTest extends AbstractControlledIntegrationTestBa
         log.info("INFO1 through org.osgi.service.log.Logger");
         log.debug("DEBUG1 through org.osgi.service.log.Logger");
         log.warn("WARN1 through org.osgi.service.log.Logger {}", "arg1");
+        log.warn("WARN1 through org.osgi.service.log.Logger {} {}", "arg1", "arg2");
 
         log = loggerFactory.getLogger("my.logger", FormatterLogger.class);
         log.info("INFO2 through org.osgi.service.log.Logger");
@@ -100,6 +101,7 @@ public class R7LoggerIntegrationTest extends AbstractControlledIntegrationTestBa
         assertTrue(lines.contains("my.logger [INFO] INFO1 through org.osgi.service.log.Logger"));
         assertTrue(lines.contains("my.logger [DEBUG] DEBUG1 through org.osgi.service.log.Logger"));
         assertTrue(lines.contains("my.logger [WARN] WARN1 through org.osgi.service.log.Logger arg1"));
+        assertTrue(lines.contains("my.logger [WARN] WARN1 through org.osgi.service.log.Logger arg1 arg2"));
         assertTrue(lines.contains("my.logger [INFO] INFO2 through org.osgi.service.log.Logger"));
         assertTrue(lines.contains("my.logger [DEBUG] DEBUG2 through org.osgi.service.log.Logger"));
         assertTrue(lines.contains("my.logger [WARN] WARN2 through org.osgi.service.log.Logger arg1"));

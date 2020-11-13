@@ -1117,7 +1117,7 @@ public class PaxLoggerImpl implements PaxLogger {
                         Object... args) {
         Message originalMessage = setDelegateContext();
         try {
-            Message msg = originalMessage == null ? m_delegate.getMessageFactory().newMessage(message)
+            Message msg = originalMessage == null ? m_delegate.getMessageFactory().newMessage(message, args)
                     : originalMessage;
             m_delegate.logMessage(fqcn, level, marker, msg, t);
         } finally {
