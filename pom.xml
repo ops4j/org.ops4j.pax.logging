@@ -235,7 +235,7 @@
         <version.org.mockito>3.7.7</version.org.mockito>
         <version.org.ops4j.pax.exam>4.13.4</version.org.ops4j.pax.exam>
         <version.org.ops4j.pax.swissbox>1.8.4</version.org.ops4j.pax.swissbox>
-        <version.org.ops4j.pax.url>2.6.1</version.org.ops4j.pax.url>
+        <version.org.ops4j.pax.url>2.6.6</version.org.ops4j.pax.url>
         <version.org.osgi>7.0.0</version.org.osgi>
         <version.org.slf4j>1.7.30</version.org.slf4j>
 
