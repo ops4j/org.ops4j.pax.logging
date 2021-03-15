@@ -245,7 +245,6 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
         private ResultSetColumnMetaData(final String schemaName, final String catalogName, final String tableName,
                 final String name, final String label, final int displaySize, final int type, final String typeName,
                 final String className, final int precision, final int scale) {
-            super();
             this.schemaName = schemaName;
             this.catalogName = catalogName;
             this.tableName = tableName;
@@ -360,14 +359,14 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
                         colMapping);
                 i++;
             }
-            if (data.columnConfigs != null) {
-                for (final ColumnConfig colConfig : data.columnConfigs) {
-                    final String columnName = colConfig.getColumnName();
-                    appendColumnName(i, columnName, sb);
-                    logger().trace(messagePattern, sqlVerb, colConfig.getClass().getSimpleName(), i, columnName,
-                            colConfig);
-                    i++;
-                }
+        }
+        if (data.columnConfigs != null) {
+            for (final ColumnConfig colConfig : data.columnConfigs) {
+                final String columnName = colConfig.getColumnName();
+                appendColumnName(i, columnName, sb);
+                logger().trace(messagePattern, sqlVerb, colConfig.getClass().getSimpleName(), i, columnName,
+                        colConfig);
+                i++;
             }
         }
     }
