@@ -44,8 +44,8 @@
     </issueManagement>
 
     <scm>
-        <connection>https://github.com/ops4j/org.ops4j.pax.logging</connection>
-        <developerConnection>https://github.com/ops4j/org.ops4j.pax.logging</developerConnection>
+        <connection>scm:git:https://github.com/ops4j/org.ops4j.pax.logging</connection>
+        <developerConnection>scm:git:https://github.com/ops4j/org.ops4j.pax.logging</developerConnection>
         <url>https://github.com/ops4j/org.ops4j.pax.logging/tree/master</url>
         <tag>HEAD</tag>
     </scm>
