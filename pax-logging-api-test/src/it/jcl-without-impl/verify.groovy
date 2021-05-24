@@ -25,7 +25,7 @@ for (String l : lines) {
   if (l.contains("at org.ops4j.pax.logging.test.jcl.CommonsLoggingApiTest.simplestUsage(CommonsLoggingApiTest.java")) {
     found1 = true
   }
-  if (l.contains("INFOS [org.ops4j.pax.logging.test.jcl.CommonsLoggingApiTest] : INFO")) {
+  if (l.contains("FINEST [org.ops4j.pax.logging.test.jcl.CommonsLoggingApiTest] : TRACE")) {
     found2 = true
   }
 }
