@@ -23,6 +23,8 @@
  */
 package org.apache.commons.logging;
 
+import java.util.Hashtable;
+
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.internal.Activator;
@@ -96,6 +98,13 @@ public class LogFactory {
     public static final String FACTORY_PROPERTIES = "commons-logging.properties";
 
     /**
+     * JDK1.3+ <a href="http://java.sun.com/j2se/1.3/docs/guide/jar/jar.html#Service%20Provider">
+     * 'Service Provider' specification</a>.
+     */
+    protected static final String SERVICE_ID =
+        "META-INF/services/org.apache.commons.logging.LogFactory";
+
+    /**
      * The name (<code>org.apache.commons.logging.diagnostics.dest</code>)
      * of the property used to enable internal commons-logging
      * diagnostic output, in order to get information on what logging
@@ -151,7 +160,7 @@ public class LogFactory {
     /**
      * Singleton instance without discovery
      */
-    private static LogFactory m_instance = new LogFactory();
+    private static final LogFactory m_instance = new LogFactory();
 
     // ----------------------------------------------------------- Constructors
 
@@ -190,7 +199,7 @@ public class LogFactory {
      * @throws LogConfigurationException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
-    public Log getInstance(Class clazz)
+    public Log getInstance(Class<?> clazz)
             throws LogConfigurationException {
         return getInstance(clazz.getName());
     }
@@ -262,7 +271,54 @@ public class LogFactory {
     public void setAttribute(String name, Object value) {
     }
 
+    // ------------------------------------------------------- Static Variables
+
+    /**
+     * The previously constructed <code>LogFactory</code> instances, keyed by
+     * the <code>ClassLoader</code> with which it was created.
+     */
+    protected static Hashtable<?, ?> factories = null;
+
+    /**
+     * Previously constructed <code>LogFactory</code> instance as in the
+     * <code>factories</code> map, but for the case where
+     * <code>getClassLoader</code> returns <code>null</code>.
+     * This can happen when:
+     * <ul>
+     * <li>using JDK1.1 and the calling code is loaded via the system
+     *  classloader (very common)</li>
+     * <li>using JDK1.2+ and the calling code is loaded via the boot
+     *  classloader (only likely for embedded systems work).</li>
+     * </ul>
+     * Note that <code>factories</code> is a <i>Hashtable</i> (not a HashMap),
+     * and hashtables don't allow null as a key.
+     * @deprecated since 1.1.2
+     */
+    protected static volatile LogFactory nullClassLoaderFactory = null;
+
     // --------------------------------------------------------- Static Methods
+
+    /**
+     * Checks whether the supplied Throwable is one that needs to be
+     * re-thrown and ignores all others.
+     *
+     * The following errors are re-thrown:
+     * <ul>
+     *   <li>ThreadDeath</li>
+     *   <li>VirtualMachineError</li>
+     * </ul>
+     *
+     * @param t the Throwable to check
+     */
+    protected static void handleThrowable(Throwable t) {
+        if (t instanceof ThreadDeath) {
+            throw (ThreadDeath) t;
+        }
+        if (t instanceof VirtualMachineError) {
+            throw (VirtualMachineError) t;
+        }
+        // All other instances of Throwable will be silently ignored
+    }
 
     /**
      * Opposite to original {@code LogFactory.getFactory}, simply preinstantiated factory is returned.
@@ -283,7 +339,7 @@ public class LogFactory {
      * @throws LogConfigurationException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
-    public static Log getLog(Class clazz) throws LogConfigurationException {
+    public static Log getLog(Class<?> clazz) throws LogConfigurationException {
         return getLog(clazz.getName());
     }
 
@@ -321,6 +377,39 @@ public class LogFactory {
      * garbage collection.
      */
     public static void releaseAll() {
+    }
+
+    // ------------------------------------------------------ Protected Methods
+
+    /**
+     * Safely get access to the classloader for the specified class.
+     * <p>
+     * Theoretically, calling getClassLoader can throw a security exception,
+     * and so should be done under an AccessController in order to provide
+     * maximum flexibility. However in practice people don't appear to use
+     * security policies that forbid getClassLoader calls. So for the moment
+     * all code is written to call this method rather than Class.getClassLoader,
+     * so that we could put AccessController stuff in this method without any
+     * disruption later if we need to.
+     * <p>
+     * Even when using an AccessController, however, this method can still
+     * throw SecurityException. Commons-logging basically relies on the
+     * ability to access classloaders, ie a policy that forbids all
+     * classloader access will also prevent commons-logging from working:
+     * currently this method will throw an exception preventing the entire app
+     * from starting up. Maybe it would be good to detect this situation and
+     * just disable all commons-logging? Not high priority though - as stated
+     * above, security policies that prevent classloader access aren't common.
+     * <p>
+     * Note that returning an object fetched via an AccessController would
+     * technically be a security flaw anyway; untrusted code that has access
+     * to a trusted JCL library could use it to fetch the classloader for
+     * a class even when forbidden to do so directly.
+     *
+     * @since 1.1
+     */
+    protected static ClassLoader getClassLoader(Class<?> clazz) {
+        return clazz.getClassLoader();
     }
 
     /**
