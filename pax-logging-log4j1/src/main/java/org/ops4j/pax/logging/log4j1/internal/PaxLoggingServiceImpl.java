@@ -55,30 +55,32 @@ import org.osgi.service.log.LogLevel;
  */
 public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<Object> {
 
-    private BundleContext m_bundleContext;
+    private final BundleContext m_bundleContext;
 
     private volatile ReadWriteLock m_configLock;
-    private boolean locking = true;
+    private final boolean locking = true;
 
     // LogReaderService registration as defined by org.osgi.service.log package
-    private LogReaderServiceImpl m_logReader;
+    private final LogReaderServiceImpl m_logReader;
 
     // pax-logging-log4j1 specific PaxContext for all MDC access
-    private PaxContext m_context;
+    private final PaxContext m_context;
 
     // optional bridging into Event Admin service
-    private EventAdminPoster m_eventAdmin;
+    private final EventAdminPoster m_eventAdmin;
 
     // optional notification mechanism for configuration events
     private final ConfigurationNotifier m_configNotifier;
 
     // Log level (actually a threashold) for this entire service.
-    private LogLevel m_r7LogLevel = LogLevel.DEBUG;
+    private final LogLevel m_r7LogLevel = LogLevel.DEBUG;
 
     // there's no need to run configureDefaults() more than once. That was happening in constructor
     // and millisecond later during registration of ManagedService, upon receiving empty org.ops4j.pax.logging
     // configuration
-    private AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
+    private final AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
+
+    private Dictionary<String, String> defaultConfiguration = null;
 
     public PaxLoggingServiceImpl(BundleContext context, LogReaderServiceImpl logReader, EventAdminPoster eventAdmin, ConfigurationNotifier configNotifier) {
         if (context == null)
@@ -246,14 +248,27 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
     }
 
     /**
+     * When there's system/context property specified using {@link PaxLoggingConstants#LOGGING_CFG_PROPERTY_FILE},
+     * and ConfigurationAdmin is available, Pax Logging may first get null configuration. When "default configuration"
+     * is set before that, we'll use it instead of empty configuration.
+     * @param config
+     */
+    public void setDefaultConfiguration(Dictionary<String, String> config) {
+        this.defaultConfiguration = config;
+    }
+
+    /**
      * ManagedService-like method but not requiring Configuration Admin
      * @param configuration
      */
     public void updated(Dictionary<String, ?> configuration) {
-        if (configuration == null) {
+        if (configuration == null && defaultConfiguration == null) {
             // mind that there's no synchronization here
             configureDefaults();
             return;
+        }
+        if (configuration == null) {
+            configuration = defaultConfiguration;
         }
 
         Object useLocks = configuration.get(PaxLoggingConstants.PID_CFG_USE_LOCKS);

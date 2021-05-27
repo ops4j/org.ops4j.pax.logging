@@ -82,12 +82,12 @@ public class Log4J2R7AuditIntegrationTest extends AbstractStdoutInterceptingInte
         LoggerFactory lf = context.getService(sr);
         org.osgi.service.log.Logger log = lf.getLogger("my.logger");
         log.error("This shall not pass to console");
-        log.audit("This shall pass to console");
+        log.audit("This shall pass to console {} {}", "arg1", "arg2");
 
         List<String> lines = readLines();
 
         assertFalse(lines.contains("my.logger/org.ops4j.pax.logging.it.Log4J2R7AuditIntegrationTest [ERROR] This shall not pass to console"));
-        assertTrue(lines.contains("my.logger/org.ops4j.pax.logging.it.Log4J2R7AuditIntegrationTest [AUDIT] This shall pass to console"));
+        assertTrue(lines.contains("my.logger/org.ops4j.pax.logging.it.Log4J2R7AuditIntegrationTest [AUDIT] This shall pass to console arg1 arg2"));
     }
 
 }

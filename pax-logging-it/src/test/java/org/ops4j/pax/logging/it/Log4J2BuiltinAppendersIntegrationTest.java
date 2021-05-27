@@ -28,6 +28,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -181,20 +183,21 @@ public class Log4J2BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
     }
 
     @Test
-    public void listAppender() throws InvalidSyntaxException {
+    public void listAppender() throws InvalidSyntaxException, InterruptedException {
         Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J2_PROPERTIES, "builtin.list");
 
         Logger log = LoggerFactory.getLogger("my.logger");
         log.info("should be added to list");
 
-        Collection<ServiceReference<List>> srs = context.getServiceReferences(List.class, "(name=l)");
+        Collection<ServiceReference<BlockingQueue>> srs = context.getServiceReferences(BlockingQueue.class, "(name=l)");
         assertThat(srs.size(), equalTo(1));
-        ServiceReference<List> sr = srs.iterator().next();
-        List<?> list = context.getService(sr);
-        Object obj = list.get(0);
+        ServiceReference<BlockingQueue> sr = srs.iterator().next();
+        BlockingQueue<?> list = context.getService(sr);
+        Object obj = list.take();
 
+        obj.toString(); // to enforce ParameterizedMessage.getFormattedMessage() call
         assertThat(obj.getClass().getName(), equalTo("org.apache.logging.log4j.core.impl.Log4jLogEvent"));
-        assertThat(Helpers.getField(obj, "message.message", String.class), equalTo("should be added to list"));
+        assertThat(Helpers.getField(obj, "message.formattedMessage", String.class), equalTo("should be added to list"));
     }
 
     @Test

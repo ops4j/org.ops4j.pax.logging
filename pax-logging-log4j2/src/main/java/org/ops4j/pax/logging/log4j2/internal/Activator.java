@@ -160,7 +160,8 @@ public class Activator implements BundleActivator {
                 config.put(PaxLoggingConstants.PID_CFG_LOG4J2_CONFIG_FILE, configFilePath.toAbsolutePath().toString());
             }
 
-            m_PaxLogging.updated(config);
+            m_PaxLogging.setDefaultConfiguration(config);
+            m_PaxLogging.updated(null);
         }
 
         if (cm) {
