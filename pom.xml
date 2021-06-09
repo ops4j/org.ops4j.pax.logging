@@ -987,7 +987,7 @@
     <repositories>
         <repository>
             <id>knopflerfish</id>
-            <url>http://resources.knopflerfish.org/repo/maven2/release</url>
+            <url>https://resources.knopflerfish.org/repo/maven2/release</url>
         </repository>
     </repositories>
 
