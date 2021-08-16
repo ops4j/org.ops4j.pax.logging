@@ -40,7 +40,6 @@ import static org.mockito.Mockito.*;
  */
 public class JdkHandlerTest {
 
-    private static final String TLS_LOGGING_MODE_PROPERTY = "com.seeburger.tlsdebug.logmode";
     private static final String NO_LOGGING_MODE = "no_logging";
     private static final String DEBUG_LOGGING_MODE = "debug_logging";
     private static final String NO_HEX_DUMPS_LOGGING_MODE = "no_hex_dumps_logging";
