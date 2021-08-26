@@ -1038,6 +1038,7 @@
                                 </goals>
                                 <configuration>
                                     <doclint>none</doclint>
+                                    <source>1.8</source>
                                 </configuration>
                             </execution>
                         </executions>
