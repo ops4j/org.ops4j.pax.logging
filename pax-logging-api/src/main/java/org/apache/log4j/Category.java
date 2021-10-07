@@ -642,7 +642,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     if (level == LogLevel.ERROR) {
       return Level.ERROR;
     }
-    return null;
+    return Level.OFF;
   }
 
   /**

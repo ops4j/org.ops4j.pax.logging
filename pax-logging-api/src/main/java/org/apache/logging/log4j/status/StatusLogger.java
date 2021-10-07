@@ -43,6 +43,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.log.LogLevel;
 
 /**
  * Records events that occur in the logging system. By default, only error messages are logged to {@link System#err}.
@@ -238,7 +239,11 @@ public final class StatusLogger extends AbstractLogger {
 
     @Override
     public Level getLevel() {
-        switch (logger.getLogLevel()) {
+        LogLevel logLevel = logger.getLogLevel();
+        if (logLevel == null) {
+            return Level.OFF;
+        }
+        switch (logLevel) {
             case AUDIT:
                 return Level.ALL;
             case INFO:

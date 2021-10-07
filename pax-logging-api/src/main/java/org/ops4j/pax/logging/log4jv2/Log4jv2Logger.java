@@ -29,6 +29,7 @@ import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 import org.ops4j.pax.logging.PaxMarker;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.log.LogLevel;
 
 /**
  * This is the default logger that is used when no suitable logging implementation is available.
@@ -193,7 +194,11 @@ public class Log4jv2Logger extends AbstractLogger implements PaxLoggingManagerAw
 
     @Override
     public Level getLevel() {
-        switch (m_delegate.getLogLevel()) {
+        LogLevel logLevel = m_delegate.getLogLevel();
+        if (logLevel == null) {
+            return Level.OFF;
+        }
+        switch (logLevel) {
             case TRACE:
                 return Level.TRACE;
             case DEBUG:
