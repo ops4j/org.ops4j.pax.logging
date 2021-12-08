@@ -82,6 +82,19 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
     }
 
     @Test
+    public void atLevel() throws IOException {
+        org.apache.logging.log4j.Logger log4j2Logger = org.apache.logging.log4j.LogManager.getLogger(Log4J2IntegrationTest.class.getName());
+        log4j2Logger.atInfo().log("INFO through Log4J v2 API");
+        log4j2Logger.atTrace().log("TRACE through Log4J v2 API");
+
+        List<String> lines = readLines();
+        lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
+
+        assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through Log4J v2 API"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through Log4J v2 API"));
+    }
+
+    @Test
     public void usageThroughJULAPI() throws IOException {
         java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Log4J2IntegrationTest.class.getName());
         logger.info("INFO through java.util.logging");
