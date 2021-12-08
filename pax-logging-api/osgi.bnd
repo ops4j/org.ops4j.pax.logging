@@ -27,7 +27,8 @@ Private-Package: \
  org.ops4j.pax.logging.log4jv2, \
  org.ops4j.pax.logging.internal, \
  org.ops4j.pax.logging.jbosslogging, \
- org.ops4j.pax.logging.spi.support
+ org.ops4j.pax.logging.spi.support, \
+ org.apache.logging.log4j.internal
 
 Export-Package: \
  org.slf4j; version=1.7.32; provider=paxlogging, \
