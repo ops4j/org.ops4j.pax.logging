@@ -102,11 +102,11 @@ public class JdkHandlerTest {
         verify(logger).error("s", null);
         verify(logger).error("off", null);
         verify(logger).error(eq("s"), isA(Throwable.class));
-        verify(logger, never()).debug("Skip TLS Debug log");
-        verify(logger, never()).debug("Skip TLS Debug log 1");
-        verify(logger, never()).debug("Skip TLS Debug log 2");
-        verify(logger).debug("TLS Debug" + lineSeparator + parameter);
-        verify(logger).debug("TLS Debug" + lineSeparator + parameter + lineSeparator + hexDump);
+        verify(logger, never()).debug("Skip TLS Debug log", null);
+        verify(logger, never()).debug("Skip TLS Debug log 1", null);
+        verify(logger, never()).debug("Skip TLS Debug log 2", null);
+        verify(logger).debug("TLS Debug" + lineSeparator + parameter, null);
+        verify(logger).debug("TLS Debug" + lineSeparator + parameter + lineSeparator + hexDump, null);
     }
 
     private LogRecord mkRecord(Level lvl, String msg, Throwable t) {
