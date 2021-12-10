@@ -389,11 +389,11 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
      */
     @Deprecated
     public static JdbcDatabaseManager getJDBCDatabaseManager(final String name, final int bufferSize,
-            final ConnectionSource connectionSource, final String tableName, final ColumnConfig[] columnConfigs) {
+        final ConnectionSource connectionSource, final String tableName, final ColumnConfig[] columnConfigs) {
         return getManager(
-                name, new FactoryData(bufferSize, null, connectionSource, tableName, columnConfigs,
-                        new ColumnMapping[0], false, AbstractDatabaseAppender.DEFAULT_RECONNECT_INTERVAL_MILLIS, true),
-                getFactory());
+            name, new FactoryData(bufferSize, null, connectionSource, tableName, columnConfigs,
+                ColumnMapping.EMPTY_ARRAY, false, AbstractDatabaseAppender.DEFAULT_RECONNECT_INTERVAL_MILLIS, true),
+            getFactory());
     }
 
     /**
@@ -577,7 +577,7 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
                 // Database connection has likely gone stale.
                 final Throwable cause = e.getCause();
                 final Throwable actual = cause == null ? e : cause;
-                logger().debug("{} committing and closing connection: {}: {}", actual, actual.getClass().getSimpleName(),
+                logger().debug("{} committing and closing connection: {}", actual, actual.getClass().getSimpleName(),
                         e.toString(), e);
             }
         }
