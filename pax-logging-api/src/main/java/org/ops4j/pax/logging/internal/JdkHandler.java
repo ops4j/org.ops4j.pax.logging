@@ -150,37 +150,6 @@ public class JdkHandler extends Handler {
     }
 
     /**
-     * Appends the TLS log record parameters to the end of the TLS log message.
-     *
-     * @param logRecord The TLS log record.
-     */
-    private String getTLSLogMessage(LogRecord logRecord) {
-        String message;
-        try {
-            message = logRecord.getMessage();
-            if (logRecord.getParameters() != null) {
-                String tlsLoggingModeProperty = System.getProperty(PaxLoggingConstants.LOGGING_CFG_TLS_LOGGING_MODE);
-                boolean isDebugLoggingEnabled = DEBUG_LOGGING_MODE.equals(tlsLoggingModeProperty);
-
-                String logParameters = Stream.of(logRecord.getParameters())
-                        .filter(Objects::nonNull)
-                        .filter(String.class::isInstance)
-                        .map(String::valueOf)
-                        // hex dump parameters are not filtered only if the TLS logging mode is "debug logging"
-                        .filter(x -> !isHexDumpMessage(x) || isDebugLoggingEnabled)
-                        .collect(Collectors.joining(System.lineSeparator()));
-
-                logParameters = !logParameters.trim().isEmpty() ? System.lineSeparator() + logParameters : "";
-                message += logParameters;
-            }
-        } catch (Exception ex) {
-            message = logRecord.getMessage();
-        }
-
-        return message;
-    }
-
-    /**
      * Checks if TLS debug logging is enabled.
      *
      * @return  Returns <b>true</b> if the value of the system property {@value PaxLoggingConstants#LOGGING_CFG_TLS_LOGGING_MODE}
