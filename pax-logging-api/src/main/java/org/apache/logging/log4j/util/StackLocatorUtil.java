@@ -18,6 +18,7 @@ package org.apache.logging.log4j.util;
 
 import java.util.NoSuchElementException;
 import java.util.Stack;
+import java.util.function.Predicate;
 
 import org.apache.logging.log4j.LogBuilder;
 import org.apache.logging.log4j.status.StatusLogger;
@@ -65,16 +66,37 @@ public final class StackLocatorUtil {
         return stackLocator.getStackTraceElement(depth + 1);
     }
 
+    /**
+     * Equivalent to {@link #getCallerClass(String, String)} with an empty {@code pkg}.
+     */
     // migrated from ClassLoaderContextSelector
     @PerformanceSensitive
     public static Class<?> getCallerClass(final String fqcn) {
         return getCallerClass(fqcn, Strings.EMPTY);
     }
 
-    // migrated from Log4jLoggerFactory
+    /**
+     * Search for a calling class.
+     *
+     * @param fqcn Root class name whose caller to search for.
+     * @param pkg Package name prefix that must be matched after the {@code fqcn} has been found.
+     * @return The caller class that was matched, or null if one could not be located.
+     */
     @PerformanceSensitive
     public static Class<?> getCallerClass(final String fqcn, final String pkg) {
         return stackLocator.getCallerClass(fqcn, pkg);
+    }
+
+    /**
+     * Search for a calling class.
+     *
+     * @param sentinelClass Sentinel class at which to begin searching
+     * @param callerPredicate Predicate checked after the sentinelClass is found
+     * @return the first matching class after <code>sentinelClass</code> is found.
+     */
+    @PerformanceSensitive
+    public static Class<?> getCallerClass(final Class<?> sentinelClass, final Predicate<Class<?>> callerPredicate) {
+        return stackLocator.getCallerClass(sentinelClass, callerPredicate);
     }
 
     // added for use in LoggerAdapter implementations mainly
