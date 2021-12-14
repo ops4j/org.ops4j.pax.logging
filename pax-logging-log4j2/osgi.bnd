@@ -47,6 +47,7 @@ Import-Package: \
  javax.lang.model.util; resolution:=optional, \
  javax.management; resolution:=optional, \
  javax.naming; resolution:=optional, \
+ javax.naming.directory; resolution:=optional, \
  javax.net; resolution:=optional, \
  javax.net.ssl; resolution:=optional, \
  javax.script; resolution:=optional, \
