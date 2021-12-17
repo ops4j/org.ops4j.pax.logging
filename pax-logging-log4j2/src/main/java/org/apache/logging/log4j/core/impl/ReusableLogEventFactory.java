@@ -78,23 +78,10 @@ public class ReusableLogEventFactory implements LogEventFactory, LocationAwareLo
     public LogEvent createEvent(final String loggerName, final Marker marker, final String fqcn,
                                 final StackTraceElement location, final Level level, final Message message,
                                 final List<Property> properties, final Throwable t) {
-        WeakReference<MutableLogEvent> refResult = mutableLogEventThreadLocal.get();
-        MutableLogEvent result = refResult == null ? null : refResult.get();
-        if (result == null || result.reserved) {
-            final boolean initThreadLocal = result == null;
-            result = new MutableLogEvent();
-
-            // usually no need to re-initialize thread-specific fields since the event is stored in a ThreadLocal
-            result.setThreadId(Thread.currentThread().getId());
-            result.setThreadName(Thread.currentThread().getName()); // Thread.getName() allocates Objects on each call
-            result.setThreadPriority(Thread.currentThread().getPriority());
-            if (initThreadLocal) {
-                refResult = new WeakReference<>(result);
-                mutableLogEventThreadLocal.set(refResult);
-            }
-        }
+        MutableLogEvent result = getOrCreateMutableLogEvent();
         result.reserved = true;
-        result.clear(); // ensure any previously cached values (thrownProxy, source, etc.) are cleared
+        // No need to clear here, values are cleared in release when reserved is set to false.
+        // If the event was dirty we'd create a new one.
 
         result.setLoggerName(loggerName);
         result.setMarker(marker);
@@ -110,6 +97,30 @@ public class ReusableLogEventFactory implements LogEventFactory, LocationAwareLo
         if (THREAD_NAME_CACHING_STRATEGY == ThreadNameCachingStrategy.UNCACHED) {
             result.setThreadName(Thread.currentThread().getName()); // Thread.getName() allocates Objects on each call
             result.setThreadPriority(Thread.currentThread().getPriority());
+        }
+        return result;
+    }
+
+    private static MutableLogEvent getOrCreateMutableLogEvent() {
+        WeakReference<MutableLogEvent> refResult = mutableLogEventThreadLocal.get();
+        MutableLogEvent result = refResult == null ? null : refResult.get();
+        if (result == null || result.reserved) {
+            result = createInstance(result);
+        }
+
+        return result;
+    }
+
+    private static MutableLogEvent createInstance(MutableLogEvent existing) {
+        MutableLogEvent result = new MutableLogEvent();
+
+        // usually no need to re-initialize thread-specific fields since the event is stored in a ThreadLocal
+        result.setThreadId(Thread.currentThread().getId());
+        result.setThreadName(Thread.currentThread().getName()); // Thread.getName() allocates Objects on each call
+        result.setThreadPriority(Thread.currentThread().getPriority());
+        if (existing == null) {
+            WeakReference<MutableLogEvent> refResult = new WeakReference<>(result);
+            mutableLogEventThreadLocal.set(refResult);
         }
         return result;
     }
