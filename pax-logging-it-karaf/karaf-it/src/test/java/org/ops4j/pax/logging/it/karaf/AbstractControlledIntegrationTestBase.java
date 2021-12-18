@@ -47,6 +47,7 @@ import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
 import static org.ops4j.pax.exam.CoreOptions.frameworkStartLevel;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.maven;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.systemTimeout;
 import static org.ops4j.pax.exam.CoreOptions.url;
 import static org.ops4j.pax.exam.OptionUtils.combine;
@@ -131,6 +132,9 @@ public class AbstractControlledIntegrationTestBase {
 
                 // set to "4" to see Felix wiring information
                 frameworkProperty("felix.log.level").value("1"),
+
+                // treat configuration errors in log4j as exceptions to catch them through EventAdmin
+                systemProperty("org.ops4j.pax.logging.log4j2.errorsAsExceptions").value("true"),
 
                 editConfigurationFilePut("etc/system.properties", "org.ops4j.pax.logging.DefaultServiceLog.level", "INFO"),
                 editConfigurationFilePut("etc/custom.properties", "org.ops4j.pax.logging.service.frameworkEventsLogLevel", "DISABLED"),
