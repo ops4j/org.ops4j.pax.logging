@@ -329,8 +329,29 @@ public class LogManager {
      * @since 2.6
      */
     public static void shutdown(final boolean currentContext) {
-        shutdown(getContext(currentContext));
+        factory.shutdown(FQCN, null, currentContext, false);
     }
+
+    /**
+     * Shutdown the logging system if the logging system supports it.
+     * This is equivalent to calling {@code LogManager.shutdown(LogManager.getContext(currentContext))}.
+     *
+     * This call is synchronous and will block until shut down is complete.
+     * This may include flushing pending log events over network connections.
+     *
+     * @param currentContext if true a default LoggerContext (may not be the LoggerContext used to create a Logger
+     *            for the calling class) will be used.
+     *            If false the LoggerContext appropriate for the caller of this method is used. For
+     *            example, in a web application if the caller is a class in WEB-INF/lib then one LoggerContext may be
+     *            used and if the caller is a class in the container's classpath then a different LoggerContext may
+     *            be used.
+     * @param allContexts if true all LoggerContexts that can be located will be shutdown.
+     * @since 2.13.0
+     */
+    public static void shutdown(final boolean currentContext, final boolean allContexts) {
+        factory.shutdown(FQCN, null, currentContext, allContexts);
+    }
+
 
     /**
      * Shutdown the logging system if the logging system supports it.
@@ -342,7 +363,7 @@ public class LogManager {
      * @since 2.6
      */
     public static void shutdown(final LoggerContext context) {
-        if (context != null && context instanceof Terminable) {
+        if (context instanceof Terminable) {
             ((Terminable) context).terminate();
         }
     }
@@ -520,7 +541,7 @@ public class LogManager {
      */
     public static Logger getLogger(final Class<?> clazz) {
         final Class<?> cls = callerClass(clazz);
-        return getContext(cls.getClassLoader(), false).getLogger(cls.getName());
+        return getContext(cls.getClassLoader(), false).getLogger(cls);
     }
 
     /**
@@ -536,7 +557,7 @@ public class LogManager {
      */
     public static Logger getLogger(final Class<?> clazz, final MessageFactory messageFactory) {
         final Class<?> cls = callerClass(clazz);
-        return getContext(cls.getClassLoader(), false).getLogger(cls.getName(), messageFactory);
+        return getContext(cls.getClassLoader(), false).getLogger(cls, messageFactory);
     }
 
     /**

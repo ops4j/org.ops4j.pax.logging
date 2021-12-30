@@ -19,6 +19,7 @@ package org.apache.logging.log4j.spi;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.logging.log4j.util.BiConsumer;
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
@@ -85,7 +86,7 @@ public class DefaultThreadContextMap implements ThreadContextMap, ReadOnlyString
             return;
         }
         Map<String, String> map = localMap.get();
-        map = map == null ? new HashMap<String, String>(1) : new HashMap<>(map);
+        map = map == null ? new HashMap<>(1) : new HashMap<>(map);
         map.put(key, value);
         localMap.set(Collections.unmodifiableMap(map));
     }
@@ -95,7 +96,7 @@ public class DefaultThreadContextMap implements ThreadContextMap, ReadOnlyString
             return;
         }
         Map<String, String> map = localMap.get();
-        map = map == null ? new HashMap<String, String>(m.size()) : new HashMap<>(map);
+        map = map == null ? new HashMap<>(m.size()) : new HashMap<>(map);
         for (final Map.Entry<String, String> e : m.entrySet()) {
             map.put(e.getKey(), e.getValue());
         }
@@ -185,7 +186,7 @@ public class DefaultThreadContextMap implements ThreadContextMap, ReadOnlyString
     @Override
     public Map<String, String> getCopy() {
         final Map<String, String> map = localMap.get();
-        return map == null ? new HashMap<String, String>() : new HashMap<>(map);
+        return map == null ? new HashMap<>() : new HashMap<>(map);
     }
 
     @Override
@@ -196,7 +197,7 @@ public class DefaultThreadContextMap implements ThreadContextMap, ReadOnlyString
     @Override
     public boolean isEmpty() {
         final Map<String, String> map = localMap.get();
-        return map == null || map.size() == 0;
+        return map == null || map.isEmpty();
     }
 
     @Override
@@ -241,13 +242,6 @@ public class DefaultThreadContextMap implements ThreadContextMap, ReadOnlyString
         final ThreadContextMap other = (ThreadContextMap) obj;
         final Map<String, String> map = this.localMap.get();
         final Map<String, String> otherMap = other.getImmutableMapOrNull();
-        if (map == null) {
-            if (otherMap != null) {
-                return false;
-            }
-        } else if (!map.equals(otherMap)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(map, otherMap);
     }
 }

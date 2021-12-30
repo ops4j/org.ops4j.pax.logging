@@ -27,10 +27,17 @@ import java.util.Objects;
  */
 public final class Strings {
 
+    private static final ThreadLocal<StringBuilder> tempStr = ThreadLocal.withInitial(StringBuilder::new);
+
     /**
      * The empty string.
      */
     public static final String EMPTY = "";
+    
+    /**
+     * The empty array.
+     */
+    public static final String[] EMPTY_ARRAY = {};
     
     /**
      * OS-dependent line separator, defaults to {@code "\n"} if the system property {@code ""line.separator"} cannot be
@@ -50,14 +57,23 @@ public final class Strings {
     }
     
     /**
-     * Checks if a String is blank. A blank string is one that is {@code null}, empty, or when trimmed using
-     * {@link String#trim()} is empty.
+     * Checks if a String is blank. A blank string is one that is either
+     * {@code null}, empty, or all characters are {@link Character#isWhitespace(char)}.
      *
      * @param s the String to check, may be {@code null}
-     * @return {@code true} if the String is {@code null}, empty, or trims to empty.
+     * @return {@code true} if the String is {@code null}, empty, or or all characters are {@link Character#isWhitespace(char)}
      */
     public static boolean isBlank(final String s) {
-        return s == null || s.trim().isEmpty();
+        if (s == null || s.isEmpty()) {
+            return true;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (!Character.isWhitespace(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -271,6 +287,49 @@ public final class Strings {
      */
     public static String toRootUpperCase(final String str) {
         return str.toUpperCase(Locale.ROOT);
+    }
+
+    /**
+     * Concatenates 2 Strings without allocation.
+     * @param str1 the first string.
+     * @param str2 the second string.
+     * @return the concatenated String.
+     */
+    public static String concat(String str1, String str2) {
+        if (isEmpty(str1)) {
+            return str2;
+        } else if (isEmpty(str2)) {
+            return str1;
+        }
+        StringBuilder sb = tempStr.get();
+        try {
+            return sb.append(str1).append(str2).toString();
+        } finally {
+            sb.setLength(0);
+        }
+    }
+
+    /**
+     * Creates a new string repeating given {@code str} {@code count} times.
+     * @param str input string
+     * @param count the repetition count
+     * @return the new string
+     * @throws IllegalArgumentException if either {@code str} is null or {@code count} is negative
+     */
+    public static String repeat(final String str, final int count) {
+        Objects.requireNonNull(str, "str");
+        if (count < 0) {
+            throw new IllegalArgumentException("count");
+        }
+        StringBuilder sb = tempStr.get();
+        try {
+            for (int index = 0; index < count; index++) {
+                sb.append(str);
+            }
+            return sb.toString();
+        } finally {
+            sb.setLength(0);
+        }
     }
 
 }

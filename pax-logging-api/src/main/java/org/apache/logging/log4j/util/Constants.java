@@ -28,7 +28,8 @@ public final class Constants {
      * is present in the classpath.
      */
     public static final boolean IS_WEB_APP = PropertiesUtil.getProperties().getBooleanProperty(
-            "log4j2.is.webapp", isClassAvailable("javax.servlet.Servlet"));
+            "log4j2.is.webapp", isClassAvailable("javax.servlet.Servlet")
+                    || isClassAvailable("jakarta.servlet.Servlet"));
 
     /**
      * Kill switch for object pooling in ThreadLocals that enables much of the LOG4J2-1270 no-GC behaviour.
@@ -56,7 +57,7 @@ public final class Constants {
     /**
      * Name of the system property that will turn on TRACE level internal log4j2 status logging.
      * <p>
-     * If system property {@value} is defined, regardless of the property value, all internal log4j2 logging will be
+     * If system property {@value} is either defined empty or its value equals to {@code true} (ignoring case), all internal log4j2 logging will be
      * printed to the console. The presence of this system property overrides any value set in the configuration's
      * {@code <Configuration status="<level>" ...>} status attribute, as well as any value set for
      * system property {@code org.apache.logging.log4j.simplelog.StatusLogger.level}.
@@ -81,6 +82,16 @@ public final class Constants {
             return false;
         }
     }
+
+    /**
+     * The empty array.
+     */
+    public static final Object[] EMPTY_OBJECT_ARRAY = {};
+
+    /**
+     * The empty array.
+     */
+    public static final byte[] EMPTY_BYTE_ARRAY = {};
 
     /**
      * Prevent class instantiation.

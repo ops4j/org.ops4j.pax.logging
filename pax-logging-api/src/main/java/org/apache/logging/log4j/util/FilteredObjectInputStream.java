@@ -23,62 +23,68 @@ import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 /**
- * Extended ObjectInputStream that only allows certain classes to be deserialized.
+ * Extends {@link ObjectInputStream} to only allow some built-in Log4j classes and caller-specified classes to be
+ * deserialized.
  *
  * @since 2.8.2
  */
 public class FilteredObjectInputStream extends ObjectInputStream {
 
-    private static final List<String> REQUIRED_JAVA_CLASSES = Arrays.asList(
+    private static final Set<String> REQUIRED_JAVA_CLASSES = new HashSet<>(Arrays.asList(
+    // @formatter:off
             "java.math.BigDecimal",
             "java.math.BigInteger",
             // for Message delegate
             "java.rmi.MarshalledObject",
             "[B"
-    );
+    // @formatter:on
+    ));
 
-    private static final List<String> REQUIRED_JAVA_PACKAGES = Arrays.asList(
+    private static final Set<String> REQUIRED_JAVA_PACKAGES = new HashSet<>(Arrays.asList(
+    // @formatter:off
             "java.lang.",
-            "java.time",
+            "java.time.",
             "java.util.",
             "org.apache.logging.log4j.",
             "[Lorg.apache.logging.log4j."
-    );
+    // @formatter:on
+    ));
 
-    private final Collection<String> allowedClasses;
+    private final Collection<String> allowedExtraClasses;
 
     public FilteredObjectInputStream() throws IOException, SecurityException {
-        super();
-        this.allowedClasses = new HashSet<>();
+        this.allowedExtraClasses = Collections.emptySet();
     }
 
-    public FilteredObjectInputStream(final InputStream in) throws IOException {
-        super(in);
-        this.allowedClasses = new HashSet<>();
+    public FilteredObjectInputStream(final InputStream inputStream) throws IOException {
+        super(inputStream);
+        this.allowedExtraClasses = Collections.emptySet();
     }
 
-    public FilteredObjectInputStream(final Collection<String> allowedClasses) throws IOException, SecurityException {
-        super();
-        this.allowedClasses = allowedClasses;
+    public FilteredObjectInputStream(final Collection<String> allowedExtraClasses)
+        throws IOException, SecurityException {
+        this.allowedExtraClasses = allowedExtraClasses;
     }
 
-    public FilteredObjectInputStream(final InputStream in, final Collection<String> allowedClasses) throws IOException {
-        super(in);
-        this.allowedClasses = allowedClasses;
+    public FilteredObjectInputStream(final InputStream inputStream, final Collection<String> allowedExtraClasses)
+        throws IOException {
+        super(inputStream);
+        this.allowedExtraClasses = allowedExtraClasses;
     }
 
     public Collection<String> getAllowedClasses() {
-        return allowedClasses;
+        return allowedExtraClasses;
     }
 
     @Override
     protected Class<?> resolveClass(final ObjectStreamClass desc) throws IOException, ClassNotFoundException {
         final String name = desc.getName();
-        if (!(isAllowedByDefault(name) || allowedClasses.contains(name))) {
+        if (!(isAllowedByDefault(name) || allowedExtraClasses.contains(name))) {
             throw new InvalidObjectException("Class is not allowed for deserialization: " + name);
         }
         return super.resolveClass(desc);

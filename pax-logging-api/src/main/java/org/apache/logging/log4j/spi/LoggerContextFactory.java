@@ -24,6 +24,37 @@ import java.net.URI;
 public interface LoggerContextFactory {
 
     /**
+     * Shuts down the LoggerContext.
+     * @param fqcn The fully qualified class name of the caller.
+     * @param loader The ClassLoader to use or null.
+     * @param currentContext If true shuts down the current Context, if false shuts down the Context appropriate
+     * for the caller if a more appropriate Context can be determined.
+     * @param allContexts if true all LoggerContexts that can be located will be shutdown.
+     * @since 2.13.0
+     */
+    default void shutdown(String fqcn, ClassLoader loader, boolean currentContext, boolean allContexts) {
+        if (hasContext(fqcn, loader, currentContext)) {
+            LoggerContext ctx = getContext(fqcn, loader, null, currentContext);
+            if (ctx instanceof Terminable) {
+                ((Terminable) ctx).terminate();
+            }
+        }
+    }
+
+    /**
+     * Checks to see if a LoggerContext is installed. The default implementation returns false.
+     * @param fqcn The fully qualified class name of the caller.
+     * @param loader The ClassLoader to use or null.
+     * @param currentContext If true returns the current Context, if false returns the Context appropriate
+     * for the caller if a more appropriate Context can be determined.
+     * @return true if a LoggerContext has been installed, false otherwise.
+     * @since 2.13.0
+     */
+    default boolean hasContext(String fqcn, ClassLoader loader, boolean currentContext) {
+        return false;
+    }
+
+    /**
      * Creates a {@link LoggerContext}.
      *
      * @param fqcn The fully qualified class name of the caller.
@@ -56,4 +87,17 @@ public interface LoggerContextFactory {
      * @param context The context to remove.
      */
     void removeContext(LoggerContext context);
+
+    /**
+     * Determines whether or not this factory and perhaps the underlying
+     * ContextSelector behavior depend on the callers classloader.
+     *
+     * This method should be overridden by implementations, however a default method is provided which always
+     * returns {@code true} to preserve the old behavior.
+     *
+     * @since 2.15.0
+     */
+    default boolean isClassLoaderDependent() {
+        return true;
+    }
 }

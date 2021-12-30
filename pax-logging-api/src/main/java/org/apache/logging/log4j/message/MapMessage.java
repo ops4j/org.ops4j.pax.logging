@@ -357,7 +357,7 @@ public class MapMessage<M extends MapMessage<M, V>, V> implements MultiFormatStr
                     .append(data.getKeyAt(i))
                     .append("\">");
             final int size = sb.length();
-            ParameterFormatter.recursiveDeepToString(data.getValueAt(i), sb, null);
+            ParameterFormatter.recursiveDeepToString(data.getValueAt(i), sb);
             StringBuilders.escapeXml(sb, size);
             sb.append("</Entry>\n");
         }
@@ -407,28 +407,13 @@ public class MapMessage<M extends MapMessage<M, V>, V> implements MultiFormatStr
                 sb.append(' ');
             }
             sb.append(data.getKeyAt(i)).append(Chars.EQ).append(Chars.DQUOTE);
-            ParameterFormatter.recursiveDeepToString(data.getValueAt(i), sb, null);
+            ParameterFormatter.recursiveDeepToString(data.getValueAt(i), sb);
             sb.append(Chars.DQUOTE);
         }
     }
 
     protected void asJson(final StringBuilder sb) {
-        sb.append('{');
-        for (int i = 0; i < data.size(); i++) {
-            if (i > 0) {
-                sb.append(", ");
-            }
-            sb.append(Chars.DQUOTE);
-            int start = sb.length();
-            sb.append(data.getKeyAt(i));
-            StringBuilders.escapeJson(sb, start);
-            sb.append(Chars.DQUOTE).append(':').append(Chars.DQUOTE);
-            start = sb.length();
-            ParameterFormatter.recursiveDeepToString(data.getValueAt(i), sb, null);
-            StringBuilders.escapeJson(sb, start);
-            sb.append(Chars.DQUOTE);
-        }
-        sb.append('}');
+        MapMessageJsonFormatter.format(sb, data);
     }
 
     protected void asJavaUnquoted(final StringBuilder sb) {
@@ -449,7 +434,7 @@ public class MapMessage<M extends MapMessage<M, V>, V> implements MultiFormatStr
             if (quoted) {
                 sb.append(Chars.DQUOTE);
             }
-            ParameterFormatter.recursiveDeepToString(data.getValueAt(i), sb, null);
+            ParameterFormatter.recursiveDeepToString(data.getValueAt(i), sb);
             if (quoted) {
                 sb.append(Chars.DQUOTE);
             }

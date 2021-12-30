@@ -19,6 +19,7 @@ package org.apache.logging.log4j.spi;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.logging.log4j.util.ReadOnlyStringMap;
 import org.apache.logging.log4j.util.StringMap;
@@ -201,7 +202,7 @@ class GarbageFreeSortedArrayThreadContextMap implements ReadOnlyThreadContextMap
     @Override
     public Map<String, String> getCopy() {
         final StringMap map = localMap.get();
-        return map == null ? new HashMap<String, String>() : map.toMap();
+        return map == null ? new HashMap<>() : map.toMap();
     }
 
     /**
@@ -226,7 +227,7 @@ class GarbageFreeSortedArrayThreadContextMap implements ReadOnlyThreadContextMap
     @Override
     public boolean isEmpty() {
         final StringMap map = localMap.get();
-        return map == null || map.size() == 0;
+        return map == null || map.isEmpty();
     }
 
     @Override
@@ -258,13 +259,6 @@ class GarbageFreeSortedArrayThreadContextMap implements ReadOnlyThreadContextMap
         final ThreadContextMap other = (ThreadContextMap) obj;
         final Map<String, String> map = this.getImmutableMapOrNull();
         final Map<String, String> otherMap = other.getImmutableMapOrNull();
-        if (map == null) {
-            if (otherMap != null) {
-                return false;
-            }
-        } else if (!map.equals(otherMap)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(map, otherMap);
     }
 }
