@@ -215,7 +215,7 @@
         <version.org.apache.tomcat.juli>9.0.43</version.org.apache.tomcat.juli>
         <version.org.apache.xbean>4.18</version.org.apache.xbean>
         <version.biz.aQute.bnd>5.2.0</version.biz.aQute.bnd>
-        <version.ch.qos.logback>1.2.9</version.ch.qos.logback>
+        <version.ch.qos.logback>1.2.10</version.ch.qos.logback>
         <version.ch.qos.logback.contrib>0.1.5</version.ch.qos.logback.contrib>
         <version.com.fasterxml.jackson>2.10.0</version.com.fasterxml.jackson>
         <version.com.h2database>1.4.200</version.com.h2database>
