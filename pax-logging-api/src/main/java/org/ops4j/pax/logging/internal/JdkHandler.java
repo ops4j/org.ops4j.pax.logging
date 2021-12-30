@@ -18,6 +18,7 @@
 package org.ops4j.pax.logging.internal;
 
 import java.util.Objects;
+import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -28,6 +29,8 @@ import java.util.stream.Stream;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.spi.support.OsgiUtil;
+import org.osgi.framework.BundleContext;
 
 /**
  * JUL {@link Handler} that bridges {@link LogRecord log records} to Pax Logging loggers.
@@ -59,11 +62,19 @@ public class JdkHandler extends Handler {
     private static final String DEBUG_LOGGING_MODE = "debug_logging";
     private static final String HEX_DUMP_OFFSET = "0000:";
 
-    private PaxLoggingManager m_loggingManager;
+    private final PaxLoggingManager m_loggingManager;
+    private BundleContext bundleContext;
+    private boolean synchronizedFormatter = false;
 
     public JdkHandler(PaxLoggingManager loggingManager) {
         m_loggingManager = loggingManager;
         setFormatter(new SimpleFormatter());
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+        String sync = OsgiUtil.systemOrContextProperty(bundleContext, PaxLoggingConstants.LOGGING_CFG_SKIP_JUL_SYNCHRONIZED_FORMATTER);
+        synchronizedFormatter = sync == null || "true".equalsIgnoreCase(sync.trim());
     }
 
     @Override
@@ -72,6 +83,15 @@ public class JdkHandler extends Handler {
 
     @Override
     public void flush() {
+    }
+
+    @Override
+    public Formatter getFormatter() {
+        if (synchronizedFormatter) {
+            return super.getFormatter();
+        } else {
+            return new SimpleFormatter();
+        }
     }
 
     /**

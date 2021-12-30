@@ -19,6 +19,7 @@
 package org.ops4j.pax.logging;
 
 import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
 
 /**
  * <p>Different constants used across Pax Logging.
@@ -60,6 +61,13 @@ public interface PaxLoggingConstants {
      * to Pax Logging.
      */
     String LOGGING_CFG_SKIP_JUL_RESET = "org.ops4j.pax.logging.skipJULReset";
+
+    /**
+     * System or context (in that order) property to use single, synchronized {@link java.util.logging.SimpleFormatter}
+     * in {@link org.ops4j.pax.logging.internal.JdkHandler#publish(LogRecord)} (which is the default) or new instance
+     * should be used for each event (to prevent deadlocks in special circumstances).
+     */
+    String LOGGING_CFG_SKIP_JUL_SYNCHRONIZED_FORMATTER = "org.ops4j.pax.logging.syncJULFormatter";
 
     /**
      * System or context (in that order) property setting the <em>threshold</em> for framework/bundle/service events.
