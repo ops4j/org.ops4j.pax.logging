@@ -93,6 +93,7 @@ public class Activator implements BundleActivator {
             rootLogger.setFilter(null);
 
             m_JdkHandler = new JdkHandler(manager);
+            m_JdkHandler.setBundleContext(bundleContext);
             rootLogger.addHandler(m_JdkHandler);
             rootLogger.setLevel(BackendSupport.toJULLevel(levelName));
 
