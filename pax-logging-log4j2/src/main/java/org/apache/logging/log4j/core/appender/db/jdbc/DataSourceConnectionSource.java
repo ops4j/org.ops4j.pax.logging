@@ -19,7 +19,6 @@ package org.apache.logging.log4j.core.appender.db.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
@@ -28,6 +27,7 @@ import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.logging.log4j.core.net.JndiManager;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.Strings;
 import org.osgi.framework.Bundle;
@@ -170,6 +170,10 @@ public final class DataSourceConnectionSource extends AbstractConnectionSource {
                 // always access via ServiceTracker
                 dataSource = null;
             } else {
+                if (!JndiManager.isJndiJdbcEnabled()) {
+                    LOGGER.error("JNDI must be enabled by setting log4j2.enableJndiJdbc=true");
+                    return null;
+                }
                 lazyJndiName = jndiName.trim();
                 dataSource = acquireDataSourceFromJNDI(lazyJndiName, lazy);
             }
@@ -199,13 +203,12 @@ public final class DataSourceConnectionSource extends AbstractConnectionSource {
 
     private static DataSource acquireDataSourceFromJNDI(String jndiName, boolean lazy) {
         try {
-            final InitialContext context = new InitialContext();
-            final DataSource dataSource = (DataSource) context.lookup(jndiName);
+            final DataSource dataSource = JndiManager.getDefaultManager(DataSourceConnectionSource.class.getCanonicalName()).lookup(jndiName);
             if (dataSource == null) {
                 if (lazy) {
-                    LOGGER.warn("No data source found with JNDI name [" + jndiName + "].");
+                    LOGGER.warn("No DataSource found with JNDI name [" + jndiName + "].");
                 } else {
-                    LOGGER.error("No data source found with JNDI name [" + jndiName + "].");
+                    LOGGER.error("No DataSource found with JNDI name [" + jndiName + "].");
                 }
                 return null;
             }
