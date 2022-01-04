@@ -17,6 +17,8 @@
  */
 package org.ops4j.pax.logging.log4j2.internal;
 
+import org.apache.logging.log4j.core.impl.ThreadContextDataInjector;
+import org.apache.logging.log4j.core.impl.ThreadContextDataProvider;
 import org.apache.logging.log4j.core.lookup.StrSubstitutor;
 import org.ops4j.pax.logging.EventAdminPoster;
 import org.ops4j.pax.logging.PaxLoggingService;
@@ -123,6 +125,9 @@ public class Activator
                 }
             };
         }
+
+        ThreadContextDataInjector.contextDataProviders.clear();
+        ThreadContextDataInjector.contextDataProviders.add(new ThreadContextDataProvider());
 
         // register the Pax Logging service
         m_PaxLogging = new PaxLoggingServiceImpl( bundleContext, logReader, m_eventAdmin );
