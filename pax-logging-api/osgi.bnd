@@ -126,3 +126,5 @@ Import-Package: \
 Include-Resource: \
  {maven-resources}, \
  META-INF/versions/9/org/apache/logging/log4j/util=target/classes/META-INF/versions/9/org/apache/logging/log4j/util
+
+-jpms-module-info:
