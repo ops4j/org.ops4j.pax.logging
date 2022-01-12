@@ -720,6 +720,16 @@
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.service.event</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.service.log</artifactId>
+                <version>1.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
                 <artifactId>osgi.cmpn</artifactId>
                 <version>${version.org.osgi}</version>
             </dependency>
