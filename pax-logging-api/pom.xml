@@ -92,7 +92,7 @@
                                 <resource>
                                     <directory>${project.build.directory}/unpack-deps/log4j-api</directory>
                                     <includes>
-                                        <include>META-INF/versions/9/**</include>
+                                        <include>META-INF/versions/9/org/apache/logging/log4j/util/**</include>
                                     </includes>
                                 </resource>
                             </resources>
