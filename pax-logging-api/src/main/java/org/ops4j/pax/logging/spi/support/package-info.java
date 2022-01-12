@@ -25,4 +25,5 @@
  * Even default/fallback logger is here (to be Private-Packaged by backends), because there's no
  * requirement to have singleton instance of {@link org.ops4j.pax.logging.spi.support.DefaultServiceLog}.
  */
+@aQute.bnd.annotation.jpms.Open()
 package org.ops4j.pax.logging.spi.support;

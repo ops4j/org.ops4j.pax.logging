@@ -121,6 +121,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- bnd -->
+        <dependency>
+            <groupId>biz.aQute.bnd</groupId>
+            <artifactId>biz.aQute.bnd.annotation</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <!-- Logging -->
 
         <dependency>

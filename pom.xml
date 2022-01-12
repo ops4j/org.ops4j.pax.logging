@@ -729,6 +729,12 @@
                 <version>${version.org.osgi}</version>
             </dependency>
 
+            <!-- bnd -->
+            <dependency>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>biz.aQute.bnd.annotation</artifactId>
+                <version>6.1.0</version>
+            </dependency>
             <dependency>
                 <groupId>biz.aQute.bnd</groupId>
                 <artifactId>biz.aQute.bndlib</artifactId>
