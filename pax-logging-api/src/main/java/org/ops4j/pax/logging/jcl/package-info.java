@@ -20,4 +20,5 @@
 /**
  * Package with pax-logging specific classes supporting Commons-Logging facade.
  */
+@aQute.bnd.annotation.jpms.Open()
 package org.ops4j.pax.logging.jcl;
