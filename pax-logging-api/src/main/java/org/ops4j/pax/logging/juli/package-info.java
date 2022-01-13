@@ -21,4 +21,5 @@
  * Package with pax-logging specific classes supporting Apache Juli facade (which itself
  * is adjusted Commons Logging API).
  */
+@aQute.bnd.annotation.jpms.Open()
 package org.ops4j.pax.logging.juli;
