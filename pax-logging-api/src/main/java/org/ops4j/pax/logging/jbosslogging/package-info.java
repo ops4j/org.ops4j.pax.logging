@@ -22,4 +22,5 @@
  * a {@link org.jboss.logging.LoggerProvider} that delegates to pax-logging.
  * For now, it's not delegating to pax-logging yet (see: PAXLOGGING-251)
  */
+@aQute.bnd.annotation.jpms.Open()
 package org.ops4j.pax.logging.jbosslogging;
