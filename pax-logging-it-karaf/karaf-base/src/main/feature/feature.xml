@@ -30,6 +30,11 @@
         <!-- fileinstall (to add pax-url-aether configuration) -->
         <bundle start-level="9">mvn:org.apache.felix/org.apache.felix.fileinstall/${version.org.apache.felix.fileinstall}</bundle>
         <!-- config and event admin -->
+        <bundle start-level="9">mvn:org.osgi/org.osgi.util.converter/${version.org.osgi.util.converter}</bundle>
+        <bundle start-level="9">mvn:org.osgi/org.osgi.util.function/${version.org.osgi.util.function}</bundle>
+        <bundle start-level="9">mvn:org.osgi/org.osgi.util.promise/${version.org.osgi.util.promise}</bundle>
+        <bundle start-level="10">mvn:org.apache.sling/org.apache.sling.commons.johnzon/${version.org.apache.sling.commons.johnzon}</bundle>
+        <bundle start-level="10">mvn:org.apache.felix/org.apache.felix.cm.json/${version.org.apache.felix.cm.json}</bundle>
         <bundle start-level="10">mvn:org.apache.felix/org.apache.felix.configadmin/${version.org.apache.felix.configadmin}</bundle>
         <bundle start-level="10">mvn:org.apache.felix/org.apache.felix.eventadmin/${version.org.apache.felix.eventadmin}</bundle>
         <!-- logging -->

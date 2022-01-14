@@ -223,20 +223,26 @@
         <version.commons-logging>1.2</version.commons-logging>
         <version.junit>4.13.1</version.junit>
         <version.log4j>1.2.17</version.log4j>
-        <version.org.apache.karaf>4.2.10</version.org.apache.karaf>
+        <version.org.apache.karaf>4.3.6</version.org.apache.karaf>
         <version.org.apache.felix.eventadmin>1.6.2</version.org.apache.felix.eventadmin>
         <version.org.apache.felix.fileinstall>3.6.4</version.org.apache.felix.fileinstall>
-        <version.org.apache.felix.configadmin>1.9.20</version.org.apache.felix.configadmin>
+        <version.org.apache.felix.cm.json>1.0.6</version.org.apache.felix.cm.json>
+        <version.org.apache.felix.configadmin>1.9.22</version.org.apache.felix.configadmin>
         <version.org.apache.felix.framework>5.6.12</version.org.apache.felix.framework>
-        <version.org.apache.felix6.framework>6.0.3</version.org.apache.felix6.framework>
+        <version.org.apache.felix6.framework>6.0.5</version.org.apache.felix6.framework>
+        <version.org.apache.felix7.framework>7.0.3</version.org.apache.felix7.framework>
         <version.org.apache.logging.log4j>2.17.1</version.org.apache.logging.log4j>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
+        <version.org.apache.sling.commons.johnzon>1.2.14</version.org.apache.sling.commons.johnzon>
         <version.org.jboss.logging>3.4.1.Final</version.org.jboss.logging>
         <version.org.mockito>3.7.7</version.org.mockito>
         <version.org.ops4j.pax.exam>4.13.4</version.org.ops4j.pax.exam>
         <version.org.ops4j.pax.swissbox>1.8.4</version.org.ops4j.pax.swissbox>
         <version.org.ops4j.pax.url>2.6.7</version.org.ops4j.pax.url>
         <version.org.osgi>7.0.0</version.org.osgi>
+        <version.org.osgi.util.converter>1.0.8</version.org.osgi.util.converter>
+        <version.org.osgi.util.function>1.2.0</version.org.osgi.util.function>
+        <version.org.osgi.util.promise>1.2.0</version.org.osgi.util.promise>
         <version.org.slf4j>1.7.32</version.org.slf4j>
 
         <!-- versions of Maven plugins -->
@@ -728,6 +734,21 @@
                 <artifactId>osgi.annotation</artifactId>
                 <version>${version.org.osgi}</version>
             </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.util.converter</artifactId>
+                <version>${version.org.osgi.util.converter}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.util.function</artifactId>
+                <version>${version.org.osgi.util.function}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.util.promise</artifactId>
+                <version>${version.org.osgi.util.promise}</version>
+            </dependency>
 
             <dependency>
                 <groupId>biz.aQute.bnd</groupId>
@@ -738,12 +759,17 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.framework</artifactId>
-                <version>${version.org.apache.felix6.framework}</version>
+                <version>${version.org.apache.felix7.framework}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.configadmin</artifactId>
                 <version>${version.org.apache.felix.configadmin}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.cm.json</artifactId>
+                <version>${version.org.apache.felix.cm.json}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>

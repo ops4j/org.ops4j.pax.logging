@@ -62,12 +62,12 @@
 
     <dependencyManagement>
 
-        <!-- We're using Karaf 4.2.x, so we need Felix 5.x -->
+        <!-- We're using Karaf 4.3.x, so we need Felix 6.x -->
         <dependencies>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.framework</artifactId>
-                <version>${version.org.apache.felix.framework}</version>
+                <version>${version.org.apache.felix6.framework}</version>
             </dependency>
         </dependencies>
 
