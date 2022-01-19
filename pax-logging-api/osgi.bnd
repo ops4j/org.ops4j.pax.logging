@@ -33,16 +33,16 @@ Private-Package: \
  org.apache.logging.log4j.internal
 
 Export-Package: \
- org.slf4j; version=1.7.32; provider=paxlogging, \
+ org.slf4j; version=1.7.33; provider=paxlogging, \
  org.slf4j; version=1.6.6; provider=paxlogging, \
  org.slf4j; version=1.5.11; provider=paxlogging, \
  org.slf4j; version=1.4.3; provider=paxlogging, \
- org.slf4j.event; version=1.7.32; provider=paxlogging, \
- org.slf4j.helpers; version=1.7.32; provider=paxlogging, \
+ org.slf4j.event; version=1.7.33; provider=paxlogging, \
+ org.slf4j.helpers; version=1.7.33; provider=paxlogging, \
  org.slf4j.helpers; version=1.6.6; provider=paxlogging, \
  org.slf4j.helpers; version=1.5.11; provider=paxlogging, \
  org.slf4j.helpers; version=1.4.3; provider=paxlogging, \
- org.slf4j.spi; version=1.7.32; provider=paxlogging, \
+ org.slf4j.spi; version=1.7.33; provider=paxlogging, \
  org.slf4j.spi; version=1.6.6; provider=paxlogging, \
  org.slf4j.spi; version=1.5.11; provider=paxlogging, \
  org.slf4j.spi; version=1.4.3; provider=paxlogging, \
