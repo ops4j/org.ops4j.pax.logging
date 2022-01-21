@@ -219,10 +219,11 @@
         <version.ch.qos.logback.contrib>0.1.5</version.ch.qos.logback.contrib>
         <version.com.fasterxml.jackson>2.12.1</version.com.fasterxml.jackson>
         <version.com.h2database>1.4.200</version.com.h2database>
-        <version.commons-io>2.8.0</version.commons-io>
+        <version.commons-io>2.11.0</version.commons-io>
         <version.commons-logging>1.2</version.commons-logging>
         <version.junit>4.13.1</version.junit>
         <version.log4j>1.2.17</version.log4j>
+        <version.org.apache.directory.api>2.1.0</version.org.apache.directory.api>
         <version.org.apache.karaf>4.3.6</version.org.apache.karaf>
         <version.org.apache.felix.eventadmin>1.6.2</version.org.apache.felix.eventadmin>
         <version.org.apache.felix.fileinstall>3.6.4</version.org.apache.felix.fileinstall>
@@ -991,6 +992,13 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>${version.org.mockito}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.directory.api</groupId>
+                <artifactId>api-ldap-codec-core</artifactId>
+                <version>${version.org.apache.directory.api}</version>
+                <scope>test</scope>
             </dependency>
 
         </dependencies>
