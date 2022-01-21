@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class H2SetupIntegrationTest {
 
@@ -84,8 +84,8 @@ public class H2SetupIntegrationTest {
         try (Connection c = DriverManager.getConnection("jdbc:h2:file:" + basedir.getCanonicalPath() + "/logsdb")) {
             LOG.info(String.format("Connection %s %s", c.getMetaData().getDatabaseProductName(), c.getMetaData().getDatabaseProductVersion()));
             try (Statement st = c.createStatement()) {
-                LOG.info(" -- CATALOGS");
-                try (ResultSet rs = st.executeQuery("select * from INFORMATION_SCHEMA.CATALOGS")) {
+                LOG.info(" -- INFORMATION_SCHEMA_CATALOG_NAME");
+                try (ResultSet rs = st.executeQuery("select * from INFORMATION_SCHEMA.INFORMATION_SCHEMA_CATALOG_NAME")) {
                     while (rs.next()) {
                         LOG.info(rs.getString(1));
                     }
@@ -93,25 +93,25 @@ public class H2SetupIntegrationTest {
             }
             try (Statement st = c.createStatement()) {
                 LOG.info(" -- SCHEMATA");
-                try (ResultSet rs = st.executeQuery("select ID, CATALOG_NAME, SCHEMA_NAME, SCHEMA_OWNER from INFORMATION_SCHEMA.SCHEMATA")) {
-                    while (rs.next()) {
-                        LOG.info(rs.getString(1) + " | " + rs.getString(2) + " | " + rs.getString(3) + " | " + rs.getString(4));
-                    }
-                }
-            }
-            try (Statement st = c.createStatement()) {
-                LOG.info(" -- ROLES");
-                try (ResultSet rs = st.executeQuery("select NAME, REMARKS, ID from INFORMATION_SCHEMA.ROLES")) {
+                try (ResultSet rs = st.executeQuery("select CATALOG_NAME, SCHEMA_NAME, SCHEMA_OWNER from INFORMATION_SCHEMA.SCHEMATA")) {
                     while (rs.next()) {
                         LOG.info(rs.getString(1) + " | " + rs.getString(2) + " | " + rs.getString(3));
                     }
                 }
             }
             try (Statement st = c.createStatement()) {
-                try (ResultSet rs = st.executeQuery("select NAME, ADMIN, REMARKS, ID from INFORMATION_SCHEMA.USERS")) {
+                LOG.info(" -- ROLES");
+                try (ResultSet rs = st.executeQuery("select ROLE_NAME, REMARKS from INFORMATION_SCHEMA.ROLES")) {
+                    while (rs.next()) {
+                        LOG.info(rs.getString(1) + " | " + rs.getString(2));
+                    }
+                }
+            }
+            try (Statement st = c.createStatement()) {
+                try (ResultSet rs = st.executeQuery("select USER_NAME, IS_ADMIN, REMARKS from INFORMATION_SCHEMA.USERS")) {
                     LOG.info(" -- USERS");
                     while (rs.next()) {
-                        LOG.info(rs.getString(1) + " | " + rs.getString(2) + " | " + rs.getString(3) + " | " + rs.getString(4));
+                        LOG.info(rs.getString(1) + " | " + rs.getString(2) + " | " + rs.getString(3));
                     }
                 }
             }
@@ -119,10 +119,10 @@ public class H2SetupIntegrationTest {
                 st.execute("create user logadmin password 'logpassword'");
             }
             try (Statement st = c.createStatement()) {
-                try (ResultSet rs = st.executeQuery("select NAME, ADMIN, REMARKS, ID from INFORMATION_SCHEMA.USERS")) {
+                try (ResultSet rs = st.executeQuery("select USER_NAME, IS_ADMIN, REMARKS from INFORMATION_SCHEMA.USERS")) {
                     LOG.info(" -- USERS");
                     while (rs.next()) {
-                        LOG.info(rs.getString(1) + " | " + rs.getString(2) + " | " + rs.getString(3) + " | " + rs.getString(4));
+                        LOG.info(rs.getString(1) + " | " + rs.getString(2) + " | " + rs.getString(3));
                     }
                 }
             }
