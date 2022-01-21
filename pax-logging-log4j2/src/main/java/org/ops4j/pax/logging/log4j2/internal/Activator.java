@@ -52,7 +52,7 @@ import org.osgi.service.log.LogReaderService;
  */
 public class Activator implements BundleActivator {
 
-    // PaxLoggingService implementation backed by Log4J1 and its registration
+    // PaxLoggingService implementation backed by Log4J2 and its registration
     private ServiceRegistration<?> m_RegistrationPaxLogging;
     private PaxLoggingServiceImpl m_PaxLogging;
 

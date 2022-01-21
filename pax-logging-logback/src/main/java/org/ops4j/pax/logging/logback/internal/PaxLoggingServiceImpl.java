@@ -123,7 +123,6 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
     // configuration
     private final AtomicBoolean emptyConfiguration = new AtomicBoolean(false);
 
-    // pax-logging-log4j1 uses org.apache.log4j.helpers.LogLog, here we'll directly use fallback logger
     private final PaxLogger logLog;
 
     private final String fqcn = getClass().getName();
@@ -180,8 +179,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
         if (!m_useStaticContext) {
             m_logbackContext.stop();
         } else {
-            // static context should be reset just like pax-logging-log4j1
-            // calls static org.apache.log4j.LogManager.resetConfiguration()
+            // static context should be reset
             m_logbackContext.reset();
 
             // but let's add status listener, so we detect (and log through fallback/default logger)
@@ -365,8 +363,6 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
 
         // pick up pax-specific configuration of LogReader
         configurePax(configuration);
-
-        updateLevelsFromLog4J1Config(configuration);
     }
 
     /**
@@ -486,9 +482,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
                 return;
             }
 
-            // pax-logging-log4j1 calls org.apache.log4j.LogManager.resetConfiguration() which
-            // cleans appenders, but preserves loggers. Fortunately logback has equivalent
-            // ch.qos.logback.classic.LoggerContext.reset()
+            // Fortunately logback has ch.qos.logback.classic.LoggerContext.reset()
             m_logbackContext.reset();
 
             m_logbackContext.putObject(LOGGER_CONTEXT_BUNDLECONTEXT_KEY, m_bundleContext);
@@ -558,22 +552,6 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
 
         // register listener to catch status errors
         m_logbackContext.getStatusManager().add(this::logLogbackStatus);
-    }
-
-    private void updateLevelsFromLog4J1Config(Dictionary<String, ?> config) {
-        for (Enumeration<String> keys = config.keys(); keys.hasMoreElements(); ) {
-            String name = keys.nextElement();
-            if (name.equals("log4j.rootLogger")) {
-                Level level = extractLevel((String) config.get(name));
-                m_logbackContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME).setLevel(level);
-            }
-
-            if (name.startsWith("log4j.logger.")) {
-                Level level = extractLevel((String) config.get(name));
-                String packageName = name.substring("log4j.logger.".length());
-                m_logbackContext.getLogger(packageName).setLevel(level);
-            }
-        }
     }
 
     private Level extractLevel(String log4jLevelConfig) {

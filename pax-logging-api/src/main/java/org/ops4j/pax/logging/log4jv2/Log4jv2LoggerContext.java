@@ -63,7 +63,7 @@ public class Log4jv2LoggerContext implements LoggerContext {
     @Override
     public boolean hasLogger(final String name) {
         // we don't know in pax-logging... Because org.apache.logging.log4j.spi.LoggerContext.hasLogger()
-        // API may actually be bridged to Logback or Log4j1 or no backend at all.
+        // API may actually be bridged to Logback or Log4j2 or no backend at all.
         // also, same "name" may be related to different loggers (associated with different bundles)
         throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }

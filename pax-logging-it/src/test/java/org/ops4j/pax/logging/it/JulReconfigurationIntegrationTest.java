@@ -57,7 +57,6 @@ public class JulReconfigurationIntegrationTest extends AbstractStdoutInterceptin
 
                 configAdmin(),
                 eventAdmin(),
-                paxLoggingLog4J1().noStart(),
                 paxLoggingLogback().noStart(),
                 paxLoggingLog4J2().noStart(),
 
@@ -70,7 +69,6 @@ public class JulReconfigurationIntegrationTest extends AbstractStdoutInterceptin
     public void julLogging() throws BundleException, InterruptedException {
         String name = "org.ops4j.pax.logging.it.test";
 
-        Bundle paxLoggingLog4J1 = Helpers.paxLoggingLog4j1(context);
         Bundle paxLoggingLogback = Helpers.paxLoggingLogback(context);
         Bundle paxLoggingLog4J2 = Helpers.paxLoggingLog4j2(context);
 
@@ -87,30 +85,6 @@ public class JulReconfigurationIntegrationTest extends AbstractStdoutInterceptin
         assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] WARN : WARN using java.util.logging 1"));
         assertTrue(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] INFO : INFO using java.util.logging 1"));
         assertFalse(lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.test] TRACE : FINER using java.util.logging 1"));
-
-        buffer.reset();
-        // start backend bundle waiting for TWO "configuration done" events - one related to "default configuration"
-        // and one related to registration of CM Managed Service
-        Helpers.awaitingConfigurationDone(2, context, () -> {
-            try {
-                paxLoggingLog4J1.start();
-            } catch (BundleException ignored) {
-            }
-        });
-        Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J1, "jul");
-
-        java.util.logging.Logger.getLogger(name).info("INFO using java.util.logging 2");
-        java.util.logging.Logger.getLogger(name).fine("FINE using java.util.logging 2");
-        java.util.logging.Logger.getLogger(name).finer("FINER using java.util.logging 2");
-
-        lines = readLines();
-        stdout.println("[[[[ log4j1 logging:\n" + buffer.toString() + "]]]]");
-
-        assertTrue(lines.contains("LOG4J1> [main] INFO org.ops4j.pax.logging.it.test - INFO using java.util.logging 2"));
-        assertTrue(lines.contains("LOG4J1> [main] DEBUG org.ops4j.pax.logging.it.test - FINE using java.util.logging 2"));
-        assertFalse(lines.contains("LOG4J1> [main] TRACE org.ops4j.pax.logging.it.test - FINER using java.util.logging 2"));
-
-        paxLoggingLog4J1.stop();
 
         buffer.reset();
         // start backend bundle waiting for TWO "configuration done" events - one related to "default configuration"

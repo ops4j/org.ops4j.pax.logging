@@ -79,7 +79,7 @@ public class LogbackLocationInfoIntegrationTest extends AbstractStdoutIntercepti
         org.ops4j.pax.logging.avalon.AvalonLogFactory.getLogger(name).info("INFO using Avalon Logging");
         // 5. JBoss Logging
         org.jboss.logging.Logger.getLogger(name).info("INFO using JBoss Logging");
-        // 6. Log4J1
+        // 6. Log4J1 API
         org.apache.log4j.Logger.getLogger(name).info("INFO using Log4Jv1");
         // 7. Logback - only behind SLF4J
         //

@@ -159,7 +159,7 @@ public class Log4J2BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
                     out.write(buf, 0, read);
                 }
 
-                // in Log4j1 we had ObjectInputStream. Now it's byt array
+                // in Log4j1 we had ObjectInputStream. Now it's byte array
                 // from org.apache.logging.log4j.core.layout.PatternLayout.encode()
                 assertTrue(new String(out.toByteArray()).startsWith("my.logger/org.ops4j.pax.logging.it.Log4J2BuiltinAppendersIntegrationTest [INFO] socket message"));
 

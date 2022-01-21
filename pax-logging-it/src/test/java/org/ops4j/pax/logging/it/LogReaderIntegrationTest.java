@@ -36,9 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
@@ -51,7 +51,6 @@ public class LogReaderIntegrationTest extends AbstractControlledIntegrationTestB
                 combine(baseConfigure(), defaultLoggingConfig()),
 
                 paxLoggingApi(),
-                paxLoggingLog4J1().noStart(),
                 paxLoggingLogback().noStart(),
                 paxLoggingLog4J2().noStart(),
                 configAdmin(),
@@ -66,35 +65,15 @@ public class LogReaderIntegrationTest extends AbstractControlledIntegrationTestB
         ServiceReference<LogReaderService> sr = context.getServiceReference(LogReaderService.class);
         assertNull(sr);
 
-        Bundle paxLoggingLog4J1 = Helpers.paxLoggingLog4j1(context);
         Bundle paxLoggingLogback = Helpers.paxLoggingLogback(context);
         Bundle paxLoggingLog4J2 = Helpers.paxLoggingLog4j2(context);
-
-        paxLoggingLog4J1.start();
-        sr = context.getServiceReference(LogReaderService.class);
-        assertNotNull(sr);
-        LogReaderService lrs = context.getService(sr);
-        CountDownLatch latch1 = new CountDownLatch(1);
-        final LogEntry[] pEntry = new LogEntry[1];
-        lrs.addLogListener(entry -> {
-            pEntry[0] = entry;
-            latch1.countDown();
-        });
-
-        logger.info("checking log4j1");
-        assertTrue(latch1.await(1, TimeUnit.SECONDS));
-        assertThat(pEntry[0].getMessage(), equalTo("checking log4j1"));
-
-        paxLoggingLog4J1.stop();
-        sr = context.getServiceReference(LogReaderService.class);
-        assertNull(sr);
 
         paxLoggingLogback.start();
         sr = context.getServiceReference(LogReaderService.class);
         assertNotNull(sr);
-        lrs = context.getService(sr);
+        LogReaderService lrs = context.getService(sr);
         CountDownLatch latch2 = new CountDownLatch(1);
-        pEntry[0] = null;
+        final LogEntry[] pEntry = new LogEntry[1];
         lrs.addLogListener(entry -> {
             pEntry[0] = entry;
             latch2.countDown();

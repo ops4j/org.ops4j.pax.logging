@@ -132,7 +132,7 @@ public class Activator implements BundleActivator {
         org.jboss.logging.Logger jbossLoggingLogger = org.jboss.logging.Logger.getLogger(name);
         jbossLoggingLogger.info("Enabling JBoss Logging API support.");
 
-        // Log4j1
+        // Log4j1 API
         org.apache.log4j.Logger.configurePaxLoggingManager(manager);
         org.apache.log4j.Logger log4j1Logger = org.apache.log4j.Logger.getLogger(name);
         log4j1Logger.info("Enabling Log4J v1 API support.");

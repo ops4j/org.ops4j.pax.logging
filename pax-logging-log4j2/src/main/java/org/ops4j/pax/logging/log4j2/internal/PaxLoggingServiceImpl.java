@@ -489,7 +489,6 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
             lock(true);
 
             if (m_log4jContext != null) {
-                // Log4J1: org.apache.log4j.LogManager.resetConfiguration()
                 // Logback: ch.qos.logback.classic.LoggerContext.reset()
                 // Log4J2: org.apache.logging.log4j.core.AbstractLifeCycle.stop()
                 m_log4jContext.stop();
