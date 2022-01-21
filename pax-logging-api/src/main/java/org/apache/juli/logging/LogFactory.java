@@ -18,6 +18,7 @@
 package org.apache.juli.logging;
 
 import java.util.Properties;
+import java.util.ServiceLoader;
 
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingManager;
@@ -27,30 +28,28 @@ import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
 
 /**
- * Modified LogFactory: removed all discovery, hardcode a specific implementation
- * If you like a different logging implementation - use either the discovery-based
- * commons-logging, or better - another implementation hardcoded to your favourite
- * logging impl.
+ * This is a modified LogFactory that uses a simple {@link ServiceLoader} based
+ * discovery mechanism with a default of using JDK based logging. An
+ * implementation that uses the full Commons Logging discovery mechanism is
+ * available as part of the Tomcat extras download.
  *
- * Why ? Each application and deployment can choose a logging implementation -
- * that involves configuration, installing the logger jar and optional plugins, etc.
- * As part of this process - they can as well install the commons-logging implementation
- * that corresponds to their logger of choice. This completely avoids any discovery
- * problem, while still allowing the user to switch.
+ * Why? It is an attempt to strike a balance between simpler code (no discovery)
+ * and providing flexibility - particularly for those projects that embed Tomcat
+ * or some of Tomcat's components - is an alternative logging
+ * implementation is desired.
  *
- * Note that this implementation is not just a wrapper arround JDK logging ( like
- * the original commons-logging impl ). It adds 2 features - a simpler configuration
- * ( which is in fact a subset of log4j.properties ) and a formatter that is
- * less ugly.
+ * Note that this implementation is not just a wrapper around JDK logging (like
+ * the original commons-logging impl). It adds 2 features - a simpler
+ * configuration  (which is in fact a subset of log4j.properties) and a
+ * formatter that is less ugly.
  *
- * The removal of 'abstract' preserves binary backward compatibility. It is possible
- * to preserve the abstract - and introduce another ( hardcoded ) factory - but I
- * see no benefit.
+ * The removal of 'abstract' preserves binary backward compatibility. It is
+ * possible to preserve the abstract - and introduce another (hardcoded) factory
+ * - but I see no benefit.
  *
- * Since this class is not intended to be extended - and provides
- * no plugin for other LogFactory implementation - all protected methods are removed.
- * This can be changed - but again, there is little value in keeping dead code.
- * Just take a quick look at the removed code ( and it's complexity)
+ * Since this class is not intended to be extended - all protected methods are
+ * removed. This can be changed - but again, there is little value in keeping
+ * dead code. Just take a quick look at the removed code ( and it's complexity).
  *
  * --------------
  *
@@ -139,7 +138,7 @@ public /* abstract */ class LogFactory {
     public static final String HASHTABLE_IMPLEMENTATION_PROPERTY =
             "org.apache.commons.logging.LogFactory.HashtableImpl";
 
-    private static LogFactory singleton=new LogFactory();
+    private static final LogFactory singleton = new LogFactory();
 
     // ----------------------------------------------------------- Constructors
 
@@ -153,6 +152,8 @@ public /* abstract */ class LogFactory {
     // hook for syserr logger - class level
     void setLogConfig( Properties p ) {
     }
+
+
     // --------------------------------------------------------- Public Methods
 
     // only those 2 methods need to change to use a different direct logger.
@@ -171,11 +172,12 @@ public /* abstract */ class LogFactory {
      *  returned (the meaning of this name is only known to the underlying
      *  logging implementation that is being wrapped)
      *
+     * @return A log instance with the requested name
+     *
      * @exception LogConfigurationException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
-    public Log getInstance(String name)
-            throws LogConfigurationException {
+    public Log getInstance(String name) throws LogConfigurationException {
         PaxLogger logger;
         if (m_paxLogging == null) {
             logger = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Log.class), name);
@@ -251,20 +253,17 @@ public /* abstract */ class LogFactory {
      *
      * @param clazz Class for which a suitable Log name will be derived
      *
+     * @return A log instance with a name of clazz.getName()
+     *
      * @exception LogConfigurationException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
-    public Log getInstance(Class<?> clazz)
-            throws LogConfigurationException {
+    public Log getInstance(Class<?> clazz) throws LogConfigurationException {
         return getInstance( clazz.getName());
     }
 
 
-
-
-
     // ------------------------------------------------------- Static Variables
-
 
 
     // --------------------------------------------------------- Static Methods
@@ -292,6 +291,8 @@ public /* abstract */ class LogFactory {
      * properties defined in this file will be set as configuration attributes
      * on the corresponding <code>LogFactory</code> instance.</p>
      *
+     * @return The singleton LogFactory instance
+     *
      * @exception LogConfigurationException if the implementation class is not
      *  available or cannot be instantiated.
      */
@@ -306,13 +307,14 @@ public /* abstract */ class LogFactory {
      *
      * @param clazz Class from which a log name will be derived
      *
+     * @return A log instance with a name of clazz.getName()
+     *
      * @exception LogConfigurationException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
     public static Log getLog(Class<?> clazz)
-            throws LogConfigurationException {
-        return (getFactory().getInstance(clazz));
-
+        throws LogConfigurationException {
+        return getFactory().getInstance(clazz);
     }
 
 
@@ -324,13 +326,14 @@ public /* abstract */ class LogFactory {
      *  returned (the meaning of this name is only known to the underlying
      *  logging implementation that is being wrapped)
      *
+     * @return A log instance with the requested name
+     *
      * @exception LogConfigurationException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
     public static Log getLog(String name)
-            throws LogConfigurationException {
-        return (getFactory().getInstance(name));
-
+        throws LogConfigurationException {
+        return getFactory().getInstance(name);
     }
 
 
@@ -342,8 +345,7 @@ public /* abstract */ class LogFactory {
      *
      * @param classLoader ClassLoader for which to release the LogFactory
      */
-    public static void release(
-            @SuppressWarnings("unused") ClassLoader classLoader) {
+    public static void release(ClassLoader classLoader) {
     }
 
 
@@ -376,5 +378,4 @@ public /* abstract */ class LogFactory {
             return o.getClass().getName() + "@" + System.identityHashCode(o);
         }
     }
-
 }
