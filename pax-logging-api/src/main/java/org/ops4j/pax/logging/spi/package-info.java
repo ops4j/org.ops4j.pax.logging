@@ -22,7 +22,7 @@
  * frameworks/libraries.</p>
  * <p>The most important concept is <em>appender</em> which is a way to store logging <em>events</em>.
  * Usually file appenders are used, but any other processing may be involved.</p>
- * <p>Users who want to extend the configuration of chosen backend (Log4J1, Log4J2, Logback) don't have to
+ * <p>Users who want to extend the configuration of chosen backend (Log4J2, Logback) don't have to
  * deal with framework-specific classes/interfaces, but may use these pax-logging interfaces.
  * Implementations of these interfaces will work with all pax-logging supported backends.</p>
  */

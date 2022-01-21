@@ -65,13 +65,6 @@ public class Helpers {
         return paxLoggingApi.orElse(null);
     }
 
-    public static Bundle paxLoggingService(BundleContext context) {
-        Optional<Bundle> paxLoggingService = Arrays.stream(context.getBundles())
-                .filter(b -> "org.ops4j.pax.logging.pax-logging-service".equals(b.getSymbolicName()))
-                .findFirst();
-        return paxLoggingService.orElse(null);
-    }
-
     public static Bundle paxLoggingLogback(BundleContext context) {
         Optional<Bundle> paxLoggingService = Arrays.stream(context.getBundles())
                 .filter(b -> "org.ops4j.pax.logging.pax-logging-logback".equals(b.getSymbolicName()))
@@ -91,36 +84,6 @@ public class Helpers {
         if (paxLoggingApi != null) {
             paxLoggingApi.stop(Bundle.STOP_TRANSIENT);
             paxLoggingApi.start(Bundle.START_TRANSIENT);
-        }
-    }
-
-    public static void restartPaxLoggingService(BundleContext context, boolean await) {
-        // restart pax-logging-service to pick up replaced stdout
-        // awaits for signal indicating successfull (re)configuration
-        Bundle paxLoggingService = paxLoggingService(context);
-        if (paxLoggingService != null) {
-            try {
-                paxLoggingService.stop(Bundle.STOP_TRANSIENT);
-
-                final CountDownLatch latch = new CountDownLatch(1);
-                ServiceRegistration<EventHandler> sr = null;
-                if (await) {
-                    EventHandler handler = event -> {
-                        latch.countDown();
-                    };
-                    Dictionary<String, Object> props = new Hashtable<>();
-                    props.put(EventConstants.EVENT_TOPIC, PaxLoggingConstants.EVENT_ADMIN_CONFIGURATION_TOPIC);
-                    sr = context.registerService(EventHandler.class, handler, props);
-                }
-
-                paxLoggingService.start();
-                if (await) {
-                    assertTrue(latch.await(5, TimeUnit.SECONDS));
-                    sr.unregister();
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
         }
     }
 
@@ -409,7 +372,6 @@ public class Helpers {
     }
 
     public enum LoggingLibrary {
-        LOG4J1("log4j-all.properties", true),
         LOG4J2_PROPERTIES("log4j2-all.properties", true),
         LOG4J2_XML("log4j2-all.xml", false),
         LOG4J2_JSON("log4j2-all.json", false),

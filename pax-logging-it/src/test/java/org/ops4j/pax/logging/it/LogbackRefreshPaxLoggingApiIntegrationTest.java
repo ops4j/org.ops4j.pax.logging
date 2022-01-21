@@ -68,7 +68,7 @@ public class LogbackRefreshPaxLoggingApiIntegrationTest extends AbstractStdoutIn
     @Override
     public void hijackStdout() throws BundleException {
         super.hijackStdout();
-        Helpers.restartPaxLoggingService(context, true);
+        Helpers.restartPaxLoggingLogback(context, true);
 
         paxLoggingApi = Helpers.paxLoggingApi(context);
         wiring = paxLoggingApi.getBundleContext().getBundle(0L).adapt(FrameworkWiring.class);

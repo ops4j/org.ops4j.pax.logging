@@ -79,7 +79,7 @@ public class Log4J2RestartPaxLoggingLog4J2ServiceIntegrationTest extends Abstrac
         // default pattern for default configuration is org.apache.logging.log4j.core.config.DefaultConfiguration.DEFAULT_PATTERN
         // i.e., %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
 
-        // Differently than with pax-logging-service and pax-logging-logback (with static context), here, with
+        // Differently than with pax-logging-logback (with static context), here, with
         // pax-logging-log4j2, stopping the bundle will effectively turn off all logging - all loggers will be
         // available, but with OFF level. See org.apache.logging.log4j.core.LoggerContext.stop(long, TimeUnit).
         

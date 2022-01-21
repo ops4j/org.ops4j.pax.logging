@@ -75,7 +75,6 @@ public class Log4j1PaxLoggingApiTest {
     @Test
     @Ignore("for now - until non logging methods from org.apache.log4j.Logger are handled well")
     public void logManagerAPI() {
-        assertSame(LogManager.getLogger(Log4j1PaxLoggingApiTest.class), Logger.getLogger(Log4j1PaxLoggingApiTest.class));
         assertSame(LogManager.getLoggerRepository().getRootLogger(), Logger.getRootLogger());
         boolean found = false;
         for (Enumeration<?> e = LogManager.getCurrentLoggers(); e.hasMoreElements(); ) {

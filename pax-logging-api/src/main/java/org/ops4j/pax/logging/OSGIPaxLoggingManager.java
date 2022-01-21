@@ -55,7 +55,7 @@ public class OSGIPaxLoggingManager
         m_context = context;
 
         // only now tracker can be opened, because when pax-logging-api bundle is restarted while
-        // pax-logging-service is not, we may already have org.ops4j.pax.logging.OSGIPaxLoggingManager.addingService()
+        // pax-logging-<impl> is not, we may already have org.ops4j.pax.logging.OSGIPaxLoggingManager.addingService()
         // called
         tracker.open();
 

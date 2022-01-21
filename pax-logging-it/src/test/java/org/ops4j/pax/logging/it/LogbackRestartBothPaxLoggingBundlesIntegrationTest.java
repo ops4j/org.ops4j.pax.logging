@@ -53,7 +53,7 @@ public class LogbackRestartBothPaxLoggingBundlesIntegrationTest extends Abstract
     @Override
     public void hijackStdout() throws BundleException {
         super.hijackStdout();
-        Helpers.restartPaxLoggingService(context, true);
+        Helpers.restartPaxLoggingLogback(context, true);
     }
 
     @Configuration

@@ -82,7 +82,7 @@ public class LogbackLocationInfoIntegrationTest extends AbstractStdoutIntercepti
         org.jboss.logging.Logger.getLogger(name).info("INFO using JBoss Logging");
         // 6. Knopflerfish - no special facade
         fishLogService.log(LogService.LOG_INFO, "INFO using Knopflerfish");
-        // 7. Log4J1
+        // 7. Log4J1 API
         org.apache.log4j.Logger.getLogger(name).info("INFO using Log4Jv1");
         // 8. Logback - only behind SLF4J
         //

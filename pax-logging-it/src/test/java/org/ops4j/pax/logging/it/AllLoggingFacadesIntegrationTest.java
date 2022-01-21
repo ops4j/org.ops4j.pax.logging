@@ -70,7 +70,7 @@ public class AllLoggingFacadesIntegrationTest extends AbstractControlledIntegrat
         // 5. JBoss Logging
         org.jboss.logging.Logger.getLogger(name).info("INFO using JBoss Logging");
         // 6. Knopflerfish - no special facade
-        // 7. Log4J1
+        // 7. Log4J1 API
         org.apache.log4j.Logger.getLogger(name).info("INFO using Log4Jv1");
         // 8. Logback - only behind SLF4J
         // 9. Log4J2

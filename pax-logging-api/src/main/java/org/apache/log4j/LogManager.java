@@ -111,7 +111,6 @@ public class LogManager {
 
   static
   public LoggerRepository getLoggerRepository() {
-    // TODO: we could try return an OSGi service that's registered ONLY by pax-logging-service backend
     throw new UnsupportedOperationException("Operation not supported in pax-logging");
   }
 

@@ -31,7 +31,7 @@ import org.osgi.framework.Bundle;
  *     <li>category - to name a logger using well known, usually dot-separated, convention</li>
  *     <li>fqcn - fully qualified class name, which is not the same as category. It generally should be used to mark
  *     a class name in {@link StackTraceElement} of stack trace where application code enters logging infrastructure.
- *     This is used for example by Log4J1 to discover <em>a location</em> - class name, method name, file name
+ *     This was used for example by Log4J1 to discover <em>a location</em> - class name, method name, file name
  *     and line number when pattern contains {@code %C} or {@code %F}.</li>
  * </ul></p>
  */

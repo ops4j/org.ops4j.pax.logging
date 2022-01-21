@@ -35,7 +35,7 @@ import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 
 /**
- * Some helper methods for backends (Log4J1, Log4J2, Logback) to share common
+ * Some helper methods for backends (Log4J2, Logback) to share common
  * internal classes.
  */
 public class BackendSupport {

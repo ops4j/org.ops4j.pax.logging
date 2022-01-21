@@ -21,7 +21,6 @@ package org.ops4j.pax.logging.it;
 import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -40,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 
 @RunWith(PaxExam.class)
@@ -52,7 +51,6 @@ public class EventAdminIntegrationTest extends AbstractControlledIntegrationTest
                 combine(baseConfigure(), defaultLoggingConfig()),
 
                 paxLoggingApi(),
-                paxLoggingLog4J1().noStart(),
                 paxLoggingLogback().noStart(),
                 paxLoggingLog4J2().noStart(),
                 configAdmin(),
@@ -61,10 +59,9 @@ public class EventAdminIntegrationTest extends AbstractControlledIntegrationTest
     }
 
     @Test
-    public void eventAdminNotificationFromAll3Backends() throws Exception {
+    public void eventAdminNotificationFromAll2Backends() throws Exception {
         Logger logger = LoggerFactory.getLogger(EventAdminIntegrationTest.class);
 
-        Bundle paxLoggingLog4J1 = Helpers.paxLoggingService(context);
         Bundle paxLoggingLogback = Helpers.paxLoggingLogback(context);
         Bundle paxLoggingLog4J2 = Helpers.paxLoggingLog4j2(context);
 
@@ -83,12 +80,6 @@ public class EventAdminIntegrationTest extends AbstractControlledIntegrationTest
 
         logger.info("when no backend available");
 
-        paxLoggingLog4J1.start();
-
-        logger.info("when log4j1 available (info)");
-        logger.error("when log4j1 available (error)", new Exception("exception 1"));
-
-        paxLoggingLog4J1.stop();
         paxLoggingLogback.start();
 
         logger.info("when logback available (info)");
@@ -100,35 +91,26 @@ public class EventAdminIntegrationTest extends AbstractControlledIntegrationTest
         logger.info("when log4j2 available (info)");
         logger.error("when log4j2 available (error)", new Exception("exception 3"));
 
-        Event e12 = ev(events, "when log4j1 available (info)");
-        Event e13 = ev(events, "when log4j1 available (error)");
         Event e22 = ev(events, "when logback available (info)");
         Event e23 = ev(events, "when logback available (error)");
         Event e32 = ev(events, "when log4j2 available (info)");
         Event e33 = ev(events, "when log4j2 available (error)");
 
-        assertThat(e12.getProperty("bundle"), equalTo(probe));
-        assertThat(e13.getProperty("bundle"), equalTo(probe));
         assertThat(e22.getProperty("bundle"), equalTo(probe));
         assertThat(e23.getProperty("bundle"), equalTo(probe));
         assertThat(e32.getProperty("bundle"), equalTo(probe));
         assertThat(e33.getProperty("bundle"), equalTo(probe));
 
-        assertThat(e12.getTopic(), equalTo("org/osgi/service/log/LogEntry/LOG_INFO"));
-        assertThat(e13.getTopic(), equalTo("org/osgi/service/log/LogEntry/LOG_ERROR"));
         assertThat(e22.getTopic(), equalTo("org/osgi/service/log/LogEntry/LOG_INFO"));
         assertThat(e23.getTopic(), equalTo("org/osgi/service/log/LogEntry/LOG_ERROR"));
         assertThat(e32.getTopic(), equalTo("org/osgi/service/log/LogEntry/LOG_INFO"));
         assertThat(e33.getTopic(), equalTo("org/osgi/service/log/LogEntry/LOG_ERROR"));
 
-        assertThat(e12.getProperty("log.level"), equalTo(3));
-        assertThat(e13.getProperty("log.level"), equalTo(1));
         assertThat(e22.getProperty("log.level"), equalTo(3));
         assertThat(e23.getProperty("log.level"), equalTo(1));
         assertThat(e32.getProperty("log.level"), equalTo(3));
         assertThat(e33.getProperty("log.level"), equalTo(1));
 
-        assertThat(((Exception)e13.getProperty("exception")).getMessage(), equalTo("exception 1"));
         assertThat(((Exception)e23.getProperty("exception")).getMessage(), equalTo("exception 2"));
         assertThat(((Exception)e33.getProperty("exception")).getMessage(), equalTo("exception 3"));
     }
