@@ -216,13 +216,14 @@
         <version.org.apache.xbean>4.20</version.org.apache.xbean>
         <version.biz.aQute.bnd>6.1.0</version.biz.aQute.bnd>
         <version.ch.qos.logback>1.2.10</version.ch.qos.logback>
+        <version.ch.qos.reload4j>1.2.18.2</version.ch.qos.reload4j>
         <version.ch.qos.logback.contrib>0.1.5</version.ch.qos.logback.contrib>
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
         <version.com.h2database>2.1.210</version.com.h2database>
         <version.commons-io>2.11.0</version.commons-io>
         <version.commons-logging>1.2</version.commons-logging>
         <version.junit>4.13.2</version.junit>
-        <version.log4j>1.2.17</version.log4j>
+        <version.log4j.extras>1.2.17</version.log4j.extras>
         <version.org.apache.karaf>4.2.10</version.org.apache.karaf>
         <version.org.apache.felix.eventadmin>1.6.2</version.org.apache.felix.eventadmin>
         <version.org.apache.felix.fileinstall>3.6.4</version.org.apache.felix.fileinstall>
@@ -845,23 +846,19 @@
 
             <dependency>
                 <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>${version.log4j}</version>
+                <artifactId>apache-log4j-extras</artifactId>
+                <version>${version.log4j.extras}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>com.sun.jmx</groupId>
-                        <artifactId>jmxri</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.sun.jdmk</groupId>
-                        <artifactId>jmxtools</artifactId>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>apache-log4j-extras</artifactId>
-                <version>${version.log4j}</version>
+                <groupId>ch.qos.reload4j</groupId>
+                <artifactId>reload4j</artifactId>
+                <version>${version.ch.qos.reload4j}</version>
             </dependency>
 
             <dependency>

@@ -200,10 +200,10 @@ public class Log4j1NativeApiTest {
     @Test
     public void loaderApi() throws Exception {
         Thread.currentThread().setContextClassLoader(null);
-        // check some internal class and resources from log4j:log4j
-        assertNotNull(Loader.loadClass("org.apache.log4j.lf5.LF5Appender"));
+        // check some internal class and resources from ch.qos.reload4j:reload4j
+        assertNotNull(Loader.loadClass("org.apache.log4j.net.JNDIUtil"));
         assertNotNull(Loader.getResource("org/apache/log4j/xml/log4j.dtd"));
-        assertNotNull(Loader.getResource("META-INF/maven/log4j/log4j/pom.xml"));
+        assertNotNull(Loader.getResource("META-INF/maven/ch.qos.reload4j/reload4j/pom.xml"));
     }
 
     @Test

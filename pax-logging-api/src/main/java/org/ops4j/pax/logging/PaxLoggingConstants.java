@@ -154,14 +154,9 @@ public interface PaxLoggingConstants {
     String LOGGING_CFG_LOGBACK_CONFIGURATION_FILE = "org.ops4j.pax.logging.StaticLogbackFile";
 
     /**
-<<<<<<< HEAD
      * <p>System or context property that can indicate alternative file with properties used instead of
      * the properties from Configuration Admin. Useful in tests probably.</p>
      * <p>Currently this is handled only by pax-logging-log4j2.</p>
-=======
-     * System or context property that can indicate alternative file in format specific to the backend used instead of
-     * the properties from Configuration Admin. Useful in tests or in environment without Configuration Admin.
->>>>>>> 49f9846b... [PAXLOGGING-308] Allow to use logging backends without Configuration Admin
      */
     String LOGGING_CFG_PROPERTY_FILE = "org.ops4j.pax.logging.property.file";
 
