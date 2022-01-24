@@ -64,8 +64,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>log4j</groupId>
-                                    <artifactId>log4j</artifactId>
+                                    <groupId>ch.qos.reload4j</groupId>
+                                    <artifactId>reload4j</artifactId>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${project.build.directory}/unpack-deps/log4j</outputDirectory>
@@ -184,11 +184,11 @@
 
         <dependency>
             <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <artifactId>apache-log4j-extras</artifactId>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>apache-log4j-extras</artifactId>
+            <groupId>ch.qos.reload4j</groupId>
+            <artifactId>reload4j</artifactId>
         </dependency>
 
         <!-- pax-logging own artifacts -->

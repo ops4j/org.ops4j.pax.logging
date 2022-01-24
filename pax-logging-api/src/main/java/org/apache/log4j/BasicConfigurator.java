@@ -22,39 +22,45 @@
 package org.apache.log4j;
 
 /**
+ * Use this class to quickly configure the package.
+ * 
+ * <p>
+ * For file based configuration see {@link PropertyConfigurator}. For XML based
+ * configuration see {@link org.apache.log4j.xml.DOMConfigurator
+ * DOMConfigurator}.
+ * 
  * This class isn't used by pax-logging, but is part of public API. Methods are simply no-op.
+ *
+ * @since 0.8.1
+ * @author Ceki G&uuml;lc&uuml;
  */
 public class BasicConfigurator {
 
-  protected BasicConfigurator() {
-  }
+    protected BasicConfigurator() {
+    }
 
-  /**
-     Add a {@link ConsoleAppender} that uses {@link PatternLayout}
-     using the {@link PatternLayout#TTCC_CONVERSION_PATTERN} and
-     prints to <code>System.out</code> to the root category.  */
-  static
-  public
-  void configure() {
-  }
+    /**
+     * Add a {@link ConsoleAppender} that uses {@link PatternLayout} using the
+     * {@link PatternLayout#TTCC_CONVERSION_PATTERN} and prints to
+     * <code>System.out</code> to the root category.
+     */
+    static public void configure() {
+    }
 
-  /**
-     Add <code>appender</code> to the root category.
-     @param appender The appender to add to the root category.
-  */
-  static
-  public
-  void configure(Appender appender) {
-  }
+    /**
+     * Add <code>appender</code> to the root category.
+     * 
+     * @param appender The appender to add to the root category.
+     */
+    static public void configure(Appender appender) {
+    }
 
-  /**
-     Reset the default hierarchy to its defaut. It is equivalent to
-     calling
-     <code>Category.getDefaultHierarchy().resetConfiguration()</code>.
-
-     See {@link Hierarchy#resetConfiguration()} for more details.  */
-  public
-  static
-  void resetConfiguration() {
-  }
+    /**
+     * Reset the default hierarchy to its defaut. It is equivalent to calling
+     * <code>Category.getDefaultHierarchy().resetConfiguration()</code>.
+     * 
+     * See {@link Hierarchy#resetConfiguration()} for more details.
+     */
+    public static void resetConfiguration() {
+    }
 }

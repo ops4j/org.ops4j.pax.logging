@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package org.apache.log4j.xml;
+
 import org.apache.log4j.Layout;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.helpers.MDCKeySetExtractor;
@@ -42,7 +43,9 @@ import java.util.Arrays;
 import java.util.TimeZone;
 import java.nio.charset.Charset;
 import java.nio.ByteBuffer;
+
 import org.apache.log4j.pattern.CachedDateFormat;
+
 import java.text.SimpleDateFormat;
 
 import org.w3c.dom.Document;
@@ -54,7 +57,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * XSLTLayout transforms each event as a document using
  * a specified or default XSLT transform.  The default
  * XSLT transform produces a result similar to XMLLayout.
- *
+ * <p>
  * When used with a FileAppender or similar, the transformation of
  * an event will be appended to the results for previous
  * transforms.  If each transform results in an XML element, then
@@ -70,27 +73,26 @@ import org.xml.sax.helpers.AttributesImpl;
  *  &lt;/log4j:eventSet&gt;
  *
  * </pre>
- *
+ * <p>
  * The layout will detect the encoding and media-type specified in
  * the transform.  If no encoding is specified in the transform,
  * an xsl:output element specifying the US-ASCII encoding will be inserted
  * before processing the transform.  If an encoding is specified in the transform,
  * the same encoding should be explicitly specified for the appender.
- *
+ * <p>
  * Extracting MDC values can be expensive when used with log4j releases
  * prior to 1.2.15.  Output of MDC values is enabled by default
  * but be suppressed by setting properties to false.
- *
- * Extracting location info can be expensive regardless of log4j version.  
+ * <p>
+ * Extracting location info can be expensive regardless of log4j version.
  * Output of location info is disabled by default but can be enabled
  * by setting locationInfo to true.
- *
+ * <p>
  * Embedded transforms in XML configuration should not
  * depend on namespace prefixes defined earlier in the document
  * as namespace aware parsing in not generally performed when
  * using DOMConfigurator.  The transform will serialize
  * and reparse to get the namespace aware document needed.
- *
  */
 public final class XSLTLayout extends Layout
         implements UnrecognizedElementHandler {
@@ -146,7 +148,6 @@ public final class XSLTLayout extends Layout
 
     /**
      * Default constructor.
-     *
      */
     public XSLTLayout() {
         outputStream = new ByteArrayOutputStream();
@@ -179,35 +180,40 @@ public final class XSLTLayout extends Layout
      * @param flag new value.
      */
     public synchronized void setLocationInfo(final boolean flag) {
-      locationInfo = flag;
+        locationInfo = flag;
     }
 
     /**
      * Gets whether location info should be output.
+     *
      * @return if location is output.
      */
     public synchronized boolean getLocationInfo() {
-      return locationInfo;
+        return locationInfo;
     }
 
     /**
      * Sets whether MDC key-value pairs should be output, default false.
+     *
      * @param flag new value.
      */
     public synchronized void setProperties(final boolean flag) {
-      properties = flag;
+        properties = flag;
     }
 
     /**
      * Gets whether MDC key-value pairs should be output.
+     *
      * @return true if MDC key-value pairs are output.
      */
     public synchronized boolean getProperties() {
-      return properties;
+        return properties;
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public synchronized void activateOptions() {
         if (templates == null) {
             try {
@@ -225,6 +231,7 @@ public final class XSLTLayout extends Layout
 
     /**
      * Gets whether throwables should not be output.
+     *
      * @return true if throwables should not be output.
      */
     public synchronized boolean ignoresThrowable() {
@@ -233,172 +240,174 @@ public final class XSLTLayout extends Layout
 
     /**
      * Sets whether throwables should not be output.
+     *
      * @param ignoresThrowable if true, throwables should not be output.
-    */
+     */
     public synchronized void setIgnoresThrowable(boolean ignoresThrowable) {
-      this.ignoresThrowable = ignoresThrowable;
+        this.ignoresThrowable = ignoresThrowable;
     }
-
 
 
     /**
      * {@inheritDoc}
      */
     public synchronized String format(final LoggingEvent event) {
-      if (!activated) {
-          activateOptions();
-      }
-      if (templates != null && encoding != null) {
-          outputStream.reset();
-
-          try {
-            TransformerHandler transformer =
-                      transformerFactory.newTransformerHandler(templates);
-
-            transformer.setResult(new StreamResult(outputStream));
-            transformer.startDocument();
-
-            //
-            //   event element
-            //
-            AttributesImpl attrs = new AttributesImpl();
-            attrs.addAttribute(null, "logger", "logger",
-                    "CDATA", event.getLoggerName());
-            attrs.addAttribute(null, "timestamp", "timestamp",
-                    "CDATA", Long.toString(event.timeStamp));
-            attrs.addAttribute(null, "level", "level",
-                    "CDATA", event.getLevel().toString());
-            attrs.addAttribute(null, "thread", "thread",
-                    "CDATA", event.getThreadName());
-            StringBuffer buf = new StringBuffer();
-            utcDateFormat.format(event.timeStamp, buf);
-            attrs.addAttribute(null, "time", "time", "CDATA", buf.toString());
-
-
-            transformer.startElement(LOG4J_NS, "event", "event", attrs);
-            attrs.clear();
-
-            //
-            //   message element
-            //
-            transformer.startElement(LOG4J_NS, "message", "message", attrs);
-            String msg = event.getRenderedMessage();
-            if (msg != null && msg.length() > 0) {
-                transformer.characters(msg.toCharArray(), 0, msg.length());
-            }
-            transformer.endElement(LOG4J_NS, "message", "message");
-
-            //
-            //    NDC element
-            //
-            String ndc = event.getNDC();
-            if (ndc != null) {
-                transformer.startElement(LOG4J_NS, "NDC", "NDC", attrs);
-                char[] ndcChars = ndc.toCharArray();
-                transformer.characters(ndcChars, 0, ndcChars.length);
-                transformer.endElement(LOG4J_NS, "NDC", "NDC");
-            }
-
-            //
-            //    throwable element unless suppressed
-            //
-              if (!ignoresThrowable) {
-                String[] s = event.getThrowableStrRep();
-                if (s != null) {
-                    transformer.startElement(LOG4J_NS, "throwable",
-                            "throwable", attrs);
-                    char[] nl = new char[] { '\n' };
-                    for (int i = 0; i < s.length; i++) {
-                        char[] line = s[i].toCharArray();
-                        transformer.characters(line, 0, line.length);
-                        transformer.characters(nl, 0, nl.length);
-                    }
-                    transformer.endElement(LOG4J_NS, "throwable", "throwable");
-                }
-              }
-
-              //
-              //     location info unless suppressed
-              //
-              //
-              if (locationInfo) {
-                LocationInfo locationInfo = event.getLocationInformation();
-                attrs.addAttribute(null, "class", "class", "CDATA",
-                        locationInfo.getClassName());
-                attrs.addAttribute(null, "method", "method", "CDATA",
-                          locationInfo.getMethodName());
-                attrs.addAttribute(null, "file", "file", "CDATA",
-                            locationInfo.getFileName());
-                attrs.addAttribute(null, "line", "line", "CDATA",
-                            locationInfo.getLineNumber());
-                transformer.startElement(LOG4J_NS, "locationInfo",
-                        "locationInfo", attrs);
-                transformer.endElement(LOG4J_NS, "locationInfo",
-                        "locationInfo");
-              }
-
-              if (properties) {
-                //
-                //    write MDC contents out as properties element
-                //
-                Set mdcKeySet = MDCKeySetExtractor.INSTANCE.getPropertyKeySet(event);
-
-                if ((mdcKeySet != null) && (mdcKeySet.size() > 0)) {
-                    attrs.clear();
-                    transformer.startElement(LOG4J_NS,
-                            "properties", "properties", attrs);
-                    Object[] keys = mdcKeySet.toArray();
-                    Arrays.sort(keys);
-                    for (int i = 0; i < keys.length; i++) {
-                        String key = keys[i].toString();
-                        Object val = event.getMDC(key);
-                        attrs.clear();
-                        attrs.addAttribute(null, "name", "name", "CDATA", key);
-                        attrs.addAttribute(null, "value", "value",
-                                "CDATA", val.toString());
-                        transformer.startElement(LOG4J_NS,
-                                "data", "data", attrs);
-                        transformer.endElement(LOG4J_NS, "data", "data");
-                    }
-                }
-              }
-
-
-            transformer.endElement(LOG4J_NS, "event", "event");
-            transformer.endDocument();
-
-            String body = encoding.decode(
-                    ByteBuffer.wrap(outputStream.toByteArray())).toString();
+        if (!activated) {
+            activateOptions();
+        }
+        if (templates != null && encoding != null) {
             outputStream.reset();
-            //
-            //   must remove XML declaration since it may
-            //      result in erroneous encoding info
-            //      if written by FileAppender in a different encoding
-            if (body.startsWith("<?xml ")) {
-                int endDecl = body.indexOf("?>");
-                if (endDecl != -1) {
-                    for(endDecl += 2; 
-					     endDecl < body.length() &&
-						 (body.charAt(endDecl) == '\n' || body.charAt(endDecl) == '\r'); 
-						 endDecl++);
-                    return body.substring(endDecl);
+
+            try {
+                TransformerHandler transformer =
+                        transformerFactory.newTransformerHandler(templates);
+
+                transformer.setResult(new StreamResult(outputStream));
+                transformer.startDocument();
+
+                //
+                //   event element
+                //
+                AttributesImpl attrs = new AttributesImpl();
+                attrs.addAttribute(null, "logger", "logger",
+                        "CDATA", event.getLoggerName());
+                attrs.addAttribute(null, "timestamp", "timestamp",
+                        "CDATA", Long.toString(event.timeStamp));
+                attrs.addAttribute(null, "level", "level",
+                        "CDATA", event.getLevel().toString());
+                attrs.addAttribute(null, "thread", "thread",
+                        "CDATA", event.getThreadName());
+                StringBuffer buf = new StringBuffer();
+                utcDateFormat.format(event.timeStamp, buf);
+                attrs.addAttribute(null, "time", "time", "CDATA", buf.toString());
+
+
+                transformer.startElement(LOG4J_NS, "event", "event", attrs);
+                attrs.clear();
+
+                //
+                //   message element
+                //
+                transformer.startElement(LOG4J_NS, "message", "message", attrs);
+                String msg = event.getRenderedMessage();
+                if (msg != null && msg.length() > 0) {
+                    transformer.characters(msg.toCharArray(), 0, msg.length());
                 }
+                transformer.endElement(LOG4J_NS, "message", "message");
+
+                //
+                //    NDC element
+                //
+                String ndc = event.getNDC();
+                if (ndc != null) {
+                    transformer.startElement(LOG4J_NS, "NDC", "NDC", attrs);
+                    char[] ndcChars = ndc.toCharArray();
+                    transformer.characters(ndcChars, 0, ndcChars.length);
+                    transformer.endElement(LOG4J_NS, "NDC", "NDC");
+                }
+
+                //
+                //    throwable element unless suppressed
+                //
+                if (!ignoresThrowable) {
+                    String[] s = event.getThrowableStrRep();
+                    if (s != null) {
+                        transformer.startElement(LOG4J_NS, "throwable",
+                                "throwable", attrs);
+                        char[] nl = new char[]{'\n'};
+                        for (int i = 0; i < s.length; i++) {
+                            char[] line = s[i].toCharArray();
+                            transformer.characters(line, 0, line.length);
+                            transformer.characters(nl, 0, nl.length);
+                        }
+                        transformer.endElement(LOG4J_NS, "throwable", "throwable");
+                    }
+                }
+
+                //
+                //     location info unless suppressed
+                //
+                //
+                if (locationInfo) {
+                    LocationInfo locationInfo = event.getLocationInformation();
+                    attrs.addAttribute(null, "class", "class", "CDATA",
+                            locationInfo.getClassName());
+                    attrs.addAttribute(null, "method", "method", "CDATA",
+                            locationInfo.getMethodName());
+                    attrs.addAttribute(null, "file", "file", "CDATA",
+                            locationInfo.getFileName());
+                    attrs.addAttribute(null, "line", "line", "CDATA",
+                            locationInfo.getLineNumber());
+                    transformer.startElement(LOG4J_NS, "locationInfo",
+                            "locationInfo", attrs);
+                    transformer.endElement(LOG4J_NS, "locationInfo",
+                            "locationInfo");
+                }
+
+                if (properties) {
+                    //
+                    //    write MDC contents out as properties element
+                    //
+                    Set mdcKeySet = MDCKeySetExtractor.INSTANCE.getPropertyKeySet(event);
+
+                    if ((mdcKeySet != null) && (mdcKeySet.size() > 0)) {
+                        attrs.clear();
+                        transformer.startElement(LOG4J_NS,
+                                "properties", "properties", attrs);
+                        Object[] keys = mdcKeySet.toArray();
+                        Arrays.sort(keys);
+                        for (int i = 0; i < keys.length; i++) {
+                            String key = keys[i].toString();
+                            Object val = event.getMDC(key);
+                            attrs.clear();
+                            attrs.addAttribute(null, "name", "name", "CDATA", key);
+                            attrs.addAttribute(null, "value", "value",
+                                    "CDATA", val.toString());
+                            transformer.startElement(LOG4J_NS,
+                                    "data", "data", attrs);
+                            transformer.endElement(LOG4J_NS, "data", "data");
+                        }
+                    }
+                }
+
+
+                transformer.endElement(LOG4J_NS, "event", "event");
+                transformer.endDocument();
+
+                String body = encoding.decode(
+                        ByteBuffer.wrap(outputStream.toByteArray())).toString();
+                outputStream.reset();
+                //
+                //   must remove XML declaration since it may
+                //      result in erroneous encoding info
+                //      if written by FileAppender in a different encoding
+                if (body.startsWith("<?xml ")) {
+                    int endDecl = body.indexOf("?>");
+                    if (endDecl != -1) {
+                        for (endDecl += 2;
+                             endDecl < body.length() &&
+                                     (body.charAt(endDecl) == '\n' || body.charAt(endDecl) == '\r');
+                             endDecl++)
+                            ;
+                        return body.substring(endDecl);
+                    }
+                }
+                return body;
+            } catch (Exception ex) {
+                LogLog.error("Error during transformation", ex);
+                return ex.toString();
             }
-            return body;
-          } catch (Exception ex) {
-              LogLog.error("Error during transformation", ex);
-              return ex.toString();
-          }
-      }
-      return "No valid transform or encoding specified.";
+        }
+        return "No valid transform or encoding specified.";
     }
 
     /**
      * Sets XSLT transform.
+     *
      * @param xsltdoc DOM document containing XSLT transform source,
-     * may be modified.
+     *                may be modified.
      * @throws TransformerConfigurationException if transformer can not be
-     * created.
+     *                                           created.
      */
     public void setTransform(final Document xsltdoc)
             throws TransformerConfigurationException {
@@ -412,7 +421,7 @@ public final class XSLTLayout extends Layout
         NodeList nodes = xsltdoc.getElementsByTagNameNS(
                 XSLT_NS,
                 "output");
-        for(int i = 0; i < nodes.getLength(); i++) {
+        for (int i = 0; i < nodes.getLength(); i++) {
             Element outputElement = (Element) nodes.item(i);
             if (method == null || method.length() == 0) {
                 method = outputElement.getAttributeNS(null, "method");
@@ -451,7 +460,7 @@ public final class XSLTLayout extends Layout
         }
 
         DOMSource transformSource = new DOMSource(xsltdoc);
-        
+
         templates = transformerFactory.newTemplates(transformSource);
 
     }
