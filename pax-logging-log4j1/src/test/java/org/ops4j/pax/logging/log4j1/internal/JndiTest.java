@@ -154,7 +154,7 @@ public class JndiTest {
         t.start();
 
         Properties props = new Properties();
-        props.setProperty(Context.INITIAL_CONTEXT_FACTORY, com.sun.jndi.ldap.LdapCtxFactory.class.getName());
+        props.setProperty(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         props.setProperty(Context.PROVIDER_URL, "ldap://localhost:" + port);
 
         // ctx.defaultInitCtx is com.sun.jndi.ldap.LdapCtx
