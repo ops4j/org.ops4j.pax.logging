@@ -155,14 +155,11 @@
 
         <dependency>
             <!--
-                log4j:apache-log4j-extras = log4j:log4j + some additional packages and classes.
-                There are no classes that are present in both libraries but in different version.
-                pax-logging-api however re-exports only classes from log4j:log4j, because some classes
-                from org.apache.log4j package from log4j:apache-log4j-extras introduce too many additional
-                packages that have to be re-exported ("uses" closure is too wide)
+                With #456 I'm changing all log4j:log4j artifacts to ch.qos.reload4j:reload4j.
+                In Pax Logging 1.12.x and 2.1.x, this is however used only for the API, not for implementation.
             -->
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <groupId>ch.qos.reload4j</groupId>
+            <artifactId>reload4j</artifactId>
             <scope>provided</scope>
         </dependency>
 
