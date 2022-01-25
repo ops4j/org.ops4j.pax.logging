@@ -247,7 +247,6 @@ public final class XSLTLayout extends Layout
         this.ignoresThrowable = ignoresThrowable;
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -314,7 +313,7 @@ public final class XSLTLayout extends Layout
                     if (s != null) {
                         transformer.startElement(LOG4J_NS, "throwable",
                                 "throwable", attrs);
-                        char[] nl = new char[]{'\n'};
+                        char[] nl = new char[] { '\n' };
                         for (int i = 0; i < s.length; i++) {
                             char[] line = s[i].toCharArray();
                             transformer.characters(line, 0, line.length);
@@ -469,7 +468,7 @@ public final class XSLTLayout extends Layout
      * {@inheritDoc}
      */
     public boolean parseUnrecognizedElement(final Element element,
-                                            final Properties props)
+            final Properties props)
             throws Exception {
         if (XSLT_NS.equals(element.getNamespaceURI()) ||
                 element.getNodeName().indexOf("transform") != -1 ||

@@ -24,8 +24,7 @@ import java.util.Stack;
 
 /**
  * <p>NOTE: This class is added to Pax Logging ONLY TO PROVIDE THE API.
- * There is NO SUPPORT for NDC in Pax Logging.
- * <p>
+ * There is NO SUPPORT for NDC in Pax Logging.</p>
  * The NDC class implements <i>nested diagnostic contexts</i> as defined by Neil
  * Harrison in the article "Patterns for Logging Diagnostic Messages" part of
  * the book "<i>Pattern Languages of Program Design 3</i>" edited by Martin et
@@ -107,7 +106,6 @@ public class NDC {
     private NDC() {
     }
 
-
     /**
      * Clear any nested diagnostic information if any. This method is useful in
      * cases where the same thread can be potentially used over and over in
@@ -138,7 +136,7 @@ public class NDC {
      * 
      */
     public static Stack cloneStack() {
-        return new Stack();
+	return new Stack();
     }
 
     /**
@@ -171,7 +169,7 @@ public class NDC {
      * {@link org.apache.log4j.spi.LoggingEvent#getNDC} method instead</b></font>.
      */
     static public String get() {
-        return "";
+	return "";
     }
 
     /**
@@ -181,7 +179,7 @@ public class NDC {
      * @since 0.7.5
      */
     public static int getDepth() {
-        return 0;
+	return 0;
     }
 
     /**
@@ -195,7 +193,7 @@ public class NDC {
      * 
      */
     public static String pop() {
-        return "";
+	    return "";
     }
 
     /**
@@ -210,7 +208,7 @@ public class NDC {
      * 
      */
     public static String peek() {
-        return "";
+	    return "";
     }
 
     /**
@@ -277,5 +275,4 @@ public class NDC {
      */
     static public void setMaxDepth(int maxDepth) {
     }
-
 }

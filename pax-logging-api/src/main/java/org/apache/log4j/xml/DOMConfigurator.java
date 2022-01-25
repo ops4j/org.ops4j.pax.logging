@@ -36,6 +36,12 @@ import java.util.Properties;
 
 /**
  * This class isn't used by pax-logging, but is part of public API. Methods are simply no-op.
+ * 
+ * @author Christopher Taylor
+ * @author Ceki G&uuml;lc&uuml;
+ * @author Anders Kristensen
+ * 
+ * @since 0.8.3
  */
 public class DOMConfigurator implements Configurator {
 
@@ -78,7 +84,6 @@ public class DOMConfigurator implements Configurator {
      */
     public DOMConfigurator() {
     }
-
 
     /**
      * Configure log4j using a <code>configuration</code> element as defined in the
@@ -178,7 +183,7 @@ public class DOMConfigurator implements Configurator {
      * @since 1.2.15
      */
     public static void setParameter(final Element elem, final PropertySetter propSetter, final Properties props) {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -197,7 +202,7 @@ public class DOMConfigurator implements Configurator {
      */
     public static Object parseElement(final Element element, final Properties props, final Class expectedClass)
 	    throws Exception {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
 }

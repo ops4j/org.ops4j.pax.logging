@@ -58,7 +58,9 @@ public class Loader {
      * 
      * <p>
      * <li>in pax-logging, {@link org.osgi.framework.Bundle#getResource(String)}
-     * is then checked</li>
+     * is then checked</li></p>
+     *
+     * <p>
      * <li>Try one last time with
      * <code>ClassLoader.getSystemResource(resource)</code>, that is is using the
      * system class loader in JDK 1.2 and virtual machine's built-in class loader in
@@ -68,60 +70,57 @@ public class Loader {
      */
     static public URL getResource(String resource) {
 	ClassLoader classLoader = null;
-        URL url = null;
+	URL url = null;
 
-        try {
-            classLoader = Thread.currentThread().getContextClassLoader();
-            if (classLoader != null) {
-                LogLog.debug("Trying to find [" + resource + "] using context classloader "
-                        + classLoader + ".");
-                url = classLoader.getResource(resource);
-                if (url != null) {
-                    return url;
-                }
-            }
+	try {
+		classLoader = Thread.currentThread().getContextClassLoader();
+		if (classLoader != null) {
+		    LogLog.debug("Trying to find [" + resource + "] using context classloader " + classLoader + ".");
+		    url = classLoader.getResource(resource);
+		    if (url != null) {
+			return url;
+		    }
+		}
 
-            Bundle bundle = FrameworkUtil.getBundle(Loader.class);
-            if (bundle != null) {
-                LogLog.debug("Trying to find [" + resource + "] using " + bundle.getSymbolicName() + "/" + bundle.getVersion() + " bundle.");
-                url = bundle.getResource(resource);
-                if (url != null) {
-                    return url;
-                }
-            }
+		Bundle bundle = FrameworkUtil.getBundle(Loader.class);
+		if (bundle != null) {
+			LogLog.debug("Trying to find [" + resource + "] using " + bundle.getSymbolicName() + "/" + bundle.getVersion() + " bundle.");
+			url = bundle.getResource(resource);
+			if (url != null) {
+				return url;
+			}
+		}
 
-            // We could not find resource. Ler us now try with the
-            // classloader that loaded this class.
-            classLoader = Loader.class.getClassLoader();
-            if (classLoader != null) {
-                LogLog.debug("Trying to find [" + resource + "] using " + classLoader
-                        + " class loader.");
-                url = classLoader.getResource(resource);
-                if (url != null) {
-                    return url;
-                }
-            }
-        } catch (Throwable t) {
-            //
-            //  can't be InterruptedException or InterruptedIOException
-            //    since not declared, must be error or RuntimeError.
-            LogLog.warn(TSTR, t);
-        }
+	    // We could not find resource. Ler us now try with the
+	    // classloader that loaded this class.
+	    classLoader = Loader.class.getClassLoader();
+	    if (classLoader != null) {
+		LogLog.debug("Trying to find [" + resource + "] using " + classLoader + " class loader.");
+		url = classLoader.getResource(resource);
+		if (url != null) {
+		    return url;
+		}
+	    }
+	} catch (Throwable t) {
+	    //
+	    // can't be InterruptedException or InterruptedIOException
+	    // since not declared, must be error or RuntimeError.
+	    LogLog.warn(TSTR, t);
+	}
 
-        // Last ditch attempt: get the resource from the class path. It
-        // may be the case that clazz was loaded by the Extentsion class
-        // loader which the parent of the system class loader. Hence the
-        // code below.
-        LogLog.debug("Trying to find [" + resource +
-                "] using ClassLoader.getSystemResource().");
-        return ClassLoader.getSystemResource(resource);
+	// Last ditch attempt: get the resource from the class path. It
+	// may be the case that clazz was loaded by the Extentsion class
+	// loader which the parent of the system class loader. Hence the
+	// code below.
+	LogLog.debug("Trying to find [" + resource + "] using ClassLoader.getSystemResource().");
+	return ClassLoader.getSystemResource(resource);
     }
 
     /**
      * Are we running under JDK 1.x?
      */
     public static boolean isJava1() {
-        return false;
+	return false;
     }
 
     /**
@@ -133,24 +132,20 @@ public class Loader {
      * eventually {@link Class#forName(String)} is called.
      */
     static public Class loadClass(String clazz) throws ClassNotFoundException {
-        if (Thread.currentThread().getContextClassLoader() != null) {
-            try {
-                return Thread.currentThread().getContextClassLoader().loadClass(clazz);
-            } catch (Exception ignored) {
-            }
-        }
+		if (Thread.currentThread().getContextClassLoader() != null) {
+			try {
+				return Thread.currentThread().getContextClassLoader().loadClass(clazz);
+			} catch (Exception ignored) {
+			}
+		}
 
-        Bundle bundle = FrameworkUtil.getBundle(Loader.class);
-        if (bundle != null) {
-            try {
-                return bundle.loadClass(clazz);
-            } catch (Exception ignored) {
-            }
-        }
-
-        // we reached here because tcl was null or because of a
-        // security exception, or because clazz could not be loaded...
-        // In any case we now try one more time
-        return Class.forName(clazz);
+		Bundle bundle = FrameworkUtil.getBundle(Loader.class);
+		if (bundle != null) {
+			try {
+				return bundle.loadClass(clazz);
+			} catch (Exception ignored) {
+			}
+		}
+	return Class.forName(clazz);
     }
 }

@@ -88,9 +88,8 @@ public class LogManager {
      */
     static public void setRepositorySelector(RepositorySelector selector, Object guard)
 	    throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
-
 
     /**
      * This method tests if called from a method that is known to result in class
@@ -108,49 +107,47 @@ public class LogManager {
     }
 
     static public LoggerRepository getLoggerRepository() {
-        // TODO: we could try return an OSGi service that's registered ONLY by pax-logging-service backend
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
-    }
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	}
 
     /**
      * Retrieve the appropriate root logger.
      */
     public static Logger getRootLogger() {
-        // Delegate the actual manufacturing of the logger to the logger factory managed by pax-web.
-        return Logger.getRootLogger();
+		// Delegate the actual manufacturing of the logger to the logger factory managed by pax-logging.
+		return Logger.getRootLogger();
     }
 
     /**
      * Retrieve the appropriate {@link Logger} instance.
      */
     public static Logger getLogger(final String name) {
-        // Delegate the actual manufacturing of the logger to the logger factory managed by pax-web.
-        return Logger.getLogger(name);
+		// Delegate the actual manufacturing of the logger to the logger factory managed by pax-logging.
+		return Logger.getLogger(name);
     }
 
     /**
      * Retrieve the appropriate {@link Logger} instance.
      */
-    public
-    static Logger getLogger(final Class clazz) {
-        // Delegate the actual manufacturing of the logger to the logger factory managed by pax-web.
-        return Logger.getLogger(clazz);
+    public static Logger getLogger(final Class clazz) {
+		// Delegate the actual manufacturing of the logger to the logger factory managed by pax-logging.
+		return Logger.getLogger(clazz);
     }
 
     /**
      * Retrieve the appropriate {@link Logger} instance.
      */
     public static Logger getLogger(final String name, final LoggerFactory factory) {
-        // Delegate the actual manufacturing of the logger to the logger factory managed by pax-web.
-        return Logger.getLogger(name);
+		// Delegate the actual manufacturing of the logger to the logger factory managed by pax-logging.
+		return Logger.getLogger(name);
     }
 
     public static Logger exists(final String name) {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+		throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     public static Enumeration getCurrentLoggers() {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+		throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     public static void shutdown() {
@@ -159,4 +156,3 @@ public class LogManager {
     public static void resetConfiguration() {
     }
 }
-

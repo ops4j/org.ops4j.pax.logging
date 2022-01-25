@@ -24,7 +24,6 @@ import org.osgi.framework.FrameworkUtil;
 
 /**
  * This class used to output log statements from within the log4j package.
- *
  * 
  * <p>
  * Log4j components cannot make log4j logging calls. However, it is sometimes
