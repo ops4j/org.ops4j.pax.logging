@@ -93,6 +93,12 @@ import java.util.ResourceBundle;
  */
 public abstract class Category implements AppenderAttachable, PaxLoggingManagerAwareLogger {
 
+    protected static final String LOG4J_FQCN = Logger.class.getName();
+
+    protected static PaxLoggingManager m_paxLogging;
+
+    protected PaxLogger m_delegate;
+
     /**
      * The hierarchy where categories are attached to by default.
      */
@@ -100,12 +106,6 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     // public
     // final Hierarchy defaultHierarchy = new Hierarchy(new
     // RootCategory(Level.DEBUG));
-
-    protected static final String LOG4J_FQCN = Logger.class.getName();
-
-    protected static PaxLoggingManager m_paxLogging;
-
-    protected PaxLogger m_delegate;
 
     /**
      * The name of this category.
@@ -128,8 +128,6 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * The fully qualified name of the Category class. See also the getFQCN method.
      */
     private static final String FQCN = Category.class.getName();
-
-    protected ResourceBundle resourceBundle;
 
     // Categories need to know what Hierarchy they are in
     protected LoggerRepository repository;
@@ -165,7 +163,6 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
 
     /**
      * Static method is different than usual, because here logger is also a factory.
-     *
      * @param manager
      */
     public static void configurePaxLoggingManager(PaxLoggingManager manager) {
@@ -181,6 +178,11 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
         }
     }
 
+    // public API of original org.apache.log4j.Category follows.
+    // no need to call isXXXEnabled, as the delegated logger (PaxLogger) does it anyway
+    // non-public API is removed or changed to no-op if that's reasonable in
+    // pax-logging case.
+
     /**
      * Add <code>newAppender</code> to the list of appenders of this Category
      * instance.
@@ -190,13 +192,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * won't be added again.
      */
     synchronized public void addAppender(Appender newAppender) {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
-
-    // public API of original org.apache.log4j.Category follows.
-    // no need to call isXXXEnabled, as the delegated logger (PaxLogger) does it anyway
-    // non-public API is removed or changed to no-op if that's reasonable in
-    // pax-logging case.
 
     /**
      * If <code>assertion</code> parameter is <code>false</code>, then logs
@@ -262,7 +259,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log.
      */
     public void debug(Object message) {
-        m_delegate.debug(message == null ? null : message.toString());
+	m_delegate.debug(message == null ? null : message.toString());
     }
 
     /**
@@ -276,7 +273,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param t       the exception to log, including its stack trace.
      */
     public void debug(Object message, Throwable t) {
-        m_delegate.debug(message == null ? null : message.toString(), t);
+	m_delegate.debug(message == null ? null : message.toString(), t);
     }
 
     /**
@@ -289,8 +286,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg            The argument to replace the formatting element, i,e,
-     *                       the '{}' pair within <code>messagePattern</code>.
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
      * @since 1.3
      */
     public void debug(Object messagePattern, Object arg) {
@@ -310,8 +307,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg1           The first argument to replace the first formatting element
-     * @param arg2           The second argument to replace the second formatting element
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
      * @since 1.3
      */
     public void debug(String messagePattern, Object arg1, Object arg2) {
@@ -335,11 +332,13 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     /**
      * Log a message object with the <code>TRACE</code> level including the
      * stack trace of the {@link Throwable}<code>t</code> passed as parameter.
+     *
      * <p>
      * See {@link #debug(Object)} form for more detailed information.
+     * </p>
      *
      * @param message the message object to log.
-     * @param t       the exception to log, including its stack trace.
+     * @param t the exception to log, including its stack trace.
      * @since 1.2.12
      */
     public void trace(Object message, Throwable t) {
@@ -356,8 +355,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg            The argument to replace the formatting element, i,e,
-     *                       the '{}' pair within <code>messagePattern</code>.
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
      * @since 1.3
      */
     public void trace(Object messagePattern, Object arg) {
@@ -377,8 +376,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg1           The first argument to replace the first formatting element
-     * @param arg2           The second argument to replace the second formatting element
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
      * @since 1.3
      */
     public void trace(String messagePattern, Object arg1, Object arg2) {
@@ -393,7 +392,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * {@link #isDebugEnabled()}.
      *
      * @return boolean - <code>true</code> if this category is enabled for level
-     * ERROR, <code>false</code> otherwise.
+     *         ERROR, <code>false</code> otherwise.
      */
     public boolean isErrorEnabled() {
         return m_delegate.isErrorEnabled();
@@ -419,7 +418,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log
      */
     public void error(Object message) {
-        m_delegate.error(message == null ? null : message.toString());
+	m_delegate.error(message == null ? null : message.toString());
     }
 
     /**
@@ -433,7 +432,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param t       the exception to log, including its stack trace.
      */
     public void error(Object message, Throwable t) {
-        m_delegate.error(message == null ? null : message.toString(), t);
+	m_delegate.error(message == null ? null : message.toString(), t);
     }
 
     /**
@@ -446,8 +445,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg            The argument to replace the formatting element, i,e,
-     *                       the '{}' pair within <code>messagePattern</code>.
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
      * @since 1.3
      */
     public void error(Object messagePattern, Object arg) {
@@ -467,8 +466,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg1           The first argument to replace the first formatting element
-     * @param arg2           The second argument to replace the second formatting element
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
      * @since 1.3
      */
     public void error(String messagePattern, Object arg1, Object arg2) {
@@ -487,7 +486,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 0.8.5
      */
     public static Logger exists(String name) {
-        throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
+	throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
     }
 
     /**
@@ -510,7 +509,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log
      */
     public void fatal(Object message) {
-        m_delegate.fatal(message == null ? null : message.toString());
+	m_delegate.fatal(message == null ? null : message.toString());
     }
 
     /**
@@ -523,8 +522,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg            The argument to replace the formatting element, i,e,
-     *                       the '{}' pair within <code>messagePattern</code>.
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
      * @since 1.3
      */
     public void fatal(Object messagePattern, Object arg) {
@@ -544,8 +543,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg1           The first argument to replace the first formatting element
-     * @param arg2           The second argument to replace the second formatting element
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
      * @since 1.3
      */
     public void fatal(String messagePattern, Object arg1, Object arg2) {
@@ -566,7 +565,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param t       the exception to log, including its stack trace.
      */
     public void fatal(Object message, Throwable t) {
-        m_delegate.fatal(message == null ? null : message.toString(), t);
+	m_delegate.fatal(message == null ? null : message.toString(), t);
     }
 
     /**
@@ -574,7 +573,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * checks.
      */
     protected void forcedLog(String fqcn, Priority level, Object message, Throwable t) {
-        log(fqcn, level, message, t);
+	log(fqcn, level, message, t);
     }
 
     /**
@@ -591,7 +590,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @return Enumeration An enumeration of the appenders in this category.
      */
     synchronized public Enumeration getAllAppenders() {
-        return NullEnumeration.getInstance();
+	return NullEnumeration.getInstance();
     }
 
     /**
@@ -602,7 +601,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * otherwise.
      */
     synchronized public Appender getAppender(String name) {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -641,7 +640,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @deprecated Please use the the {@link #getEffectiveLevel} method instead.
      */
     public Priority getChainedPriority() {
-        throw new UnsupportedOperationException("Deprecated in log4j since Mar 12, 2002");
+	throw new UnsupportedOperationException("Deprecated in log4j since Mar 12, 2002");
     }
 
     /**
@@ -655,7 +654,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @deprecated Please use {@link LogManager#getCurrentLoggers()} instead.
      */
     public static Enumeration getCurrentCategories() {
-        throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
+	throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
     }
 
     /**
@@ -666,7 +665,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 1.0
      */
     public static LoggerRepository getDefaultHierarchy() {
-        throw new UnsupportedOperationException("Deprecated in log4j since Nov 18, 2001");
+	throw new UnsupportedOperationException("Deprecated in log4j since Nov 18, 2001");
     }
 
     /**
@@ -678,7 +677,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 1.1
      */
     public LoggerRepository getHierarchy() {
-        throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
+	throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
     }
 
     /**
@@ -695,21 +694,21 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @deprecated Make sure to use {@link Logger#getLogger(String)} instead.
      */
     public static Category getInstance(String name) {
-        return Logger.getLogger(name);
+	return Logger.getLogger(name);
     }
 
     /**
      * @deprecated Please make sure to use {@link Logger#getLogger(Class)} instead.
      */
     public static Category getInstance(Class clazz) {
-        return Logger.getLogger(clazz);
+	return Logger.getLogger(clazz);
     }
 
     /**
      * Return the category name.
      */
     public final String getName() {
-        return m_delegate.getName();
+	return m_delegate.getName();
     }
 
     /**
@@ -722,7 +721,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 1.2
      */
     final public Category getParent() {
-        return null;
+	return null;
     }
 
     /**
@@ -731,21 +730,21 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @return Level - the assigned Level, can be <code>null</code>.
      */
     final public Level getLevel() {
-        return getEffectiveLevel();
+	return getEffectiveLevel();
     }
 
     /**
      * @deprecated Please use {@link #getLevel} instead.
      */
     final public Level getPriority() {
-        return getEffectiveLevel();
+	return getEffectiveLevel();
     }
 
     /**
      * @deprecated Please use {@link Logger#getRootLogger()} instead.
      */
-    public static Category getRoot() {
-        throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
+    final public static Category getRoot() {
+	throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
     }
 
     /**
@@ -760,7 +759,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 0.9.0
      */
     public ResourceBundle getResourceBundle() {
-        return null;
+	return null;
     }
 
     /**
@@ -772,7 +771,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * logged complaining about the missing resource.
      */
     protected String getResourceBundleString(String key) {
-        return null;
+		return null;
     }
 
     /**
@@ -795,7 +794,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log
      */
     public void info(Object message) {
-        m_delegate.info(message == null ? null : message.toString());
+	m_delegate.info(message == null ? null : message.toString());
     }
 
     /**
@@ -808,8 +807,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg            The argument to replace the formatting element, i,e,
-     *                       the '{}' pair within <code>messagePattern</code>.
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
      * @since 1.3
      */
     public void info(Object messagePattern, Object arg) {
@@ -829,8 +828,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg1           The first argument to replace the first formatting element
-     * @param arg2           The second argument to replace the second formatting element
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
      * @since 1.3
      */
     public void info(String messagePattern, Object arg1, Object arg2) {
@@ -851,14 +850,14 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param t       the exception to log, including its stack trace.
      */
     public void info(Object message, Throwable t) {
-        m_delegate.info(message == null ? null : message.toString(), t);
+	m_delegate.info(message == null ? null : message.toString(), t);
     }
 
     /**
      * Is the appender passed as parameter attached to this category?
      */
     public boolean isAttached(Appender appender) {
-        return false;
+	return false;
     }
 
     /**
@@ -908,7 +907,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * {@link #isDebugEnabled()}.
      *
      * @return boolean - <code>true</code> if this category is enabled for level
-     * TRACE, <code>false</code> otherwise.
+     *         TRACE, <code>false</code> otherwise.
      */
     public boolean isTraceEnabled() {
         return m_delegate.isTraceEnabled();
@@ -923,9 +922,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @return boolean True if this category is enabled for <code>level</code>.
      */
     public boolean isEnabledFor(Priority level) {
-        if (level == null) {
-            return false;
-        }
+	if (level == null)
+	    return false;
         switch (level.level) {
             case Level.FATAL_INT:
                 return m_delegate.isFatalEnabled();
@@ -953,7 +951,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      *         info, <code>false</code> otherwise.
      */
     public boolean isInfoEnabled() {
-        return m_delegate.isInfoEnabled();
+	return m_delegate.isInfoEnabled();
     }
 
     /**
@@ -965,7 +963,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 0.8.4
      */
     public void l7dlog(Priority priority, String key, Throwable t) {
-        log(FQCN, priority, key, t);
+	log(FQCN, priority, key, t);
     }
 
     /**
@@ -978,16 +976,16 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 0.8.4
      */
     public void l7dlog(Priority priority, String key, Object[] params, Throwable t) {
-        log(FQCN, priority, key, t);
+	log(FQCN, priority, key, t);
     }
 
     /**
      * This generic form is intended to be used by wrappers.
      */
     public void log(Priority priority, Object message, Throwable t) {
-        if (priority == null) {
-            return;
-        }
+	if (priority == null) {
+	    return;
+	}
         switch (priority.level) {
             case Level.FATAL_INT:
                 fatal(message, t);
@@ -1016,7 +1014,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * This generic form is intended to be used by wrappers.
      */
     public void log(Priority priority, Object message) {
-        log(priority, message, null);
+	log(priority, message, null);
     }
 
     /**
@@ -1030,7 +1028,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param t          The throwable of the logging request, may be null.
      */
     public void log(String callerFQCN, Priority level, Object message, Throwable t) {
-        log(level, message, t);
+	log(level, message, t);
     }
 
     /**
@@ -1040,7 +1038,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * This is useful when re-reading configuration information.
      */
     synchronized public void removeAllAppenders() {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -1049,7 +1047,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 0.8.2
      */
     synchronized public void removeAppender(Appender appender) {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -1059,7 +1057,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 0.8.2
      */
     synchronized public void removeAppender(String name) {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -1076,7 +1074,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * access is MANDATORY here.
      */
     final void setHierarchy(LoggerRepository repository) {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -1120,7 +1118,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 0.8.4
      */
     public void setResourceBundle(ResourceBundle bundle) {
-        throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -1149,7 +1147,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * {@link #isDebugEnabled()}.
      *
      * @return boolean - <code>true</code> if this category is enabled for level
-     * WARN, <code>false</code> otherwise.
+     *         WARN, <code>false</code> otherwise.
      */
     public boolean isWarnEnabled() {
         return m_delegate.isWarnEnabled();
@@ -1176,7 +1174,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log.
      */
     public void warn(Object message) {
-        m_delegate.warn(message == null ? null : message.toString());
+	m_delegate.warn(message == null ? null : message.toString());
     }
 
     /**
@@ -1190,7 +1188,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param t       the exception to log, including its stack trace.
      */
     public void warn(Object message, Throwable t) {
-        m_delegate.warn(message == null ? null : message.toString(), t);
+	m_delegate.warn(message == null ? null : message.toString(), t);
     }
 
     /**
@@ -1203,8 +1201,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg            The argument to replace the formatting element, i,e,
-     *                       the '{}' pair within <code>messagePattern</code>.
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
      * @since 1.3
      */
     public void warn(Object messagePattern, Object arg) {
@@ -1224,8 +1222,8 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * using string concatenation.
      *
      * @param messagePattern The message pattern which will be parsed and formatted
-     * @param arg1           The first argument to replace the first formatting element
-     * @param arg2           The second argument to replace the second formatting element
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
      * @since 1.3
      */
     public void warn(String messagePattern, Object arg1, Object arg2) {

@@ -24,7 +24,6 @@ import org.osgi.framework.FrameworkUtil;
 
 /**
  * This class used to output log statements from within the log4j package.
- *
  * 
  * <p>
  * Log4j components cannot make log4j logging calls. However, it is sometimes
@@ -92,7 +91,7 @@ public class LogLog {
      */
     public static void debug(String msg) {
 	if (debugEnabled && !quietMode) {
-	    log.debug(msg);
+	    log.debug(msg, null);
 	}
     }
 
@@ -113,7 +112,7 @@ public class LogLog {
     public static void error(String msg) {
 	if (quietMode)
 	    return;
-	log.error(msg);
+	log.error(msg, null);
     }
 
     /**
@@ -144,7 +143,7 @@ public class LogLog {
 	if (quietMode)
 	    return;
 
-	log.warn(msg);
+	log.warn(msg, null);
     }
 
     /**

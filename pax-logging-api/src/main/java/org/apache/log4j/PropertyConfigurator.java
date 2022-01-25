@@ -32,6 +32,10 @@ import org.apache.log4j.spi.ErrorHandler;
 
 /**
  * This class isn't used by pax-logging, but is part of public API. Methods are simply no-op.
+ * 
+ * @author Ceki G&uuml;lc&uuml;
+ * @author Anders Kristensen
+ * @since 0.8.1
  */
 public class PropertyConfigurator implements Configurator {
 
@@ -394,5 +398,4 @@ public class PropertyConfigurator implements Configurator {
      */
     public void doConfigure(java.net.URL configURL, LoggerRepository hierarchy) {
     }
-
 }

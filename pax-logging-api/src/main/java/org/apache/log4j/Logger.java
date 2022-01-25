@@ -29,7 +29,7 @@ import org.osgi.framework.FrameworkUtil;
  * except configuration, are done through this class.
  * 
  * <p>pax-logging-api has to treat this class both as a factory and as logger itself
- * - with all the configuration-related consequences.
+ * - with all the configuration-related consequences.</p>
  *
  * @since log4j 1.2
  * 
@@ -112,8 +112,8 @@ public class Logger extends Category {
      * neareast ancestor with a set level. This is one of the central features of
      * log4j.
      *
-     * In pax-logging, loggers are obtained from current or fallback
-     * {@link PaxLoggingManager}
+     * <p>In pax-logging, loggers are obtained from current or fallback
+     * {@link PaxLoggingManager}</p>
      *
      * @param name The name of the logger to retrieve.
      */
@@ -141,7 +141,7 @@ public class Logger extends Category {
      *              detailed information.
      */
     static public Logger getLogger(Class clazz) {
-        return getLogger(clazz.getName());
+	return getLogger(clazz.getName());
     }
 
     /**
@@ -156,7 +156,7 @@ public class Logger extends Category {
      * logger.
      */
     public static Logger getRootLogger() {
-        return getLogger("");
+	return getLogger("");
     }
 
     /**
@@ -170,13 +170,12 @@ public class Logger extends Category {
      * 
      * @param name    The name of the logger to retrieve.
      * 
-     * @param factory A {@link LoggerFactory} implementation that will actually
-     *                create a new Instance.
+     * @param factory <b>Ignored!</b>
      * 
      * @since 0.8.5
      */
     public static Logger getLogger(String name, LoggerFactory factory) {
-        return getLogger(name);
+	return getLogger(name);
     }
 
     // Here are added overriden methods from the Category class (all methods that can be potentially used for logging).
@@ -193,7 +192,7 @@ public class Logger extends Category {
      * @since 1.2.12
      */
     public void trace(Object message) {
-        super.trace(message);
+	super.trace(message);
     }
 
     /**
@@ -208,8 +207,8 @@ public class Logger extends Category {
      * @param t       the exception to log, including its stack trace.
      * @since 1.2.12
      */
-    public void trace(Object message, Throwable t) {
-        super.trace(message, t);
+    public void trace(final Object message, final Throwable t) {
+	super.trace(message, t);
     }
 
     public void trace(Object messagePattern, Object arg) {
