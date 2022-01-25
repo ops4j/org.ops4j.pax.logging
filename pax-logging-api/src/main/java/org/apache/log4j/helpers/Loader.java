@@ -18,9 +18,6 @@
 package org.apache.log4j.helpers;
 
 import java.net.URL;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.io.InterruptedIOException;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -58,7 +55,7 @@ public class Loader {
      * under Java2. If that fails, search for <code>resource</code> using the class
      * loader that loaded this class (<code>Loader</code>). Under JDK 1.1, only the
      * the class loader that loaded this class (<code>Loader</code>) is used.
-     *
+     * 
      * <p>
      * <li>in pax-logging, {@link org.osgi.framework.Bundle#getResource(String)}
      * is then checked</li></p>

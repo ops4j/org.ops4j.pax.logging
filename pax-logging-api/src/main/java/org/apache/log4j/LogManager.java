@@ -88,7 +88,7 @@ public class LogManager {
      */
     static public void setRepositorySelector(RepositorySelector selector, Object guard)
 	    throws IllegalArgumentException {
-		throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -107,7 +107,7 @@ public class LogManager {
     }
 
     static public LoggerRepository getLoggerRepository() {
-		throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
 	}
 
     /**

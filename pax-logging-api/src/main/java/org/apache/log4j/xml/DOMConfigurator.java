@@ -183,7 +183,7 @@ public class DOMConfigurator implements Configurator {
      * @since 1.2.15
      */
     public static void setParameter(final Element elem, final PropertySetter propSetter, final Properties props) {
-		throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -202,7 +202,7 @@ public class DOMConfigurator implements Configurator {
      */
     public static Object parseElement(final Element element, final Properties props, final Class expectedClass)
 	    throws Exception {
-		throw new UnsupportedOperationException("Operation not supported in pax-logging");
+	throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
 }

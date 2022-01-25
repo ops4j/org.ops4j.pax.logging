@@ -27,7 +27,7 @@ import org.osgi.framework.FrameworkUtil;
 /**
  * This is the central class in the log4j package. Most logging operations,
  * except configuration, are done through this class.
- *
+ * 
  * <p>pax-logging-api has to treat this class both as a factory and as logger itself
  * - with all the configuration-related consequences.</p>
  *
@@ -141,7 +141,7 @@ public class Logger extends Category {
      *              detailed information.
      */
     static public Logger getLogger(Class clazz) {
-        return getLogger(clazz.getName());
+	return getLogger(clazz.getName());
     }
 
     /**
@@ -156,7 +156,7 @@ public class Logger extends Category {
      * logger.
      */
     public static Logger getRootLogger() {
-        return getLogger("");
+	return getLogger("");
     }
 
     /**
@@ -175,7 +175,7 @@ public class Logger extends Category {
      * @since 0.8.5
      */
     public static Logger getLogger(String name, LoggerFactory factory) {
-        return getLogger(name);
+	return getLogger(name);
     }
 
     // Here are added overriden methods from the Category class (all methods that can be potentially used for logging).
@@ -183,12 +183,32 @@ public class Logger extends Category {
     // looking for the LocationInfo instead of Logger class.
     // These methods just call their super methods in the Category class
 
-    public void trace(final Object message) {
-        super.trace(message);
+    /**
+     * Log a message object with the {@link org.apache.log4j.Level#TRACE TRACE}
+     * level.
+     *
+     * @param message the message object to log.
+     * @see #debug(Object) for an explanation of the logic applied.
+     * @since 1.2.12
+     */
+    public void trace(Object message) {
+	super.trace(message);
     }
 
+    /**
+     * Log a message object with the <code>TRACE</code> level including the stack
+     * trace of the {@link Throwable}<code>t</code> passed as parameter.
+     *
+     * <p>
+     * See {@link #debug(Object)} form for more detailed information.
+     * </p>
+     *
+     * @param message the message object to log.
+     * @param t       the exception to log, including its stack trace.
+     * @since 1.2.12
+     */
     public void trace(final Object message, final Throwable t) {
-        super.trace(message, t);
+	super.trace(message, t);
     }
 
     public void trace(Object messagePattern, Object arg) {

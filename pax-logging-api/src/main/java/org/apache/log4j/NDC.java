@@ -136,7 +136,7 @@ public class NDC {
      * 
      */
     public static Stack cloneStack() {
-		return new Stack();
+	return new Stack();
     }
 
     /**
@@ -169,7 +169,7 @@ public class NDC {
      * {@link org.apache.log4j.spi.LoggingEvent#getNDC} method instead</b></font>.
      */
     static public String get() {
-		return "";
+	return "";
     }
 
     /**
@@ -179,7 +179,7 @@ public class NDC {
      * @since 0.7.5
      */
     public static int getDepth() {
-		return 0;
+	return 0;
     }
 
     /**
