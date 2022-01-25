@@ -20,21 +20,16 @@ package org.apache.log4j;
 import org.apache.log4j.spi.LoggerRepository;
 import org.apache.log4j.spi.LoggerFactory;
 import org.apache.log4j.spi.RepositorySelector;
-import org.apache.log4j.spi.DefaultRepositorySelector;
-import org.apache.log4j.spi.RootLogger;
-import org.apache.log4j.spi.NOPLoggerRepository;
-import org.apache.log4j.helpers.Loader;
-import org.apache.log4j.helpers.OptionConverter;
-import org.apache.log4j.helpers.LogLog;
-
-import java.net.URL;
-import java.net.MalformedURLException;
 
 import java.util.Enumeration;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
 /**
+ * <p>In pax-logging-api, this class is part of Log4j1 API, but it doesn't
+ * perform any discovery. It can be used to access some internal information
+ * from Log4j1.</p>
+ *
  * Use the <code>LogManager</code> class to retreive {@link Logger} instances or
  * to operate on the current {@link LoggerRepository}. When the
  * <code>LogManager</code> class is loaded into memory the default initalzation
@@ -71,63 +66,6 @@ public class LogManager {
      */
     public static final String DEFAULT_INIT_OVERRIDE_KEY = "log4j.defaultInitOverride";
 
-    static private Object guard = null;
-    static private RepositorySelector repositorySelector;
-
-    static {
-	// By default we use a DefaultRepositorySelector which always returns 'h'.
-	Hierarchy h = new Hierarchy(new RootLogger((Level) Level.DEBUG));
-	repositorySelector = new DefaultRepositorySelector(h);
-
-	/** Search for the properties file log4j.properties in the CLASSPATH. */
-	String override = OptionConverter.getSystemProperty(DEFAULT_INIT_OVERRIDE_KEY, null);
-
-	// if there is no default init override, then get the resource
-	// specified by the user or the default config file.
-	if (override == null || "false".equalsIgnoreCase(override)) {
-
-	    String configurationOptionStr = OptionConverter.getSystemProperty(DEFAULT_CONFIGURATION_KEY, null);
-
-	    String configuratorClassName = OptionConverter.getSystemProperty(CONFIGURATOR_CLASS_KEY, null);
-
-	    URL url = null;
-
-	    // if the user has not specified the log4j.configuration
-	    // property, we search first for the file "log4j.xml" and then
-	    // "log4j.properties"
-	    if (configurationOptionStr == null) {
-		url = Loader.getResource(DEFAULT_XML_CONFIGURATION_FILE);
-		if (url == null) {
-		    url = Loader.getResource(DEFAULT_CONFIGURATION_FILE);
-		}
-	    } else {
-		try {
-		    url = new URL(configurationOptionStr);
-		} catch (MalformedURLException ex) {
-		    // so, resource is not a URL:
-		    // attempt to get the resource from the class path
-		    url = Loader.getResource(configurationOptionStr);
-		}
-	    }
-
-	    // If we have a non-null url, then delegate the rest of the
-	    // configuration to the OptionConverter.selectAndConfigure
-	    // method.
-	    if (url != null) {
-		LogLog.debug("Using URL [" + url + "] for automatic log4j configuration.");
-		try {
-		    OptionConverter.selectAndConfigure(url, configuratorClassName, LogManager.getLoggerRepository());
-		} catch (NoClassDefFoundError e) {
-		    LogLog.warn("Error during default initialization", e);
-		}
-	    } else {
-		LogLog.debug("Could not find resource: [" + configurationOptionStr + "].");
-	    }
-	} else {
-	    LogLog.debug("Default initialization of overridden by " + DEFAULT_INIT_OVERRIDE_KEY + "property.");
-	}
-    }
-
     /**
      * Sets <code>LoggerFactory</code> but only if the correct <em>guard</em> is
      * passed as parameter.
@@ -150,16 +88,7 @@ public class LogManager {
      */
     static public void setRepositorySelector(RepositorySelector selector, Object guard)
 	    throws IllegalArgumentException {
-	if ((LogManager.guard != null) && (LogManager.guard != guard)) {
-	    throw new IllegalArgumentException("Attempted to reset the LoggerFactory without possessing the guard.");
-	}
-
-	if (selector == null) {
-	    throw new IllegalArgumentException("RepositorySelector must be non-null.");
-	}
-
-	LogManager.guard = guard;
-	LogManager.repositorySelector = selector;
+		throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -178,65 +107,52 @@ public class LogManager {
     }
 
     static public LoggerRepository getLoggerRepository() {
-	if (repositorySelector == null) {
-	    repositorySelector = new DefaultRepositorySelector(new NOPLoggerRepository());
-	    guard = null;
-	    Exception ex = new IllegalStateException("Class invariant violation");
-	    String msg = "log4j called after unloading, see http://logging.apache.org/log4j/1.2/faq.html#unload.";
-	    if (isLikelySafeScenario(ex)) {
-		LogLog.debug(msg, ex);
-	    } else {
-		LogLog.error(msg, ex);
-	    }
+		throw new UnsupportedOperationException("Operation not supported in pax-logging");
 	}
-	return repositorySelector.getLoggerRepository();
-    }
 
     /**
      * Retrieve the appropriate root logger.
      */
     public static Logger getRootLogger() {
-	// Delegate the actual manufacturing of the logger to the logger repository.
-	return getLoggerRepository().getRootLogger();
+		// Delegate the actual manufacturing of the logger to the logger factory managed by pax-logging.
+		return Logger.getRootLogger();
     }
 
     /**
      * Retrieve the appropriate {@link Logger} instance.
      */
     public static Logger getLogger(final String name) {
-	// Delegate the actual manufacturing of the logger to the logger repository.
-	return getLoggerRepository().getLogger(name);
+		// Delegate the actual manufacturing of the logger to the logger factory managed by pax-logging.
+		return Logger.getLogger(name);
     }
 
     /**
      * Retrieve the appropriate {@link Logger} instance.
      */
     public static Logger getLogger(final Class clazz) {
-	// Delegate the actual manufacturing of the logger to the logger repository.
-	return getLoggerRepository().getLogger(clazz.getName());
+		// Delegate the actual manufacturing of the logger to the logger factory managed by pax-logging.
+		return Logger.getLogger(clazz);
     }
 
     /**
      * Retrieve the appropriate {@link Logger} instance.
      */
     public static Logger getLogger(final String name, final LoggerFactory factory) {
-	// Delegate the actual manufacturing of the logger to the logger repository.
-	return getLoggerRepository().getLogger(name, factory);
+		// Delegate the actual manufacturing of the logger to the logger factory managed by pax-logging.
+		return Logger.getLogger(name);
     }
 
     public static Logger exists(final String name) {
-	return getLoggerRepository().exists(name);
+		throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     public static Enumeration getCurrentLoggers() {
-	return getLoggerRepository().getCurrentLoggers();
+		throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     public static void shutdown() {
-	getLoggerRepository().shutdown();
     }
 
     public static void resetConfiguration() {
-	getLoggerRepository().resetConfiguration();
     }
 }

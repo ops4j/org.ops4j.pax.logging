@@ -31,17 +31,20 @@
 
 package org.apache.log4j;
 
+import org.apache.log4j.helpers.MessageFormatter;
 import org.apache.log4j.spi.AppenderAttachable;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.LoggerRepository;
-import org.apache.log4j.spi.HierarchyEventListener;
 import org.apache.log4j.helpers.NullEnumeration;
-import org.apache.log4j.helpers.AppenderAttachableImpl;
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.log.LogLevel;
 
 import java.util.Enumeration;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 /**
  * <font color="#AA2222"><b>This class has been deprecated and replaced by the
@@ -88,7 +91,13 @@ import java.util.Vector;
  * @author Ceki G&uuml;lc&uuml;
  * @author Anders Kristensen
  */
-public class Category implements AppenderAttachable {
+public abstract class Category implements AppenderAttachable, PaxLoggingManagerAwareLogger {
+
+    protected static final String LOG4J_FQCN = Logger.class.getName();
+
+    protected static PaxLoggingManager m_paxLogging;
+
+    protected PaxLogger m_delegate;
 
     /**
      * The hierarchy where categories are attached to by default.
@@ -120,12 +129,8 @@ public class Category implements AppenderAttachable {
      */
     private static final String FQCN = Category.class.getName();
 
-    protected ResourceBundle resourceBundle;
-
     // Categories need to know what Hierarchy they are in
     protected LoggerRepository repository;
-
-    AppenderAttachableImpl aai;
 
     /**
      * Additivity is set to true by default, that is children inherit the appenders
@@ -151,6 +156,33 @@ public class Category implements AppenderAttachable {
 	this.name = name;
     }
 
+    protected Category(String name, PaxLogger delegate) {
+        this.name = name;
+        this.m_delegate = delegate;
+    }
+
+    /**
+     * Static method is different than usual, because here logger is also a factory.
+     * @param manager
+     */
+    public static void configurePaxLoggingManager(PaxLoggingManager manager) {
+        m_paxLogging = manager;
+    }
+
+    @Override
+    public void setPaxLoggingManager(PaxLoggingManager loggingManager) {
+        if (loggingManager == null) {
+            m_delegate = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Logger.class), name);
+        } else {
+            m_delegate = loggingManager.getLogger(name, LOG4J_FQCN);
+        }
+    }
+
+    // public API of original org.apache.log4j.Category follows.
+    // no need to call isXXXEnabled, as the delegated logger (PaxLogger) does it anyway
+    // non-public API is removed or changed to no-op if that's reasonable in
+    // pax-logging case.
+
     /**
      * Add <code>newAppender</code> to the list of appenders of this Category
      * instance.
@@ -160,11 +192,7 @@ public class Category implements AppenderAttachable {
      * won't be added again.
      */
     synchronized public void addAppender(Appender newAppender) {
-	if (aai == null) {
-	    aai = new AppenderAttachableImpl();
-	}
-	aai.addAppender(newAppender);
-	repository.fireAddAppenderEvent(this, newAppender);
+        throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -197,23 +225,10 @@ public class Category implements AppenderAttachable {
      * @param event the event to log.
      */
     public void callAppenders(LoggingEvent event) {
-	int writes = 0;
-
-	for (Category c = this; c != null; c = c.parent) {
-	    // Protected against simultaneous call to addAppender, removeAppender,...
-	    synchronized (c) {
-		if (c.aai != null) {
-		    writes += c.aai.appendLoopOnAppenders(event);
-		}
-		if (!c.additive) {
-		    break;
-		}
-	    }
-	}
-
-	if (writes == 0) {
-	    repository.emitNoAppenderWarning(this);
-	}
+        // we have to unwrap the event coming from LogMF/LogSF
+        Throwable t = event.getThrowableInformation() == null ? null
+                : event.getThrowableInformation().getThrowable();
+        log(event.getFQNOfLoggerClass(), event.getLevel(), event.getMessage(), t);
     }
 
     /**
@@ -222,15 +237,6 @@ public class Category implements AppenderAttachable {
      * @since 1.0
      */
     synchronized void closeNestedAppenders() {
-	Enumeration enumeration = this.getAllAppenders();
-	if (enumeration != null) {
-	    while (enumeration.hasMoreElements()) {
-		Appender a = (Appender) enumeration.nextElement();
-		if (a instanceof AppenderAttachable) {
-		    a.close();
-		}
-	    }
-	}
     }
 
     /**
@@ -253,11 +259,7 @@ public class Category implements AppenderAttachable {
      * @param message the message object to log.
      */
     public void debug(Object message) {
-	if (repository.isDisabled(Level.DEBUG_INT))
-	    return;
-	if (Level.DEBUG.isGreaterOrEqual(this.getEffectiveLevel())) {
-	    forcedLog(FQCN, Level.DEBUG, message, null);
-	}
+        m_delegate.debug(message == null ? null : message.toString());
     }
 
     /**
@@ -271,10 +273,129 @@ public class Category implements AppenderAttachable {
      * @param t       the exception to log, including its stack trace.
      */
     public void debug(Object message, Throwable t) {
-	if (repository.isDisabled(Level.DEBUG_INT))
-	    return;
-	if (Level.DEBUG.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, Level.DEBUG, message, t);
+        m_delegate.debug(message == null ? null : message.toString(), t);
+    }
+
+    /**
+     * Log a message with the <code>DEBUG</code> level with message formatting
+     * done according to the value of <code>messagePattern</code> and
+     * <code>arg</code> parameters.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
+     * @since 1.3
+     */
+    public void debug(Object messagePattern, Object arg) {
+        if (m_delegate.isDebugEnabled()) {
+            String msgStr = (String) messagePattern;
+            msgStr = MessageFormatter.format(msgStr, arg);
+            m_delegate.debug(msgStr);
+        }
+    }
+
+    /**
+     * Log a message with the <code>DEBUG</code> level with message formatting
+     * done according to the messagePattern and the arguments arg1 and arg2.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
+     * @since 1.3
+     */
+    public void debug(String messagePattern, Object arg1, Object arg2) {
+        if (m_delegate.isDebugEnabled()) {
+            String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+            m_delegate.debug(msgStr);
+        }
+    }
+
+    /**
+     * Log a message object with the {@link org.apache.log4j.Level#TRACE TRACE} level.
+     *
+     * @param message the message object to log.
+     * @see #debug(Object) for an explanation of the logic applied.
+     * @since 1.2.12
+     */
+    public void trace(Object message) {
+        m_delegate.trace(message == null ? null : message.toString());
+    }
+
+    /**
+     * Log a message object with the <code>TRACE</code> level including the
+     * stack trace of the {@link Throwable}<code>t</code> passed as parameter.
+     *
+     * <p>
+     * See {@link #debug(Object)} form for more detailed information.
+     * </p>
+     *
+     * @param message the message object to log.
+     * @param t the exception to log, including its stack trace.
+     * @since 1.2.12
+     */
+    public void trace(Object message, Throwable t) {
+        m_delegate.trace(message == null ? null : message.toString(), t);
+    }
+
+    /**
+     * Log a message with the <code>TRACE</code> level with message formatting
+     * done according to the value of <code>messagePattern</code> and
+     * <code>arg</code> parameters.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
+     * @since 1.3
+     */
+    public void trace(Object messagePattern, Object arg) {
+        if (m_delegate.isTraceEnabled()) {
+            String msgStr = (String) messagePattern;
+            msgStr = MessageFormatter.format(msgStr, arg);
+            m_delegate.trace(msgStr);
+        }
+    }
+
+    /**
+     * Log a message with the <code>TRACE</code> level with message formatting
+     * done according to the messagePattern and the arguments arg1 and arg2.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
+     * @since 1.3
+     */
+    public void trace(String messagePattern, Object arg1, Object arg2) {
+        if (m_delegate.isTraceEnabled()) {
+            String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+            m_delegate.trace(msgStr);
+        }
+    }
+
+    /**
+     * Check whether this category is enabled for the ERROR Level. See also
+     * {@link #isDebugEnabled()}.
+     *
+     * @return boolean - <code>true</code> if this category is enabled for level
+     *         ERROR, <code>false</code> otherwise.
+     */
+    public boolean isErrorEnabled() {
+        return m_delegate.isErrorEnabled();
     }
 
     /**
@@ -297,10 +418,7 @@ public class Category implements AppenderAttachable {
      * @param message the message object to log
      */
     public void error(Object message) {
-	if (repository.isDisabled(Level.ERROR_INT))
-	    return;
-	if (Level.ERROR.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, Level.ERROR, message, null);
+        m_delegate.error(message == null ? null : message.toString());
     }
 
     /**
@@ -314,11 +432,49 @@ public class Category implements AppenderAttachable {
      * @param t       the exception to log, including its stack trace.
      */
     public void error(Object message, Throwable t) {
-	if (repository.isDisabled(Level.ERROR_INT))
-	    return;
-	if (Level.ERROR.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, Level.ERROR, message, t);
+        m_delegate.error(message == null ? null : message.toString(), t);
+    }
 
+    /**
+     * Log a message with the <code>ERROR</code> level with message formatting
+     * done according to the value of <code>messagePattern</code> and
+     * <code>arg</code> parameters.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
+     * @since 1.3
+     */
+    public void error(Object messagePattern, Object arg) {
+        if (m_delegate.isErrorEnabled()) {
+            String msgStr = (String) messagePattern;
+            msgStr = MessageFormatter.format(msgStr, arg);
+            m_delegate.error(msgStr);
+        }
+    }
+
+    /**
+     * Log a message with the <code>ERROR</code> level with message formatting
+     * done according to the messagePattern and the arguments arg1 and arg2.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
+     * @since 1.3
+     */
+    public void error(String messagePattern, Object arg1, Object arg2) {
+        if (m_delegate.isErrorEnabled()) {
+            String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+            m_delegate.error(msgStr);
+        }
     }
 
     /**
@@ -330,7 +486,7 @@ public class Category implements AppenderAttachable {
      * @since 0.8.5
      */
     public static Logger exists(String name) {
-	return LogManager.exists(name);
+        throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
     }
 
     /**
@@ -353,10 +509,49 @@ public class Category implements AppenderAttachable {
      * @param message the message object to log
      */
     public void fatal(Object message) {
-	if (repository.isDisabled(Level.FATAL_INT))
-	    return;
-	if (Level.FATAL.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, Level.FATAL, message, null);
+        m_delegate.fatal(message == null ? null : message.toString());
+    }
+
+    /**
+     * Log a message with the <code>FATAL</code> level with message formatting
+     * done according to the value of <code>messagePattern</code> and
+     * <code>arg</code> parameters.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
+     * @since 1.3
+     */
+    public void fatal(Object messagePattern, Object arg) {
+        if (m_delegate.isFatalEnabled()) {
+            String msgStr = (String) messagePattern;
+            msgStr = MessageFormatter.format(msgStr, arg);
+            m_delegate.fatal(msgStr);
+        }
+    }
+
+    /**
+     * Log a message with the <code>FATAL</code> level with message formatting
+     * done according to the messagePattern and the arguments arg1 and arg2.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
+     * @since 1.3
+     */
+    public void fatal(String messagePattern, Object arg1, Object arg2) {
+        if (m_delegate.isFatalEnabled()) {
+            String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+            m_delegate.fatal(msgStr);
+        }
     }
 
     /**
@@ -370,10 +565,7 @@ public class Category implements AppenderAttachable {
      * @param t       the exception to log, including its stack trace.
      */
     public void fatal(Object message, Throwable t) {
-	if (repository.isDisabled(Level.FATAL_INT))
-	    return;
-	if (Level.FATAL.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, Level.FATAL, message, t);
+        m_delegate.fatal(message == null ? null : message.toString(), t);
     }
 
     /**
@@ -381,7 +573,7 @@ public class Category implements AppenderAttachable {
      * checks.
      */
     protected void forcedLog(String fqcn, Priority level, Object message, Throwable t) {
-	callAppenders(new LoggingEvent(fqcn, this, level, message, t));
+        log(fqcn, level, message, t);
     }
 
     /**
@@ -398,10 +590,7 @@ public class Category implements AppenderAttachable {
      * @return Enumeration An enumeration of the appenders in this category.
      */
     synchronized public Enumeration getAllAppenders() {
-	if (aai == null)
-	    return NullEnumeration.getInstance();
-	else
-	    return aai.getAllAppenders();
+        return NullEnumeration.getInstance();
     }
 
     /**
@@ -412,10 +601,7 @@ public class Category implements AppenderAttachable {
      * otherwise.
      */
     synchronized public Appender getAppender(String name) {
-	if (aai == null || name == null)
-	    return null;
-
-	return aai.getAppender(name);
+        throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -427,11 +613,26 @@ public class Category implements AppenderAttachable {
      * possible.
      */
     public Level getEffectiveLevel() {
-	for (Category c = this; c != null; c = c.parent) {
-	    if (c.level != null)
-		return c.level;
-	}
-	return null; // If reached will cause an NullPointerException.
+        LogLevel level = m_delegate.getLogLevel();
+        if (level == LogLevel.AUDIT) {
+            return AuditLevel.AUDIT;
+        }
+        if (level == LogLevel.TRACE) {
+            return Level.TRACE;
+        }
+        if (level == LogLevel.DEBUG) {
+            return Level.DEBUG;
+        }
+        if (level == LogLevel.INFO) {
+            return Level.INFO;
+        }
+        if (level == LogLevel.WARN) {
+            return Level.WARN;
+        }
+        if (level == LogLevel.ERROR) {
+            return Level.ERROR;
+        }
+        return Level.OFF;
     }
 
     /**
@@ -439,11 +640,7 @@ public class Category implements AppenderAttachable {
      * @deprecated Please use the the {@link #getEffectiveLevel} method instead.
      */
     public Priority getChainedPriority() {
-	for (Category c = this; c != null; c = c.parent) {
-	    if (c.level != null)
-		return c.level;
-	}
-	return null; // If reached will cause an NullPointerException.
+        throw new UnsupportedOperationException("Deprecated in log4j since Mar 12, 2002");
     }
 
     /**
@@ -457,7 +654,7 @@ public class Category implements AppenderAttachable {
      * @deprecated Please use {@link LogManager#getCurrentLoggers()} instead.
      */
     public static Enumeration getCurrentCategories() {
-	return LogManager.getCurrentLoggers();
+        throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
     }
 
     /**
@@ -468,7 +665,7 @@ public class Category implements AppenderAttachable {
      * @since 1.0
      */
     public static LoggerRepository getDefaultHierarchy() {
-	return LogManager.getLoggerRepository();
+        throw new UnsupportedOperationException("Deprecated in log4j since Nov 18, 2001");
     }
 
     /**
@@ -480,7 +677,7 @@ public class Category implements AppenderAttachable {
      * @since 1.1
      */
     public LoggerRepository getHierarchy() {
-	return repository;
+        throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
     }
 
     /**
@@ -497,21 +694,21 @@ public class Category implements AppenderAttachable {
      * @deprecated Make sure to use {@link Logger#getLogger(String)} instead.
      */
     public static Category getInstance(String name) {
-	return LogManager.getLogger(name);
+        return Logger.getLogger(name);
     }
 
     /**
      * @deprecated Please make sure to use {@link Logger#getLogger(Class)} instead.
      */
     public static Category getInstance(Class clazz) {
-	return LogManager.getLogger(clazz);
+        return Logger.getLogger(clazz);
     }
 
     /**
      * Return the category name.
      */
     public final String getName() {
-	return name;
+        return m_delegate.getName();
     }
 
     /**
@@ -524,7 +721,7 @@ public class Category implements AppenderAttachable {
      * @since 1.2
      */
     final public Category getParent() {
-	return this.parent;
+	return null;
     }
 
     /**
@@ -533,21 +730,21 @@ public class Category implements AppenderAttachable {
      * @return Level - the assigned Level, can be <code>null</code>.
      */
     final public Level getLevel() {
-	return this.level;
+	return getEffectiveLevel();
     }
 
     /**
      * @deprecated Please use {@link #getLevel} instead.
      */
     final public Level getPriority() {
-	return this.level;
+	return getEffectiveLevel();
     }
 
     /**
      * @deprecated Please use {@link Logger#getRootLogger()} instead.
      */
-    final public static Category getRoot() {
-	return LogManager.getRootLogger();
+    public static Category getRoot() {
+        throw new UnsupportedOperationException("Deprecated in log4j since Sep 5, 2001");
     }
 
     /**
@@ -562,11 +759,6 @@ public class Category implements AppenderAttachable {
      * @since 0.9.0
      */
     public ResourceBundle getResourceBundle() {
-	for (Category c = this; c != null; c = c.parent) {
-	    if (c.resourceBundle != null)
-		return c.resourceBundle;
-	}
-	// It might be the case that there is no resource bundle
 	return null;
     }
 
@@ -579,23 +771,7 @@ public class Category implements AppenderAttachable {
      * logged complaining about the missing resource.
      */
     protected String getResourceBundleString(String key) {
-	ResourceBundle rb = getResourceBundle();
-	// This is one of the rare cases where we can use logging in order
-	// to report errors from within log4j.
-	if (rb == null) {
-	    // if(!hierarchy.emittedNoResourceBundleWarning) {
-	    // error("No resource bundle has been set for category "+name);
-	    // hierarchy.emittedNoResourceBundleWarning = true;
-	    // }
-	    return null;
-	} else {
-	    try {
-		return rb.getString(key);
-	    } catch (MissingResourceException mre) {
-		error("No resource is associated with key \"" + key + "\".");
 		return null;
-	    }
-	}
     }
 
     /**
@@ -618,10 +794,49 @@ public class Category implements AppenderAttachable {
      * @param message the message object to log
      */
     public void info(Object message) {
-	if (repository.isDisabled(Level.INFO_INT))
-	    return;
-	if (Level.INFO.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, Level.INFO, message, null);
+        m_delegate.info(message == null ? null : message.toString());
+    }
+
+    /**
+     * Log a message with the <code>INFO</code> level with message formatting
+     * done according to the value of <code>messagePattern</code> and
+     * <code>arg</code> parameters.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
+     * @since 1.3
+     */
+    public void info(Object messagePattern, Object arg) {
+        if (m_delegate.isInfoEnabled()) {
+            String msgStr = (String) messagePattern;
+            msgStr = MessageFormatter.format(msgStr, arg);
+            m_delegate.info(msgStr);
+        }
+    }
+
+    /**
+     * Log a message with the <code>INFO</code> level with message formatting
+     * done according to the messagePattern and the arguments arg1 and arg2.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
+     * @since 1.3
+     */
+    public void info(String messagePattern, Object arg1, Object arg2) {
+        if (m_delegate.isInfoEnabled()) {
+            String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+            m_delegate.info(msgStr);
+        }
     }
 
     /**
@@ -635,21 +850,14 @@ public class Category implements AppenderAttachable {
      * @param t       the exception to log, including its stack trace.
      */
     public void info(Object message, Throwable t) {
-	if (repository.isDisabled(Level.INFO_INT))
-	    return;
-	if (Level.INFO.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, Level.INFO, message, t);
+        m_delegate.info(message == null ? null : message.toString(), t);
     }
 
     /**
      * Is the appender passed as parameter attached to this category?
      */
     public boolean isAttached(Appender appender) {
-	if (appender == null || aai == null)
-	    return false;
-	else {
-	    return aai.isAttached(appender);
-	}
+        return false;
     }
 
     /**
@@ -691,9 +899,18 @@ public class Category implements AppenderAttachable {
      *         <code>false</code> otherwise.
      */
     public boolean isDebugEnabled() {
-	if (repository.isDisabled(Level.DEBUG_INT))
-	    return false;
-	return Level.DEBUG.isGreaterOrEqual(this.getEffectiveLevel());
+        return m_delegate.isDebugEnabled();
+    }
+
+    /**
+     * Check whether this category is enabled for the TRACE  Level. See also
+     * {@link #isDebugEnabled()}.
+     *
+     * @return boolean - <code>true</code> if this category is enabled for level
+     *         TRACE, <code>false</code> otherwise.
+     */
+    public boolean isTraceEnabled() {
+        return m_delegate.isTraceEnabled();
     }
 
     /**
@@ -705,9 +922,25 @@ public class Category implements AppenderAttachable {
      * @return boolean True if this category is enabled for <code>level</code>.
      */
     public boolean isEnabledFor(Priority level) {
-	if (repository.isDisabled(level.level))
+	if (level == null)
 	    return false;
-	return level.isGreaterOrEqual(this.getEffectiveLevel());
+        switch (level.level) {
+            case Level.FATAL_INT:
+                return m_delegate.isFatalEnabled();
+            case Level.ERROR_INT:
+                return m_delegate.isErrorEnabled();
+            case Level.WARN_INT:
+                return m_delegate.isWarnEnabled();
+            case Level.INFO_INT:
+                return m_delegate.isInfoEnabled();
+            case Level.DEBUG_INT:
+                return m_delegate.isDebugEnabled();
+            case Level.TRACE_INT:
+            case Level.ALL_INT:
+                return m_delegate.isTraceEnabled();
+            default:
+                return false;
+        }
     }
 
     /**
@@ -718,9 +951,7 @@ public class Category implements AppenderAttachable {
      *         info, <code>false</code> otherwise.
      */
     public boolean isInfoEnabled() {
-	if (repository.isDisabled(Level.INFO_INT))
-	    return false;
-	return Level.INFO.isGreaterOrEqual(this.getEffectiveLevel());
+        return m_delegate.isInfoEnabled();
     }
 
     /**
@@ -732,18 +963,7 @@ public class Category implements AppenderAttachable {
      * @since 0.8.4
      */
     public void l7dlog(Priority priority, String key, Throwable t) {
-	if (repository.isDisabled(priority.level)) {
-	    return;
-	}
-	if (priority.isGreaterOrEqual(this.getEffectiveLevel())) {
-	    String msg = getResourceBundleString(key);
-	    // if message corresponding to 'key' could not be found in the
-	    // resource bundle, then default to 'key'.
-	    if (msg == null) {
-		msg = key;
-	    }
-	    forcedLog(FQCN, priority, msg, t);
-	}
+        log(FQCN, priority, key, t);
     }
 
     /**
@@ -756,40 +976,45 @@ public class Category implements AppenderAttachable {
      * @since 0.8.4
      */
     public void l7dlog(Priority priority, String key, Object[] params, Throwable t) {
-	if (repository.isDisabled(priority.level)) {
-	    return;
-	}
-	if (priority.isGreaterOrEqual(this.getEffectiveLevel())) {
-	    String pattern = getResourceBundleString(key);
-	    String msg;
-	    if (pattern == null)
-		msg = key;
-	    else
-		msg = java.text.MessageFormat.format(pattern, params);
-	    forcedLog(FQCN, priority, msg, t);
-	}
+        log(FQCN, priority, key, t);
     }
 
     /**
      * This generic form is intended to be used by wrappers.
      */
     public void log(Priority priority, Object message, Throwable t) {
-	if (repository.isDisabled(priority.level)) {
+	if (priority == null) {
 	    return;
 	}
-	if (priority.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, priority, message, t);
+        switch (priority.level) {
+            case Level.FATAL_INT:
+                fatal(message, t);
+                break;
+            case Level.ERROR_INT:
+                error(message, t);
+                break;
+            case Level.WARN_INT:
+                warn(message, t);
+                break;
+            case Level.INFO_INT:
+                info(message, t);
+                break;
+            case Level.DEBUG_INT:
+                debug(message, t);
+                break;
+            case Level.TRACE_INT:
+            case Level.ALL_INT:
+                trace(message, t);
+            default:
+                break;
+        }
     }
 
     /**
      * This generic form is intended to be used by wrappers.
      */
     public void log(Priority priority, Object message) {
-	if (repository.isDisabled(priority.level)) {
-	    return;
-	}
-	if (priority.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, priority, message, null);
+        log(priority, message, null);
     }
 
     /**
@@ -803,29 +1028,7 @@ public class Category implements AppenderAttachable {
      * @param t          The throwable of the logging request, may be null.
      */
     public void log(String callerFQCN, Priority level, Object message, Throwable t) {
-	if (repository.isDisabled(level.level)) {
-	    return;
-	}
-	if (level.isGreaterOrEqual(this.getEffectiveLevel())) {
-	    forcedLog(callerFQCN, level, message, t);
-	}
-    }
-
-    /**
-     * LoggerRepository forgot the fireRemoveAppenderEvent method, if using the
-     * stock Hierarchy implementation, then call its fireRemove. Custom repositories
-     * can implement HierarchyEventListener if they want remove notifications.
-     * 
-     * @param appender appender, may be null.
-     */
-    private void fireRemoveAppenderEvent(final Appender appender) {
-	if (appender != null) {
-	    if (repository instanceof Hierarchy) {
-		((Hierarchy) repository).fireRemoveAppenderEvent(this, appender);
-	    } else if (repository instanceof HierarchyEventListener) {
-		((HierarchyEventListener) repository).removeAppenderEvent(this, appender);
-	    }
-	}
+        log(level, message, t);
     }
 
     /**
@@ -835,17 +1038,7 @@ public class Category implements AppenderAttachable {
      * This is useful when re-reading configuration information.
      */
     synchronized public void removeAllAppenders() {
-	if (aai != null) {
-	    Vector appenders = new Vector();
-	    for (Enumeration iter = aai.getAllAppenders(); iter != null && iter.hasMoreElements();) {
-		appenders.add(iter.nextElement());
-	    }
-	    aai.removeAllAppenders();
-	    for (Enumeration iter = appenders.elements(); iter.hasMoreElements();) {
-		fireRemoveAppenderEvent((Appender) iter.nextElement());
-	    }
-	    aai = null;
-	}
+        throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -854,13 +1047,7 @@ public class Category implements AppenderAttachable {
      * @since 0.8.2
      */
     synchronized public void removeAppender(Appender appender) {
-	if (appender == null || aai == null)
-	    return;
-	boolean wasAttached = aai.isAttached(appender);
-	aai.removeAppender(appender);
-	if (wasAttached) {
-	    fireRemoveAppenderEvent(appender);
-	}
+        throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -870,13 +1057,7 @@ public class Category implements AppenderAttachable {
      * @since 0.8.2
      */
     synchronized public void removeAppender(String name) {
-	if (name == null || aai == null)
-	    return;
-	Appender appender = aai.getAppender(name);
-	aai.removeAppender(name);
-	if (appender != null) {
-	    fireRemoveAppenderEvent(appender);
-	}
+        throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -893,7 +1074,7 @@ public class Category implements AppenderAttachable {
      * access is MANDATORY here.
      */
     final void setHierarchy(LoggerRepository repository) {
-	this.repository = repository;
+        throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -937,7 +1118,7 @@ public class Category implements AppenderAttachable {
      * @since 0.8.4
      */
     public void setResourceBundle(ResourceBundle bundle) {
-	resourceBundle = bundle;
+        throw new UnsupportedOperationException("Operation not supported in pax-logging");
     }
 
     /**
@@ -959,7 +1140,17 @@ public class Category implements AppenderAttachable {
      * @since 1.0
      */
     public static void shutdown() {
-	LogManager.shutdown();
+    }
+
+    /**
+     * Check whether this category is enabled for the WARN Level. See also
+     * {@link #isDebugEnabled()}.
+     *
+     * @return boolean - <code>true</code> if this category is enabled for level
+     *         WARN, <code>false</code> otherwise.
+     */
+    public boolean isWarnEnabled() {
+        return m_delegate.isWarnEnabled();
     }
 
     /**
@@ -983,11 +1174,7 @@ public class Category implements AppenderAttachable {
      * @param message the message object to log.
      */
     public void warn(Object message) {
-	if (repository.isDisabled(Level.WARN_INT))
-	    return;
-
-	if (Level.WARN.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, Level.WARN, message, null);
+        m_delegate.warn(message == null ? null : message.toString());
     }
 
     /**
@@ -1001,9 +1188,48 @@ public class Category implements AppenderAttachable {
      * @param t       the exception to log, including its stack trace.
      */
     public void warn(Object message, Throwable t) {
-	if (repository.isDisabled(Level.WARN_INT))
-	    return;
-	if (Level.WARN.isGreaterOrEqual(this.getEffectiveLevel()))
-	    forcedLog(FQCN, Level.WARN, message, t);
+        m_delegate.warn(message == null ? null : message.toString(), t);
+    }
+
+    /**
+     * Log a message with the <code>WARN</code> level with message formatting
+     * done according to the value of <code>messagePattern</code> and
+     * <code>arg</code> parameters.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg The argument to replace the formatting element, i,e,
+     * the '{}' pair within <code>messagePattern</code>.
+     * @since 1.3
+     */
+    public void warn(Object messagePattern, Object arg) {
+        if (m_delegate.isWarnEnabled()) {
+            String msgStr = (String) messagePattern;
+            msgStr = MessageFormatter.format(msgStr, arg);
+            m_delegate.warn(msgStr);
+        }
+    }
+
+    /**
+     * Log a message with the <code>WARN</code> level with message formatting
+     * done according to the messagePattern and the arguments arg1 and arg2.
+     * <p>
+     * This form avoids superflous parameter construction. Whenever possible,
+     * you should use this form instead of constructing the message parameter
+     * using string concatenation.
+     *
+     * @param messagePattern The message pattern which will be parsed and formatted
+     * @param arg1 The first argument to replace the first formatting element
+     * @param arg2 The second argument to replace the second formatting element
+     * @since 1.3
+     */
+    public void warn(String messagePattern, Object arg1, Object arg2) {
+        if (m_delegate.isWarnEnabled()) {
+            String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
+            m_delegate.warn(msgStr);
+        }
     }
 }
