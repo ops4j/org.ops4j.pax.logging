@@ -54,7 +54,7 @@
         <item name="Formatters" href="roadmap/formatters.html"/>
 -->
       </item>
-      <item name="Wiki" href="http://wiki.ops4j.org/confluence/display/ops4j/Pax+Logging" />
+      <item name="Wiki" href="https://ops4j1.jira.com/wiki/spaces/paxlogging/overview" />
     </menu>
 
     ${reports}

@@ -11,7 +11,7 @@
 How to use Pax Logging in my bundles
 
     For a more step-by-step approach, look at Pierre Parrend's article
-    {{{http://wiki.ops4j.org/confluence/display/ops4j/How+to+use+Pax+Logging}here}}.
+    {{{https://ops4j1.jira.com/wiki/spaces/paxlogging/pages/165/How+to+use+Pax+Logging}here}}.
     (This article needs update since the APIs are now folded into a single bundle.)
     
     First of all, look at the example in pax/logging/example, which is complete with both
