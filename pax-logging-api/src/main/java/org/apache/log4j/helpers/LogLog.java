@@ -18,7 +18,9 @@
 package org.apache.log4j.helpers;
 
 import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
 
 /**
  * This class used to output log statements from within the log4j package.
@@ -32,9 +34,9 @@ import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
  * All log4j internal debug calls go to <code>System.out</code> where as
  * internal error messages are sent to <code>System.err</code>. All internal
  * messages are prepended with the string "log4j: ".
- *
+ * 
  * <p>In pax-logging, this class is configured to always delegate to
- * {@link org.ops4j.pax.logging.spi.support.DefaultServiceLog}</p>
+ * {@link DefaultServiceLog}
  *
  * @since 0.8.2
  * @author Ceki G&uuml;lc&uuml;
@@ -74,7 +76,7 @@ public class LogLog {
      */
     private static boolean quietMode = false;
 
-    private static final PaxLogger log = FallbackLogFactory.createFallbackLog(null, "log4j");
+    private static PaxLogger log = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(LogLog.class), "log4j");
 
     /**
      * Allows to enable/disable log4j internal logging.
@@ -89,7 +91,7 @@ public class LogLog {
      */
     public static void debug(String msg) {
 	if (debugEnabled && !quietMode) {
-        log.debug(msg, null);
+	    log.debug(msg, null);
 	}
     }
 
@@ -110,7 +112,7 @@ public class LogLog {
     public static void error(String msg) {
 	if (quietMode)
 	    return;
-        log.error(msg, null);
+	log.error(msg, null);
     }
 
     /**
@@ -121,7 +123,7 @@ public class LogLog {
 	if (quietMode)
 	    return;
 
-        log.error(msg, t);
+	log.error(msg, t);
     }
 
     /**
@@ -141,7 +143,7 @@ public class LogLog {
 	if (quietMode)
 	    return;
 
-        log.warn(msg, null);
+	log.warn(msg, null);
     }
 
     /**
@@ -152,6 +154,6 @@ public class LogLog {
 	if (quietMode)
 	    return;
 
-        log.warn(msg, t);
+	log.warn(msg, t);
     }
 }

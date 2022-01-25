@@ -88,7 +88,7 @@ public class MDC {
      * 
      */
     static public void put(String key, Object o) {
-		getPaxContext().put(key, o);
+	getPaxContext().put(key, o);
     }
 
     /**
@@ -98,7 +98,7 @@ public class MDC {
      * This method has no side effects.
      */
     static public Object get(String key) {
-		return getPaxContext().get(key);
+	return getPaxContext().get(key);
     }
 
     /**
@@ -106,7 +106,7 @@ public class MDC {
      * 
      */
     static public void remove(String key) {
-		getPaxContext().remove(key);
+	getPaxContext().remove(key);
     }
 
     /**
@@ -118,7 +118,7 @@ public class MDC {
      * returned {@link Map} for very long time.
      */
     public static Map getContext() {
-		return getPaxContext().getContext();
+	return getPaxContext().getContext();
     }
 
     /**
@@ -127,7 +127,7 @@ public class MDC {
      * @since 1.2.16
      */
     public static void clear() {
-		getPaxContext().clear();
+	getPaxContext().clear();
     }
 
 }
