@@ -41,6 +41,9 @@ import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.plugins.util.PluginManager;
 import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory;
+import org.apache.logging.log4j.layout.template.json.JsonTemplateLayout;
+import org.apache.logging.log4j.layout.template.json.resolver.LoggerResolverFactory;
+import org.apache.logging.log4j.layout.template.json.util.RecyclerFactoryConverter;
 import org.apache.logging.log4j.status.StatusData;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PaxPropertySource;
@@ -74,6 +77,9 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
         // using default cache file "/META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat"
         // taken unchanged from "org.apache.logging.log4j:log4j-core".
         PluginManager.addPackage(PaxOsgiAppender.class.getPackage().getName());
+        PluginManager.addPackage(JsonTemplateLayout.class.getPackage().getName());
+        PluginManager.addPackage(LoggerResolverFactory.class.getPackage().getName());
+        PluginManager.addPackage(RecyclerFactoryConverter.class.getPackage().getName());
     }
 
     private final BundleContext m_bundleContext;
