@@ -41,8 +41,8 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>log4j</groupId>
-                  <artifactId>log4j</artifactId>
+                  <groupId>ch.qos.reload4j</groupId>
+                  <artifactId>reload4j</artifactId>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>
@@ -64,7 +64,7 @@
             <configuration>
               <artifactSet>
                 <includes>
-                  <include>log4j:log4j</include>
+                  <include>ch.qos.reload4j:reload4j</include>
                   <include>${project.groupId}:${project.artifactId}</include>
                 </includes>
               </artifactSet>
@@ -111,8 +111,8 @@
       <artifactId>pax-logging-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
+      <groupId>ch.qos.reload4j</groupId>
+      <artifactId>reload4j</artifactId>
       <exclusions>
         <exclusion>
           <groupId>javax.jms</groupId>
