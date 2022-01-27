@@ -26,6 +26,9 @@ Export-Package: \
  org.apache.log4j; version=1.2.15; provider=paxlogging, \
  org.apache.log4j.spi; version=1.2.15; provider=paxlogging, \
  org.apache.log4j.xml; version=1.2.15; provider=paxlogging, \
+ org.apache.log4j; version=1.2.18; provider=paxlogging, \
+ org.apache.log4j.spi; version=1.2.18; provider=paxlogging, \
+ org.apache.log4j.xml; version=1.2.18; provider=paxlogging, \
  org.apache.logging.log4j; version=2.4.1; provider=paxlogging, \
  org.apache.logging.log4j.message; version=2.4.1; provider=paxlogging, \
  org.apache.logging.log4j.spi; version=2.4.1; provider=paxlogging, \
