@@ -166,7 +166,7 @@ public class PaxLoggingServiceImpl
         Configuration config;
         Object configfile = configuration.get(LOG4J2_CONFIG_FILE_KEY);
 		if (configfile != null) {
-			config = ConfigurationFactory.getInstance().getConfiguration(
+			config = ConfigurationFactory.getInstance().getConfiguration(m_log4jContext,
                       LOGGER_CONTEXT_NAME, new File(configfile.toString()).toURI());
             Object asyncObj = configuration.get(LOG4J2_ASYNC_KEY);
             if (asyncObj != null) {
@@ -183,7 +183,7 @@ public class PaxLoggingServiceImpl
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 props.store(baos, null);
                 ConfigurationSource src = new ConfigurationSource(new ByteArrayInputStream(baos.toByteArray()));
-                config = new PropertiesConfigurationFactory().getConfiguration(src);
+                config = new PropertiesConfigurationFactory().getConfiguration(m_log4jContext, src);
                 async = config.getRootLogger() instanceof AsyncLoggerConfig;
             } catch (IOException e) {
                 throw new RuntimeException(e);

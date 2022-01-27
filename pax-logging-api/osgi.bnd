@@ -33,6 +33,10 @@ Export-Package: \
  org.apache.logging.log4j.message; version=2.4.1; provider=paxlogging, \
  org.apache.logging.log4j.spi; version=2.4.1; provider=paxlogging, \
  org.apache.logging.log4j.util; version=2.4.1; provider=paxlogging, \
+ org.apache.logging.log4j; version=2.12.4; provider=paxlogging, \
+ org.apache.logging.log4j.message; version=2.12.4; provider=paxlogging, \
+ org.apache.logging.log4j.spi; version=2.12.4; provider=paxlogging, \
+ org.apache.logging.log4j.util; version=2.12.4; provider=paxlogging, \
  org.knopflerfish.service.log; version=1.1.0; provider=paxlogging, \
  org.ops4j.pax.logging; version=${pom.version}; provider=paxlogging, \
  org.ops4j.pax.logging.avalon; version=${pom.version}; provider=paxlogging, \
