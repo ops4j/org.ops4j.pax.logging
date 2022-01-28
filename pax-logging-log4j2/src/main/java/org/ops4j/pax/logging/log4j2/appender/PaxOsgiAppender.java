@@ -33,7 +33,7 @@ import org.osgi.framework.FrameworkUtil;
 
 /**
  * <p>
- * This is a Logback appender that forwards log messages to any services registered with OSGi with the interface
+ * This is a Log4j2 appender that forwards log messages to any services registered with OSGi with the interface
  * org.ops4j.pax.logging.spi.PaxAppender. That list of appender services is possibly filtered by the filter setting.
  * </p>
  */

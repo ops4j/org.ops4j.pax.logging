@@ -183,16 +183,6 @@
         <version>2.12.4</version>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.1.7</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>1.1.7</version>
-      </dependency>
-      <dependency>
         <groupId>avalon-framework</groupId>
         <artifactId>avalon-framework-api</artifactId>
         <version>4.3</version>
@@ -422,7 +412,6 @@
     <module>pax-logging-api</module>
     <module>pax-logging-service</module>
     <module>pax-logging-log4j2</module>
-    <module>pax-logging-logback</module>
     <module>pax-logging-it</module>
     <module>pax-logging-samples</module>
   </modules>
