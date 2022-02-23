@@ -79,8 +79,8 @@ public class BackendSupport {
     public static RegisteredService<EventAdminPoster, EventAdminPoster> eventAdminSupport(BundleContext context) {
         EventAdminPoster eventAdmin = new EventAdminPoster() {
             @Override
-            public void postEvent(Bundle bundle, LogLevel level, LogEntry entry, String message, Throwable exception,
-                    ServiceReference sr, Map context) {
+            public void postEvent(Bundle bundle, int level, LogEntry entry, String message, Throwable exception,
+                    ServiceReference<?> sr, Map<String, ?> context) {
             }
 
             @Override
