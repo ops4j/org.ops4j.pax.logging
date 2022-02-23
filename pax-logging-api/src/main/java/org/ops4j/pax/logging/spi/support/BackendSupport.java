@@ -77,26 +77,32 @@ public class BackendSupport {
      * @return
      */
     public static RegisteredService<EventAdminPoster, EventAdminPoster> eventAdminSupport(BundleContext context) {
-        EventAdminPoster eventAdmin;
+        EventAdminPoster eventAdmin = new EventAdminPoster() {
+            @Override
+            public void postEvent(Bundle bundle, LogLevel level, LogEntry entry, String message, Throwable exception,
+                    ServiceReference sr, Map context) {
+            }
+
+            @Override
+            public void destroy() {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+
+        String enabled = OsgiUtil.systemOrContextProperty(context, PaxLoggingConstants.LOGGING_CFG_ENABLE_EVENT_ADMIN);
+        if ("false".equalsIgnoreCase(enabled)) {
+            // regardless of Event Admin availability
+            return new RegisteredService<>(eventAdmin, null);
+        }
+
         try {
             eventAdmin = new EventAdminTracker(context);
         } catch (NoClassDefFoundError e) {
             // If we hit a NCDFE, this means the event admin package is not available,
             // so use a dummy poster
-            eventAdmin = new EventAdminPoster() {
-                @Override
-                public void postEvent(Bundle bundle, int level, LogEntry entry, String message, Throwable exception,
-                                      ServiceReference sr, Map context) {
-                }
-
-                @Override
-                public void destroy() {
-                }
-
-                @Override
-                public void close() throws Exception {
-                }
-            };
         }
 
         return new RegisteredService<>(eventAdmin, null);
@@ -108,23 +114,29 @@ public class BackendSupport {
      * @return
      */
     public static RegisteredService<ConfigurationNotifier, ConfigurationNotifier> eventAdminConfigurationNotifier(BundleContext context) {
-        ConfigurationNotifier notifier;
+        ConfigurationNotifier notifier = new ConfigurationNotifier() {
+            @Override
+            public void configurationDone() {
+            }
+
+            @Override
+            public void configurationError(Throwable t) {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+
+        String enabled = OsgiUtil.systemOrContextProperty(context, PaxLoggingConstants.LOGGING_CFG_ENABLE_EVENT_ADMIN);
+        if ("false".equalsIgnoreCase(enabled)) {
+            // regardless of Event Admin availability
+            return new RegisteredService<>(notifier, null);
+        }
+
         try {
             notifier = new EventAdminConfigurationNotifier(context);
-        } catch (NoClassDefFoundError e) {
-            notifier = new ConfigurationNotifier() {
-                @Override
-                public void configurationDone() {
-                }
-
-                @Override
-                public void configurationError(Throwable t) {
-                }
-
-                @Override
-                public void close() throws Exception {
-                }
-            };
+        } catch (NoClassDefFoundError ignored) {
         }
 
         return new RegisteredService<>(notifier, null);
