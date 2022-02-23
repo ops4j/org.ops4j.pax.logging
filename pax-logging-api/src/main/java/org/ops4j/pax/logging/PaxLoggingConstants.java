@@ -221,4 +221,10 @@ public interface PaxLoggingConstants {
      */
     String PAX_LOGGING_PROPERTY_FILE = "pax-logging.properties";
 
+    /**
+     * System or context property to disable (because its enabled by default) Event Admin support (even if it's
+     * available). If not specified, it is assumed that Event Admin is enabled.
+     */
+    String LOGGING_CFG_ENABLE_EVENT_ADMIN = "org.ops4j.pax.logging.eventAdminEnabled";
+
 }
