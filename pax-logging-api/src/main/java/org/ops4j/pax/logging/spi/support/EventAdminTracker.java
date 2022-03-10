@@ -135,7 +135,7 @@ public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
     }
 
     static Event createEvent(Bundle bundle, int level, LogEntry entry, String message,
-                             Throwable exception, ServiceReference sr, Map<String, ?> context) {
+                             Throwable exception, ServiceReference<?> sr, Map<String, ?> context) {
         String type;
         switch (level) {
             case LogService.LOG_ERROR:
