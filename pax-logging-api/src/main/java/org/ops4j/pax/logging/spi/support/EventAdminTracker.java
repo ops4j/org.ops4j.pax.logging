@@ -154,7 +154,7 @@ public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
                 type = "LOG_OTHER";
         }
         String topic = "org/osgi/service/log/LogEntry/" + type;
-        Dictionary<String, Object> props = new Hashtable<String, Object>();
+        Dictionary<String, Object> props = new Hashtable<>();
         if (bundle != null) {
             props.put("bundle", bundle);
             Long bundleId = bundle.getBundleId();
@@ -190,9 +190,11 @@ public class EventAdminTracker extends ServiceTracker<EventAdmin, EventAdmin>
             props.put("service.objectClass", objClass);
         }
         if (context != null) {
-            for (Object o : context.keySet()) {
-                String key = (String) o;
-                props.put(key, context.get(key));
+            for (String key : context.keySet()) {
+                Object value = context.get(key);
+                if (value != null) {
+                    props.put(key, value);
+                }
             }
         }
         return new Event(topic, props);
