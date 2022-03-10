@@ -63,6 +63,11 @@ public class BackendSupport {
      * @return
      */
     public static RegisteredService<LogReaderService, LogReaderServiceImpl> createAndRegisterLogReaderService(BundleContext context) {
+        String enabled = OsgiUtil.systemOrContextProperty(context, PaxLoggingConstants.LOGGING_CFG_ENABLE_LOG_READER_SERVICE);
+        if ("false".equalsIgnoreCase(enabled)) {
+            return new RegisteredService<>(null, null);
+        }
+
         // register org.osgi.service.log.LogReaderService
         LogReaderServiceImpl logReader = new LogReaderServiceImpl(100, FallbackLogFactory.createFallbackLog(context.getBundle(), "pax-logging"));
         Dictionary<String, Object> serviceProperties = new Hashtable<>();
@@ -77,29 +82,14 @@ public class BackendSupport {
      * Event Admin service
      * @return
      */
-    @SuppressWarnings("rawtypes")
     public static RegisteredService<EventAdminPoster, EventAdminPoster> eventAdminSupport(BundleContext context) {
-        EventAdminPoster eventAdmin = new EventAdminPoster() {
-            @Override
-            public void postEvent(Bundle bundle, LogLevel level, LogEntry entry, String message, Throwable exception,
-                    ServiceReference sr, Map context) {
-            }
-
-            @Override
-            public void destroy() {
-            }
-
-            @Override
-            public void close() {
-            }
-        };
-
         String enabled = OsgiUtil.systemOrContextProperty(context, PaxLoggingConstants.LOGGING_CFG_ENABLE_EVENT_ADMIN);
         if ("false".equalsIgnoreCase(enabled)) {
             // regardless of Event Admin availability
-            return new RegisteredService<>(eventAdmin, null);
+            return new RegisteredService<>(null, null);
         }
 
+        EventAdminPoster eventAdmin = null;
         try {
             eventAdmin = new EventAdminTracker(context);
         } catch (NoClassDefFoundError e) {

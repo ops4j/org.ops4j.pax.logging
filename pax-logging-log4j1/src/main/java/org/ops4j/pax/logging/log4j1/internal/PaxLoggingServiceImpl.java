@@ -87,12 +87,8 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
             throw new IllegalArgumentException("bundleContext cannot be null");
         m_bundleContext = context;
 
-        if (logReader == null)
-            throw new IllegalArgumentException("logReader cannot be null");
         m_logReader = logReader;
 
-        if (eventAdmin == null)
-            throw new IllegalArgumentException("eventAdmin cannot be null");
         m_eventAdmin = eventAdmin;
 
         m_configNotifier = configNotifier;
@@ -391,10 +387,12 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
     }
 
     void handleEvents(String name, Bundle bundle, ServiceReference<?> sr, LogLevel level, String message, Throwable exception) {
-        LogEntry entry = new LogEntryImpl(name, bundle, sr, level, message, exception);
-        m_logReader.fireEvent(entry);
+        LogEntry entry = m_logReader != null || m_eventAdmin != null
+                ? new LogEntryImpl(name, bundle, sr, level, message, exception) : null;
+        if (m_logReader != null) {
+            m_logReader.fireEvent(entry);
+        }
 
-        // This should only be null for TestCases.
         if (m_eventAdmin != null) {
             m_eventAdmin.postEvent(bundle, level, entry, message, exception, sr, getPaxContext().getContext());
         }
@@ -415,7 +413,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
         Object value = configuration.get(obj);
         if (key.startsWith("log4j")) {
             extracted.put(key, value);
-        } else if (key.startsWith("pax.")) {
+        } else if (key.startsWith("pax.") && m_logReader != null) {
             if (PaxLoggingConstants.PID_CFG_LOG_READER_SIZE_LEGACY.equals(key)
                     || PaxLoggingConstants.PID_CFG_LOG_READER_SIZE.equals(key)) {
                 try {

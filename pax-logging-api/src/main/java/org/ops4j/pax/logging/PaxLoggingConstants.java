@@ -227,4 +227,12 @@ public interface PaxLoggingConstants {
      */
     String LOGGING_CFG_ENABLE_EVENT_ADMIN = "org.ops4j.pax.logging.eventAdminEnabled";
 
+    /**
+     * System or context property to disable (because its enabled by default)
+     * {@link org.osgi.service.log.LogReaderService} registration. If not specified, it is assumed that
+     * this service is registered. This is mandated by OSGi CMPN Log Specification, but impacts performance.
+     * So it can be disabled if needed.
+     */
+    String LOGGING_CFG_ENABLE_LOG_READER_SERVICE = "org.ops4j.pax.logging.logReaderEnabled";
+
 }

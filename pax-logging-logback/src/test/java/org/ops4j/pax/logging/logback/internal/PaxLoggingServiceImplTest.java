@@ -156,14 +156,4 @@ public class PaxLoggingServiceImplTest {
         new PaxLoggingServiceImpl(null, mock(LogReaderServiceImpl.class), mock(EventAdminPoster.class), mock(ConfigurationNotifier.class), mock(PaxLogger.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullLogReader() {
-        new PaxLoggingServiceImpl(mock(BundleContext.class), null, mock(EventAdminPoster.class), mock(ConfigurationNotifier.class), mock(PaxLogger.class));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullEventPoster() {
-        new PaxLoggingServiceImpl(mock(BundleContext.class), mock(LogReaderServiceImpl.class), null, mock(ConfigurationNotifier.class), mock(PaxLogger.class));
-    }
-
 }
