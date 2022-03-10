@@ -124,12 +124,8 @@ public class PaxLoggingServiceImpl
             throw new IllegalArgumentException("bundleContext cannot be null");
         m_bundleContext = bundleContext;
 
-        if (logReader == null)
-            throw new IllegalArgumentException("logReader cannot be null");
         m_logReader = logReader;
 
-        if (eventAdmin == null)
-            throw new IllegalArgumentException("eventAdmin cannot be null");
         m_eventAdmin = eventAdmin;
 
         m_configNotifier = configNotifier;
@@ -337,10 +333,12 @@ public class PaxLoggingServiceImpl
     }
 
     void handleEvents(Bundle bundle, ServiceReference<?> sr, int level, String message, Throwable exception) {
-        LogEntry entry = new LogEntryImpl(bundle, sr, level, message, exception);
-        m_logReader.fireEvent(entry);
+        LogEntry entry = m_logReader != null || m_eventAdmin != null
+                ? new LogEntryImpl(bundle, sr, level, message, exception) : null;
+        if (m_logReader != null) {
+            m_logReader.fireEvent(entry);
+        }
 
-        // This should only be null for TestCases.
         if (m_eventAdmin != null) {
             m_eventAdmin.postEvent(bundle, level, entry, message, exception, sr, getPaxContext().getContext());
         }
@@ -556,7 +554,7 @@ public class PaxLoggingServiceImpl
         if (size == null) {
             size = config.get(PaxLoggingConstants.PID_CFG_LOG_READER_SIZE_LEGACY);
         }
-        if (null != size) {
+        if (null != size && m_logReader != null) {
             try {
                 m_logReader.setMaxEntries(Integer.parseInt((String) size));
             } catch (Exception e) {
