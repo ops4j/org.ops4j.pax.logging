@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.ops4j.pax.logging</groupId>
         <artifactId>pax-logging-samples</artifactId>
-        <version>1.12.2</version>
+        <version>1.12.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
