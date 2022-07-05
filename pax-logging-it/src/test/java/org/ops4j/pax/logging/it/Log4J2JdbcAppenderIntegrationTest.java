@@ -88,6 +88,7 @@ public class Log4J2JdbcAppenderIntegrationTest extends AbstractStdoutInterceptin
         return combine(
                 combine(baseConfigure(), defaultLoggingConfig()),
 
+                mavenBundle("org.osgi", "org.osgi.service.jdbc").versionAsInProject().startLevel(START_LEVEL_SYSTEM_BUNDLES).start(),
                 mavenBundle("com.h2database", "h2").versionAsInProject().startLevel(START_LEVEL_SYSTEM_BUNDLES).start(),
 
                 systemProperty("h2.port").value(sport),
@@ -143,13 +144,13 @@ public class Log4J2JdbcAppenderIntegrationTest extends AbstractStdoutInterceptin
 
         try (Connection c = DriverManager.getConnection("jdbc:h2:file:" + basedir + "/logsdb")) {
             try (Statement st = c.createStatement()) {
-                st.execute("create user logadmin password 'logpassword'");
+                st.execute("create user logadmin password 'logpassword' admin");
             }
         }
 
         // connect using TCP JDBC URL as admin to create tables
 
-        try (Connection c = DriverManager.getConnection("jdbc:h2:tcp://localhost:" + port + "/logsdb", "", "")) {
+        try (Connection c = DriverManager.getConnection("jdbc:h2:tcp://localhost:" + port + "/logsdb", "logadmin", "logpassword")) {
             try (Statement st = c.createStatement()) {
                 st.execute("create schema LOGS");
             }

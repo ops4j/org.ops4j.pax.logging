@@ -20,9 +20,6 @@ package org.ops4j.pax.logging.log4j2.extra;
 
 import java.io.Serializable;
 import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -42,7 +39,7 @@ import org.osgi.framework.FrameworkUtil;
 @Plugin(name = "List", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class ListAppender extends AbstractAppender {
 
-    private static final BlockingQueue<LogEvent> events = new LinkedBlockingQueue<>();
+    private static final BlockingQueue<String> events = new LinkedBlockingQueue<>();
 
     public ListAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
         super(name, filter, layout, ignoreExceptions, properties);
@@ -50,10 +47,10 @@ public class ListAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent event) {
-        events.offer(event);
+        events.offer(event.getMessage().getFormattedMessage());
     }
 
-    public BlockingQueue<LogEvent> getEvents() {
+    public BlockingQueue<String> getEvents() {
         return events;
     }
 

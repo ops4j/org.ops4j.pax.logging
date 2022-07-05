@@ -17,21 +17,14 @@
 package org.apache.logging.log4j;
 
 import java.net.URI;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 import org.apache.logging.log4j.simple.SimpleLoggerContextFactory;
 import org.apache.logging.log4j.spi.LoggerContext;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
-import org.apache.logging.log4j.spi.Provider;
 import org.apache.logging.log4j.spi.Terminable;
 import org.apache.logging.log4j.status.StatusLogger;
-import org.apache.logging.log4j.util.LoaderUtil;
-import org.apache.logging.log4j.util.PropertiesUtil;
-import org.apache.logging.log4j.util.ProviderUtil;
 import org.apache.logging.log4j.util.StackLocatorUtil;
 import org.apache.logging.log4j.util.Strings;
 import org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContextFactory;
@@ -54,7 +47,7 @@ public class LogManager {
     public static final String FACTORY_PROPERTY_NAME = "log4j2.loggerContextFactory";
 
     /**
-     * The name of the root Logger.
+     * The name of the root Logger is {@value #ROOT_LOGGER_NAME}.
      */
     public static final String ROOT_LOGGER_NAME = Strings.EMPTY;
 
@@ -104,7 +97,7 @@ public class LogManager {
             return factory.getContext(FQCN, null, null, true);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(FQCN, null, null, true);
+            return SimpleLoggerContextFactory.INSTANCE.getContext(FQCN, null, null, true);
         }
     }
 
@@ -123,7 +116,7 @@ public class LogManager {
             return factory.getContext(FQCN, null, null, currentContext, null, null);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(FQCN, null, null, currentContext, null, null);
+            return SimpleLoggerContextFactory.INSTANCE.getContext(FQCN, null, null, currentContext, null, null);
         }
     }
 
@@ -143,7 +136,7 @@ public class LogManager {
             return factory.getContext(FQCN, loader, null, currentContext);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(FQCN, loader, null, currentContext);
+            return SimpleLoggerContextFactory.INSTANCE.getContext(FQCN, loader, null, currentContext);
         }
     }
 
@@ -165,7 +158,7 @@ public class LogManager {
             return factory.getContext(FQCN, loader, externalContext, currentContext);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(FQCN, loader, externalContext, currentContext);
+            return SimpleLoggerContextFactory.INSTANCE.getContext(FQCN, loader, externalContext, currentContext);
         }
     }
 
@@ -187,7 +180,7 @@ public class LogManager {
             return factory.getContext(FQCN, loader, null, currentContext, configLocation, null);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(FQCN, loader, null, currentContext, configLocation,
+            return SimpleLoggerContextFactory.INSTANCE.getContext(FQCN, loader, null, currentContext, configLocation,
                     null);
         }
     }
@@ -211,7 +204,7 @@ public class LogManager {
             return factory.getContext(FQCN, loader, externalContext, currentContext, configLocation, null);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(FQCN, loader, externalContext, currentContext,
+            return SimpleLoggerContextFactory.INSTANCE.getContext(FQCN, loader, externalContext, currentContext,
                     configLocation, null);
         }
     }
@@ -236,7 +229,7 @@ public class LogManager {
             return factory.getContext(FQCN, loader, externalContext, currentContext, configLocation, name);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(FQCN, loader, externalContext, currentContext,
+            return SimpleLoggerContextFactory.INSTANCE.getContext(FQCN, loader, externalContext, currentContext,
                     configLocation, name);
         }
     }
@@ -256,7 +249,7 @@ public class LogManager {
             return factory.getContext(fqcn, null, null, currentContext);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(fqcn, null, null, currentContext);
+            return SimpleLoggerContextFactory.INSTANCE.getContext(fqcn, null, null, currentContext);
         }
     }
 
@@ -278,7 +271,7 @@ public class LogManager {
             return factory.getContext(fqcn, loader, null, currentContext);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(fqcn, loader, null, currentContext);
+            return SimpleLoggerContextFactory.INSTANCE.getContext(fqcn, loader, null, currentContext);
         }
     }
 
@@ -298,12 +291,12 @@ public class LogManager {
      * @return a LoggerContext.
      */
     protected static LoggerContext getContext(final String fqcn, final ClassLoader loader,
-                                              final boolean currentContext, final URI configLocation, final String name) {
+                                          final boolean currentContext, final URI configLocation, final String name) {
         try {
             return factory.getContext(fqcn, loader, null, currentContext, configLocation, name);
         } catch (final IllegalStateException ex) {
             LOGGER.warn(ex.getMessage() + " Using SimpleLogger");
-            return new SimpleLoggerContextFactory().getContext(fqcn, loader, null, currentContext);
+            return SimpleLoggerContextFactory.INSTANCE.getContext(fqcn, loader, null, currentContext);
         }
     }
 

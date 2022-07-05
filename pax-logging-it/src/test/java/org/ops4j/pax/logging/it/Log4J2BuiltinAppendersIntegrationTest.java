@@ -28,7 +28,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collection;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -56,8 +55,8 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.OptionUtils.combine;
@@ -189,15 +188,14 @@ public class Log4J2BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         Logger log = LoggerFactory.getLogger("my.logger");
         log.info("should be added to list");
 
+        @SuppressWarnings("rawtypes")
         Collection<ServiceReference<BlockingQueue>> srs = context.getServiceReferences(BlockingQueue.class, "(name=l)");
         assertThat(srs.size(), equalTo(1));
         ServiceReference<BlockingQueue> sr = srs.iterator().next();
         BlockingQueue<?> list = context.getService(sr);
         Object obj = list.take();
 
-        obj.toString(); // to enforce ParameterizedMessage.getFormattedMessage() call
-        assertThat(obj.getClass().getName(), equalTo("org.apache.logging.log4j.core.impl.Log4jLogEvent"));
-        assertThat(Helpers.getField(obj, "message.formattedMessage", String.class), equalTo("should be added to list"));
+        assertThat(obj.toString(), equalTo("should be added to list"));
     }
 
     @Test

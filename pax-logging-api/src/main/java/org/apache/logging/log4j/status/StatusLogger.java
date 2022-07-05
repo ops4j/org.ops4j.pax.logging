@@ -49,7 +49,7 @@ import org.osgi.service.log.LogLevel;
  * Records events that occur in the logging system. By default, only error messages are logged to {@link System#err}.
  * Normally, the Log4j StatusLogger is configured via the root {@code <Configuration status="LEVEL"/>} node in a Log4j
  * configuration file. However, this can be overridden via a system property named
- * "{@value SimpleLoggerContext#SYSTEM_PREFIX}StatusLogger.level" and will work with any Log4j provider.
+ * {@value #DEFAULT_STATUS_LISTENER_LEVEL} and will work with any Log4j provider.
  *
  * @see SimpleLogger
  * @see SimpleLoggerContext
@@ -105,6 +105,34 @@ public final class StatusLogger extends AbstractLogger {
 
     private int listenersLevel;
 
+    /**
+     * Constructs the singleton instance for the STATUS_LOGGER constant.
+     * <p>
+     * This is now the logger level is set:
+     * </p>
+     * <ol>
+     * <li>If the property {@value Constants#LOG4J2_DEBUG} is {@code "true"}, then use {@link Level#TRACE}, otherwise,</li>
+     * <li>Use {@link Level#ERROR}</li>
+     * </ol>
+     * <p>
+     * This is now the listener level is set:
+     * </p>
+     * <ol>
+     * <li>If the property {@value #DEFAULT_STATUS_LISTENER_LEVEL} is set, then use <em>it</em>, otherwise,</li>
+     * <li>Use {@link Level#WARN}</li>
+     * </ol>
+     * <p>
+     * See:
+     * <ol>
+     * <li>LOG4J2-1813 Provide shorter and more intuitive way to switch on Log4j internal debug logging. If system property
+     * "log4j2.debug" is defined, print all status logging.</li>
+     * <li>LOG4J2-3340 StatusLogger's log Level cannot be changed as advertised.</li>
+     * </ol>
+     * </p>
+     * 
+     * @param name The logger name.
+     * @param messageFactory The message factory.
+     */
     private StatusLogger(final String name, final MessageFactory messageFactory) {
         super(name, messageFactory);
         final String dateFormat = PROPS.getStringProperty(STATUS_DATE_FORMAT, Strings.EMPTY);

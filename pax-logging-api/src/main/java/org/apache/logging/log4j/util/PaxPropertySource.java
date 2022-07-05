@@ -18,10 +18,14 @@
  */
 package org.apache.logging.log4j.util;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * High priority {@link PropertySource} to ensure that user won't turn on (or off) anything that could break
  * pax-logging-log4j2.
- * See http://logging.apache.org/log4j/2.x/manual/configuration.html#SystemProperties
+ * See <a href="https://logging.apache.org/log4j/2.x/manual/configuration.html#SystemProperties">SystemProperties</a>
  */
 public class PaxPropertySource implements PropertySource {
 
@@ -35,25 +39,49 @@ public class PaxPropertySource implements PropertySource {
     // using org.apache.logging.log4j.core.config.ConfigurationFactory.CONFIGURATION_FILE_PROPERTY
     public static String fileConfiguration = null;
 
+    private static final Map<String, String> properties = new HashMap<>();
+
+    public PaxPropertySource() {
+        properties.put(Constants.LOG4J2_DEBUG, Boolean.toString(debug));
+        properties.put("log4j2.enable.threadlocals", Boolean.FALSE.toString());
+        properties.put("log4j2.is.webapp", Boolean.FALSE.toString());
+        properties.put("log4j2.shutdownHookEnabled", Boolean.FALSE.toString());
+        properties.put("log4j2.level", defaultLevel);
+        properties.put("log4j2.disableJmx", Boolean.TRUE.toString());
+        properties.put("log4j2.skipJansi", Boolean.TRUE.toString());
+        if (fileConfiguration != null) {
+            properties.put("log4j.configurationFile", fileConfiguration);
+        }
+        // log4j2.isThreadContextMapInheritable - https://github.com/ops4j/org.ops4j.pax.logging/pull/38
+    }
+
+    public static void updateFileConfiguration(String fileName) {
+        fileConfiguration = fileName;
+        properties.put("log4j.configurationFile", fileName);
+    }
+
     @Override
     public int getPriority() {
         // higher than org.apache.logging.log4j.util.SystemPropertiesPropertySource.DEFAULT_PRIORITY
-        return 200;
+        // https://github.com/ops4j/org.ops4j.pax.logging/issues/484 when it's the same as in
+        // org.apache.logging.log4j.util.PropertyFilePropertySource, only one is used (same key
+        // in org.apache.logging.log4j.util.PropertiesUtil.Environment.sources map!)
+        return 199;
+    }
+
+    @Override
+    public Collection<String> getPropertyNames() {
+        return properties.keySet();
+    }
+
+    @Override
+    public String getProperty(String key) {
+        return properties.get(key);
     }
 
     @Override
     public void forEach(BiConsumer<String, String> action) {
-        action.accept(Constants.LOG4J2_DEBUG, Boolean.toString(debug));
-        action.accept("log4j2.enable.threadlocals", Boolean.FALSE.toString());
-        action.accept("log4j2.is.webapp", Boolean.FALSE.toString());
-        action.accept("log4j2.shutdownHookEnabled", Boolean.FALSE.toString());
-        action.accept("log4j2.level", defaultLevel);
-        action.accept("log4j2.disableJmx", Boolean.TRUE.toString());
-        action.accept("log4j2.skipJansi", Boolean.TRUE.toString());
-        if (fileConfiguration != null) {
-            action.accept("log4j.configurationFile", fileConfiguration);
-        }
-        // log4j2.isThreadContextMapInheritable - https://github.com/ops4j/org.ops4j.pax.logging/pull/38
+        properties.forEach(action::accept);
     }
 
     @Override
