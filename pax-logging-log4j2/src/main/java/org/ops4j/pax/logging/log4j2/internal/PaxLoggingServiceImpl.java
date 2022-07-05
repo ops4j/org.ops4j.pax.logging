@@ -539,7 +539,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
 
                     // File name (or comma-separated file names) is not passed to getConfiguration, but is made
                     // available in high-priority org.apache.logging.log4j.util.PropertySource
-                    PaxPropertySource.fileConfiguration = configFileName;
+                    PaxPropertySource.updateFileConfiguration(configFileName);
                     // reload() is needed to let the source apply the settings
                     PropertiesUtil.getProperties().reload();
                     Configuration config = factory.getConfiguration(m_log4jContext, LOGGER_CONTEXT_NAME, null);
