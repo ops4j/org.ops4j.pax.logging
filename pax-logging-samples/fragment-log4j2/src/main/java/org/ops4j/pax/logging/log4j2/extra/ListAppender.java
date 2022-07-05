@@ -20,8 +20,9 @@ package org.ops4j.pax.logging.log4j2.extra;
 
 import java.io.Serializable;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
@@ -39,7 +40,7 @@ import org.osgi.framework.FrameworkUtil;
 @Plugin(name = "List", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class ListAppender extends AbstractAppender {
 
-    private static List<LogEvent> events = new LinkedList<>();
+    private static final BlockingQueue<String> events = new LinkedBlockingQueue<>();
 
     public ListAppender(String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions, Property[] properties) {
         super(name, filter, layout, ignoreExceptions, properties);
@@ -47,10 +48,10 @@ public class ListAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent event) {
-        events.add(event);
+        events.offer(event.getMessage().getFormattedMessage());
     }
 
-    public List<LogEvent> getEvents() {
+    public BlockingQueue<String> getEvents() {
         return events;
     }
 
@@ -63,7 +64,7 @@ public class ListAppender extends AbstractAppender {
         // put to OSGi to reference in test
         Hashtable<String, Object> props = new Hashtable<>();
         props.put("name", name);
-        bundle.getBundleContext().registerService(List.class, events, props);
+        bundle.getBundleContext().registerService(BlockingQueue.class, events, props);
 
         return new ListAppender(name, null, null, true, Property.EMPTY_ARRAY);
     }

@@ -226,9 +226,9 @@
         <version.org.apache.karaf>4.2.10</version.org.apache.karaf>
         <version.org.apache.felix.eventadmin>1.6.2</version.org.apache.felix.eventadmin>
         <version.org.apache.felix.fileinstall>3.6.4</version.org.apache.felix.fileinstall>
-        <version.org.apache.felix.configadmin>1.9.20</version.org.apache.felix.configadmin>
+        <version.org.apache.felix.configadmin>1.9.22</version.org.apache.felix.configadmin>
         <version.org.apache.felix.framework>5.6.12</version.org.apache.felix.framework>
-        <version.org.apache.logging.log4j>2.17.1</version.org.apache.logging.log4j>
+        <version.org.apache.logging.log4j>2.18.0</version.org.apache.logging.log4j>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
         <version.org.jboss.logging>3.4.3.Final</version.org.jboss.logging>
         <version.org.knopflerfish.kf6>5.0.0</version.org.knopflerfish.kf6>
@@ -723,6 +723,11 @@
                 <groupId>org.osgi</groupId>
                 <artifactId>osgi.cmpn</artifactId>
                 <version>${version.org.osgi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.service.jdbc</artifactId>
+                <version>${version.org.osgi.service.jdbc}</version>
             </dependency>
 
             <dependency>
