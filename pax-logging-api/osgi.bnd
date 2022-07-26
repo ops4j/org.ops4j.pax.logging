@@ -108,6 +108,7 @@ Export-Package: \
  org.ops4j.pax.logging; version=${pom.version}; provider=paxlogging, \
  org.ops4j.pax.logging.spi; version=${pom.version}; provider=paxlogging, \
  org.osgi.service.log; version=1.4;-split-package:=merge-first, \
+ org.osgi.service.log; version=1.5;-split-package:=merge-first, \
  org.osgi.service.log.admin; version=1.0;-split-package:=merge-first, \
  org.osgi.service.log.stream; version=1.0;-split-package:=merge-first
 
