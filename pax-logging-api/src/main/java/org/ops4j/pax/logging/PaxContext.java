@@ -120,7 +120,7 @@ public class PaxContext {
     public Map<String, Object> getCopyOfContextMap() {
         Map<String, Object> ht = tlm.get();
         if (ht != null) {
-            return new HashMap<String, Object>(ht);
+            return new HashMap<>(ht);
         } else {
             return null;
         }
