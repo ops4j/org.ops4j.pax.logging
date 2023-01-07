@@ -32,7 +32,7 @@
 
     <groupId>org.ops4j.pax.logging</groupId>
     <artifactId>pax-logging-api-test</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>OPS4J Pax Logging - API tests</name>
 
@@ -79,7 +79,6 @@
                 <module>src/it/slf4j-without-binder</module>
                 <module>src/it/slf4j-with-simple-binder</module>
                 <module>src/it/slf4j-with-nop-binder</module>
-                <module>src/it/slf4j-with-jcl-binder</module>
 
                 <!-- Pure Commons Logging usage -->
                 <module>src/it/jcl-without-impl</module>

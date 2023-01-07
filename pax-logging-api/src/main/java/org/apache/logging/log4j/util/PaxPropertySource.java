@@ -85,6 +85,11 @@ public class PaxPropertySource implements PropertySource {
     }
 
     @Override
+    public boolean containsProperty(String key) {
+        return properties.containsKey(key);
+    }
+
+    @Override
     public CharSequence getNormalForm(Iterable<? extends CharSequence> tokens) {
         return PREFIX + Util.joinAsCamelCase(tokens);
     }

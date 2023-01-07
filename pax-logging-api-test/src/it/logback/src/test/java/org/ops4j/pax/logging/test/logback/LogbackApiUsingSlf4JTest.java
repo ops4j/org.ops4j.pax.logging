@@ -20,10 +20,10 @@ package org.ops4j.pax.logging.test.logback;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.LogbackServiceProvider;
 import ch.qos.logback.core.util.StatusPrinter;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
-import org.slf4j.impl.StaticLoggerBinder;
 
 /**
  * This unit test shows different Logback API usages. Logback should generally be used via SLF4J, but we
@@ -34,7 +34,9 @@ public class LogbackApiUsingSlf4JTest {
     @Test
     public void statusWithLogbackClassicAndLowLevelSlf4JUsage() {
         // low level method
-        ch.qos.logback.classic.LoggerContext context = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+        LogbackServiceProvider provider = new LogbackServiceProvider();
+        provider.initialize();
+        ch.qos.logback.classic.LoggerContext context = (LoggerContext) provider.getLoggerFactory();
 
         Logger logger = context.getLogger("my.logger");
         logger.info("Hello");

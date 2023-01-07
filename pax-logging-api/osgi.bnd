@@ -22,7 +22,6 @@ Bundle-Activator: org.ops4j.pax.logging.internal.Activator
 Multi-Release: true
 
 Private-Package: \
- org.slf4j.impl, \
  org.ops4j.pax.logging.slf4j, \
  org.ops4j.pax.logging.jcl, \
  org.ops4j.pax.logging.juli, \
@@ -34,15 +33,19 @@ Private-Package: \
 
 Export-Package: \
  org.slf4j; version=${version.org.slf4j}; provider=paxlogging, \
+ org.slf4j; version=1.7.36; provider=paxlogging, \
  org.slf4j; version=1.6.6; provider=paxlogging, \
  org.slf4j; version=1.5.11; provider=paxlogging, \
  org.slf4j; version=1.4.3; provider=paxlogging, \
  org.slf4j.event; version=${version.org.slf4j}; provider=paxlogging, \
+ org.slf4j.event; version=1.7.36; provider=paxlogging, \
  org.slf4j.helpers; version=${version.org.slf4j}; provider=paxlogging, \
+ org.slf4j.helpers; version=1.7.36; provider=paxlogging, \
  org.slf4j.helpers; version=1.6.6; provider=paxlogging, \
  org.slf4j.helpers; version=1.5.11; provider=paxlogging, \
  org.slf4j.helpers; version=1.4.3; provider=paxlogging, \
  org.slf4j.spi; version=${version.org.slf4j}; provider=paxlogging, \
+ org.slf4j.spi; version=1.7.36; provider=paxlogging, \
  org.slf4j.spi; version=1.6.6; provider=paxlogging, \
  org.slf4j.spi; version=1.5.11; provider=paxlogging, \
  org.slf4j.spi; version=1.4.3; provider=paxlogging, \

@@ -43,24 +43,48 @@ The goal of this project is to allow users and bundles to use well known Logging
 |1.2.11
 |1.2.11
 |1.2.11
-|1.2.11
+|1.3.5
+
+|Maintained
+|no
+|no
+|no, use 1.12.x instead
+|yes
+|no, use 2.2.x instead
+|no, use 2.2.x instead
+|yes
 |===
 
-NOTE: All versions support Log4j1 API, while only selected ones support Log4j1 backend.
+NOTE: All versions support Log4j1 *API*, while only selected ones support Log4j1 *backend*.
 
 .History of the versions
 
-* Version 1.11.x was major refactor of 1.10.x wheren >100 integration tests were added and behavior of Log4j1, Log4j2 and Logback backends was unified
-* New major version 2.0.x was created to provide implementation of new version of the `org.osgi.service.log` package from OSGi R7 specification
+* Version 1.11.x was major refactor of 1.10.x where >100 integration tests were added and the behavior of Log4j1, Log4j2 and Logback backends was unified
+* New major version 2.0.x was created to provide implementation of a new version of the `org.osgi.service.log` package from OSGi R7 specification
 * Version 1.12.x and 2.1.x were created during https://www.lunasec.io/docs/blog/log4j-zero-day/[Log4j crisis] to provide versions that match 1.11.x and 2.0.x (respectively), but without Log4j1 backend
 * Version 2.2.x was created to provide implementation of new version of the `org.osgi.service.log` package from OSGi R8 specification - from day 1 without Log4j1 backend (but still with Log4j1 API)
 
 At some point, https://reload4j.qos.ch/[reload4j] fork of https://logging.apache.org/log4j/1.2/index.html[Apache log4j] was used.
 
+In 2023 I decided to stop maintaining these versions:
+
+* 1.11.x, because 1.12.x is compatible version but without log4j1 _backend_ (we don't need it in 2023). Log4j1 API is still available. 1.12.x is the only version exporting `org.osgi.service.log` with version 1.3
+* 2.1.x, because 2.2.x is supporting OSGi CMPN R8 (Log Service 1.5) which is compatible with R7 (Log Service 1.4)
+* 2.0.x, because 2.1.x is no longer maintained, because 2.2.x should be used instead.
+
+1.12.x should be used for older OSGi runtimes, based for example on Karaf 4.2 (and Felix 5.6.12).
+
+Please don't worry about deprecating 2.0.x/2.1.x. Pax Logging 2.2.x is the same as 2.1.x, but with _two_ exports:
+----
+...
+org.osgi.service.log; version=1.4,
+org.osgi.service.log; version=1.5,
+...
+----
 
 == Basics
 
-There should be a distinction between _Logging API_ which, by itself, doesn't do any log, but instead requires specific logging implementation (and related configuration) and the _Logging implementation_ itself.
+There should be a distinction between _Logging API_ which, by itself, doesn't do any logging, but instead requires specific logging implementation (and related configuration) and the _Logging implementation_ (referred to as a _backend_) itself.
 
 Logging APIs (or _Facades_) matching the above distinction include:
 
@@ -79,7 +103,7 @@ However usage of Logback _without_ SLF4J is very rare and won't be implemented i
 And the above two (with their specific configuration file syntax) are supported by (respectively):
 
 * pax-logging-log4j2 (log4J2)
-* pax-logging-logback (logoback)
+* pax-logging-logback (logback)
 
 `pax-logging-log4j1` was named `pax-logging-service` before version 2.0.0 and was removed completely in 2.1.0. However Log4j1 API was _not_ removed.
 
@@ -96,7 +120,10 @@ The history of `org.osgi.service.log` package versions is:
 * `1.5`: OSGi R8
 
 pax-logging-api 1.x uses version `1.3` from OSGi Compendium R6.
-pax-logging-api 2.x uses version `1.4` from OSGi Compendium R7.
+
+pax-logging-api 2.0.x/2.1.x uses version `1.4` from OSGi Compendium R7.
+
+pax-logging-api 2.2.x uses version `1.5` from OSGi Compendium R8.
 
 Each class that's an entry point to specific Logging framework (like `org.slf4j.LoggerFactory`) interacts with pax-logging using `org.ops4j.pax.logging.PaxLoggingManager`. This _manager_ tracks instances of framework-specific `org.ops4j.pax.logging.PaxLoggingService` services that eventually delegate to particular framework (like Log4J2).
 
@@ -445,7 +472,7 @@ https://ops4j1.jira.com/browse/PAXLOGGING-251[PAXLOGGING-251] tracks this issue.
 
 == Log4j
 
-Ah, the grandfather of all configurable Logging frameworks. Created when there was no logging bridges/facades around. Actually first facades (Commons Logging) was created to bridge common logging API to one of different logging frameworks (back then, it was only Log4J1 and Java Util Logging (JUL) from JDK1.4).
+Ah, the grandfather of all configurable Logging frameworks. Created when there was no logging bridges/facades around. Actually first facade (Commons Logging) was created to bridge common logging API to one of different logging frameworks (back then, it was only Log4J1 and Java Util Logging (JUL) from JDK1.4).
 
 Because its origins are in pre-logging bridge times, Log4J1's API was used directly by very large amount of code. That's why pax-logging fully supports its native API. However in Pax Logging 1.12.x and 2.1.x I've removed the implementation (in particular the appenders) based on Log4J1.
 

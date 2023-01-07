@@ -17,32 +17,37 @@
  */
 package org.ops4j.pax.logging.slf4j;
 
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingService;
+import org.slf4j.helpers.ThreadLocalMapOfStacks;
 import org.slf4j.spi.MDCAdapter;
 
 /**
- * pax-logging specific {@link MDCAdapter} returned from {@link org.slf4j.impl.StaticMDCBinder}
+ * pax-logging specific {@link MDCAdapter} returned from {@link org.slf4j.spi.SLF4JServiceProvider}
  */
 public class Slf4jMDCAdapter implements MDCAdapter {
 
     /** {@link PaxContext} used when {@link org.ops4j.pax.logging.PaxLoggingService} is not available */
-    private static PaxContext m_defaultContext = new PaxContext();
+    private static final PaxContext m_defaultContext = new PaxContext();
     /** {@link PaxContext} obtained from {@link org.ops4j.pax.logging.PaxLoggingService} */
     private static PaxContext m_context;
 
+    private final ThreadLocalMapOfStacks threadLocalMapOfDeques = new ThreadLocalMapOfStacks();
+
     /**
-     * For all the methods that use the context, default, static, {@link PaxContext} may be used (tied to pax-logging-api
+     * <p>For all the methods that use the context, default, static, {@link PaxContext} may be used (tied to pax-logging-api
      * bundle) if there's no available {@link PaxLoggingManager} or {@link PaxLoggingService}. If the service is
-     * available, it is <strong>always</strong> used to get service specific {@link PaxContext}.
+     * available, it is <strong>always</strong> used to get service specific {@link PaxContext}.</p>
      *
-     * Refering <strong>always</strong> to {@link PaxLoggingService#getPaxContext()} is cheap operation, as it's
-     * only reference to fields.
+     * <p>Refering <strong>always</strong> to {@link PaxLoggingService#getPaxContext()} is cheap operation, as it's
+     * only reference to fields.</p>
      *
-     * See: https://ops4j1.jira.com/browse/PAXLOGGING-247
+     * <p>See: <a href="https://ops4j1.jira.com/browse/PAXLOGGING-247">PAXLOGGING-247</a></p>
      *
      * @return m_context if the MDC should use the PaxContext object from the PaxLoggingManager,
      *      or m_defaultContext if the logging manager is not set, or does not have its context available yet.
@@ -80,15 +85,43 @@ public class Slf4jMDCAdapter implements MDCAdapter {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Map getCopyOfContextMap() {
-        return getContext().getCopyOfContextMap();
+    public Map<String, String> getCopyOfContextMap() {
+        Map<String, Object> copy = getContext().getCopyOfContextMap();
+        Map<String, String> result = new HashMap<>();
+        copy.forEach((k, v) -> {
+            if (v instanceof String) {
+                result.put(k, (String) v);
+            } else {
+                result.put(k, v == null ? null : v.toString());
+            }
+        });
+        return result;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void setContextMap(Map contextMap) {
         getContext().setContextMap(contextMap);
+    }
+
+    @Override
+    public void pushByKey(String key, String value) {
+        threadLocalMapOfDeques.pushByKey(key, value);
+    }
+
+    @Override
+    public String popByKey(String key) {
+        return threadLocalMapOfDeques.popByKey(key);
+    }
+
+    @Override
+    public Deque<String> getCopyOfDequeByKey(String key) {
+        return threadLocalMapOfDeques.getCopyOfDequeByKey(key);
+    }
+
+    @Override
+    public void clearDequeByKey(String key) {
+        threadLocalMapOfDeques.clearDequeByKey(key);
     }
 
 }

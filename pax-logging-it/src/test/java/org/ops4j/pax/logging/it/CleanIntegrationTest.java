@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -39,6 +40,7 @@ import static org.ops4j.pax.exam.OptionUtils.combine;
  * manually controlled pax-exam test.
  */
 @RunWith(PaxExam.class)
+@Ignore("This test requires Slf4j 1.7 bundles installed for org.ops4j.pax.extender.service")
 public class CleanIntegrationTest extends AbstractControlledIntegrationTestBase {
 
     public static Logger LOG = LoggerFactory.getLogger(CleanIntegrationTest.class);

@@ -21,9 +21,9 @@ package org.ops4j.pax.logging;
 import java.util.Iterator;
 
 import org.apache.logging.log4j.MarkerManager;
+import org.ops4j.pax.logging.slf4j.PaxLoggingSLF4JServiceProvider;
 import org.slf4j.IMarkerFactory;
 import org.slf4j.helpers.BasicMarkerFactory;
-import org.slf4j.impl.StaticMarkerBinder;
 
 /**
  * Wrapper for either SLF4J {@code org.slf4j.Marker} or Log4J2 {@code org.apache.logging.log4j.Marker}. We can
@@ -39,7 +39,7 @@ public class PaxMarker {
     private org.slf4j.Marker slf4jMarker;
     private org.apache.logging.log4j.Marker log4j2Marker;
 
-    private final IMarkerFactory factory = StaticMarkerBinder.SINGLETON.getMarkerFactory();
+    private final IMarkerFactory factory = PaxLoggingSLF4JServiceProvider.markerFactory;
 
     public PaxMarker(org.slf4j.Marker slf4jMarker) {
         this.slf4jMarker = slf4jMarker;

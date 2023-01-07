@@ -23,6 +23,7 @@ import java.net.UnknownHostException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -33,6 +34,8 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.Configurator;
+import ch.qos.logback.classic.spi.LogbackServiceProvider;
+import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.status.ErrorStatus;
 import ch.qos.logback.core.status.InfoStatus;
 import ch.qos.logback.core.status.Status;
@@ -55,7 +58,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogEntry;
 import org.osgi.service.log.LogLevel;
-import org.slf4j.impl.StaticLoggerBinder;
 
 /**
  * An implementation of PaxLoggingService that delegates to Logback.
@@ -88,6 +90,8 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
 
     // pax-logging-logback-only key to find BundleContext
     public static final String LOGGER_CONTEXT_BUNDLECONTEXT_KEY = "org.ops4j.pax.logging.logback.bundlecontext";
+
+    private static LogbackServiceProvider logbackServiceProvider;
 
     private final BundleContext m_bundleContext;
 
@@ -156,9 +160,23 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
         if (m_useStaticContext) {
             // org.slf4j.impl.StaticLoggerBinder is included in logback-classic and private-packaged in
             // pax-logging-logback - it's not the same class as the one included in pax-logging-api
-            m_logbackContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+            if (logbackServiceProvider == null) {
+                logbackServiceProvider = new LogbackServiceProvider();
+                logbackServiceProvider.initialize();
+                if (CoreConstants.SCHEDULED_EXECUTOR_POOL_SIZE == 1) {
+                    // https://jira.qos.ch/browse/LOGBACK-1716
+                    ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) ((LoggerContext) logbackServiceProvider.getLoggerFactory()).getScheduledExecutorService();
+                    executor.setCorePoolSize(2);
+                }
+            }
+            m_logbackContext = (LoggerContext) logbackServiceProvider.getLoggerFactory();
         } else {
             m_logbackContext = new LoggerContext();
+            if (CoreConstants.SCHEDULED_EXECUTOR_POOL_SIZE == 1) {
+                // https://jira.qos.ch/browse/LOGBACK-1716
+                ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) m_logbackContext.getScheduledExecutorService();
+                executor.setCorePoolSize(2);
+            }
             m_logbackContext.start();
         }
 
