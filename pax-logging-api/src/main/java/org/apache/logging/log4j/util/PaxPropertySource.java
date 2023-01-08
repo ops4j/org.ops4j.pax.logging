@@ -32,7 +32,7 @@ public class PaxPropertySource implements PropertySource {
     private static final String PREFIX = "log4j2.";
 
     public static boolean debug;
-    public static String defaultLevel;
+    public static String defaultLevel = "DEBUG";
 
     // PAXLOGGING-308: external file may be passed here (can be comma-separated). It'll be picked
     // up by org.apache.logging.log4j.core.config.ConfigurationFactory.Factory.getConfiguration()
