@@ -28,6 +28,9 @@ package org.apache.log4j;
  * For file based configuration see {@link PropertyConfigurator}. For XML based configuration see
  * {@link org.apache.log4j.xml.DOMConfigurator DOMConfigurator}.
  *
+ * <p>
+ * This class isn't used by pax-logging, but is part of public API. Methods are simply no-op.
+ *
  * @author Ceki G&uuml;lc&uuml;
  * @since 0.8.1
  */
@@ -42,8 +45,6 @@ public class BasicConfigurator {
      * <code>System.out</code> to the root category.
      */
     static public void configure() {
-        Logger root = Logger.getRootLogger();
-        root.addAppender(new ConsoleAppender(new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
     }
 
     /**
@@ -52,8 +53,6 @@ public class BasicConfigurator {
      * @param appender The appender to add to the root category.
      */
     static public void configure(Appender appender) {
-        Logger root = Logger.getRootLogger();
-        root.addAppender(appender);
     }
 
     /**
@@ -63,6 +62,5 @@ public class BasicConfigurator {
      * See {@link Hierarchy#resetConfiguration()} for more details.
      */
     public static void resetConfiguration() {
-        LogManager.resetConfiguration();
     }
 }

@@ -22,6 +22,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.io.InterruptedIOException;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+
 /**
  * Load resources (or images) from various sources.
  *
@@ -31,15 +34,6 @@ import java.io.InterruptedIOException;
 public class Loader {
 
     static final String TSTR = "Caught Exception while in Loader.getResource. This may be innocuous.";
-
-    static private boolean ignoreTCL = false;
-
-    static {
-        String ignoreTCLProp = OptionConverter.getSystemProperty("log4j.ignoreTCL", null);
-        if (ignoreTCLProp != null) {
-            ignoreTCL = OptionConverter.toBoolean(ignoreTCLProp, true);
-        }
-    }
 
     /**
      * Get a resource by delegating to getResource(String).
@@ -60,6 +54,7 @@ public class Loader {
      * <li><p>Search for <code>resource</code> using the class
      * loader that loaded this class (<code>Loader</code>).<p>
      * </li>
+     * <li>In Pax Logging, {@link org.osgi.framework.Bundle#getResource(String)} is first checked</li>
      * <li>Try one last time with
      * <code>ClassLoader.getSystemResource(resource)</code>, that is is using the
      * system class loader.
@@ -76,6 +71,15 @@ public class Loader {
     static public URL getResource(String resource) {
         ClassLoader classLoader = null;
         URL url = null;
+
+        Bundle bundle = FrameworkUtil.getBundle(Loader.class);
+        if (bundle != null) {
+            LogLog.debug("Trying to find [" + resource + "] using " + bundle.getSymbolicName() + "/" + bundle.getVersion() + " bundle.");
+            url = bundle.getResource(resource);
+            if (url != null) {
+                return url;
+            }
+        }
 
         try {
             // We could not find resource. Ler us now try with the
@@ -139,9 +143,26 @@ public class Loader {
      * the javadoc above matches the code as executed.
      * </p>
      *
+     * In pax-logging, TCCL is always checked first, then {@link Bundle#loadClass(String)}
+     * eventually {@link Class#forName(String)} is called.
+     *
      * @param clazz the name of class to load
      */
     static public Class loadClass(String clazz) throws ClassNotFoundException {
+        if (Thread.currentThread().getContextClassLoader() != null) {
+            try {
+                return Thread.currentThread().getContextClassLoader().loadClass(clazz);
+            } catch (Exception ignored) {
+            }
+        }
+
+        Bundle bundle = FrameworkUtil.getBundle(Loader.class);
+        if (bundle != null) {
+            try {
+                return bundle.loadClass(clazz);
+            } catch (Exception ignored) {
+            }
+        }
         return Class.forName(clazz);
     }
 }

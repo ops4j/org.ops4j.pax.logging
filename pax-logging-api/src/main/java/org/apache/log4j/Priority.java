@@ -122,7 +122,7 @@ public class Priority {
      * @deprecated This method will be removed with no replacement.
      */
     public static Priority[] getAllPossiblePriorities() {
-        return new Priority[] { Priority.FATAL, Priority.ERROR, Level.WARN, Priority.INFO, Priority.DEBUG };
+        return new Priority[] { Priority.FATAL, Priority.ERROR, Level.WARN, Priority.INFO, Priority.DEBUG, Level.TRACE };
     }
 
     /**
