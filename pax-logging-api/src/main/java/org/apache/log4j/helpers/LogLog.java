@@ -17,6 +17,10 @@
 
 package org.apache.log4j.helpers;
 
+import org.ops4j.pax.logging.PaxLogger;
+import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
+import org.osgi.framework.FrameworkUtil;
+
 /**
  * This class used to output log statements from within the log4j package.
  *
@@ -27,6 +31,9 @@ package org.apache.log4j.helpers;
  * <p>
  * All log4j internal debug calls go to <code>System.out</code> where as internal error messages are sent to
  * <code>System.err</code>. All internal messages are prepended with the string "log4j: ".
+ *
+ * <p>In pax-logging, this class is configured to always delegate to
+ * {@link org.ops4j.pax.logging.spi.support.DefaultServiceLog}.
  *
  * @author Ceki G&uuml;lc&uuml;
  * @since 0.8.2
@@ -69,17 +76,7 @@ public class LogLog {
     private static final String ERR_PREFIX = "log4j:ERROR ";
     private static final String WARN_PREFIX = "log4j:WARN ";
 
-    static {
-        String key = OptionConverter.getSystemProperty(DEBUG_KEY, null);
-
-        if (key == null) {
-            key = OptionConverter.getSystemProperty(CONFIG_DEBUG_KEY, null);
-        }
-
-        if (key != null) {
-            debugEnabled = OptionConverter.toBoolean(key, true);
-        }
-    }
+    private static final PaxLogger log = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(LogLog.class), "log4j");
 
     /**
      * Allows to enable/disable log4j internal logging.
@@ -94,7 +91,7 @@ public class LogLog {
      */
     public static void debug(String msg) {
         if (debugEnabled && !quietMode) {
-            System.out.println(PREFIX + msg);
+            log.debug(msg);
         }
     }
 
@@ -104,9 +101,7 @@ public class LogLog {
      */
     public static void debug(String msg, Throwable t) {
         if (debugEnabled && !quietMode) {
-            System.out.println(PREFIX + msg);
-            if (t != null)
-                t.printStackTrace(System.out);
+            log.debug(msg, t);
         }
     }
 
@@ -117,7 +112,7 @@ public class LogLog {
     public static void error(String msg) {
         if (quietMode)
             return;
-        System.err.println(ERR_PREFIX + msg);
+        log.error(msg);
     }
 
     /**
@@ -128,10 +123,7 @@ public class LogLog {
         if (quietMode)
             return;
 
-        System.err.println(ERR_PREFIX + msg);
-        if (t != null) {
-            t.printStackTrace();
-        }
+        log.error(msg, t);
     }
 
     /**
@@ -151,7 +143,7 @@ public class LogLog {
         if (quietMode)
             return;
 
-        System.err.println(WARN_PREFIX + msg);
+        log.warn(msg);
     }
 
     /**
@@ -162,9 +154,6 @@ public class LogLog {
         if (quietMode)
             return;
 
-        System.err.println(WARN_PREFIX + msg);
-        if (t != null) {
-            t.printStackTrace();
-        }
+        log.warn(msg, t);
     }
 }

@@ -28,6 +28,9 @@ import java.util.Vector;
 import org.apache.log4j.helpers.LogLog;
 
 /**
+ * <p>
+ * NOTE: This class is added to Pax Logging ONLY TO PROVIDE THE API. There is NO SUPPORT for NDC in Pax Logging.
+ *
  * The NDC class implements <i>nested diagnostic contexts</i> as defined by Neil Harrison in the article "Patterns for
  * Logging Diagnostic Messages" part of the book "<i>Pattern Languages of Program Design 3</i>" edited by Martin et al.
  *
@@ -100,42 +103,8 @@ import org.apache.log4j.helpers.LogLog;
 
 public class NDC {
 
-    // The synchronized keyword is not used in this class. This may seem
-    // dangerous, especially since the class will be used by
-    // multiple-threads. In particular, all threads share the same
-    // hashtable (the "ht" variable). This is OK since java hashtables
-    // are thread safe. Same goes for Stacks.
-
-    // More importantly, when inheriting diagnostic contexts the child
-    // thread is handed a clone of the parent's NDC. It follows that
-    // each thread has its own NDC (i.e. stack).
-
-    static Hashtable ht = new Hashtable();
-
-    static int pushCounter = 0; // the number of times push has been called
-    // after the latest call to lazyRemove
-
-    // The number of times we allow push to be called before we call lazyRemove
-    // 5 is a relatively small number. As such, lazyRemove is not called too
-    // frequently. We thus avoid the cost of creating an Enumeration too often.
-    // The higher this number, the longer is the avarage period for which all
-    // logging calls in all threads are blocked.
-    static final int REAP_THRESHOLD = 5;
-
     // No instances allowed.
     private NDC() {
-    }
-
-    /**
-     * Get NDC stack for current thread.
-     *
-     * @return NDC stack for current thread.
-     */
-    private static Stack getCurrentStack() {
-        if (ht != null) {
-            return (Stack) ht.get(Thread.currentThread());
-        }
-        return null;
     }
 
     /**
@@ -148,9 +117,6 @@ public class NDC {
      * @since 0.8.4c
      */
     public static void clear() {
-        Stack stack = getCurrentStack();
-        if (stack != null)
-            stack.setSize(0);
     }
 
     /**
@@ -166,12 +132,7 @@ public class NDC {
      * @return Stack A clone of the current thread's diagnostic context.
      */
     public static Stack cloneStack() {
-        Stack stack = getCurrentStack();
-        if (stack == null)
-            return null;
-        else {
-            return (Stack) stack.clone();
-        }
+        return new Stack();
     }
 
     /**
@@ -193,8 +154,6 @@ public class NDC {
      * @param stack The diagnostic context of the parent thread.
      */
     public static void inherit(Stack stack) {
-        if (stack != null)
-            ht.put(Thread.currentThread(), stack);
     }
 
     /**
@@ -202,11 +161,7 @@ public class NDC {
      * {@link org.apache.log4j.spi.LoggingEvent#getNDC} method instead</b></font>.
      */
     static public String get() {
-        Stack s = getCurrentStack();
-        if (s != null && !s.isEmpty())
-            return ((DiagnosticContext) s.peek()).fullMessage;
-        else
-            return null;
+        return "";
     }
 
     /**
@@ -216,54 +171,7 @@ public class NDC {
      * @since 0.7.5
      */
     public static int getDepth() {
-        Stack stack = getCurrentStack();
-        if (stack == null)
-            return 0;
-        else
-            return stack.size();
-    }
-
-    private static void lazyRemove() {
-        if (ht == null)
-            return;
-
-        // The synchronization on ht is necessary to prevent JDK 1.2.x from
-        // throwing ConcurrentModificationExceptions at us. This sucks BIG-TIME.
-        // One solution is to write our own hashtable implementation.
-        Vector v;
-
-        synchronized (ht) {
-            // Avoid calling clean-up too often.
-            if (++pushCounter <= REAP_THRESHOLD) {
-                return; // We release the lock ASAP.
-            } else {
-                pushCounter = 0; // OK let's do some work.
-            }
-
-            int misses = 0;
-            v = new Vector();
-            Enumeration enumeration = ht.keys();
-            // We give up after 4 straigt missses. That is 4 consecutive
-            // inspected threads in 'ht' that turn out to be alive.
-            // The higher the proportion on dead threads in ht, the higher the
-            // chances of removal.
-            while (enumeration.hasMoreElements() && (misses <= 4)) {
-                Thread t = (Thread) enumeration.nextElement();
-                if (t.isAlive()) {
-                    misses++;
-                } else {
-                    misses = 0;
-                    v.addElement(t);
-                }
-            }
-        } // synchronized
-
-        int size = v.size();
-        for (int i = 0; i < size; i++) {
-            Thread t = (Thread) v.elementAt(i);
-            LogLog.debug("Lazy NDC removal for thread [" + t.getName() + "] (" + ht.size() + ").");
-            ht.remove(t);
-        }
+        return 0;
     }
 
     /**
@@ -276,11 +184,7 @@ public class NDC {
      * @return String The innermost diagnostic context.
      */
     public static String pop() {
-        Stack stack = getCurrentStack();
-        if (stack != null && !stack.isEmpty())
-            return ((DiagnosticContext) stack.pop()).message;
-        else
-            return "";
+        return "";
     }
 
     /**
@@ -293,11 +197,7 @@ public class NDC {
      * @return String The innermost diagnostic context.
      */
     public static String peek() {
-        Stack stack = getCurrentStack();
-        if (stack != null && !stack.isEmpty())
-            return ((DiagnosticContext) stack.peek()).message;
-        else
-            return "";
+        return "";
     }
 
     /**
@@ -309,21 +209,6 @@ public class NDC {
      * @param message The new diagnostic context information.
      */
     public static void push(String message) {
-        Stack stack = getCurrentStack();
-
-        if (stack == null) {
-            DiagnosticContext dc = new DiagnosticContext(message, null);
-            stack = new Stack();
-            Thread key = Thread.currentThread();
-            ht.put(key, stack);
-            stack.push(dc);
-        } else if (stack.isEmpty()) {
-            DiagnosticContext dc = new DiagnosticContext(message, null);
-            stack.push(dc);
-        } else {
-            DiagnosticContext parent = (DiagnosticContext) stack.peek();
-            stack.push(new DiagnosticContext(message, parent));
-        }
     }
 
     /**
@@ -342,12 +227,6 @@ public class NDC {
      * it, then your application is sure to run out of memory.
      */
     static public void remove() {
-        if (ht != null) {
-            ht.remove(Thread.currentThread());
-
-            // Lazily remove dead-thread references in ht.
-            lazyRemove();
-        }
     }
 
     /**
@@ -378,24 +257,6 @@ public class NDC {
      * @since 0.7.5
      */
     static public void setMaxDepth(int maxDepth) {
-        Stack stack = getCurrentStack();
-        if (stack != null && maxDepth < stack.size())
-            stack.setSize(maxDepth);
     }
 
-    // =====================================================================
-    private static class DiagnosticContext {
-
-        String fullMessage;
-        String message;
-
-        DiagnosticContext(String message, DiagnosticContext parent) {
-            this.message = message;
-            if (parent != null) {
-                fullMessage = parent.fullMessage + ' ' + message;
-            } else {
-                fullMessage = message;
-            }
-        }
-    }
 }

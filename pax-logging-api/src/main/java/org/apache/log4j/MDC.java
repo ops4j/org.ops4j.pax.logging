@@ -18,8 +18,11 @@
 package org.apache.log4j;
 
 import java.util.Hashtable;
+import java.util.Map;
 
-import org.apache.log4j.helpers.ThreadLocalMap;
+import org.ops4j.pax.logging.PaxContext;
+import org.ops4j.pax.logging.PaxLoggingManager;
+import org.ops4j.pax.logging.PaxLoggingService;
 
 /**
  * The MDC class is similar to the {@link NDC} class except that it is based on a map instead of a stack. It provides
@@ -41,16 +44,35 @@ import org.apache.log4j.helpers.ThreadLocalMap;
  */
 public class MDC {
 
-    final static MDC mdc = new MDC();
-
-    static final int HT_SIZE = 7;
-
-    // boolean java1;
-
-    Object tlm;
+    /** {@link PaxContext} used when {@link org.ops4j.pax.logging.PaxLoggingService} is not available */
+    private static PaxContext m_defaultContext = new PaxContext();
+    /** {@link PaxContext} obtained from {@link org.ops4j.pax.logging.PaxLoggingService} */
+    private static PaxContext m_context;
 
     private MDC() {
-        tlm = new ThreadLocalMap();
+    }
+
+    /**
+     * <p>For all the methods that use the context, default, static, {@link PaxContext} may be used (tied to pax-logging-api
+     * bundle) if there's no available {@link PaxLoggingManager} or {@link PaxLoggingService}. If the service is
+     * available, it is <strong>always</strong> used to get service specific {@link PaxContext}.</p>
+     * <p>Refering <strong>always</strong> to {@link PaxLoggingService#getPaxContext()} is cheap operation, as it's
+     * only reference to fields.</p>
+     *
+     * <p>See: https://ops4j1.jira.com/browse/PAXLOGGING-247</p>
+     *
+     * @return m_context if the MDC should use the PaxContext object from the PaxLoggingManager,
+     *      or m_defaultContext if the logging manager is not set, or does not have its context available yet.
+     */
+    private static PaxContext getPaxContext() {
+        PaxLoggingManager manager = Logger.m_paxLogging;
+        if (manager != null) {
+            synchronized (MDC.class) {
+                PaxLoggingService service = manager.getPaxLoggingService();
+                m_context = service != null ? service.getPaxContext() : null;
+            }
+        }
+        return m_context != null ? m_context : m_defaultContext;
     }
 
     /**
@@ -61,9 +83,7 @@ public class MDC {
      * If the current thread does not have a context map it is created as a side effect.
      */
     static public void put(String key, Object o) {
-        if (mdc != null) {
-            mdc.put0(key, o);
-        }
+        getPaxContext().put(key, o);
     }
 
     /**
@@ -73,30 +93,25 @@ public class MDC {
      * This method has no side effects.
      */
     static public Object get(String key) {
-        if (mdc != null) {
-            return mdc.get0(key);
-        }
-        return null;
+        return getPaxContext().get(key);
     }
 
     /**
      * Remove the the context identified by the <code>key</code> parameter.
      */
     static public void remove(String key) {
-        if (mdc != null) {
-            mdc.remove0(key);
-        }
+        getPaxContext().remove(key);
     }
 
     /**
      * Get the current thread's MDC as a hashtable. This method is intended to be used internally.
+     *
+     * pax-logging note: this method has different return type than original {@code org.apache.log4j.MDC}.
+     * Originally this method returns {@link Hashtable}, but pax-logging's version
+     * returned {@link Map} for very long time.
      */
-    public static Hashtable getContext() {
-        if (mdc != null) {
-            return mdc.getContext0();
-        } else {
-            return null;
-        }
+    public static Map<?, ?> getContext() {
+        return getPaxContext().getContext();
     }
 
     /**
@@ -105,67 +120,7 @@ public class MDC {
      * @since 1.2.16
      */
     public static void clear() {
-        if (mdc != null) {
-            mdc.clear0();
-        }
-    }
-
-    private void put0(String key, Object o) {
-        if (tlm == null) {
-            return;
-        } else {
-            Hashtable ht = (Hashtable) ((ThreadLocalMap) tlm).get();
-            if (ht == null) {
-                ht = new Hashtable(HT_SIZE);
-                ((ThreadLocalMap) tlm).set(ht);
-            }
-            ht.put(key, o);
-        }
-    }
-
-    private Object get0(String key) {
-        if (tlm == null) {
-            return null;
-        } else {
-            Hashtable ht = (Hashtable) ((ThreadLocalMap) tlm).get();
-            if (ht != null && key != null) {
-                return ht.get(key);
-            } else {
-                return null;
-            }
-        }
-    }
-
-    private void remove0(String key) {
-        if (tlm != null) {
-            Hashtable ht = (Hashtable) ((ThreadLocalMap) tlm).get();
-            if (ht != null) {
-                ht.remove(key);
-                // clean up if this was the last key
-                if (ht.isEmpty()) {
-                    clear0();
-                }
-            }
-        }
-    }
-
-    private Hashtable getContext0() {
-        if (tlm == null) {
-            return null;
-        } else {
-            return (Hashtable) ((ThreadLocalMap) tlm).get();
-        }
-    }
-
-    private void clear0() {
-        if (tlm != null) {
-            Hashtable ht = (Hashtable) ((ThreadLocalMap) tlm).get();
-            if (ht != null) {
-                ht.clear();
-            }
-
-            ((ThreadLocalMap) tlm).remove();
-        }
+        getPaxContext().clear();
     }
 
 }
