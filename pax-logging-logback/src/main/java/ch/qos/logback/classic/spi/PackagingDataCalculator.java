@@ -15,7 +15,9 @@ package ch.qos.logback.classic.spi;
 
 import java.net.URL;
 import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 //import sun.reflect.Reflection;
 
@@ -23,14 +25,21 @@ import java.util.HashMap;
 /**
  * Given a classname locate associated PackageInfo (jar name, version name).
  *
+ * Original change was done in https://github.com/chrisdolan/logback/commits/eb1b03ac72f0534d9152279e39d85a81615a5e78
+ * from logback-classic 0.9.30
+ * Then I started over from the version from logback-classic 1.3.5 and did my best to reapply the OSGi fix
+ *
  * @author James Strachan
  * @Ceki G&uuml;lc&uuml;
+ *
+ * TODO - remove this class from pax-logging-logback when LBCLASSIC-296 is resolved and we pull in a Logback jar
+ *     that has that fix
  */
 public class PackagingDataCalculator {
 
     final static StackTraceElementProxy[] STEP_ARRAY_TEMPLATE = new StackTraceElementProxy[0];
 
-    HashMap<String, ClassPackagingData> cache = new HashMap<String, ClassPackagingData>();
+    HashMap<String, ClassPackagingData> cache = new HashMap<>();
 
     private static boolean GET_CALLER_CLASS_METHOD_AVAILABLE = false; // private static boolean
                                                                       // HAS_GET_CLASS_LOADER_PERMISSION = false;
@@ -51,6 +60,19 @@ public class PackagingDataCalculator {
             System.err.println("Unexpected exception");
             e.printStackTrace();
         }
+    }
+
+    private static final PackagingDataStrategy[] dataStrategies;
+
+    static {
+        List<PackagingDataStrategy> strategies = new ArrayList<>();
+        try {
+            strategies.add(new OsgiPackagingDataStrategy());
+        } catch (Throwable t) {
+            // ignore, probably org.osgi.framework.* is simply not in the classpath, or it's too old (need v4.2.0)
+        }
+        strategies.add(new DefaultPackagingDataStrategy());
+        dataStrategies = strategies.toArray(new PackagingDataStrategy[0]);
     }
 
     public void calculate(IThrowableProxy tp) {
@@ -122,11 +144,7 @@ public class PackagingDataCalculator {
         if (cpd != null) {
             return cpd;
         }
-        String version = getImplementationVersion(type);
-        String codeLocation = getCodeLocation(type);
-        cpd = new ClassPackagingData(codeLocation, version);
-        cache.put(className, cpd);
-        return cpd;
+        return makePackagingFromType(type, className);
     }
 
     private ClassPackagingData computeBySTEP(StackTraceElementProxy step, ClassLoader lastExactClassLoader) {
@@ -136,14 +154,28 @@ public class PackagingDataCalculator {
             return cpd;
         }
         Class<?> type = bestEffortLoadClass(lastExactClassLoader, className);
-        String version = getImplementationVersion(type);
-        String codeLocation = getCodeLocation(type);
-        cpd = new ClassPackagingData(codeLocation, version, false);
+        return makePackagingFromType(type, className);
+    }
+
+    private ClassPackagingData makePackagingFromType(Class<?> type, String className) {
+        ClassPackagingData cpd = null;
+        if (type != null) {
+            for (PackagingDataStrategy strategy : dataStrategies) {
+                cpd = strategy.makePackagingFromType(type, className);
+                if (cpd != null) {
+                    break;
+                }
+            }
+        }
+        if (cpd == null) {
+            // should only happen if type == null
+            cpd = new ClassPackagingData("na", "na");
+        }
         cache.put(className, cpd);
         return cpd;
     }
 
-    String getImplementationVersion(Class<?> type) {
+    static String getImplementationVersion(Class<?> type) {
         if (type == null) {
             return "na";
         }
@@ -160,7 +192,7 @@ public class PackagingDataCalculator {
 
     }
 
-    String getCodeLocation(Class<?> type) {
+    static String getCodeLocation(Class<?> type) {
         try {
             if (type != null) {
                 // file:/C:/java/maven-2.0.8/repo/com/icegreen/greenmail/1.3/greenmail-1.3.jar
@@ -184,7 +216,7 @@ public class PackagingDataCalculator {
         return "na";
     }
 
-    private String getCodeLocation(String locationStr, char separator) {
+    private static String getCodeLocation(String locationStr, char separator) {
         int idx = locationStr.lastIndexOf(separator);
         if (isFolder(idx, locationStr)) {
             idx = locationStr.lastIndexOf(separator, idx - 1);
@@ -195,7 +227,7 @@ public class PackagingDataCalculator {
         return null;
     }
 
-    private boolean isFolder(int idx, String text) {
+    private static boolean isFolder(int idx, String text) {
         return (idx != -1 && idx + 1 == text.length());
     }
 
@@ -242,6 +274,37 @@ public class PackagingDataCalculator {
             return null;
         } catch (Exception e) {
             e.printStackTrace(); // this is unexpected
+            return null;
+        }
+    }
+
+    public interface PackagingDataStrategy {
+        ClassPackagingData makePackagingFromType(Class<?> type, String className);
+    }
+
+    private static final class DefaultPackagingDataStrategy implements PackagingDataStrategy {
+        public ClassPackagingData makePackagingFromType(Class<?> type, String className) {
+            String version = getImplementationVersion(type);
+            String codeLocation = getCodeLocation(type);
+            return new ClassPackagingData(codeLocation, version);
+        }
+    }
+
+    private static final class OsgiPackagingDataStrategy implements PackagingDataStrategy {
+        public ClassPackagingData makePackagingFromType(Class<?> type, String className) {
+            try {
+                org.osgi.framework.Bundle bundle = org.osgi.framework.FrameworkUtil.getBundle(type);
+                if (bundle != null) {
+                    org.osgi.framework.Version bundleVersion = bundle.getVersion();
+                    String version = bundleVersion == org.osgi.framework.Version.emptyVersion ? "na" : bundleVersion.toString();
+                    String codeLocation = bundle.getSymbolicName();
+                    return new ClassPackagingData(codeLocation, version);
+                }
+            } catch (NoSuchMethodError e) {
+                // this means that FrameworkUtil is older than v4.2.0. Give up.
+            } catch (RuntimeException e) {    // at minimum: IllegalStateException, SecurityException
+                // go on to next strategy
+            }
             return null;
         }
     }
