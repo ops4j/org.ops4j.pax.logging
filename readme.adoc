@@ -855,6 +855,7 @@ Here's a list of all `org.apache.logging.log4j` artifacts I found in version 2.1
 * org.apache.logging.log4j:log4j-osgi
 * org.apache.logging.log4j:log4j-slf4j-impl
 * org.apache.logging.log4j:log4j-slf4j18-impl
+* org.apache.logging.log4j:log4j-slf4j2-impl
 * org.apache.logging.log4j:log4j-taglib
 * org.apache.logging.log4j:log4j-to-slf4j
 * org.apache.logging.log4j:log4j-web
@@ -863,7 +864,7 @@ Currently, pax-logging uses 3:
 
 * org.apache.logging.log4j:log4j-api
 * org.apache.logging.log4j:log4j-core
-* org.apache.logging.log4j:log4j-slf4j-impl
+* org.apache.logging.log4j:log4j-slf4j2-impl
 
 I'm going to include some more just like with `log4j:apache-log4j-extras` and `ch.qos.logback.contrib`.
 
@@ -988,7 +989,7 @@ That's tricky problem. If we want to use Pax Exam and test Pax Logging under Kar
 Then, taking into account the logging process itself:
 
 * We want logging statement issued by pax-exam itself to be handled properly (before launching Karaf) - ideally using `src/test/resources/log4j2-test.properties`
-* Thus `test` classpath has to contain `org.slf4j:slf4j-api` and `org.apache.logging.log4j:log4j-slf4j-impl`
+* Thus `test` classpath has to contain `org.slf4j:slf4j-api` and `org.apache.logging.log4j:log4j-slf4j2-impl`
 * Karaf has to start without any `org.ops4j.pax.logging` PID configured, but we want logging statements to be handled properly even if invoked from pax-logging-api bundle activator
 * Thus proper _default service log_ has to be configured in `etc/config.properties`
 * Remember that maven-surefire|failsafe-plugin can be configured with `<redirectTestOutputToFile>`

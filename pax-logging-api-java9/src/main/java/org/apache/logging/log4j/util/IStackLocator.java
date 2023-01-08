@@ -18,6 +18,7 @@
  */
 package org.apache.logging.log4j.util;
 
+import java.util.Deque;
 import java.util.Stack;
 import java.util.function.Predicate;
 
@@ -31,7 +32,7 @@ public interface IStackLocator {
 
     Class<?> getCallerClass(final Class<?> sentinelClass, final Predicate<Class<?>> callerPredicate);
 
-    Stack<Class<?>> getCurrentStackTrace();
+    Deque<Class<?>> getCurrentStackTrace();
 
     StackTraceElement calcLocation(final String fqcnOfLogger);
 

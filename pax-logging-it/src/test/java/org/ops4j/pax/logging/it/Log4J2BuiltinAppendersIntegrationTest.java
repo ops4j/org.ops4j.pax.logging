@@ -182,7 +182,7 @@ public class Log4J2BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
     }
 
     @Test
-    public void listAppender() throws InvalidSyntaxException {
+    public void listAppender() throws InvalidSyntaxException, InterruptedException {
         Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J2_PROPERTIES, "builtin.list");
 
         Logger log = LoggerFactory.getLogger("my.logger");
@@ -192,8 +192,8 @@ public class Log4J2BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
         Collection<ServiceReference<BlockingQueue>> srs = context.getServiceReferences(BlockingQueue.class, "(name=l)");
         assertThat(srs.size(), equalTo(1));
         ServiceReference<?> sr = srs.iterator().next();
-        List<?> list = (List<?>) context.getService(sr);
-        Object obj = list.get(0);
+        BlockingQueue<?> list = (BlockingQueue<?>) context.getService(sr);
+        Object obj = list.take();
 
         assertThat(obj.toString(), equalTo("should be added to list"));
     }
