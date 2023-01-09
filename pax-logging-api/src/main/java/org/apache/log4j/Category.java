@@ -41,7 +41,6 @@ import org.ops4j.pax.logging.PaxLoggingManager;
 import org.ops4j.pax.logging.PaxLoggingManagerAwareLogger;
 import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.log.LogLevel;
 
 import java.util.Enumeration;
 import java.util.ResourceBundle;
@@ -245,7 +244,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log.
      */
     public void debug(Object message) {
-        m_delegate.debug(message == null ? null : message.toString());
+        m_delegate.debug(message == null ? null : message.toString(), null);
     }
 
     /**
@@ -280,7 +279,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
         if (m_delegate.isDebugEnabled()) {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format(msgStr, arg);
-            m_delegate.debug(msgStr);
+            m_delegate.debug(msgStr, null);
         }
     }
 
@@ -300,7 +299,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     public void debug(String messagePattern, Object arg1, Object arg2) {
         if (m_delegate.isDebugEnabled()) {
             String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
-            m_delegate.debug(msgStr);
+            m_delegate.debug(msgStr, null);
         }
     }
 
@@ -312,7 +311,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @since 1.2.12
      */
     public void trace(Object message) {
-        m_delegate.trace(message == null ? null : message.toString());
+        m_delegate.trace(message == null ? null : message.toString(), null);
     }
 
     /**
@@ -349,7 +348,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
         if (m_delegate.isTraceEnabled()) {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format(msgStr, arg);
-            m_delegate.trace(msgStr);
+            m_delegate.trace(msgStr, null);
         }
     }
 
@@ -369,7 +368,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     public void trace(String messagePattern, Object arg1, Object arg2) {
         if (m_delegate.isTraceEnabled()) {
             String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
-            m_delegate.trace(msgStr);
+            m_delegate.trace(msgStr, null);
         }
     }
 
@@ -402,7 +401,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log
      */
     public void error(Object message) {
-        m_delegate.error(message == null ? null : message.toString());
+        m_delegate.error(message == null ? null : message.toString(), null);
     }
 
     /**
@@ -437,7 +436,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
         if (m_delegate.isErrorEnabled()) {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format(msgStr, arg);
-            m_delegate.error(msgStr);
+            m_delegate.error(msgStr, null);
         }
     }
 
@@ -457,7 +456,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     public void error(String messagePattern, Object arg1, Object arg2) {
         if (m_delegate.isErrorEnabled()) {
             String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
-            m_delegate.error(msgStr);
+            m_delegate.error(msgStr, null);
         }
     }
 
@@ -490,7 +489,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log
      */
     public void fatal(Object message) {
-        m_delegate.fatal(message == null ? null : message.toString());
+        m_delegate.fatal(message == null ? null : message.toString(), null);
     }
 
     /**
@@ -511,7 +510,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
         if (m_delegate.isFatalEnabled()) {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format(msgStr, arg);
-            m_delegate.fatal(msgStr);
+            m_delegate.fatal(msgStr, null);
         }
     }
 
@@ -531,7 +530,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     public void fatal(String messagePattern, Object arg1, Object arg2) {
         if (m_delegate.isFatalEnabled()) {
             String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
-            m_delegate.fatal(msgStr);
+            m_delegate.fatal(msgStr, null);
         }
     }
 
@@ -591,26 +590,23 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * The Category class is designed so that this method executes as quickly as possible.
      */
     public Level getEffectiveLevel() {
-        LogLevel level = m_delegate.getLogLevel();
-        if (level == LogLevel.AUDIT) {
-            return AuditLevel.AUDIT;
-        }
-        if (level == LogLevel.TRACE) {
+        int level = m_delegate.getLogLevel();
+        if (level == PaxLogger.LEVEL_TRACE) {
             return Level.TRACE;
         }
-        if (level == LogLevel.DEBUG) {
+        if (level == PaxLogger.LEVEL_DEBUG) {
             return Level.DEBUG;
         }
-        if (level == LogLevel.INFO) {
+        if (level == PaxLogger.LEVEL_INFO) {
             return Level.INFO;
         }
-        if (level == LogLevel.WARN) {
+        if (level == PaxLogger.LEVEL_WARNING) {
             return Level.WARN;
         }
-        if (level == LogLevel.ERROR) {
+        if (level == PaxLogger.LEVEL_ERROR) {
             return Level.ERROR;
         }
-        return Level.OFF;
+        return null;
     }
 
     /**
@@ -764,7 +760,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log
      */
     public void info(Object message) {
-        m_delegate.info(message == null ? null : message.toString());
+        m_delegate.inform(message == null ? null : message.toString(), null);
     }
 
     /**
@@ -785,7 +781,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
         if (m_delegate.isInfoEnabled()) {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format(msgStr, arg);
-            m_delegate.info(msgStr);
+            m_delegate.inform(msgStr, null);
         }
     }
 
@@ -805,7 +801,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     public void info(String messagePattern, Object arg1, Object arg2) {
         if (m_delegate.isInfoEnabled()) {
             String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
-            m_delegate.info(msgStr);
+            m_delegate.inform(msgStr, null);
         }
     }
 
@@ -820,7 +816,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param t       the exception to log, including its stack trace.
      */
     public void info(Object message, Throwable t) {
-        m_delegate.info(message == null ? null : message.toString(), t);
+        m_delegate.inform(message == null ? null : message.toString(), t);
     }
 
     /**
@@ -1128,7 +1124,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
      * @param message the message object to log.
      */
     public void warn(Object message) {
-        m_delegate.warn(message == null ? null : message.toString());
+        m_delegate.warn(message == null ? null : message.toString(), null);
     }
 
     /**
@@ -1144,7 +1140,6 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     public void warn(Object message, Throwable t) {
         m_delegate.warn(message == null ? null : message.toString(), t);
     }
-
 
     /**
      * Log a message with the <code>WARN</code> level with message formatting
@@ -1164,7 +1159,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
         if (m_delegate.isWarnEnabled()) {
             String msgStr = (String) messagePattern;
             msgStr = MessageFormatter.format(msgStr, arg);
-            m_delegate.warn(msgStr);
+            m_delegate.warn(msgStr, null);
         }
     }
 
@@ -1184,7 +1179,7 @@ public abstract class Category implements AppenderAttachable, PaxLoggingManagerA
     public void warn(String messagePattern, Object arg1, Object arg2) {
         if (m_delegate.isWarnEnabled()) {
             String msgStr = MessageFormatter.format(messagePattern, arg1, arg2);
-            m_delegate.warn(msgStr);
+            m_delegate.warn(msgStr, null);
         }
     }
 
