@@ -21,7 +21,7 @@ name: "Build Pax Logging"
 run-name: "Build Pax Logging (${{ github.actor }})"
 
 # trigger condition (see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows)
-#on:
+on: workflow_dispatch
 
 # definitions of jobs for the workflow. By deault they run in parallel.
 jobs:
