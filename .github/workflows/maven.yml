@@ -1,22 +1,47 @@
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+#
+# Copyright 2023 OPS4J.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-name: Java CI with Maven
+# name of the workflow displayed at https://github.com/ops4j/org.ops4j.pax.logging/actions
+name: "Build Pax Logging"
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+# name of particular run of the workflow displayed at https://github.com/ops4j/org.ops4j.pax.logging/actions/workflows/<workflow.yml>
+run-name: "Build Pax Logging (${{ github.actor }})"
 
+# trigger condition (see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows)
+#on:
+
+# definitions of jobs for the workflow. By deault they run in parallel.
 jobs:
-  build:
-
+  build-jdk8:
+    name: "Build Pax Logging with JDK8"
+    permissions: read-all
+    # define the type of machine to run the job on
     runs-on: ubuntu-latest
-
+    # A job contains a sequence of tasks called steps.
+    # Steps can run commands, run setup tasks, or run an action in your repository, a public repository, or an action
+    # published in a Docker registry. Not all steps run actions, but all actions run as a step.
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - run: mvn clean install -f pom.xml -Dinvoker.skip=true
+      - name: "Checkout Pax Logging repository"
+        uses: actions/checkout@v3 # https://github.com/actions/checkout/tree/v3.3.0
+        with:
+          ref: main
+      - name: "Setup Java" # https://github.com/actions/setup-java/tree/v3.9.0
+        uses: actions/setup-jave@v3
+        with:
+          java-version: 8
+          distribution: temurin
+      - name: "Maven Build"
+        run: mvn clean package
