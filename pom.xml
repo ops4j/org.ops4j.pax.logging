@@ -217,7 +217,7 @@
         <version.biz.aQute.bnd>6.1.0</version.biz.aQute.bnd>
         <version.ch.qos.logback>1.3.5</version.ch.qos.logback>
         <version.ch.qos.logback.contrib>0.1.5</version.ch.qos.logback.contrib>
-        <version.ch.qos.reload4j>1.2.22</version.ch.qos.reload4j>
+        <version.ch.qos.reload4j>1.2.24</version.ch.qos.reload4j>
         <version.com.fasterxml.jackson>2.13.3</version.com.fasterxml.jackson>
         <version.com.h2database>2.1.210</version.com.h2database>
         <version.commons-io>2.11.0</version.commons-io>
