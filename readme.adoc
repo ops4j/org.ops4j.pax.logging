@@ -31,10 +31,10 @@ The goal of this project is to allow users and bundles to use well known Logging
 |2.12.4
 |2.17.1
 |2.17.1
-|2.19.0
+|2.20.0
 |2.18.0
 |2.18.0
-|2.19.0
+|2.20.0
 
 |Logback version
 |no
