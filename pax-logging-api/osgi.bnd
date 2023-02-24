@@ -63,6 +63,7 @@ Export-Package: \
  org.apache.juli.logging;-split-package:=merge-first; version=5.5.28; provider=paxlogging, \
  org.apache.avalon.framework.logger;-split-package:=merge-first; version=4.3; provider=paxlogging, \
  org.ops4j.pax.logging.avalon; version=${pom.version}; provider=paxlogging, \
+ org.jboss.logging; version=3.5.0.Final;-split-package:=merge-first; provider=paxlogging, \
  org.jboss.logging; version=3.4.3.Final;-split-package:=merge-first; provider=paxlogging, \
  org.jboss.logging; version=3.3.0.Final;-split-package:=merge-first; provider=paxlogging, \
  org.apache.log4j;-split-package:=merge-first; version=${version.ch.qos.reload4j}; provider=paxlogging, \
