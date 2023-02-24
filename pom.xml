@@ -31,7 +31,7 @@
 
     <groupId>org.ops4j.pax</groupId>
     <artifactId>logging</artifactId>
-    <version>1.12.5</version>
+    <version>1.12.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OPS4J Pax Logging (Build POM)</name>
@@ -47,7 +47,7 @@
         <connection>scm:git:git@github.com:ops4j/org.ops4j.pax.web.git</connection>
         <developerConnection>scm:git:git@github.com:ops4j/org.ops4j.pax.logging.git</developerConnection>
         <url>https://github.com/ops4j/org.ops4j.pax.logging/tree/master</url>
-        <tag>logging-1.12.5</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
