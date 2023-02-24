@@ -14,7 +14,6 @@
  * See the license for the specific language governing permissions and
  * limitations under the license.
  */
-
 package org.apache.logging.log4j;
 
 import java.io.Serializable;
@@ -27,13 +26,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.logging.log4j.message.ParameterizedMessage;
+import org.apache.logging.log4j.spi.CleanableThreadContextMap;
 import org.apache.logging.log4j.spi.DefaultThreadContextMap;
-import org.apache.logging.log4j.spi.DefaultThreadContextStack;
 import org.apache.logging.log4j.spi.NoOpThreadContextMap;
 import org.apache.logging.log4j.spi.ReadOnlyThreadContextMap;
 import org.apache.logging.log4j.spi.ThreadContextMap;
 import org.apache.logging.log4j.spi.ThreadContextMap2;
-import org.apache.logging.log4j.spi.CleanableThreadContextMap;
 import org.apache.logging.log4j.spi.ThreadContextMapFactory;
 import org.apache.logging.log4j.spi.ThreadContextStack;
 import org.apache.logging.log4j.util.PropertiesUtil;
@@ -211,7 +209,7 @@ public final class ThreadContext {
     /**
      * <em>Consider private, used for testing.</em>
      */
-    static void init() {
+    public static void init() {
         contextMap = null;
         final PropertiesUtil managerProps = PropertiesUtil.getProperties();
         boolean disableAll = managerProps.getBooleanProperty(DISABLE_ALL);

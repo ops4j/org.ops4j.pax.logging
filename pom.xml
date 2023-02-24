@@ -231,7 +231,7 @@
         <version.org.apache.felix.configadmin>1.9.22</version.org.apache.felix.configadmin>
         <version.org.apache.felix6.framework>6.0.5</version.org.apache.felix6.framework>
         <version.org.apache.felix7.framework>7.0.3</version.org.apache.felix7.framework>
-        <version.org.apache.logging.log4j>2.19.0</version.org.apache.logging.log4j>
+        <version.org.apache.logging.log4j>2.20.0</version.org.apache.logging.log4j>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
         <version.org.apache.sling.commons.johnzon>1.2.14</version.org.apache.sling.commons.johnzon>
         <version.org.jboss.logging>3.4.3.Final</version.org.jboss.logging>
