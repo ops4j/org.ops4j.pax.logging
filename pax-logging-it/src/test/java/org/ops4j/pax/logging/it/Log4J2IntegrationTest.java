@@ -129,7 +129,7 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         String name = Log4J2IntegrationTest.class.getName();
 
         Logger slf4jLogger = LoggerFactory.getLogger(name);
-        slf4jLogger.info("INFO through SLF4J");
+        slf4jLogger.info("INFO through SLF4J {}", "arg1{}arg1");
         slf4jLogger.trace("TRACE through SLF4J");
 
         org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog(name);
@@ -166,7 +166,7 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         List<String> lines = readLines();
         lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through SLF4J"));
+        assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through SLF4J arg1{}arg1"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through SLF4J"));
         assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through Apache Commons Logging"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through Apache Commons Logging"));
