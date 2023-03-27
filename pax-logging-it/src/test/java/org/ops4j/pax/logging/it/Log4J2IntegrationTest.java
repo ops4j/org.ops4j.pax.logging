@@ -133,7 +133,7 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         org.osgi.service.log.Logger log = loggerFactory.getLogger("my.logger");
         log.info("INFO1 through org.osgi.service.log.Logger");
         log.debug("DEBUG1 through org.osgi.service.log.Logger");
-        log.warn("WARN1 through org.osgi.service.log.Logger {}", "arg1");
+        log.warn("WARN1 through org.osgi.service.log.Logger {}", "arg1{}arg1");
 
         log = loggerFactory.getLogger("my.logger", FormatterLogger.class);
         log.info("INFO2 through org.osgi.service.log.Logger");
@@ -147,7 +147,7 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
 
         assertTrue(lines.contains("[main] INFO  my.logger - INFO1 through org.osgi.service.log.Logger"));
         assertTrue(lines.contains("[main] DEBUG my.logger - DEBUG1 through org.osgi.service.log.Logger"));
-        assertTrue(lines.contains("[main] WARN  my.logger - WARN1 through org.osgi.service.log.Logger arg1"));
+        assertTrue(lines.contains("[main] WARN  my.logger - WARN1 through org.osgi.service.log.Logger arg1{}arg1"));
         assertTrue(lines.contains("[main] INFO  my.logger - INFO2 through org.osgi.service.log.Logger"));
         assertTrue(lines.contains("[main] DEBUG my.logger - DEBUG2 through org.osgi.service.log.Logger"));
         assertTrue(lines.contains("[main] WARN  my.logger - WARN2 through org.osgi.service.log.Logger arg1"));
@@ -160,7 +160,7 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         String name = Log4J2IntegrationTest.class.getName();
 
         Logger slf4jLogger = LoggerFactory.getLogger(name);
-        slf4jLogger.info("INFO through SLF4J");
+        slf4jLogger.info("INFO through SLF4J {}", "arg1{}arg1");
         slf4jLogger.trace("TRACE through SLF4J");
 
         org.apache.commons.logging.Log commonsLogger = org.apache.commons.logging.LogFactory.getLog(name);
@@ -197,7 +197,7 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
         List<String> lines = readLines();
         lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through SLF4J"));
+        assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through SLF4J arg1{}arg1"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through SLF4J"));
         assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through Apache Commons Logging"));
         assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.Log4J2IntegrationTest - TRACE through Apache Commons Logging"));

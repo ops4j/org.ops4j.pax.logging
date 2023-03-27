@@ -75,6 +75,9 @@ public class MessageFormatterArrayTest {
         Logger logger = LoggerFactory.getLogger(MessageFormatterArrayTest.class);
         logger.info("My message with 3 parameters : {}, {}, {}", "1", "2", "3");
         assertEquals("info:My message with 3 parameters : 1, 2, 3", output);
+
+        logger.info("My message with 1 parameter : {}", "test{}test");
+        assertEquals("info:My message with 1 parameter : test{}test", output);
     }
 
     @Test

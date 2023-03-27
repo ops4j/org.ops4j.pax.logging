@@ -87,10 +87,10 @@ public class FormattingTriple {
             }
             // format is one-argument format
             if (printfFormatting) {
-                String m = String.format(format, argArray);
+                String m = resolve ? String.format(format, argArray) : format;
                 return new FormattingTriple(m, argArray, null, null);
             } else {
-                String m = MessageFormatter.arrayFormat(format, argArray, null).getMessage();
+                String m = resolve ? MessageFormatter.arrayFormat(format, argArray, null).getMessage() : format;
                 return new FormattingTriple(m, argArray, null, null);
             }
         }
