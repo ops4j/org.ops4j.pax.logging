@@ -219,7 +219,7 @@
         <version.ch.qos.logback.contrib>0.1.5</version.ch.qos.logback.contrib>
         <version.ch.qos.reload4j>1.2.24</version.ch.qos.reload4j>
         <version.com.fasterxml.jackson>2.13.3</version.com.fasterxml.jackson>
-        <version.com.h2database>2.1.210</version.com.h2database>
+        <version.com.h2database>2.2.220</version.com.h2database>
         <version.commons-io>2.11.0</version.commons-io>
         <version.commons-logging>1.2</version.commons-logging>
         <version.junit>4.13.2</version.junit>
