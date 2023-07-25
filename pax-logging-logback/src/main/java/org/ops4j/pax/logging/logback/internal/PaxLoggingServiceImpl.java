@@ -35,6 +35,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.Configurator;
 import ch.qos.logback.classic.spi.LogbackServiceProvider;
+import ch.qos.logback.classic.util.LogbackMDCAdapter;
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.status.ErrorStatus;
 import ch.qos.logback.core.status.InfoStatus;
@@ -172,6 +173,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
             m_logbackContext = (LoggerContext) logbackServiceProvider.getLoggerFactory();
         } else {
             m_logbackContext = new LoggerContext();
+            m_logbackContext.setMDCAdapter(new Slf4jLogbackMDCAdapter());
             if (CoreConstants.SCHEDULED_EXECUTOR_POOL_SIZE == 1) {
                 // https://jira.qos.ch/browse/LOGBACK-1716
                 ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) m_logbackContext.getScheduledExecutorService();

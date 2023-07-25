@@ -34,7 +34,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.ops4j.pax.logging.PaxContext;
-import org.ops4j.pax.logging.PaxLogger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.osgi.service.log.LogLevel;
@@ -54,6 +53,7 @@ public class PaxLoggerImplTest {
     public void test() {
         String fqcn = "blarg";
         LoggerContext context = new LoggerContext();
+        context.setMDCAdapter(new Slf4jLogbackMDCAdapter());
         Logger logger = context.getLogger("foo");
         PaxContext paxContext = new PaxContext();
 
@@ -102,6 +102,7 @@ public class PaxLoggerImplTest {
     @Test
     public void testTestCode() {
         LoggerContext context = new LoggerContext();
+        context.setMDCAdapter(new Slf4jLogbackMDCAdapter());
         Logger logger = context.getLogger("lg");
         LoggingEvent e1 = new LoggingEvent("foo", logger, Level.DEBUG, "bar", null, null); // MDC is null
         Assert.assertTrue(e1.toString(), new LoggingEventMatcher(e1).matches(e1));

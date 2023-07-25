@@ -100,8 +100,8 @@ public class LogbackWithConfigAdminIntegrationTest extends AbstractStdoutInterce
         lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
         // verification of LogLog messages
-        assertTrue(lines.contains("[main] INFO defaultConfigurationButUsingConfigAdmin - Before org.osgi.service.cm.Configuration.update()"));
-        assertTrue(lines.contains("[main] INFO defaultConfigurationButUsingConfigAdmin - After org.osgi.service.cm.Configuration.update()"));
+        assertTrue(lines.contains("[main] INFO defaultConfigurationButUsingConfigAdmin -- Before org.osgi.service.cm.Configuration.update()"));
+        assertTrue(lines.contains("[main] INFO defaultConfigurationButUsingConfigAdmin -- After org.osgi.service.cm.Configuration.update()"));
     }
 
 }

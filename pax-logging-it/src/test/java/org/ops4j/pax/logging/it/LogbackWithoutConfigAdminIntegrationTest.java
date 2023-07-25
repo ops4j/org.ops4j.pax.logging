@@ -61,7 +61,7 @@ public class LogbackWithoutConfigAdminIntegrationTest extends AbstractStdoutInte
 
         List<String> lines = readLines(13);
 
-        assertTrue(lines.contains("[main] INFO defaultConfigurationWithoutConfigAdmin - After pax-logging-logback start"));
+        assertTrue(lines.contains("[main] INFO defaultConfigurationWithoutConfigAdmin -- After pax-logging-logback start"));
     }
 
 }

@@ -71,10 +71,10 @@ public class LogbackUpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutI
         List<String> lines = readLines();
         lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        assertFalse(lines.contains("[main] INFO l1 - INFO using l1 before"));
-        assertTrue(lines.contains("[main] INFO l2 - INFO using l2 before"));
-        assertTrue(lines.contains("[main] INFO l1 - INFO using l1 after"));
-        assertFalse(lines.contains("[main] INFO l2 - INFO using l2 after"));
+        assertFalse(lines.contains("[main] INFO l1 -- INFO using l1 before"));
+        assertTrue(lines.contains("[main] INFO l2 -- INFO using l2 before"));
+        assertTrue(lines.contains("[main] INFO l1 -- INFO using l1 after"));
+        assertFalse(lines.contains("[main] INFO l2 -- INFO using l2 after"));
     }
 
 }

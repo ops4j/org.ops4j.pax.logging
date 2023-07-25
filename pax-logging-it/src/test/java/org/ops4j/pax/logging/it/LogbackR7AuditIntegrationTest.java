@@ -72,7 +72,7 @@ public class LogbackR7AuditIntegrationTest extends AbstractStdoutInterceptingInt
         List<String> lines = readLines(13);
 
         // Logback doesn't support custom log levels... see ch.qos.logback.classic.Level.fromLocationAwareLoggerInteger
-        assertTrue(lines.contains("[main] ERROR my.logger - This shall pass to console"));
+        assertTrue(lines.contains("[main] ERROR my.logger -- This shall pass to console"));
     }
 
     @Test
