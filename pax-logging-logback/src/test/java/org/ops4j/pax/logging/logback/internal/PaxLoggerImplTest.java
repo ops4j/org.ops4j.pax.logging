@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.ops4j.pax.logging.PaxContext;
+import org.ops4j.pax.logging.PaxLogger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 import org.slf4j.MDC;
