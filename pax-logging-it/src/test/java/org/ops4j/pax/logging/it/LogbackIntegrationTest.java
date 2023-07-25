@@ -81,7 +81,8 @@ public class LogbackIntegrationTest extends AbstractStdoutInterceptingIntegratio
     public void simplestUsage() throws IOException {
         Logger log = LoggerFactory.getLogger(LogbackIntegrationTest.class);
         // MDC won't be printed because default ch.qos.logback.classic.layout.TTLLLayout layout doesn't handle it
-        // TTLL layout is %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+        // https://jira.qos.ch/browse/LOGBACK-1707 changed the layout
+        // TTLL layout is %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -%kvp- %msg%n
         MDC.put("user", "me");
         MDC.put("country", "Equestria");
 
@@ -91,7 +92,7 @@ public class LogbackIntegrationTest extends AbstractStdoutInterceptingIntegratio
         List<String> lines = readLines();
         lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - simplestUsage - INFO"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest -- simplestUsage - INFO"));
         assertTrue("Line should be printed without MDC", lines.stream().noneMatch(l -> l.contains("Equestria")));
     }
 
@@ -106,8 +107,8 @@ public class LogbackIntegrationTest extends AbstractStdoutInterceptingIntegratio
         List<String> lines = readLines();
         lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - INFO through java.util.logging"));
-        assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.LogbackIntegrationTest - FINE through java.util.logging"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest -- INFO through java.util.logging"));
+        assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.LogbackIntegrationTest -- FINE through java.util.logging"));
         assertFalse(lines.stream().anyMatch(l -> l.contains("FINER through java.util.logging")));
         assertFalse(lines.stream().anyMatch(l -> l.contains("FINEST through java.util.logging")));
     }
@@ -125,10 +126,10 @@ public class LogbackIntegrationTest extends AbstractStdoutInterceptingIntegratio
         List<String> lines = readLines();
         lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO1 through org.osgi.service.log"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through org.osgi.service.log"));
-        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO2 through org.osgi.service.log"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through org.osgi.service.log"));
+        assertTrue(lines.contains("[main] INFO PaxExam-Probe -- INFO1 through org.osgi.service.log"));
+        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe -- DEBUG1 through org.osgi.service.log"));
+        assertTrue(lines.contains("[main] INFO PaxExam-Probe -- INFO2 through org.osgi.service.log"));
+        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe -- DEBUG2 through org.osgi.service.log"));
     }
 
     @Test
@@ -171,22 +172,22 @@ public class LogbackIntegrationTest extends AbstractStdoutInterceptingIntegratio
         List<String> lines = readLines();
         lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - INFO through SLF4J arg1{}arg1"));
-        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest - TRACE through SLF4J"));
-        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - INFO through Apache Commons Logging"));
-        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest - TRACE through Apache Commons Logging"));
-        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - INFO through JULI Logging"));
-        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest - TRACE through JULI Logging"));
-        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - INFO through Avalon Logger API"));
-        assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.LogbackIntegrationTest - DEBUG through Avalon Logger API"));
-        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - INFO through JBoss Logging Logger API"));
-        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest - TRACE through JBoss Logging Logger API"));
-        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO1 through Knopflerfish"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG1 through Knopflerfish"));
-        assertTrue(lines.contains("[main] INFO PaxExam-Probe - INFO2 through Knopflerfish"));
-        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe - DEBUG2 through Knopflerfish"));
-        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest - INFO through Log4J v2 API"));
-        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest - TRACE through Log4J v2 API"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest -- INFO through SLF4J arg1{}arg1"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest -- TRACE through SLF4J"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest -- INFO through Apache Commons Logging"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest -- TRACE through Apache Commons Logging"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest -- INFO through JULI Logging"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest -- TRACE through JULI Logging"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest -- INFO through Avalon Logger API"));
+        assertTrue(lines.contains("[main] DEBUG org.ops4j.pax.logging.it.LogbackIntegrationTest -- DEBUG through Avalon Logger API"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest -- INFO through JBoss Logging Logger API"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest -- TRACE through JBoss Logging Logger API"));
+        assertTrue(lines.contains("[main] INFO PaxExam-Probe -- INFO1 through Knopflerfish"));
+        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe -- DEBUG1 through Knopflerfish"));
+        assertTrue(lines.contains("[main] INFO PaxExam-Probe -- INFO2 through Knopflerfish"));
+        assertTrue(lines.contains("[main] DEBUG PaxExam-Probe -- DEBUG2 through Knopflerfish"));
+        assertTrue(lines.contains("[main] INFO org.ops4j.pax.logging.it.LogbackIntegrationTest -- INFO through Log4J v2 API"));
+        assertFalse(lines.contains("[main] TRACE org.ops4j.pax.logging.it.LogbackIntegrationTest -- TRACE through Log4J v2 API"));
     }
 
 }

@@ -129,18 +129,18 @@ public class LogbackRestartPaxLoggingLogbackIntegrationTest extends AbstractStdo
         List<String> lines2 = lines.stream().map(l -> l.length() > 13 ? l.substring(13) : l)
                 .collect(Collectors.toList());
 
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest - Before restarting pax-logging-logback"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe - Before restarting pax-logging-logback"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest -- Before restarting pax-logging-logback"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe -- Before restarting pax-logging-logback"));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest] INFO : When pax-logging-logback is stopped"));
         assertFalse("old LogService reference should not work", lines.stream().anyMatch(l -> l.contains("When pax-logging-logback is stopped (log service)")));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest] INFO : When pax-logging-logback is stopped (log1)"));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTestEx] INFO : When pax-logging-logback is stopped (log2)"));
         assertTrue("Reconfiguration", lines.contains("org.ops4j.pax.logging.pax-logging-logback [logback] INFO : Logback configured using default configuration."));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest - After restarting pax-logging-logback"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest - After restarting pax-logging-logback (log1)"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe - After restarting pax-logging-logback (log service old ref)"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe - After restarting pax-logging-logback (log service new ref)"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest - After restarting pax-logging-logback (log3)"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest -- After restarting pax-logging-logback"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest -- After restarting pax-logging-logback (log1)"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe -- After restarting pax-logging-logback (log service old ref)"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe -- After restarting pax-logging-logback (log service new ref)"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingLogbackIntegrationTest -- After restarting pax-logging-logback (log3)"));
     }
 
 }

@@ -114,19 +114,19 @@ public class LogbackRestartPaxLoggingApiIntegrationTest extends AbstractStdoutIn
         List<String> lines2 = lines.stream().map(l -> l.length() > 13 ? l.substring(13) : l)
                 .collect(Collectors.toList());
 
-        assertTrue("line from TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest - Before restarting pax-logging-api"));
-        assertTrue("line from TTLLLayout (log service)", lines2.contains("[main] INFO PaxExam-Probe - Before restarting pax-logging-api"));
-        assertTrue("line from TTLLLayout when pax-logging-api is being stopped", lines2.contains("[main] INFO org.ops4j.pax.logging.internal.Activator - Disabling SLF4J API support."));
+        assertTrue("line from TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest -- Before restarting pax-logging-api"));
+        assertTrue("line from TTLLLayout (log service)", lines2.contains("[main] INFO PaxExam-Probe -- Before restarting pax-logging-api"));
+        assertTrue("line from TTLLLayout when pax-logging-api is being stopped", lines2.contains("[main] INFO org.ops4j.pax.logging.internal.Activator -- Disabling SLF4J API support."));
         assertTrue("line from DefaultServiceLog when pax-logging-api is stopped", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest] INFO : When pax-logging-api is stopped"));
         assertTrue("line from DefaultServiceLog when pax-logging-api is stopped (new logger)", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest] INFO : When pax-logging-api is stopped (log1a)"));
         assertTrue("line from DefaultServiceLog when pax-logging-api is stopped (new logger)", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest] INFO : When pax-logging-api is stopped (log1b)"));
-        assertTrue("line from TTLLLayout when pax-logging-api is stopped (log service)", lines2.contains("[main] INFO PaxExam-Probe - When pax-logging-api is stopped"));
-        assertTrue("line from TTLLLayout when pax-logging-api is being started", lines2.contains("[main] INFO org.ops4j.pax.logging.internal.Activator - Enabling SLF4J API support."));
+        assertTrue("line from TTLLLayout when pax-logging-api is stopped (log service)", lines2.contains("[main] INFO PaxExam-Probe -- When pax-logging-api is stopped"));
+        assertTrue("line from TTLLLayout when pax-logging-api is being started", lines2.contains("[main] INFO org.ops4j.pax.logging.internal.Activator -- Enabling SLF4J API support."));
         assertTrue("line from DefaultServiceLog when pax-logging-api is started", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest] INFO : After restarting pax-logging-api"));
-        assertTrue("line from TTLLLayout when pax-logging-api is started (new logger)", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest - After restarting pax-logging-api (log1a)"));
-        assertTrue("line from TTLLLayout when pax-logging-api is started (new logger)", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest - After restarting pax-logging-api (log1b)"));
-        assertTrue("line from TTLLLayout when pax-logging-api is started", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest - After restarting pax-logging-api (log2)"));
-        assertTrue("line from TTLLLayout when pax-logging-api is started (log service)", lines2.contains("[main] INFO PaxExam-Probe - After restarting pax-logging-api"));
+        assertTrue("line from TTLLLayout when pax-logging-api is started (new logger)", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest -- After restarting pax-logging-api (log1a)"));
+        assertTrue("line from TTLLLayout when pax-logging-api is started (new logger)", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest -- After restarting pax-logging-api (log1b)"));
+        assertTrue("line from TTLLLayout when pax-logging-api is started", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartPaxLoggingApiIntegrationTest -- After restarting pax-logging-api (log2)"));
+        assertTrue("line from TTLLLayout when pax-logging-api is started (log service)", lines2.contains("[main] INFO PaxExam-Probe -- After restarting pax-logging-api"));
     }
 
 }

@@ -131,8 +131,8 @@ public class LogbackFrameworkEventsIntegrationTest extends AbstractStdoutInterce
         List<String> lines2 = readLines();
         List<String> lines3 = lines2.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
-        // we should see start of pax-logging-log4j2 bundle
-        assertTrue(lines3.contains("[main] INFO org.osgi.framework.BundleEvent - BundleEvent STARTED"));
+        // we should see start of pax-logging-logback bundle
+        assertTrue(lines3.contains("[main] INFO org.osgi.framework.BundleEvent -- BundleEvent STARTED"));
         // we should see registration of our java.util.List service
         assertTrue(lines1.contains("{main} org.osgi.framework.ServiceEvent [INFO] ServiceEvent REGISTERED - [java.util.List]"));
         // we should also see error event with stack trace

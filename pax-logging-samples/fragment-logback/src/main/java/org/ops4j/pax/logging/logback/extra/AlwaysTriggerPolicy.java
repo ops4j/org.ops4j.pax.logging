@@ -26,11 +26,11 @@ public class AlwaysTriggerPolicy extends TimeBasedRollingPolicy<ILoggingEvent> {
 
     @Override
     public void start() {
-        // setting this before we start allows for propert configuration in super.start()
+        // setting this before we start allows for property configuration in super.start()
         setTimeBasedFileNamingAndTriggeringPolicy(new DefaultTimeBasedFileNamingAndTriggeringPolicy<ILoggingEvent>() {
             @Override
-            protected void computeNextCheck() {
-                nextCheck = System.currentTimeMillis() - 1L;
+            protected long computeNextCheck(long timestamp) {
+                return System.currentTimeMillis() - 1L;
             }
 
             @Override

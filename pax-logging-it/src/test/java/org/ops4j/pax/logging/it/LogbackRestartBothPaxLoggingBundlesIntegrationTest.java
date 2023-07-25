@@ -129,20 +129,20 @@ public class LogbackRestartBothPaxLoggingBundlesIntegrationTest extends Abstract
         List<String> lines2 = lines.stream().map(l -> l.length() > 13 ? l.substring(13) : l)
                 .collect(Collectors.toList());
 
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartBothPaxLoggingBundlesIntegrationTest - Before restarting"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe - Before restarting"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.internal.Activator - Disabling SLF4J API support."));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartBothPaxLoggingBundlesIntegrationTest -- Before restarting"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe -- Before restarting"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.internal.Activator -- Disabling SLF4J API support."));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartBothPaxLoggingBundlesIntegrationTest] INFO : When bundles are stopped"));
         assertFalse("old LogService reference should not work", lines.contains("When pax-logging-logback is stopped (log service)"));
         assertTrue("old LogService reference should not work", lines.contains("org.ops4j.pax.logging.pax-logging-logback [logback] WARN : No appenders present in context [default] for logger [PaxExam-Probe]."));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartBothPaxLoggingBundlesIntegrationTest] INFO : When bundles are stopped (log1)"));
         assertTrue("Reconfiguration", lines.contains("org.ops4j.pax.logging.pax-logging-logback [logback] INFO : Logback configured using default configuration."));
-        assertTrue("TTLLLayout, startup of pax-logging-api", lines2.contains("[main] INFO org.ops4j.pax.logging.internal.Activator - Enabling Java Util Logging API support."));
+        assertTrue("TTLLLayout, startup of pax-logging-api", lines2.contains("[main] INFO org.ops4j.pax.logging.internal.Activator -- Enabling Java Util Logging API support."));
         assertTrue("Default Logger", lines.contains("PaxExam-Probe [org.ops4j.pax.logging.it.LogbackRestartBothPaxLoggingBundlesIntegrationTest] INFO : After restarting bundles"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartBothPaxLoggingBundlesIntegrationTest - After restarting bundles (log1)"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe - After restarting bundles (log service old ref)"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe - After restarting bundles (log service new ref)"));
-        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartBothPaxLoggingBundlesIntegrationTest - After restarting bundles (log3)"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartBothPaxLoggingBundlesIntegrationTest -- After restarting bundles (log1)"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe -- After restarting bundles (log service old ref)"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO PaxExam-Probe -- After restarting bundles (log service new ref)"));
+        assertTrue("TTLLLayout", lines2.contains("[main] INFO org.ops4j.pax.logging.it.LogbackRestartBothPaxLoggingBundlesIntegrationTest -- After restarting bundles (log3)"));
     }
 
 }
