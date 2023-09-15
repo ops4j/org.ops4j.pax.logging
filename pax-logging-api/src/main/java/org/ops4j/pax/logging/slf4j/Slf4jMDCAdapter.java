@@ -17,6 +17,7 @@
  */
 package org.ops4j.pax.logging.slf4j;
 
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,6 +89,9 @@ public class Slf4jMDCAdapter implements MDCAdapter {
     public Map<String, String> getCopyOfContextMap() {
         Map<String, Object> copy = getContext().getCopyOfContextMap();
         Map<String, String> result = new HashMap<>();
+        if (copy == null) {
+            return Collections.emptyMap();
+        }
         copy.forEach((k, v) -> {
             if (v instanceof String) {
                 result.put(k, (String) v);
