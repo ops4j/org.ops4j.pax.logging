@@ -27,6 +27,7 @@
         <groupId>org.ops4j</groupId>
         <artifactId>master</artifactId>
         <version>4.3.0</version>
+        <relativePath/>
     </parent>
 
     <groupId>org.ops4j.pax</groupId>
