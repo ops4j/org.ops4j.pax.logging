@@ -75,6 +75,106 @@
                             <outputDirectory>${project.build.directory}/unpack-deps/log4j-api</outputDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>unpack-sources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>commons-logging</groupId>
+                                    <artifactId>commons-logging</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.logging.log4j</groupId>
+                                    <artifactId>log4j-api</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.jboss.logging</groupId>
+                                    <artifactId>jboss-logging</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.slf4j</groupId>
+                                    <artifactId>slf4j-api</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-avalon-sources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.avalon.framework</groupId>
+                                    <artifactId>avalon-framework-api</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/avalon-sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-reload4j-sources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>ch.qos.reload4j</groupId>
+                                    <artifactId>reload4j</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/reload4j-sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-tomcat-juli-sources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.tomcat</groupId>
+                                    <artifactId>tomcat-juli</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/tomcat-juli-sources</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>unpack-osgi-cmpn-sources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.osgi</groupId>
+                                    <artifactId>osgi.cmpn</artifactId>
+                                    <classifier>sources</classifier>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/osgi-cmpn-sources</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -96,6 +196,72 @@
                                     </includes>
                                 </resource>
                             </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-sources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="Copying sources to include in sources jar" />
+
+                                <mkdir dir="${project.build.directory}/sources/org/apache/avalon/framework/logger" />
+                                <copy todir="${project.build.directory}/sources/org/apache/avalon/framework/logger">
+                                    <fileset dir="${project.build.directory}/avalon-sources/org/apache/avalon/framework/logger" />
+                                </copy>
+
+                                <mkdir dir="${project.build.directory}/sources/org/apache/juli/logging" />
+                                <copy todir="${project.build.directory}/sources/org/apache/juli/logging">
+                                    <fileset dir="${project.build.directory}/tomcat-juli-sources/org/apache/juli/logging" />
+                                </copy>
+
+                                <mkdir dir="${project.build.directory}/sources/org/apache/log4j" />
+                                <delete dir="${project.build.directory}/reload4j-sources/org/apache/log4j/chainsaw" />
+                                <delete dir="${project.build.directory}/reload4j-sources/org/apache/log4j/jdbc" />
+                                <delete dir="${project.build.directory}/reload4j-sources/org/apache/log4j/net" />
+                                <delete dir="${project.build.directory}/reload4j-sources/org/apache/log4j/or/jms" />
+                                <delete dir="${project.build.directory}/reload4j-sources/org/apache/log4j/or/sax" />
+                                <delete dir="${project.build.directory}/reload4j-sources/org/apache/log4j/rewrite" />
+                                <delete dir="${project.build.directory}/reload4j-sources/org/apache/log4j/varia" />
+                                <copy todir="${project.build.directory}/sources/org/apache/log4j">
+                                    <fileset dir="${project.build.directory}/reload4j-sources/org/apache/log4j" />
+                                </copy>
+
+                                <mkdir dir="${project.build.directory}/sources/org/osgi/service/log" />
+                                <copy todir="${project.build.directory}/sources/org/osgi/service/log">
+                                    <fileset dir="${project.build.directory}/osgi-cmpn-sources/org/osgi/service/log" />
+                                </copy>
+
+                                <copy todir="${project.build.directory}/sources">
+                                    <fileset dir="${project.basedir}/src/main/java" />
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enhanced-source-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>sources</classifier>
+                            <classesDirectory>${project.build.directory}/sources</classesDirectory>
                         </configuration>
                     </execution>
                 </executions>
