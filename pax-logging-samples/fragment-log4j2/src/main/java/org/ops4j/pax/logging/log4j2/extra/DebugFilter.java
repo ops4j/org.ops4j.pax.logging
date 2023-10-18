@@ -27,6 +27,7 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.message.SimpleMessage;
 
 @Plugin(name = "PaxDebug", category = Core.CATEGORY_NAME)
 public class DebugFilter extends AbstractFilter {

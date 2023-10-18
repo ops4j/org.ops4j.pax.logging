@@ -229,7 +229,7 @@
         <version.org.apache.felix.fileinstall>3.6.4</version.org.apache.felix.fileinstall>
         <version.org.apache.felix.configadmin>1.9.26</version.org.apache.felix.configadmin>
         <version.org.apache.felix.framework>5.6.12</version.org.apache.felix.framework>
-        <version.org.apache.logging.log4j>2.20.0</version.org.apache.logging.log4j>
+        <version.org.apache.logging.log4j>2.21.0</version.org.apache.logging.log4j>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
         <!-- 3.5.0.Final is JDK11 only, but we'll export 3.5.3 package version anyway -->
         <version.org.jboss.logging>3.4.3.Final</version.org.jboss.logging>
@@ -427,6 +427,7 @@
                         <instructions>
                             <Bundle-DocURL>${project.url}</Bundle-DocURL>
                             <_include>-osgi.bnd</_include>
+                            <_bundleannotations />
                         </instructions>
                     </configuration>
                     <dependencies>

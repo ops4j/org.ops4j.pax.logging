@@ -1,18 +1,18 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements. See the NOTICE file distributed with
+ * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache license, Version 2.0
+ * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * the License.  You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the license for the specific language governing permissions and
- * limitations under the license.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.logging.log4j.core.appender.db.jdbc;
 
@@ -66,11 +66,11 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
     /**
      * Encapsulates data that {@link JdbcDatabaseManagerFactory} uses to create managers.
      */
-    private static final class FactoryData extends AbstractDatabaseManager.AbstractFactoryData {
+    static final class FactoryData extends AbstractDatabaseManager.AbstractFactoryData {
         private final ConnectionSource connectionSource;
         private final String tableName;
         private final ColumnConfig[] columnConfigs;
-        private final ColumnMapping[] columnMappings;
+        final ColumnMapping[] columnMappings;
         private final boolean immediateFail;
         private final boolean retry;
         private final long reconnectIntervalMillis;
@@ -421,13 +421,14 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
      *
      * @param name The name of the manager, which should include connection details and hashed passwords where possible.
      * @param bufferSize The size of the log event buffer.
-     * @param layout
+     * @param layout the Appender-level layout
      * @param connectionSource The source for connections to the database.
      * @param tableName The name of the database table to insert log events into.
      * @param columnConfigs Configuration information about the log table columns.
      * @param columnMappings column mapping configuration (including type conversion).
-     * @param reconnectIntervalMillis
-     * @param immediateFail
+     * @param reconnectIntervalMillis How often to reconnect to the database when a SQL exception is detected.
+     * @param immediateFail Whether to fail immediately with a {@link AppenderLoggingException} when connecting
+     * to JDBC fails.
      * @return a new or existing JDBC manager as applicable.
      * @deprecated use
      * {@link #getManager(String, int, Layout, ConnectionSource, String, ColumnConfig[], ColumnMapping[], boolean, long)}
@@ -468,7 +469,8 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
     // NOTE: prepared statements are prepared in this order: column mappings, then column configs
     private final List<ColumnConfig> columnConfigs;
     private final String sqlStatement;
-    private final FactoryData factoryData;
+    // Used in tests
+    final FactoryData factoryData;
     private volatile Connection connection;
     private volatile PreparedStatement statement;
     private volatile Reconnector reconnector;
