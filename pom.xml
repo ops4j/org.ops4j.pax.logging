@@ -736,6 +736,11 @@
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
+                <artifactId>osgi.annotation</artifactId>
+                <version>${version.org.osgi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.service.jdbc</artifactId>
                 <version>${version.org.osgi.service.jdbc}</version>
             </dependency>
