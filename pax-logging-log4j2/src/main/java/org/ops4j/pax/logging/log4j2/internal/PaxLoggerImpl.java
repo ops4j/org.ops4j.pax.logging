@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.Message;
+import org.apache.logging.log4j.message.SimpleMessage;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.apache.logging.log4j.spi.StandardLevel;
 import org.ops4j.pax.logging.PaxContext;
@@ -1117,8 +1118,14 @@ public class PaxLoggerImpl implements PaxLogger {
                         Object... args) {
         Message originalMessage = setDelegateContext();
         try {
-            Message msg = originalMessage == null ? m_delegate.getMessageFactory().newMessage(message, args)
-                    : originalMessage;
+            Message msg = originalMessage;
+            if (originalMessage == null) {
+                if (args == null || args.length == 0) {
+                    msg = new SimpleMessage(message);
+                } else {
+                    msg = m_delegate.getMessageFactory().newMessage(message, args);
+                }
+            }
             m_delegate.logMessage(fqcn, level, marker, msg, t);
         } finally {
             clearDelegateContext();

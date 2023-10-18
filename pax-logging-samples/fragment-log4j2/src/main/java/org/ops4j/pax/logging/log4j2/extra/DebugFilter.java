@@ -27,6 +27,7 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.message.SimpleMessage;
 
 @Plugin(name = "PaxDebug", category = Core.CATEGORY_NAME)
 public class DebugFilter extends AbstractFilter {
@@ -44,7 +45,7 @@ public class DebugFilter extends AbstractFilter {
     @Override
     public Result filter(LogEvent event) {
         Object simpleMessage = getField(event, "message");
-        String message = (String) getField(simpleMessage, "formattedMessage");
+        String message = simpleMessage instanceof SimpleMessage ? (String) getField(simpleMessage, "message") : (String) getField(simpleMessage, "formattedMessage");
         if ("before".equals(message)) {
             beforeTS = (long) getField(getField(event, "instant"), "epochSecond");
         }
