@@ -84,3 +84,6 @@ Provide-Capability: \
  osgi.service;effective:=active;objectClass=org.knopflerfish.service.log.LogService,\
  osgi.service;effective:=active;objectClass=org.ops4j.pax.logging.PaxLoggingService,\
  osgi.service;effective:=active;objectClass=org.osgi.service.cm.ManagedService
+
+# somehow we were getting Export-Package value from log4j-core...
+-removeheaders: Export-Package, Include-Resource, Private-Package
