@@ -41,7 +41,7 @@ import org.osgi.framework.FrameworkUtil;
  * this class is concrete. All public methods and fields are preserved. Unnecessary private and protected methods
  * and fields are removed.</p>
  *
- * <p>pax-logging-api used source from commons-logging:commons-logging:1.2</p>
+ * <p>pax-logging-api used source from commons-logging:commons-logging:1.3.0</p>
  *
  * @author Niclas Hedhman (responsible for the OSGi adaptation.)
  * @author Craig R. McClanahan
