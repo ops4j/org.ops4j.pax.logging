@@ -145,9 +145,10 @@ public final class DataSourceConnectionSource extends AbstractConnectionSource {
      * @return the created connection source.
      */
     @PluginFactory
-    public static DataSourceConnectionSource createConnectionSource(@PluginAttribute("jndiName") final String jndiName,
-                                                                    @PluginAttribute("service") final String serviceFilter,
-                                                                    @PluginAttribute("lazy") final boolean lazy) {
+    public static DataSourceConnectionSource createConnectionSource(
+            @PluginAttribute("jndiName") final String jndiName,
+            @PluginAttribute("service") final String serviceFilter,
+            @PluginAttribute("lazy") final boolean lazy) {
         if (Strings.isEmpty(jndiName) && Strings.isEmpty(serviceFilter)) {
             LOGGER.error("No JNDI name or OSGi service filter provided.");
             return null;
@@ -201,7 +202,9 @@ public final class DataSourceConnectionSource extends AbstractConnectionSource {
 
     private static DataSource acquireDataSourceFromJNDI(String jndiName, boolean lazy) {
         try {
-            final DataSource dataSource = JndiManager.getDefaultManager(DataSourceConnectionSource.class.getCanonicalName()).lookup(jndiName);
+            final DataSource dataSource = JndiManager.getDefaultManager(
+                            DataSourceConnectionSource.class.getCanonicalName())
+                    .lookup(jndiName);
             if (dataSource == null) {
                 if (lazy) {
                     LOGGER.warn("No DataSource found with JNDI name [" + jndiName + "].");
