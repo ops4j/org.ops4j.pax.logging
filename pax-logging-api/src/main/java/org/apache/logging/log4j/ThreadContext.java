@@ -257,7 +257,7 @@ public final class ThreadContext {
      * @since 2.13.0
      */
     public static void putIfNull(final String key, final String value) {
-        if(!contextMap.containsKey(key)) {
+        if (!contextMap.containsKey(key)) {
             contextMap.put(key, value);
         }
     }
@@ -277,7 +277,7 @@ public final class ThreadContext {
         } else if (contextMap instanceof DefaultThreadContextMap) {
             ((DefaultThreadContextMap) contextMap).putAll(m);
         } else {
-            for (final Map.Entry<String, String> entry: m.entrySet()) {
+            for (final Map.Entry<String, String> entry : m.entrySet()) {
                 contextMap.put(entry.getKey(), entry.getValue());
             }
         }

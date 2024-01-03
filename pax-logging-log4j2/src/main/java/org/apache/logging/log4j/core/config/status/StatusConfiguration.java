@@ -39,6 +39,7 @@ public class StatusConfiguration {
 
     @SuppressWarnings("UseOfSystemOutOrSystemErr")
     private static final PrintStream DEFAULT_STREAM = System.out;
+
     private static final Level DEFAULT_STATUS = Level.ERROR;
     private static final Verbosity DEFAULT_VERBOSITY = Verbosity.QUIET;
 
@@ -56,7 +57,8 @@ public class StatusConfiguration {
      * Specifies how verbose the StatusLogger should be.
      */
     public enum Verbosity {
-        QUIET, VERBOSE;
+        QUIET,
+        VERBOSE;
 
         /**
          * Parses the verbosity property into an enum.
@@ -206,7 +208,6 @@ public class StatusConfiguration {
         }
         return configured;
     }
-
 
     private void registerNewStatusConsoleListener() {
         final StatusConsoleListener listener = new StatusConsoleListener(this.status, this.destination);
