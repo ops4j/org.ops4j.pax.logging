@@ -1026,6 +1026,7 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <configuration>
+                            <failOnError>false</failOnError>
                             <doclint>none</doclint>
                         </configuration>
                         <executions>
@@ -1036,6 +1037,7 @@
                                     <goal>test-javadoc</goal>
                                 </goals>
                                 <configuration>
+                                    <failOnError>false</failOnError>
                                     <doclint>none</doclint>
                                     <source>1.8</source>
                                 </configuration>
