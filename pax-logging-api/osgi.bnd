@@ -83,6 +83,7 @@ Export-Package: \
  org.apache.logging.log4j;-split-package:=merge-first; version=2.16.0; provider=paxlogging, \
  org.apache.logging.log4j;-split-package:=merge-first; version=2.20.0; provider=paxlogging, \
  org.apache.logging.log4j;-split-package:=merge-first; version=2.21.0; provider=paxlogging, \
+ org.apache.logging.log4j;-split-package:=merge-first; version=2.22.1; provider=paxlogging, \
  org.apache.logging.log4j.message; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j.message; version=2.9.1; provider=paxlogging, \
  org.apache.logging.log4j.message; version=2.13.3; provider=paxlogging, \
@@ -91,6 +92,7 @@ Export-Package: \
  org.apache.logging.log4j.message; version=2.16.0; provider=paxlogging, \
  org.apache.logging.log4j.message; version=2.20.0; provider=paxlogging, \
  org.apache.logging.log4j.message; version=2.21.0; provider=paxlogging, \
+ org.apache.logging.log4j.message; version=2.22.1; provider=paxlogging, \
  org.apache.logging.log4j.simple; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j.simple; version=2.9.1; provider=paxlogging, \
  org.apache.logging.log4j.simple; version=2.13.3; provider=paxlogging, \
@@ -99,6 +101,7 @@ Export-Package: \
  org.apache.logging.log4j.simple; version=2.16.0; provider=paxlogging, \
  org.apache.logging.log4j.simple; version=2.20.0; provider=paxlogging, \
  org.apache.logging.log4j.simple; version=2.21.0; provider=paxlogging, \
+ org.apache.logging.log4j.simple; version=2.22.1; provider=paxlogging, \
  org.apache.logging.log4j.spi; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j.spi; version=2.9.1; provider=paxlogging, \
  org.apache.logging.log4j.spi; version=2.13.3; provider=paxlogging, \
@@ -107,6 +110,7 @@ Export-Package: \
  org.apache.logging.log4j.spi; version=2.16.0; provider=paxlogging, \
  org.apache.logging.log4j.spi; version=2.20.0; provider=paxlogging, \
  org.apache.logging.log4j.spi; version=2.21.0; provider=paxlogging, \
+ org.apache.logging.log4j.spi; version=2.22.1; provider=paxlogging, \
  org.apache.logging.log4j.status;-split-package:=merge-first; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j.status;-split-package:=merge-first; version=2.9.1; provider=paxlogging, \
  org.apache.logging.log4j.status;-split-package:=merge-first; version=2.13.3; provider=paxlogging, \
@@ -115,6 +119,7 @@ Export-Package: \
  org.apache.logging.log4j.status;-split-package:=merge-first; version=2.16.0; provider=paxlogging, \
  org.apache.logging.log4j.status;-split-package:=merge-first; version=2.20.0; provider=paxlogging, \
  org.apache.logging.log4j.status;-split-package:=merge-first; version=2.21.0; provider=paxlogging, \
+ org.apache.logging.log4j.status;-split-package:=merge-first; version=2.22.1; provider=paxlogging, \
  org.apache.logging.log4j.util;-split-package:=merge-first; version=${version.org.apache.logging.log4j}; provider=paxlogging, \
  org.apache.logging.log4j.util;-split-package:=merge-first; version=2.9.1; provider=paxlogging, \
  org.apache.logging.log4j.util;-split-package:=merge-first; version=2.13.3; provider=paxlogging, \
@@ -123,6 +128,7 @@ Export-Package: \
  org.apache.logging.log4j.util;-split-package:=merge-first; version=2.16.0; provider=paxlogging, \
  org.apache.logging.log4j.util;-split-package:=merge-first; version=2.20.0; provider=paxlogging, \
  org.apache.logging.log4j.util;-split-package:=merge-first; version=2.21.0; provider=paxlogging, \
+ org.apache.logging.log4j.util;-split-package:=merge-first; version=2.22.1; provider=paxlogging, \
  org.ops4j.pax.logging; version=${pom.version}; provider=paxlogging, \
  org.ops4j.pax.logging.spi; version=${pom.version}; provider=paxlogging, \
  org.osgi.service.log; version=1.4;-split-package:=merge-first, \
