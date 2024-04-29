@@ -220,6 +220,7 @@
         <version.ch.qos.logback.contrib>0.1.5</version.ch.qos.logback.contrib>
         <version.ch.qos.reload4j>1.2.25</version.ch.qos.reload4j>
         <version.com.fasterxml.jackson>2.16.1</version.com.fasterxml.jackson>
+        <version.com.github.spotbugs>4.8.4</version.com.github.spotbugs>
         <version.com.h2database>2.2.224</version.com.h2database>
         <version.commons-io>2.15.1</version.commons-io>
         <version.commons-logging>1.3.0</version.commons-logging>
@@ -974,6 +975,12 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${version.com.h2database}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-annotations</artifactId>
+                <version>${version.com.github.spotbugs}</version>
             </dependency>
 
             <!-- Testing -->
