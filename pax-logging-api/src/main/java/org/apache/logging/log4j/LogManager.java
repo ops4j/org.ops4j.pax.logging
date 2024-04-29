@@ -17,17 +17,23 @@
 package org.apache.logging.log4j;
 
 import java.net.URI;
-
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import org.apache.logging.log4j.internal.LogManagerStatus;
 import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 import org.apache.logging.log4j.simple.SimpleLoggerContextFactory;
 import org.apache.logging.log4j.spi.LoggerContext;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
+import org.apache.logging.log4j.spi.Provider;
 import org.apache.logging.log4j.spi.Terminable;
 import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.LoaderUtil;
+import org.apache.logging.log4j.util.PropertiesUtil;
+import org.apache.logging.log4j.util.ProviderUtil;
 import org.apache.logging.log4j.util.StackLocatorUtil;
 import org.apache.logging.log4j.util.Strings;
-import org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContextFactory;
 
 /**
  * The anchor point for the Log4j logging system. The most common usage of this class is to obtain a named
@@ -63,7 +69,63 @@ public class LogManager {
      * extended to allow multiple implementations to be used.
      */
     static {
-        factory = new Log4jv2LoggerContextFactory();
+        // Shortcut binding to force a specific logging implementation.
+        final PropertiesUtil managerProps = PropertiesUtil.getProperties();
+        final String factoryClassName = managerProps.getStringProperty(FACTORY_PROPERTY_NAME);
+        if (factoryClassName != null) {
+            try {
+                factory = LoaderUtil.newCheckedInstanceOf(factoryClassName, LoggerContextFactory.class);
+            } catch (final ClassNotFoundException cnfe) {
+                LOGGER.error("Unable to locate configured LoggerContextFactory {}", factoryClassName);
+            } catch (final Exception ex) {
+                LOGGER.error("Unable to create configured LoggerContextFactory {}", factoryClassName, ex);
+            }
+        }
+
+        if (factory == null) {
+            final SortedMap<Integer, LoggerContextFactory> factories = new TreeMap<>();
+            // note that the following initial call to ProviderUtil may block until a Provider has been installed when
+            // running in an OSGi environment
+            if (ProviderUtil.hasProviders()) {
+                for (final Provider provider : ProviderUtil.getProviders()) {
+                    final Class<? extends LoggerContextFactory> factoryClass = provider.loadLoggerContextFactory();
+                    if (factoryClass != null) {
+                        try {
+                            factories.put(provider.getPriority(), LoaderUtil.newInstanceOf(factoryClass));
+                        } catch (final Exception e) {
+                            LOGGER.error(
+                                "Unable to create class {} specified in provider URL {}",
+                                factoryClass.getName(),
+                                provider.getUrl(),
+                                e);
+                        }
+                    }
+                }
+
+                if (factories.isEmpty()) {
+                    LOGGER.error(
+                        "Log4j2 could not find a logging implementation. Please add log4j-core to the classpath. Using SimpleLogger to log to the console...");
+                    factory = SimpleLoggerContextFactory.INSTANCE;
+                } else if (factories.size() == 1) {
+                    factory = factories.get(factories.lastKey());
+                } else {
+                    final StringBuilder sb = new StringBuilder("Multiple logging implementations found: \n");
+                    for (final Map.Entry<Integer, LoggerContextFactory> entry : factories.entrySet()) {
+                        sb.append("Factory: ")
+                            .append(entry.getValue().getClass().getName());
+                        sb.append(", Weighting: ").append(entry.getKey()).append('\n');
+                    }
+                    factory = factories.get(factories.lastKey());
+                    sb.append("Using factory: ").append(factory.getClass().getName());
+                    LOGGER.warn(sb.toString());
+                }
+            } else {
+                LOGGER.error(
+                    "Log4j2 could not find a logging implementation. Please add log4j-core to the classpath. Using SimpleLogger to log to the console...");
+                factory = SimpleLoggerContextFactory.INSTANCE;
+            }
+        }
+        LogManagerStatus.setInitialized(true);
     }
 
     /**
@@ -152,7 +214,7 @@ public class LogManager {
      * @return a LoggerContext.
      */
     public static LoggerContext getContext(
-            final ClassLoader loader, final boolean currentContext, final Object externalContext) {
+        final ClassLoader loader, final boolean currentContext, final Object externalContext) {
         try {
             return factory.getContext(FQCN, loader, externalContext, currentContext);
         } catch (final IllegalStateException ex) {
@@ -174,13 +236,13 @@ public class LogManager {
      * @return a LoggerContext.
      */
     public static LoggerContext getContext(
-            final ClassLoader loader, final boolean currentContext, final URI configLocation) {
+        final ClassLoader loader, final boolean currentContext, final URI configLocation) {
         try {
             return factory.getContext(FQCN, loader, null, currentContext, configLocation, null);
         } catch (final IllegalStateException ex) {
             LOGGER.warn("{} Using SimpleLogger", ex.getMessage());
             return SimpleLoggerContextFactory.INSTANCE.getContext(
-                    FQCN, loader, null, currentContext, configLocation, null);
+                FQCN, loader, null, currentContext, configLocation, null);
         }
     }
 
@@ -198,16 +260,16 @@ public class LogManager {
      * @return a LoggerContext.
      */
     public static LoggerContext getContext(
-            final ClassLoader loader,
-            final boolean currentContext,
-            final Object externalContext,
-            final URI configLocation) {
+        final ClassLoader loader,
+        final boolean currentContext,
+        final Object externalContext,
+        final URI configLocation) {
         try {
             return factory.getContext(FQCN, loader, externalContext, currentContext, configLocation, null);
         } catch (final IllegalStateException ex) {
             LOGGER.warn("{} Using SimpleLogger", ex.getMessage());
             return SimpleLoggerContextFactory.INSTANCE.getContext(
-                    FQCN, loader, externalContext, currentContext, configLocation, null);
+                FQCN, loader, externalContext, currentContext, configLocation, null);
         }
     }
 
@@ -226,17 +288,17 @@ public class LogManager {
      * @return a LoggerContext.
      */
     public static LoggerContext getContext(
-            final ClassLoader loader,
-            final boolean currentContext,
-            final Object externalContext,
-            final URI configLocation,
-            final String name) {
+        final ClassLoader loader,
+        final boolean currentContext,
+        final Object externalContext,
+        final URI configLocation,
+        final String name) {
         try {
             return factory.getContext(FQCN, loader, externalContext, currentContext, configLocation, name);
         } catch (final IllegalStateException ex) {
             LOGGER.warn("{} Using SimpleLogger", ex.getMessage());
             return SimpleLoggerContextFactory.INSTANCE.getContext(
-                    FQCN, loader, externalContext, currentContext, configLocation, name);
+                FQCN, loader, externalContext, currentContext, configLocation, name);
         }
     }
 
@@ -272,7 +334,7 @@ public class LogManager {
      * @return a LoggerContext.
      */
     protected static LoggerContext getContext(
-            final String fqcn, final ClassLoader loader, final boolean currentContext) {
+        final String fqcn, final ClassLoader loader, final boolean currentContext) {
         try {
             return factory.getContext(fqcn, loader, null, currentContext);
         } catch (final IllegalStateException ex) {
@@ -296,11 +358,11 @@ public class LogManager {
      * @return a LoggerContext.
      */
     protected static LoggerContext getContext(
-            final String fqcn,
-            final ClassLoader loader,
-            final boolean currentContext,
-            final URI configLocation,
-            final String name) {
+        final String fqcn,
+        final ClassLoader loader,
+        final boolean currentContext,
+        final URI configLocation,
+        final String name) {
         try {
             return factory.getContext(fqcn, loader, null, currentContext, configLocation, name);
         } catch (final IllegalStateException ex) {
@@ -446,7 +508,7 @@ public class LogManager {
      */
     public static Logger getFormatterLogger(final Class<?> clazz) {
         return getLogger(
-                clazz != null ? clazz : StackLocatorUtil.getCallerClass(2), StringFormatterMessageFactory.INSTANCE);
+            clazz != null ? clazz : StackLocatorUtil.getCallerClass(2), StringFormatterMessageFactory.INSTANCE);
     }
 
     /**
@@ -478,8 +540,8 @@ public class LogManager {
      */
     public static Logger getFormatterLogger(final Object value) {
         return getLogger(
-                value != null ? value.getClass() : StackLocatorUtil.getCallerClass(2),
-                StringFormatterMessageFactory.INSTANCE);
+            value != null ? value.getClass() : StackLocatorUtil.getCallerClass(2),
+            StringFormatterMessageFactory.INSTANCE);
     }
 
     /**
@@ -510,8 +572,8 @@ public class LogManager {
      */
     public static Logger getFormatterLogger(final String name) {
         return name == null
-                ? getFormatterLogger(StackLocatorUtil.getCallerClass(2))
-                : getLogger(name, StringFormatterMessageFactory.INSTANCE);
+            ? getFormatterLogger(StackLocatorUtil.getCallerClass(2))
+            : getLogger(name, StringFormatterMessageFactory.INSTANCE);
     }
 
     private static Class<?> callerClass(final Class<?> clazz) {
@@ -627,8 +689,8 @@ public class LogManager {
      */
     public static Logger getLogger(final String name, final MessageFactory messageFactory) {
         return name != null
-                ? getContext(false).getLogger(name, messageFactory)
-                : getLogger(StackLocatorUtil.getCallerClass(2), messageFactory);
+            ? getContext(false).getLogger(name, messageFactory)
+            : getLogger(StackLocatorUtil.getCallerClass(2), messageFactory);
     }
 
     /**
