@@ -16,6 +16,7 @@
  */
 package org.apache.logging.log4j.core.config.plugins.util;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -36,7 +37,6 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.util.Loader;
 import org.apache.logging.log4j.status.StatusLogger;
@@ -174,6 +174,9 @@ public class ResolverUtil {
      * @param packageName
      *        the name of the package from which to start scanning for classes, e.g. {@code net.sourceforge.stripes}
      */
+    @SuppressFBWarnings(
+            value = {"URLCONNECTION_SSRF_FD", "PATH_TRAVERSAL_IN"},
+            justification = "The URLs used come from the classloader.")
     public void findInPackage(final Test test, String packageName) {
         packageName = packageName.replace('.', '/');
         final ClassLoader loader = getClassLoader();
@@ -191,7 +194,7 @@ public class ResolverUtil {
                 final URL url = urls.nextElement();
                 final String urlPath = extractPath(url);
 
-                LOGGER.info("Scanning for classes in '{}' matching criteria {}", urlPath, test);
+                LOGGER.debug("Scanning for classes in '{}' matching criteria {}", urlPath, test);
                 // Check for a jar in a war in JBoss
                 if (VFSZIP.equals(url.getProtocol())) {
                     final String path = urlPath.substring(0, urlPath.length() - packageName.length() - 2);
@@ -246,6 +249,7 @@ public class ResolverUtil {
         }
     }
 
+    @SuppressFBWarnings(value = "PATH_TRAVERSAL_IN", justification = "The URLs used come from the classloader.")
     String extractPath(final URL url) throws UnsupportedEncodingException, URISyntaxException {
         String urlPath = url.getPath(); // same as getFile but without the Query portion
         // System.out.println(url.getProtocol() + "->" + urlPath);
@@ -454,9 +458,7 @@ public class ResolverUtil {
             final ClassLoader loader = getClassLoader();
             if (test.doesMatchClass()) {
                 final String externalName = fqn.substring(0, fqn.indexOf('.')).replace('/', '.');
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Checking to see if class {} matches criteria {}", externalName, test);
-                }
+                LOGGER.debug("Checking to see if class {} matches criteria {}", externalName, test);
 
                 final Class<?> type = loader.loadClass(externalName);
                 if (test.matches(type)) {

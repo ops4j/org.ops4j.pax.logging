@@ -153,6 +153,15 @@
                                         <headfilter lines="-1" skip="18" />
                                     </filterchain>
                                 </concat>
+                                <concat destfile="${project.build.outputDirectory}/resources/etc/system.properties" append="true" encoding="UTF-8">
+                                    <filelist dir="${project.build.directory}/appended-resources" files="append-header.part" />
+                                </concat>
+                                <concat destfile="${project.build.outputDirectory}/resources/etc/system.properties" append="true" encoding="UTF-8">
+                                    <filelist dir="${project.build.directory}/appended-resources/etc" files="system.properties" />
+                                    <filterchain>
+                                        <headfilter lines="-1" skip="18" />
+                                    </filterchain>
+                                </concat>
                             </target>
                         </configuration>
                     </execution>

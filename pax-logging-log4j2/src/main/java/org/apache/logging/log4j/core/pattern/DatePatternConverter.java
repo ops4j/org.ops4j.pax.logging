@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.time.Instant;
@@ -365,7 +364,7 @@ public final class DatePatternConverter extends LogEventPatternConverter impleme
     /**
      * Gets the pattern string describing this date format.
      *
-     * @return the pattern string describing this date format.
+     * @return the pattern string describing this date format or {@code  null} if the format does not have a pattern.
      */
     public String getPattern() {
         return formatter.toPattern();
