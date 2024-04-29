@@ -34,7 +34,7 @@ The goal of this project is to allow users and bundles to use well known Logging
 |2.22.1
 |2.18.0
 |2.18.0
-|2.22.1
+|2.23.1
 
 |Logback version
 |no
