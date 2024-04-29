@@ -270,7 +270,7 @@
         <plugin.maven-site-plugin>3.12.1</plugin.maven-site-plugin>
         <plugin.maven-source-plugin>3.3.0</plugin.maven-source-plugin>
         <plugin.maven-surefire-plugin>3.2.3</plugin.maven-surefire-plugin>
-        <plugin.maven-toolchains-plugin>3.1.0</plugin.maven-toolchains-plugin>
+        <plugin.maven-toolchains-plugin>3.2.0</plugin.maven-toolchains-plugin>
 
         <!-- Other Maven plugins (and their dependencies) -->
 <!--        <plugin.apache.apache-rat-plugin>0.13</plugin.apache.apache-rat-plugin>-->
