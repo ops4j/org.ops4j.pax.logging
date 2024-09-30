@@ -154,6 +154,28 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.ops4j.pax.logging</groupId>
+                <artifactId>pax-logging-log4j2-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-pax-logging-log4j2-plugin-descriptor</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>generate-log4j-plugin-descriptor</goal>
+                        </goals>
+                        <configuration>
+                            <plugins>
+                                <!-- These are equivalents of deprecated org.apache.logging.log4j.core.config.plugins.util.PluginManager.addPackage() call -->
+                                <plugin>org.ops4j.pax.logging.log4j2.internal.bridges.PaxOsgiAppender</plugin>
+                                <plugin>org.apache.logging.log4j.layout.template.json.JsonTemplateLayout</plugin>
+                                <plugin>org.apache.logging.log4j.layout.template.json.resolver.LoggerResolverFactory</plugin>
+                                <plugin>org.apache.logging.log4j.layout.template.json.util.RecyclerFactoryConverter</plugin>
+                            </plugins>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
@@ -198,6 +220,12 @@
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
+        </dependency>
+        <dependency>
+            <!-- for ordering reasons -->
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-log4j2-maven-plugin</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- OSGi -->

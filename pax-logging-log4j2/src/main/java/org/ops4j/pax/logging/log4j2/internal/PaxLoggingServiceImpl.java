@@ -76,10 +76,13 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
         // We don't have to add "org.apache.logging.log4j.core", because this package will be handled
         // using default cache file "/META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat"
         // taken unchanged from "org.apache.logging.log4j:log4j-core".
-        PluginManager.addPackage(PaxOsgiAppender.class.getPackage().getName());
-        PluginManager.addPackage(JsonTemplateLayout.class.getPackage().getName());
-        PluginManager.addPackage(LoggerResolverFactory.class.getPackage().getName());
-        PluginManager.addPackage(RecyclerFactoryConverter.class.getPackage().getName());
+        // plugins are now added using org.ops4j.pax.logging:pax-logging-log4j2-maven-plugin
+        // and the descriptor it generates, because
+        // org.apache.logging.log4j.core.config.plugins.util.PluginManager.addPackage() is now deprecated
+//        PluginManager.addPackage(PaxOsgiAppender.class.getPackage().getName());
+//        PluginManager.addPackage(JsonTemplateLayout.class.getPackage().getName());
+//        PluginManager.addPackage(LoggerResolverFactory.class.getPackage().getName());
+//        PluginManager.addPackage(RecyclerFactoryConverter.class.getPackage().getName());
     }
 
     private final BundleContext m_bundleContext;
