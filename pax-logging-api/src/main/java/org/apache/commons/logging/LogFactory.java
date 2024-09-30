@@ -48,7 +48,7 @@ import org.osgi.framework.FrameworkUtil;
  * this class is concrete. All public methods and fields are preserved. Unnecessary private and protected methods
  * and fields are removed.
  *
- * <p>pax-logging-api used source from commons-logging:commons-logging:1.3.0
+ * <p>pax-logging-api used source from commons-logging:commons-logging:1.3.4
  *
  * @author Niclas Hedhman (responsible for the OSGi adaptation.)
  * @author Craig R. McClanahan
@@ -57,6 +57,30 @@ import org.osgi.framework.FrameworkUtil;
  * @author Grzegorz Grzybek (adjustments and code cleanup)
  */
 public class LogFactory {
+    // Implementation note re AccessController usage
+    //
+    // It is important to keep code invoked via an AccessController to small
+    // auditable blocks. Such code must carefully evaluate all user input
+    // (parameters, system properties, configuration file contents, etc). As an
+    // example, a Log implementation should not write to its log file
+    // with an AccessController anywhere in the call stack, otherwise an
+    // insecure application could configure the log implementation to write
+    // to a protected file using the privileges granted to JCL rather than
+    // to the calling application.
+    //
+    // Under no circumstance should a non-private method return data that is
+    // retrieved via an AccessController. That would allow an insecure application
+    // to invoke that method and obtain data that it is not permitted to have.
+    //
+    // Invoking user-supplied code with an AccessController set is not a major
+    // issue (for example, invoking the constructor of the class specified by
+    // HASHTABLE_IMPLEMENTATION_PROPERTY). That class will be in a different
+    // trust domain, and therefore must have permissions to do whatever it
+    // is trying to do regardless of the permissions granted to JCL. There is
+    // a slight issue in that untrusted code may point that environment variable
+    // to another trusted library, in which case the code runs if both that
+    // library and JCL have the necessary permissions even when the untrusted
+    // caller does not. That's a pretty hard route to exploit though.
 
     private static PaxLoggingManager m_paxLogging;
 
@@ -103,11 +127,10 @@ public class LogFactory {
     public static final String FACTORY_PROPERTIES = "commons-logging.properties";
 
     /**
-     * JDK 1.3+ <a href="http://java.sun.com/j2se/1.3/docs/guide/jar/jar.html#Service%20Provider">
+     * JDK 1.3+ <a href="https://java.sun.com/j2se/1.3/docs/guide/jar/jar.html#Service%20Provider">
      * 'Service Provider' specification</a>.
      */
-    protected static final String SERVICE_ID =
-        "META-INF/services/org.apache.commons.logging.LogFactory";
+    protected static final String SERVICE_ID = "META-INF/services/org.apache.commons.logging.LogFactory";
 
     /**
      * The name ({@code org.apache.commons.logging.diagnostics.dest})
@@ -124,8 +147,7 @@ public class LogFactory {
      * Diagnostic logging should be used only to debug problematic
      * configurations and should not be set in normal production use.
      */
-    public static final String DIAGNOSTICS_DEST_PROPERTY =
-        "org.apache.commons.logging.diagnostics.dest";
+    public static final String DIAGNOSTICS_DEST_PROPERTY = "org.apache.commons.logging.diagnostics.dest";
 
     /**
      * Setting this system property
@@ -134,15 +156,19 @@ public class LogFactory {
      * class loaders to be substituted by an alternative implementation.
      * <p>
      * <strong>Note:</strong> {@code LogFactory} will print:
+     * </p>
      * <pre>
-     * [ERROR] LogFactory: Load of custom hashtable failed
+     * [ERROR] LogFactory: Load of custom hash table failed
      * </pre>
+     * <p>
      * to system error and then continue using a standard Hashtable.
+     * </p>
      * <p>
      * <strong>Usage:</strong> Set this property when Java is invoked
      * and {@code LogFactory} will attempt to load a new instance
      * of the given implementation class.
      * For example, running the following ant scriplet:
+     * </p>
      * <pre>
      *  &lt;java classname="${test.runner}" fork="yes" failonerror="${test.failonerror}"&gt;
      *     ...
@@ -151,16 +177,18 @@ public class LogFactory {
      *        value="org.apache.commons.logging.AltHashtable"/&gt;
      *  &lt;/java&gt;
      * </pre>
+     * <p>
      * will mean that {@code LogFactory} will load an instance of
      * {@code org.apache.commons.logging.AltHashtable}.
+     * </p>
      * <p>
      * A typical use case is to allow a custom
      * Hashtable implementation using weak references to be substituted.
      * This will allow class loaders to be garbage collected without
      * the need to release them (on 1.3+ JVMs only, of course ;).
+     * </p>
      */
-    public static final String HASHTABLE_IMPLEMENTATION_PROPERTY =
-        "org.apache.commons.logging.LogFactory.HashtableImpl";
+    public static final String HASHTABLE_IMPLEMENTATION_PROPERTY = "org.apache.commons.logging.LogFactory.HashtableImpl";
 
     /**
      * The previously constructed {@code LogFactory} instances, keyed by
@@ -179,8 +207,8 @@ public class LogFactory {
      * <li>using JDK1.2+ and the calling code is loaded via the boot
      *  class loader (only likely for embedded systems work).</li>
      * </ul>
-     * Note that {@code factories} is a <i>Hashtable</i> (not a HashMap),
-     * and hashtables don't allow null as a key.
+     * Note that {@code factories} is a <em>Hashtable</em> (not a HashMap),
+     * and hash tables don't allow null as a key.
      * @deprecated since 1.1.2
      */
     @Deprecated
@@ -237,7 +265,7 @@ public class LogFactory {
      * <li>The {@code org.apache.commons.logging.LogFactory} system property.</li>
      * <li>The JDK 1.3 Service Discovery mechanism</li>
      * <li>Use the properties file {@code commons-logging.properties} file, if found in the class path of this class. The configuration file is in standard
-     * {@code java.util.Properties} format and contains the fully qualified name of the implementation class with the key being the system property defined
+     * {@link java.util.Properties} format and contains the fully qualified name of the implementation class with the key being the system property defined
      * above.</li>
      * <li>Fall back to a default implementation class ({@code org.apache.commons.logging.impl.LogFactoryImpl}).</li>
      * </ul>
@@ -257,7 +285,7 @@ public class LogFactory {
     }
 
     /**
-     * Convenience method to return a named logger, without the application having to care about factories.
+     * Gets a named logger, without the application having to care about factories.
      *
      * @param clazz Class from which a log name will be derived
      * @return a named logger.
@@ -268,7 +296,7 @@ public class LogFactory {
     }
 
     /**
-     * Convenience method to return a named logger, without the application having to care about factories.
+     * Gets a named logger, without the application having to care about factories.
      *
      * @param name Logical name of the {@code Log} instance to be returned (the meaning of this name is only known to the underlying logging implementation that
      *             is being wrapped)
@@ -305,24 +333,24 @@ public class LogFactory {
      * Returns a string that uniquely identifies the specified object, including
      * its class.
      * <p>
-     * The returned string is of form "className@hashCode", that is, is the same as
-     * the return value of the Object.toString() method, but works even when
+     * The returned string is of form {@code "className@hashCode"}, that is, is the same as
+     * the return value of the {@link Object#toString()} method, but works even when
      * the specified object's class has overridden the toString method.
      * </p>
      *
-     * @param o may be null.
-     * @return a string of form className@hashCode, or "null" if param o is null.
+     * @param obj may be null.
+     * @return a string of form {@code className@hashCode}, or "null" if obj is null.
      * @since 1.1
      */
-    public static String objectId(final Object o) {
-        if (o == null) {
+    public static String objectId(final Object obj) {
+        if (obj == null) {
             return "null";
         }
-        return o.getClass().getName() + "@" + System.identityHashCode(o);
+        return obj.getClass().getName() + "@" + System.identityHashCode(obj);
     }
 
     /**
-     * Release any internal references to previously created {@link LogFactory}
+     * Releases any internal references to previously created {@link LogFactory}
      * instances that have been associated with the specified class loader
      * (if any), after calling the instance method {@code release()} on
      * each of them.
@@ -344,13 +372,13 @@ public class LogFactory {
     }
 
     /**
-     * Protected constructor that is not available for public use.
+     * Constructs a new instance.
      */
     protected LogFactory() {
     }
 
     /**
-     * Return the configuration attribute with the specified name (if any),
+     * Gets the configuration attribute with the specified name (if any),
      * or {@code null} if there is no such attribute.
      *
      * @param name Name of the attribute to return
@@ -370,7 +398,7 @@ public class LogFactory {
     }
 
     /**
-     * Convenience method to derive a name from the specified class and call {@code getInstance(String)} with it.
+     * Gets a Log for the given class.
      *
      * @param clazz Class for which a suitable Log name will be derived
      * @return a name from the specified class.
@@ -382,7 +410,7 @@ public class LogFactory {
     }
 
     /**
-     * Constructs (if necessary) and return a {@code Log} instance, using the factory's current set of configuration attributes.
+     * Gets a (possibly new) {@code Log} instance, using the factory's current set of configuration attributes.
      * <p>
      * <strong>NOTE</strong> - Depending upon the implementation of the {@code LogFactory} you are using, the {@code Log} instance you are returned may or may
      * not be local to the current application, and may or may not be returned again on a subsequent call with the same name argument.
@@ -414,7 +442,7 @@ public class LogFactory {
     }
 
     /**
-     * Release any internal references to previously created {@link Log}
+     * Releases any internal references to previously created {@link Log}
      * instances returned by this factory.  This is useful in environments
      * like servlet containers, which implement application reloading by
      * throwing away a ClassLoader.  Dangling references to objects in that
@@ -424,7 +452,7 @@ public class LogFactory {
     }
 
     /**
-     * Remove any configuration attribute associated with the specified name.
+     * Removes any configuration attribute associated with the specified name.
      * If there is no such attribute, no action is taken.
      *
      * @param name Name of the attribute to remove
@@ -459,15 +487,5 @@ public class LogFactory {
      */
     public void setAttribute(String name, Object value) {
     }
-
-    // ----------------------------------------------------------- Constructors
-
-    // --------------------------------------------------------- Public Methods
-
-    // ------------------------------------------------------- Static Variables
-
-    // --------------------------------------------------------- Static Methods
-
-    // ------------------------------------------------------ Protected Methods
 
 }
