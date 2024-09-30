@@ -68,6 +68,7 @@
                         <Export-Package />
                         <Private-Package>org.ops4j.pax.logging.log4j2.extra</Private-Package>
                         <Fragment-Host>org.ops4j.pax.logging.pax-logging-log4j2</Fragment-Host>
+                        <!-- see https://logging.apache.org/log4j/2.x/manual/plugins.html#plugin-registry -->
                         <Include-Resource>
                             {maven-resources},
                             META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat=target/classes/META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat

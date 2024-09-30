@@ -233,7 +233,7 @@
         <version.org.apache.felix.configadmin>1.9.26</version.org.apache.felix.configadmin>
         <version.org.apache.felix6.framework>6.0.5</version.org.apache.felix6.framework>
         <version.org.apache.felix7.framework>7.0.5</version.org.apache.felix7.framework>
-        <version.org.apache.logging.log4j>2.23.1</version.org.apache.logging.log4j>
+        <version.org.apache.logging.log4j>2.24.1</version.org.apache.logging.log4j>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
         <version.org.apache.sling.commons.johnzon>1.2.14</version.org.apache.sling.commons.johnzon>
         <!-- 3.5.0.Final is JDK11 only, but we'll export 3.5.3 and 3.6.1 package version anyway -->
