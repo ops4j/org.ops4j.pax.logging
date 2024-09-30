@@ -17,7 +17,7 @@
 package org.apache.logging.log4j;
 
 import java.net.URI;
-
+import org.apache.logging.log4j.internal.LogManagerStatus;
 import org.apache.logging.log4j.message.MessageFactory;
 import org.apache.logging.log4j.message.StringFormatterMessageFactory;
 import org.apache.logging.log4j.simple.SimpleLoggerContextFactory;
@@ -25,6 +25,7 @@ import org.apache.logging.log4j.spi.LoggerContext;
 import org.apache.logging.log4j.spi.LoggerContextFactory;
 import org.apache.logging.log4j.spi.Terminable;
 import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.ProviderUtil;
 import org.apache.logging.log4j.util.StackLocatorUtil;
 import org.apache.logging.log4j.util.Strings;
 import org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContextFactory;
@@ -41,13 +42,15 @@ import org.ops4j.pax.logging.log4jv2.Log4jv2LoggerContextFactory;
 public class LogManager {
 
     /**
-     * Log4j property to set to the fully qualified class name of a custom implementation of
-     * {@link org.apache.logging.log4j.spi.LoggerContextFactory}.
+     * Log4j's property to set to the fully qualified class name of a custom implementation of
+     * {@link LoggerContextFactory}.
+     * @deprecated Replaced since 2.24.0 with {@value org.apache.logging.log4j.spi.Provider#PROVIDER_PROPERTY_NAME}.
      */
+    @Deprecated
     public static final String FACTORY_PROPERTY_NAME = "log4j2.loggerContextFactory";
 
     /**
-     * The name of the root Logger is {@value #ROOT_LOGGER_NAME}.
+     * The name of the root Logger.
      */
     public static final String ROOT_LOGGER_NAME = Strings.EMPTY;
 
@@ -312,10 +315,10 @@ public class LogManager {
     /**
      * Shutdown using the LoggerContext appropriate for the caller of this method.
      * This is equivalent to calling {@code LogManager.shutdown(false)}.
-     *
-     * This call is synchronous and will block until shut down is complete.
-     * This may include flushing pending log events over network connections.
-     *
+     * <p>
+     *     This call is synchronous and will block until shut down is complete. This may include flushing pending log
+     *     events over network connections.
+     * </p>
      * @since 2.6
      */
     public static void shutdown() {
@@ -325,9 +328,10 @@ public class LogManager {
     /**
      * Shutdown the logging system if the logging system supports it.
      * This is equivalent to calling {@code LogManager.shutdown(LogManager.getContext(currentContext))}.
-     *
-     * This call is synchronous and will block until shut down is complete.
-     * This may include flushing pending log events over network connections.
+     * <p>
+     *     This call is synchronous and will block until shut down is complete. This may include flushing pending log
+     *     events over network connections.
+     * </p>
      *
      * @param currentContext if true a default LoggerContext (may not be the LoggerContext used to create a Logger
      *            for the calling class) will be used.
@@ -344,9 +348,10 @@ public class LogManager {
     /**
      * Shutdown the logging system if the logging system supports it.
      * This is equivalent to calling {@code LogManager.shutdown(LogManager.getContext(currentContext))}.
-     *
-     * This call is synchronous and will block until shut down is complete.
-     * This may include flushing pending log events over network connections.
+     * <p>
+     *     This call is synchronous and will block until shut down is complete. This may include flushing pending log
+     *     events over network connections.
+     * </p>
      *
      * @param currentContext if true a default LoggerContext (may not be the LoggerContext used to create a Logger
      *            for the calling class) will be used.
@@ -363,9 +368,10 @@ public class LogManager {
 
     /**
      * Shutdown the logging system if the logging system supports it.
-     *
-     * This call is synchronous and will block until shut down is complete.
-     * This may include flushing pending log events over network connections.
+     * <p>
+     *     This call is synchronous and will block until shut down is complete. This may include flushing pending log
+     *     events over network connections.
+     * </p>
      *
      * @param context the LoggerContext.
      * @since 2.6
@@ -458,7 +464,7 @@ public class LogManager {
      * Short-hand for {@code getLogger(value, StringFormatterMessageFactory.INSTANCE)}
      * </p>
      *
-     * @param value The value's whose class name should be used as the Logger name.
+     * @param value The value whose class name should be used as the Logger name.
      * @return The Logger, created with a {@link StringFormatterMessageFactory}
      * @throws UnsupportedOperationException if {@code value} is {@code null} and the calling class cannot be
      *             determined.

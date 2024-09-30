@@ -23,18 +23,18 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.logging.log4j.spi.CleanableThreadContextMap;
 import org.apache.logging.log4j.spi.DefaultThreadContextMap;
-import org.apache.logging.log4j.spi.NoOpThreadContextMap;
+import org.apache.logging.log4j.spi.DefaultThreadContextStack;
+import org.apache.logging.log4j.spi.MutableThreadContextStack;
 import org.apache.logging.log4j.spi.ReadOnlyThreadContextMap;
 import org.apache.logging.log4j.spi.ThreadContextMap;
 import org.apache.logging.log4j.spi.ThreadContextMap2;
 import org.apache.logging.log4j.spi.ThreadContextMapFactory;
 import org.apache.logging.log4j.spi.ThreadContextStack;
 import org.apache.logging.log4j.util.PropertiesUtil;
+import org.apache.logging.log4j.util.ProviderUtil;
 import org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextMap;
 import org.ops4j.pax.logging.log4jv2.Log4jv2ThreadContextStack;
 
@@ -55,8 +55,6 @@ public final class ThreadContext {
     private static class EmptyThreadContextStack extends AbstractCollection<String> implements ThreadContextStack {
 
         private static final long serialVersionUID = 1L;
-
-        private static final Iterator<String> EMPTY_ITERATOR = new EmptyIterator<>();
 
         @Override
         public String pop() {
@@ -102,42 +100,45 @@ public final class ThreadContext {
 
         @Override
         public ContextStack copy() {
-            return this;
+            return new MutableThreadContextStack();
         }
 
         @Override
-        public <T> T[] toArray(final T[] a) {
+        public <T> T[] toArray(final T[] ignored) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean add(final String e) {
+        public boolean add(final String ignored) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean containsAll(final Collection<?> c) {
+        public void clear() {}
+
+        @Override
+        public boolean containsAll(final Collection<?> ignored) {
             return false;
         }
 
         @Override
-        public boolean addAll(final Collection<? extends String> c) {
+        public boolean addAll(final Collection<? extends String> ignored) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean removeAll(final Collection<?> c) {
+        public boolean removeAll(final Collection<?> ignored) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean retainAll(final Collection<?> c) {
+        public boolean retainAll(final Collection<?> ignored) {
             throw new UnsupportedOperationException();
         }
 
         @Override
         public Iterator<String> iterator() {
-            return EMPTY_ITERATOR;
+            return Collections.emptyIterator();
         }
 
         @Override
@@ -151,26 +152,34 @@ public final class ThreadContext {
         }
     }
 
-    /**
-     * An empty iterator. Since Java 1.7 added the Collections.emptyIterator() method, we have to make do.
-     *
-     * @param <E> the type of the empty iterator
-     */
-    private static class EmptyIterator<E> implements Iterator<E> {
+    private static final class NoOpThreadContextStack extends EmptyThreadContextStack {
 
         @Override
-        public boolean hasNext() {
+        public boolean add(final String ignored) {
             return false;
         }
 
         @Override
-        public E next() {
-            throw new NoSuchElementException("This is an empty iterator!");
+        public boolean addAll(final Collection<? extends String> ignored) {
+            return false;
         }
 
         @Override
-        public void remove() {
-            // no-op
+        public void push(final String ignored) {}
+
+        @Override
+        public boolean remove(final Object ignored) {
+            return false;
+        }
+
+        @Override
+        public boolean removeAll(final Collection<?> ignored) {
+            return false;
+        }
+
+        @Override
+        public boolean retainAll(final Collection<?> ignored) {
+            return false;
         }
     }
 
@@ -189,13 +198,12 @@ public final class ThreadContext {
     @SuppressWarnings("PublicStaticCollectionField")
     public static final ThreadContextStack EMPTY_STACK = new EmptyThreadContextStack();
 
-    private static final String DISABLE_MAP = "disableThreadContextMap";
     private static final String DISABLE_STACK = "disableThreadContextStack";
     private static final String DISABLE_ALL = "disableThreadContext";
 
-    private static boolean useStack;
-    private static ThreadContextMap contextMap;
     private static ThreadContextStack contextStack;
+
+    private static ThreadContextMap contextMap;
     private static ReadOnlyThreadContextMap readOnlyContextMap;
 
     static {
@@ -210,23 +218,15 @@ public final class ThreadContext {
      * <em>Consider private, used for testing.</em>
      */
     public static void init() {
-        contextMap = null;
-        final PropertiesUtil managerProps = PropertiesUtil.getProperties();
-        final boolean disableAll = managerProps.getBooleanProperty(DISABLE_ALL);
-        useStack = !(managerProps.getBooleanProperty(DISABLE_STACK) || disableAll);
-        final boolean useMap = !(managerProps.getBooleanProperty(DISABLE_MAP) || disableAll);
-
-        contextStack = new Log4jv2ThreadContextStack(useStack);
-        if (!useMap) {
-            contextMap = new NoOpThreadContextMap();
-        } else {
-            contextMap = new Log4jv2ThreadContextMap();
-        }
-        if (contextMap instanceof ReadOnlyThreadContextMap) {
-            readOnlyContextMap = (ReadOnlyThreadContextMap) contextMap;
-        } else {
-            readOnlyContextMap = null;
-        }
+        final PropertiesUtil properties = PropertiesUtil.getProperties();
+        contextStack = properties.getBooleanProperty(DISABLE_STACK) || properties.getBooleanProperty(DISABLE_ALL)
+                ? new NoOpThreadContextStack()
+                : new Log4jv2ThreadContextStack(true);
+        // TODO: Fix the tests that need to reset the thread context map to use separate instance of the
+        //       provider instead.
+        contextMap = new Log4jv2ThreadContextMap();
+        readOnlyContextMap =
+                contextMap instanceof ReadOnlyThreadContextMap ? (ReadOnlyThreadContextMap) contextMap : null;
     }
 
     /**
@@ -381,8 +381,6 @@ public final class ThreadContext {
      * @return the internal data structure used to store thread context key-value pairs or {@code null}
      * @see ThreadContextMapFactory
      * @see DefaultThreadContextMap
-     * @see org.apache.logging.log4j.spi.CopyOnWriteSortedArrayThreadContextMap
-     * @see org.apache.logging.log4j.spi.GarbageFreeSortedArrayThreadContextMap
      * @since 2.8
      */
     public static ReadOnlyThreadContextMap getThreadContextMap() {
@@ -430,7 +428,7 @@ public final class ThreadContext {
      * @param stack The stack to use.
      */
     public static void setStack(final Collection<String> stack) {
-        if (stack.isEmpty() || !useStack) {
+        if (stack.isEmpty()) {
             return;
         }
         contextStack.clear();

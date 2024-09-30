@@ -222,7 +222,8 @@ public class StatusLogger extends AbstractLogger {
 
         private static final Config INSTANCE = new Config();
 
-        private final boolean debugEnabled;
+        // Visible for tests
+        final boolean debugEnabled;
 
         // Visible for tests
         final int bufferCapacity;
@@ -295,7 +296,7 @@ public class StatusLogger extends AbstractLogger {
 
         private static boolean readDebugEnabled(final Map<String, Object> normalizedProperties) {
             final String debug = PropertiesUtilsDouble.readProperty(normalizedProperties, DEBUG_PROPERTY_NAME);
-            return debug != null;
+            return debug != null && !"false".equalsIgnoreCase(debug);
         }
 
         private static int readBufferCapacity(final Map<String, Object> normalizedProperties) {
@@ -534,7 +535,7 @@ public class StatusLogger extends AbstractLogger {
                 StatusLogger.class.getSimpleName(),
                 ParameterizedNoReferenceMessageFactory.INSTANCE,
                 Config.getInstance(),
-                new StatusConsoleListener(Config.getInstance().fallbackListenerLevel));
+                new StatusConsoleListener(requireNonNull(Config.getInstance().fallbackListenerLevel)));
     }
 
     /**

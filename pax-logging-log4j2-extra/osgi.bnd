@@ -39,6 +39,7 @@ Import-Package: \
  com.fasterxml.jackson.core.util ;resolution:=optional, \
  com.fasterxml.jackson.databind ;resolution:=optional, \
  com.fasterxml.jackson.databind.annotation ;resolution:=optional, \
+ com.fasterxml.jackson.databind.deser ;resolution:=optional, \
  com.fasterxml.jackson.databind.deser.std ;resolution:=optional, \
  com.fasterxml.jackson.databind.module ;resolution:=optional, \
  com.fasterxml.jackson.databind.node ;resolution:=optional, \
