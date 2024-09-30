@@ -19,6 +19,8 @@
 
 Bundle-Activator: org.ops4j.pax.logging.log4j2.internal.Activator
 
+Bundle-ClassPath: ., META-INF/pax-logging-log4j-plugins
+
 Private-Package: \
  org.apache.logging.log4j.core.*; -split-package:=merge-first, \
  org.apache.logging.log4j.layout.*; -split-package:=merge-first, \
@@ -30,6 +32,7 @@ Private-Package: \
 Include-Resource: \
  {maven-resources}, \
  META-INF/maven=target/classes/META-INF/maven, \
+ META-INF/pax-logging-log4j-plugins=target/classes/META-INF/pax-logging-log4j-plugins, \
  META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat=target/classes/META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat, \
  /=target/classes;filter:=*.json;recursive:=false, \
  /=target/classes;filter:=*.xsd;recursive:=false, \
