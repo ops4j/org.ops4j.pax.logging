@@ -61,7 +61,7 @@ public class Log4J2WithDefaultConfigurationIntegrationTest extends AbstractContr
         assertTrue(lines.stream().anyMatch(l -> l.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] WARN : StatusLogger warn")));
         assertTrue(lines.stream().anyMatch(l -> l.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] ERROR : StatusLogger error")));
 
-        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] INFO : Log4J2 configured using default configuration. Ignored FQCN: org.apache.logging.log4j.spi.AbstractLogger"));
+        assertTrue(lines.contains("org.ops4j.pax.logging.pax-logging-api [log4j2] INFO : Log4J2 configured using default configuration. Ignored FQCN: org.ops4j.pax.logging.log4j2.internal.PaxLoggingServiceImpl"));
     }
 
 }
