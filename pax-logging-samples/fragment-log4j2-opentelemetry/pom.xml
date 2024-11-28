@@ -55,7 +55,16 @@
                             {maven-resources},
 <!--                            META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat=target/classes/META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat-->
                         </Include-Resource>
-                        <Embed-Dependency>opentelemetry-log4j-appender-2.17</Embed-Dependency>
+                        <Embed-Dependency>
+                            opentelemetry-log4j-appender-2.17,
+                            opentelemetry-log4j-context-data-2.17-autoconfigure,
+                            opentelemetry-instrumentation-api,
+                            opentelemetry-instrumentation-api-incubator,
+                            opentelemetry-api,
+                            opentelemetry-context,
+                            opentelemetry-api-incubator,
+                            opentelemetry-semconv
+                        </Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
@@ -97,6 +106,34 @@
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-log4j-appender-2.17</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-log4j-context-data-2.17-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-instrumentation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-instrumentation-api-incubator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-api-incubator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry.semconv</groupId>
+            <artifactId>opentelemetry-semconv</artifactId>
         </dependency>
 
     </dependencies>
