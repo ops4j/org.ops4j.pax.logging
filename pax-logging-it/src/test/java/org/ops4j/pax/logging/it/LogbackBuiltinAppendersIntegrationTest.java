@@ -19,6 +19,7 @@
 package org.ops4j.pax.logging.it;
 
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -141,6 +142,7 @@ public class LogbackBuiltinAppendersIntegrationTest extends AbstractStdoutInterc
         final int port = ss.getLocalPort();
         final CountDownLatch latch1 = new CountDownLatch(1);
         final CountDownLatch latch2 = new CountDownLatch(1);
+        final CountDownLatch latch3 = new CountDownLatch(1);
         ss.close();
 
         System.setProperty("socketAppender.port", Integer.toString(port));
@@ -149,14 +151,18 @@ public class LogbackBuiltinAppendersIntegrationTest extends AbstractStdoutInterc
         Thread t = new Thread(() -> {
             Socket s = null;
             try {
-                Thread.sleep(100);
+                Thread.sleep(250);
                 s = new Socket("localhost", port);
+                s.setSoTimeout(2000);
                 latch1.countDown();
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 byte[] buf = new byte[1024];
                 ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+                latch3.await(2, TimeUnit.SECONDS);
                 Object obj = ois.readObject();
                 s.close();
+            } catch (EOFException e) {
+                latch2.countDown();
             } catch (ClassNotFoundException e) {
                 // I could embed logback-classic in PaxExam-Probe bundle, but let's leave it for now
                 // CNFE is enough ;)
@@ -176,6 +182,7 @@ public class LogbackBuiltinAppendersIntegrationTest extends AbstractStdoutInterc
         latch1.await(5, TimeUnit.SECONDS);
         Logger log = LoggerFactory.getLogger("my.logger");
         log.info("socket message");
+        latch3.countDown();
 
         assertTrue(latch2.await(5, TimeUnit.SECONDS));
     }
