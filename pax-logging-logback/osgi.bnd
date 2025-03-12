@@ -45,6 +45,7 @@ Import-Package: \
  javax.servlet.http;resolution:=optional, \
  javax.sql;resolution:=optional, \
  org.ops4j.pax.logging; version="[2.0,3.0)", \
+ org.ops4j.pax.logging.slf4j; version="[2.0,3.0)", \
  org.ops4j.pax.logging.spi; version="[2.0,3.0)", \
  org.osgi.framework; version="[1.0.0,2.0.0)", \
  org.osgi.service.cm; version="[1.0.0,2.0.0)"; resolution:=optional, \

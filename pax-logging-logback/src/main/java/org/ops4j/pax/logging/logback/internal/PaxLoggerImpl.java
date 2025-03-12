@@ -27,6 +27,7 @@ import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxMarker;
+import org.ops4j.pax.logging.slf4j.Slf4jLogger;
 import org.ops4j.pax.logging.spi.support.FormattingTriple;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
@@ -1154,7 +1155,17 @@ public class PaxLoggerImpl implements PaxLogger {
                         final Object... args) {
         setDelegateContext();
         try {
-            m_delegate.log(marker, fqcn, level, message, args, t);
+            String[] finalFqcns = new String[1];
+            //noinspection StringEquality - this string is intern()ed
+            if (fqcn == Slf4jLogger.SLF4J_FQCN) {
+                finalFqcns[0] = Slf4jLogger.fcqn.get();
+                if (finalFqcns[0] == null) {
+                    finalFqcns[0] = fqcn;
+                }
+            } else {
+                finalFqcns[0] = fqcn;
+            }
+            m_delegate.log(marker, finalFqcns[0], level, message, args, t);
         } finally {
             clearDelegateContext();
         }

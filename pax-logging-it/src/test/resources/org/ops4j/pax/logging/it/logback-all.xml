@@ -114,6 +114,29 @@
         </root>
     </configuration>
 
+    <!-- test for SLF4J Builder APIs -->
+    <configuration id="slf4j-builder">
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                <layout class="ch.qos.logback.classic.layout.TTLLLayout" />
+            </encoder>
+        </appender>
+        <appender name="file" class="ch.qos.logback.core.FileAppender">
+            <file>target/logs-logback/slf4j-builder-file-appender.log</file>
+            <append>false</append>
+            <encoder>
+                <pattern>%logger/%class [%level] %message%n</pattern>
+            </encoder>
+        </appender>
+
+        <logger name="my.logger" level="info" additivity="false">
+            <appender-ref ref="file" />
+        </logger>
+        <root level="debug">
+            <appender-ref ref="console" />
+        </root>
+    </configuration>
+
     <!-- test for MDCSiftingAppender -->
     <configuration id="mdc.appender">
         <appender name="sift" class="ch.qos.logback.classic.sift.SiftingAppender">

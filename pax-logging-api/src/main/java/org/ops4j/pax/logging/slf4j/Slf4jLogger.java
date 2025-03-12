@@ -25,22 +25,29 @@ import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
+import org.slf4j.event.KeyValuePair;
+import org.slf4j.event.LoggingEvent;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
+import org.slf4j.spi.DefaultLoggingEventBuilder;
 import org.slf4j.spi.LocationAwareLogger;
+import org.slf4j.spi.LoggingEventAware;
 
 /**
  * pax-logging specific {@link org.slf4j.Logger} that delegates to {@link PaxLogger} that is obtained from
  * framework specific {@link org.ops4j.pax.logging.PaxLoggingService} and eventually delegates to logging
  * implementation.
  */
-public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareLogger {
+public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareLogger, LoggingEventAware {
 
     public static final String SLF4J_MARKER_MDC_ATTRIBUTE = "slf4j.marker";
-    public static final String SLF4J_FQCN = Slf4jLogger.class.getName();
+    public static final String SLF4J_FQCN = Slf4jLogger.class.getName().intern();
+    public static final String SLF4J_BUILDER_FQCN = DefaultLoggingEventBuilder.class.getName().intern();
 
     private String m_name;
     private PaxLogger m_delegate;
+
+    public static ThreadLocal<String> fcqn = new ThreadLocal<>();
 
     public Slf4jLogger(String name, PaxLogger delegate) {
         m_name = name;
@@ -53,6 +60,86 @@ public class Slf4jLogger implements LocationAwareLogger, PaxLoggingManagerAwareL
             m_delegate = FallbackLogFactory.createFallbackLog(FrameworkUtil.getBundle(Logger.class), m_name);
         } else {
             m_delegate = loggingManager.getLogger(m_name, SLF4J_FQCN);
+        }
+    }
+
+    // implementation of org.slf4j.spi.LoggingEventAware
+
+    @Override
+    public void log(LoggingEvent event) {
+        // see org.slf4j.spi.DefaultLoggingEventBuilder.logViaPublicSLF4JLoggerAPI()
+        Object[] argArray = event.getArgumentArray();
+        int argLen = argArray == null ? 0 : argArray.length;
+
+        Throwable t = event.getThrowable();
+        int tLen = t == null ? 0 : 1;
+
+        String msg = event.getMessage();
+
+        Object[] combinedArguments = new Object[argLen + tLen];
+
+        if (argArray != null) {
+            System.arraycopy(argArray, 0, combinedArguments, 0, argLen);
+        }
+        if (t != null) {
+            combinedArguments[argLen] = t;
+        }
+
+        msg = mergeMarkersAndKeyValuePairs(event, msg);
+
+        try {
+            fcqn.set(SLF4J_BUILDER_FQCN);
+            switch (event.getLevel()) {
+                case TRACE:
+                    m_delegate.trace(msg, combinedArguments);
+                    break;
+                case DEBUG:
+                    m_delegate.debug(msg, combinedArguments);
+                    break;
+                case INFO:
+                    m_delegate.info(msg, combinedArguments);
+                    break;
+                case WARN:
+                    m_delegate.warn(msg, combinedArguments);
+                    break;
+                case ERROR:
+                    m_delegate.error(msg, combinedArguments);
+                    break;
+            }
+        } finally {
+            fcqn.remove();
+        }
+    }
+
+    // copy from SLF4J
+    private String mergeMarkersAndKeyValuePairs(LoggingEvent aLoggingEvent, String msg) {
+        StringBuilder sb = null;
+
+        if (aLoggingEvent.getMarkers() != null) {
+            sb = new StringBuilder();
+            for (Marker marker : aLoggingEvent.getMarkers()) {
+                sb.append(marker);
+                sb.append(' ');
+            }
+        }
+
+        if (aLoggingEvent.getKeyValuePairs() != null) {
+            if (sb == null) {
+                sb = new StringBuilder();
+            }
+            for (KeyValuePair kvp : aLoggingEvent.getKeyValuePairs()) {
+                sb.append(kvp.key);
+                sb.append('=');
+                sb.append(kvp.value);
+                sb.append(' ');
+            }
+        }
+
+        if (sb != null) {
+            sb.append(msg);
+            return sb.toString();
+        } else {
+            return msg;
         }
     }
 
