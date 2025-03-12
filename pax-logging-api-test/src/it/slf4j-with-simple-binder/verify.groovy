@@ -19,4 +19,5 @@
 
 File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.logging.test.slf4j.Slf4JApiTest-output.txt")
 List<String> lines = surefireOutput.readLines()
-assert lines.get(0) == "[main] INFO org.ops4j.pax.logging - INFO"
+assert lines.get(0) == "[main] INFO org.ops4j.pax.logging - k1=v1 message for the builder a1"
+assert lines.get(1) == "[main] INFO org.ops4j.pax.logging - INFO"

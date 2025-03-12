@@ -46,6 +46,7 @@ Import-Package: \
  javax.sql;resolution:=optional, \
  org.knopflerfish.service.log; provider="paxlogging"; version="[1.1.0,2.0.0)", \
  org.ops4j.pax.logging; version="[1.11,2.0)", \
+ org.ops4j.pax.logging.slf4j; version="[1.11,2.0)", \
  org.ops4j.pax.logging.spi; version="[1.11,2.0)", \
  org.osgi.framework; version="[1.0.0,2.0.0)", \
  org.osgi.service.cm; version="[1.0.0,2.0.0)"; resolution:=optional, \

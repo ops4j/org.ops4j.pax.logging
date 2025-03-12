@@ -94,6 +94,32 @@
         </Loggers>
     </Configuration>
 
+    <!-- test for SLF4J Builder APIs -->
+    <Configuration id="slf4j-builder">
+        <Appenders>
+            <!-- lax version -->
+            <Console name="console">
+                <PatternLayout pattern="%logger/%class [%level] %message%n" />
+            </Console>
+            <File name="file">
+                <fileName>target/logs-log4j2/slf4j-builder-file-appender.log</fileName>
+                <append>false</append>
+                <PatternLayout>
+                    <pattern>%logger/%class [%level] %message%n</pattern>
+                </PatternLayout>
+            </File>
+        </Appenders>
+
+        <Loggers>
+            <Logger name="my.logger" level="info" additivity="false">
+                <AppenderRef ref="file" />
+            </Logger>
+            <Root level="debug">
+                <AppenderRef ref="console" />
+            </Root>
+        </Loggers>
+    </Configuration>
+
     <!-- test for MDCSiftingAppender -->
     <Configuration id="mdc.appender">
         <Appenders>
