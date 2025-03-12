@@ -21,8 +21,20 @@ package org.ops4j.pax.logging.test.slf4j;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
+import org.slf4j.spi.DefaultLoggingEventBuilder;
+import org.slf4j.spi.LoggingEventBuilder;
 
 public class Slf4JApiTest {
+
+    @Test
+    public void simplestUsageWithBuilderAPI() {
+        Logger log = LoggerFactory.getLogger("org.ops4j.pax.logging");
+        LoggingEventBuilder builder = new DefaultLoggingEventBuilder(log, Level.INFO);
+        builder.addKeyValue("k1", "v1")
+                .addArgument("a1")
+                .setMessage("message for the builder {}").log();
+    }
 
     @Test
     public void simplestUsageWithSimpleBinder() {

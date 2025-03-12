@@ -25,12 +25,12 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.message.Message;
-import org.apache.logging.log4j.message.SimpleMessage;
 import org.apache.logging.log4j.spi.ExtendedLogger;
 import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxMarker;
+import org.ops4j.pax.logging.slf4j.Slf4jLogger;
 import org.osgi.framework.Bundle;
 import org.osgi.service.log.LogService;
 
@@ -328,15 +328,25 @@ public class PaxLoggerImpl implements PaxLogger {
     // private methods
 
     private void doLog(final Marker marker, final Level level, final int svcLevel, final String fqcn, final String message, final Throwable t) {
+        String[] finalFqcns = new String[1];
+        //noinspection StringEquality - this string is intern()ed
+        if (fqcn == Slf4jLogger.SLF4J_FQCN) {
+            finalFqcns[0] = Slf4jLogger.fcqn.get();
+            if (finalFqcns[0] == null) {
+                finalFqcns[0] = fqcn;
+            }
+        } else {
+            finalFqcns[0] = fqcn;
+        }
         if (System.getSecurityManager() != null) {
             AccessController.doPrivileged(
                     (PrivilegedAction<Void>) () -> {
-                        doLog0(marker, level, svcLevel, fqcn, message, t);
+                        doLog0(marker, level, svcLevel, finalFqcns[0], message, t);
                         return null;
                     }
             );
         } else {
-            doLog0(marker, level, svcLevel, fqcn, message, t);
+            doLog0(marker, level, svcLevel, finalFqcns[0], message, t);
         }
     }
 
