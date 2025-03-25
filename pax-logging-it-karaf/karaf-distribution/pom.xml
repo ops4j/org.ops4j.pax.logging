@@ -79,6 +79,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <javase>11</javase>
                     <!--
                         explicit <framework> configuration is needed if there's no compile dependency on
                         mvn:org.apache.karaf.features/framework/VERSION/kar or
