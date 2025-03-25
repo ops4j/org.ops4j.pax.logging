@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -39,11 +40,7 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
-import org.apache.logging.log4j.core.config.plugins.util.PluginManager;
 import org.apache.logging.log4j.core.config.properties.PropertiesConfigurationFactory;
-import org.apache.logging.log4j.layout.template.json.JsonTemplateLayout;
-import org.apache.logging.log4j.layout.template.json.resolver.LoggerResolverFactory;
-import org.apache.logging.log4j.layout.template.json.util.RecyclerFactoryConverter;
 import org.apache.logging.log4j.status.StatusData;
 import org.apache.logging.log4j.status.StatusLogger;
 import org.apache.logging.log4j.util.PaxPropertySource;
@@ -54,7 +51,6 @@ import org.ops4j.pax.logging.PaxContext;
 import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.PaxLoggingService;
-import org.ops4j.pax.logging.log4j2.internal.bridges.PaxOsgiAppender;
 import org.ops4j.pax.logging.spi.support.BackendSupport;
 import org.ops4j.pax.logging.spi.support.ConfigurationNotifier;
 import org.ops4j.pax.logging.spi.support.LogEntryImpl;
@@ -72,7 +68,7 @@ public class PaxLoggingServiceImpl
 
     private static final String LOGGER_CONTEXT_NAME = "pax-logging";
 
-    static {
+//    static {
 //        PluginManager.addPackage("org.apache.logging.log4j.core");
         // We don't have to add "org.apache.logging.log4j.core", because this package will be handled
         // using default cache file "/META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat"
@@ -84,7 +80,7 @@ public class PaxLoggingServiceImpl
 //        PluginManager.addPackage(JsonTemplateLayout.class.getPackage().getName());
 //        PluginManager.addPackage(LoggerResolverFactory.class.getPackage().getName());
 //        PluginManager.addPackage(RecyclerFactoryConverter.class.getPackage().getName());
-    }
+//    }
 
     private final BundleContext m_bundleContext;
 
@@ -513,7 +509,12 @@ public class PaxLoggingServiceImpl
             unlock(true);
         }
 
-        setLevelToJavaLogging();
+        try {
+            setLevelToJavaLogging();
+        } catch (Throwable e) {
+            StatusLogger.getLogger().error("Log4J2 configuration problem: " + e.getMessage(), e);
+            problem = e;
+        }
 
         // do it outside of the lock
         if (problem == null) {
@@ -536,6 +537,7 @@ public class PaxLoggingServiceImpl
             java.util.logging.Logger.getLogger(name).setLevel(null);
         }
 
+        // reconfigure existing loggers
         for (Logger logger : m_log4jContext.getLoggers()) {
             if (logger != null) {
                 Level l = logger.getLevel();
@@ -550,6 +552,36 @@ public class PaxLoggingServiceImpl
                 }
             }
         }
+
+        // reconfigure future loggers - we can:
+        //  - obtain a logger - even if it doesn't exist - and set its leve
+        //  - add special configuration properties
+        //noinspection WriteOnlyObject
+        StringWriter sw = new StringWriter();
+        this.m_log4jContext.getConfiguration().getLoggers().forEach((name, config) -> {
+            java.util.logging.Level julLevel = BackendSupport.toJULLevel(config.getLevel().name());
+            if ("".equals(name)) {
+                sw.append(".level=").append(String.valueOf(julLevel)).append("\n");
+                sw.append("global.level=").append(String.valueOf(julLevel)).append("\n");
+            } else {
+                sw.append(name).append(".level=").append(String.valueOf(julLevel)).append("\n");
+            }
+            // https://github.com/ops4j/org.ops4j.pax.logging/issues/520
+            // With Logback ch.qos.logback.classic.LoggerContext.getLoggerList() iterates over ALL loggers
+            // created for all definitions from XML.
+            // With Log4j2 adding a logger level definition in configuration doesn't create a logger
+            // reachable with org.apache.logging.log4j.core.LoggerContext.getLoggers(), so we have to use
+            // org.apache.logging.log4j.core.config.Configuration.getLoggers() and create JUL loggers
+            java.util.logging.Logger.getLogger(name).setLevel(julLevel);
+        });
+        // java.util.logging.LogManager.readConfiguration() overrides the configuration
+//        java.util.logging.LogManager.getLogManager()
+//                .readConfiguration(new ByteArrayInputStream(sw.toString().getBytes(StandardCharsets.UTF_8)));
+        // java.util.logging.LogManager.updateConfiguration() is marked as JDK9+ - we may switch at some point
+//        java.util.logging.LogManager.getLogManager().updateConfiguration(
+//                new ByteArrayInputStream(sw.toString().getBytes(StandardCharsets.UTF_8)), k -> (ov, nv) -> {
+//                    return nv;
+//                });
     }
 
     private void configurePax(Dictionary<String, ?> config) {
