@@ -34,15 +34,21 @@ Export-Package: \
 
 # Slf4J packages are explicitly marked as being imported from pax-logging-api
 Import-Package: \
+ !java.*, \
  javax.jms;resolution:=optional, \
+ jakarta.jms;resolution:=optional, \
  javax.mail;resolution:=optional, \
  javax.mail.internet;resolution:=optional, \
+ jakarta.mail;resolution:=optional, \
+ jakarta.mail.internet;resolution:=optional, \
  javax.management;resolution:=optional, \
  javax.naming;resolution:=optional, \
  javax.net;resolution:=optional, \
  javax.net.ssl;resolution:=optional, \
  javax.servlet;resolution:=optional, \
  javax.servlet.http;resolution:=optional, \
+ jakarta.servlet;resolution:=optional, \
+ jakarta.servlet.http;resolution:=optional, \
  javax.sql;resolution:=optional, \
  org.ops4j.pax.logging; version="[2.0,3.0)", \
  org.ops4j.pax.logging.slf4j; version="[2.0,3.0)", \
@@ -67,6 +73,7 @@ Import-Package: \
  org.codehaus.groovy.transform.*;resolution:=optional;version="1.7", \
  org.codehaus.janino;resolution:=optional, \
  groovy.lang;resolution:=optional;version="1.7", \
+ org.tukaani.xz;resolution:=optional, \
  *
 
 Provide-Capability: \
