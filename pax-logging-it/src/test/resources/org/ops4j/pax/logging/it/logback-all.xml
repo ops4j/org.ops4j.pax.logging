@@ -292,6 +292,7 @@
 
         <logger name="l1" level="warn" />
         <logger name="l2" level="debug" />
+        <logger name="l3" level="debug" />
         <root level="info">
             <appender-ref ref="console" />
         </root>
@@ -306,6 +307,7 @@
 
         <logger name="l1" level="debug" />
         <logger name="l2" level="warn" />
+        <logger name="l3" level="warn" />
         <root level="info">
             <appender-ref ref="console" />
         </root>

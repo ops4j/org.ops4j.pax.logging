@@ -75,11 +75,12 @@
                                 <artifactItem>
                                     <groupId>org.apache.logging.log4j</groupId>
                                     <artifactId>log4j-core</artifactId>
+                                    <excludes>module-info.class</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.logging.log4j</groupId>
                                     <artifactId>log4j-layout-template-json</artifactId>
-                                    <excludes>**/Log4j2Plugins.dat</excludes>
+                                    <excludes>**/Log4j2Plugins.dat,module-info.class</excludes>
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${project.build.directory}/classes</outputDirectory>

@@ -58,25 +58,34 @@ public class Log4J2UpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutIn
 
         java.util.logging.Logger l1 = java.util.logging.Logger.getLogger("l1");
         java.util.logging.Logger l2 = java.util.logging.Logger.getLogger("l2");
+        java.util.logging.Logger l3s = java.util.logging.Logger.getLogger("l3.sub");
 
         l1.info("INFO using l1 before");
         l2.info("INFO using l2 before");
+        l3s.fine("FINE using l3.sub before");
 
         Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOG4J2_PROPERTIES, "update.jul", props -> {
             // swap the levels
             props.put("log4j2.logger.l1.level", "debug");
             props.put("log4j2.logger.l2.level", "warn");
+            props.put("log4j2.logger.l3.level", "warn");
         });
 
         l1.info("INFO using l1 after");
         l2.info("INFO using l2 after");
+        l3s.fine("FINE using l3.sub after");
+        java.util.logging.Logger l3s2 = java.util.logging.Logger.getLogger("l3.sub2");
+        l3s2.fine("FINE using l3.sub2 after");
 
         List<String> lines = readLines();
 
         assertFalse(lines.contains("l1/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [INFO] INFO using l1 before"));
         assertTrue(lines.contains("l2/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [INFO] INFO using l2 before"));
+        assertTrue(lines.contains("l3.sub/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [DEBUG] FINE using l3.sub before"));
         assertTrue(lines.contains("l1/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [INFO] INFO using l1 after"));
         assertFalse(lines.contains("l2/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [INFO] INFO using l2 after"));
+        assertFalse(lines.contains("l3.sub/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [DEBUG] FINE using l3.sub after"));
+        assertFalse(lines.contains("l3.sub2/org.ops4j.pax.logging.it.Log4J2UpdateJULLoggerLevelsIntegrationTest [DEBUG] FINE using l3.sub2 after"));
     }
 
 }

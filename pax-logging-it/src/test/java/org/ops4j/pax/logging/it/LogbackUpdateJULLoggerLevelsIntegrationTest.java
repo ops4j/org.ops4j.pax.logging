@@ -59,22 +59,30 @@ public class LogbackUpdateJULLoggerLevelsIntegrationTest extends AbstractStdoutI
 
         java.util.logging.Logger l1 = java.util.logging.Logger.getLogger("l1");
         java.util.logging.Logger l2 = java.util.logging.Logger.getLogger("l2");
+        java.util.logging.Logger l3s = java.util.logging.Logger.getLogger("l3.sub");
 
         l1.info("INFO using l1 before");
         l2.info("INFO using l2 before");
+        l3s.fine("FINE using l3.sub before");
 
         Helpers.updateLoggingConfig(context, cm, Helpers.LoggingLibrary.LOGBACK, "update.jul2");
 
         l1.info("INFO using l1 after");
         l2.info("INFO using l2 after");
+        l3s.fine("FINE using l3.sub after");
+        java.util.logging.Logger l3s2 = java.util.logging.Logger.getLogger("l3.sub2");
+        l3s2.fine("FINE using l3.sub2 after");
 
         List<String> lines = readLines();
         lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
 
         assertFalse(lines.contains("[main] INFO l1 -- INFO using l1 before"));
         assertTrue(lines.contains("[main] INFO l2 -- INFO using l2 before"));
+        assertTrue(lines.contains("[main] DEBUG l3.sub -- FINE using l3.sub before"));
         assertTrue(lines.contains("[main] INFO l1 -- INFO using l1 after"));
         assertFalse(lines.contains("[main] INFO l2 -- INFO using l2 after"));
+        assertFalse(lines.contains("[main] DEBUG l3.sub -- FINE using l3.sub after"));
+        assertFalse(lines.contains("[main] DEBUG l3.sub2 -- FINE using l3.sub2 after"));
     }
 
 }
