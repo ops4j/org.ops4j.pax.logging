@@ -212,7 +212,7 @@
             <!-- for ordering reasons -->
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-log4j2-maven-plugin</artifactId>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
 
         <!-- OSGi -->

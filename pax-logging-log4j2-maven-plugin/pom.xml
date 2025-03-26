@@ -34,7 +34,7 @@
     <artifactId>pax-logging-log4j2-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
-    <name>OPS4J Pax Logging - Maven plugin</name>
+    <name>OPS4J Pax Logging - Log4Jv2 Maven plugin</name>
 
     <description>
         This plugin is used to generate additional /META-INF/org/apache/logging/log4j/core/config/plugins/Log4j2Plugins.dat
