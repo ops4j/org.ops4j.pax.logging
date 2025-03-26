@@ -242,6 +242,8 @@
         <version.org.mockito>4.11.0</version.org.mockito>
         <version.org.ops4j.pax.exam>4.13.4</version.org.ops4j.pax.exam>
         <version.org.ops4j.pax.swissbox>1.8.5</version.org.ops4j.pax.swissbox>
+        <!-- Pax URL 2.6.x is only for Karaf itests -->
+        <version.org.ops4j.pax.url2>2.6.16</version.org.ops4j.pax.url2>
         <version.org.ops4j.pax.url>3.0.0</version.org.ops4j.pax.url>
         <version.org.osgi>7.0.0</version.org.osgi>
         <version.org.osgi.service.jdbc>1.1.0</version.org.osgi.service.jdbc>
