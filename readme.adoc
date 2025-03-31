@@ -7,7 +7,7 @@ The goal of this project is to allow users and bundles to use well known Logging
 
 
 |===
-| |1.9.x |1.10.x |1.11.x |1.12.x |2.0.x |2.1.x |2.2.x
+| |1.9.x |1.10.x |1.11.x |1.12.x |2.0.x |2.1.x |2.2.x |2.3.x
 
 |OSGi Log version
 |R6 (1.3)
@@ -17,6 +17,7 @@ The goal of this project is to allow users and bundles to use well known Logging
 |R7 (1.4)
 |R7 (1.4)
 |R8 (1.5)
+|R8 (1.5)
 
 |Log4j1 backend
 |yes
@@ -24,6 +25,7 @@ The goal of this project is to allow users and bundles to use well known Logging
 |yes
 |no
 |yes
+|no
 |no
 |no
 
@@ -35,6 +37,7 @@ The goal of this project is to allow users and bundles to use well known Logging
 |2.18.0
 |2.18.0
 |2.24.3
+|2.24.3
 
 |Logback version
 |no
@@ -44,6 +47,17 @@ The goal of this project is to allow users and bundles to use well known Logging
 |1.2.11
 |1.2.11
 |1.3.15
+|1.5.18
+
+|JDK
+|~
+|~
+|~
+|JDK 8+
+|~
+|~
+|JDK 8+
+|JDK 11+
 
 |Maintained
 |no
@@ -52,6 +66,7 @@ The goal of this project is to allow users and bundles to use well known Logging
 |yes
 |no, use 2.2.x instead
 |no, use 2.2.x instead
+|yes
 |yes
 |===
 
@@ -63,6 +78,7 @@ NOTE: All versions support Log4j1 *API*, while only selected ones support Log4j1
 * New major version 2.0.x was created to provide implementation of a new version of the `org.osgi.service.log` package from OSGi R7 specification
 * Version 1.12.x and 2.1.x were created during https://www.lunasec.io/docs/blog/log4j-zero-day/[Log4j crisis] to provide versions that match 1.11.x and 2.0.x (respectively), but without Log4j1 backend
 * Version 2.2.x was created to provide implementation of new version of the `org.osgi.service.log` package from OSGi R8 specification - from day 1 without Log4j1 backend (but still with Log4j1 API)
+* Version 2.3.x was created as natural evolution of 2.2.x, where Logback was upgraded to a version that requires minimum JDK 11.
 
 At some point, https://reload4j.qos.ch/[reload4j] fork of https://logging.apache.org/log4j/1.2/index.html[Apache log4j] was used.
 
