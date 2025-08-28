@@ -16,6 +16,7 @@
  */
 package org.apache.logging.log4j.core.appender.db.jdbc;
 
+import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.sql.Clob;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
-
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.StringLayout;
@@ -943,7 +943,10 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
 
     @Override
     protected void writeInternal(final LogEvent event, final Serializable serializable) {
-        StringReader reader = null;
+        // Don't close StringReaders because of (1) batching, (2) resources are not allocated, and (3) they'll be GC'd
+        // away.
+        // See https://github.com/apache/logging-log4j2/issues/3127 where closing StringReaders too soon can cause
+        // problems.
         try {
             if (!this.isRunning() || isClosed(this.connection) || isClosed(this.statement)) {
                 logger().debug("Cannot write logging event; JDBC manager not connected to the database, running={}, [{}]).",
@@ -988,7 +991,7 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
                 if (column.isEventTimestamp()) {
                     this.statement.setTimestamp(j++, new Timestamp(event.getTimeMillis()));
                 } else if (column.isClob()) {
-                    reader = new StringReader(column.getLayout().toSerializable(event));
+                    final Reader reader = new StringReader(column.getLayout().toSerializable(event));
                     if (column.isUnicode()) {
                         this.statement.setNClob(j++, reader);
                     } else {
@@ -1038,7 +1041,6 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
             } catch (final SQLException e) {
                 // Ignore
             }
-            Closer.closeSilently(reader);
         }
     }
 
