@@ -232,7 +232,7 @@
         <version.org.apache.felix.cm.json>1.0.8</version.org.apache.felix.cm.json>
         <version.org.apache.felix.configadmin>1.9.26</version.org.apache.felix.configadmin>
         <version.org.apache.felix7.framework>7.0.5</version.org.apache.felix7.framework>
-        <version.org.apache.logging.log4j>2.25.1</version.org.apache.logging.log4j>
+        <version.org.apache.logging.log4j>2.25.3</version.org.apache.logging.log4j>
         <version.org.apache.maven>3.9.11</version.org.apache.maven>
         <version.org.apache.maven.plugin-tools>3.15.1</version.org.apache.maven.plugin-tools>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
