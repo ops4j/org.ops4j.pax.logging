@@ -338,8 +338,8 @@
         <!-- Other -->
 
         <dependency>
-            <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs-annotations</artifactId>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
             <scope>provided</scope>
         </dependency>
 
