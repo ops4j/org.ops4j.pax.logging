@@ -225,7 +225,6 @@
             ERROR : Unable to invoke factory method in class org.apache.logging.log4j.core.layout.JsonLayout for element JsonLayout: java.lang.IllegalStateException: No factory method found for class org.apache.logging.log4j.core.layout.JsonLayout
         -->
         <version.com.fasterxml.jackson>2.19.2</version.com.fasterxml.jackson>
-        <version.com.github.spotbugs>4.9.4</version.com.github.spotbugs>
         <version.com.h2database>2.2.224</version.com.h2database>
         <version.commons-io>2.21.0</version.commons-io>
         <version.commons-logging>1.3.5</version.commons-logging>
@@ -236,13 +235,14 @@
         <version.org.apache.felix.fileinstall>3.6.4</version.org.apache.felix.fileinstall>
         <version.org.apache.felix.configadmin>1.9.26</version.org.apache.felix.configadmin>
         <version.org.apache.felix.framework>5.6.12</version.org.apache.felix.framework>
-        <version.org.apache.logging.log4j>2.25.1</version.org.apache.logging.log4j>
+        <version.org.apache.logging.log4j>2.25.3</version.org.apache.logging.log4j>
         <version.org.apache.maven>3.9.12</version.org.apache.maven>
         <version.org.apache.maven.plugin-tools>3.15.2</version.org.apache.maven.plugin-tools>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
         <!-- 3.5.0.Final is JDK11 only, but we'll export 3.5.3 package version anyway -->
         <version.org.jboss.logging>3.4.3.Final</version.org.jboss.logging>
         <version.org.knopflerfish.kf6>5.0.0</version.org.knopflerfish.kf6>
+        <version.org.jspecify>1.0.0</version.org.jspecify>
         <!-- 5.x is for JDK11+ -->
         <version.org.mockito>4.11.0</version.org.mockito>
         <version.org.ops4j.pax.exam>4.13.4</version.org.ops4j.pax.exam>
@@ -1050,9 +1050,9 @@
             </dependency>
 
             <dependency>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-annotations</artifactId>
-                <version>${version.com.github.spotbugs}</version>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>${version.org.jspecify}</version>
             </dependency>
 
             <!-- Testing -->
