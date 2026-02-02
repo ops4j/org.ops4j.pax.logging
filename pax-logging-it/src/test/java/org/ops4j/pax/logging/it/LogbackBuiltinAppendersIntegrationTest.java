@@ -35,6 +35,7 @@ import java.util.function.Consumer;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -137,6 +138,7 @@ public class LogbackBuiltinAppendersIntegrationTest extends AbstractStdoutInterc
     }
 
     @Test
+    @Ignore("ServerSocketAppender was somehow removed in https://github.com/qos-ch/logback/commit/0370b137a47a6148c3f2d527f6bfdbd22d3136a8")
     public void socketAppender() throws Exception {
         final ServerSocket ss = new ServerSocket(0);
         final int port = ss.getLocalPort();
