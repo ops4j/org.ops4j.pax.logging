@@ -242,7 +242,7 @@
         <version.org.apache.maven.plugin-tools>3.15.2</version.org.apache.maven.plugin-tools>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
         <version.org.apache.sling.commons.johnzon>1.2.14</version.org.apache.sling.commons.johnzon>
-        <version.org.jboss.logging>3.6.1.Final</version.org.jboss.logging>
+        <version.org.jboss.logging>3.6.2.Final</version.org.jboss.logging>
         <version.org.jspecify>1.0.0</version.org.jspecify>
         <!-- 5.x is for JDK11+ -->
         <version.org.mockito>4.11.0</version.org.mockito>
