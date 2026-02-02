@@ -45,7 +45,7 @@ import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.it.support.Helpers;
 import org.ops4j.pax.logging.it.support.OnDemandLogger;
 import org.ops4j.pax.logging.it.support.OnDemandLoggerActivator;
-import org.ops4j.pax.tinybundles.core.TinyBundles;
+import org.ops4j.pax.tinybundles.TinyBundles;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -89,24 +89,24 @@ public class Log4J2BuiltinAppendersIntegrationTest extends AbstractStdoutInterce
      */
     public static void prepareBundles() throws IOException {
         InputStream bundle1 = TinyBundles.bundle()
-                .set("Bundle-ManifestVersion", "2")
-                .set("Bundle-SymbolicName", "b1")
-                .set("Bundle-Activator", "org.ops4j.pax.logging.it.support.OnDemandLoggerActivator")
-                .set("Import-Package", "org.osgi.framework,org.slf4j,org.apache.logging.log4j")
-                .add(OnDemandLogger.class)
-                .add(OnDemandLoggerActivator.class)
-                .build();
+                .setHeader("Bundle-ManifestVersion", "2")
+                .setHeader("Bundle-SymbolicName", "b1")
+                .setHeader("Bundle-Activator", "org.ops4j.pax.logging.it.support.OnDemandLoggerActivator")
+                .setHeader("Import-Package", "org.osgi.framework,org.slf4j,org.apache.logging.log4j")
+                .addClass(OnDemandLogger.class)
+                .addClass(OnDemandLoggerActivator.class)
+                .build(TinyBundles.rawBuilder());
         new File("target/bundles").mkdirs();
         IOUtils.copy(bundle1, new FileOutputStream("target/bundles/mdc-bundle1.jar"));
 
         InputStream bundle2 = TinyBundles.bundle()
-                .set("Bundle-ManifestVersion", "2")
-                .set("Bundle-SymbolicName", "b2")
-                .set("Bundle-Activator", "org.ops4j.pax.logging.it.support.OnDemandLoggerActivator")
-                .set("Import-Package", "org.osgi.framework,org.slf4j,org.apache.logging.log4j")
-                .add(OnDemandLogger.class)
-                .add(OnDemandLoggerActivator.class)
-                .build();
+                .setHeader("Bundle-ManifestVersion", "2")
+                .setHeader("Bundle-SymbolicName", "b2")
+                .setHeader("Bundle-Activator", "org.ops4j.pax.logging.it.support.OnDemandLoggerActivator")
+                .setHeader("Import-Package", "org.osgi.framework,org.slf4j,org.apache.logging.log4j")
+                .addClass(OnDemandLogger.class)
+                .addClass(OnDemandLoggerActivator.class)
+                .build(TinyBundles.rawBuilder());
         new File("target/bundles").mkdirs();
         IOUtils.copy(bundle2, new FileOutputStream("target/bundles/mdc-bundle2.jar"));
     }

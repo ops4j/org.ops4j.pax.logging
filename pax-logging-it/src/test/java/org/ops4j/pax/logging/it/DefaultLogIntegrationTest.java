@@ -40,7 +40,7 @@ import org.ops4j.pax.logging.PaxLogger;
 import org.ops4j.pax.logging.PaxLoggingConstants;
 import org.ops4j.pax.logging.spi.PaxDefaultLogStreamProvider;
 import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
-import org.ops4j.pax.tinybundles.core.TinyBundles;
+import org.ops4j.pax.tinybundles.TinyBundles;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
@@ -96,16 +96,16 @@ public class DefaultLogIntegrationTest extends AbstractStdoutInterceptingIntegra
      */
     public static void prepareBundles() throws IOException {
         InputStream bundle1 = TinyBundles.bundle()
-                .set("Bundle-ManifestVersion", "2")
-                .set("Bundle-SymbolicName", "MySpecialBundleThatShouldTriggerBundleEventWhenInstalling")
-                .build();
+                .setHeader("Bundle-ManifestVersion", "2")
+                .setHeader("Bundle-SymbolicName", "MySpecialBundleThatShouldTriggerBundleEventWhenInstalling")
+                .build(TinyBundles.rawBuilder());
         new File("target/bundles").mkdirs();
         IOUtils.copy(bundle1, new FileOutputStream("target/bundles/sample-bundle1.jar"));
 
         InputStream bundle2 = TinyBundles.bundle()
-                .set("Bundle-ManifestVersion", "2")
-                .set("Bundle-SymbolicName", "AnotherBundle")
-                .build();
+                .setHeader("Bundle-ManifestVersion", "2")
+                .setHeader("Bundle-SymbolicName", "AnotherBundle")
+                .build(TinyBundles.rawBuilder());
         new File("target/bundles").mkdirs();
         IOUtils.copy(bundle2, new FileOutputStream("target/bundles/sample-bundle2.jar"));
     }

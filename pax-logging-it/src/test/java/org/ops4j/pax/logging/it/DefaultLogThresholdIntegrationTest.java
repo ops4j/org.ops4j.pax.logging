@@ -34,7 +34,8 @@ import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.logging.PaxLoggingConstants;
-import org.ops4j.pax.tinybundles.core.TinyBundles;
+import org.ops4j.pax.tinybundles.TinyBundles;
+import org.ops4j.pax.tinybundles.internal.DefaultTinyBundlesFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.slf4j.Logger;
@@ -54,16 +55,16 @@ public class DefaultLogThresholdIntegrationTest extends AbstractStdoutIntercepti
      */
     public static void prepareBundles() throws IOException {
         InputStream bundle1 = TinyBundles.bundle()
-                .set("Bundle-ManifestVersion", "2")
-                .set("Bundle-SymbolicName", "MySpecialBundleThatShouldTriggerBundleEventWhenInstalling")
-                .build();
+                .setHeader("Bundle-ManifestVersion", "2")
+                .setHeader("Bundle-SymbolicName", "MySpecialBundleThatShouldTriggerBundleEventWhenInstalling")
+                .build(TinyBundles.rawBuilder());
         new File("target/bundles").mkdirs();
         IOUtils.copy(bundle1, new FileOutputStream("target/bundles/sample-bundle1.jar"));
 
         InputStream bundle2 = TinyBundles.bundle()
-                .set("Bundle-ManifestVersion", "2")
-                .set("Bundle-SymbolicName", "AnotherBundle")
-                .build();
+                .setHeader("Bundle-ManifestVersion", "2")
+                .setHeader("Bundle-SymbolicName", "AnotherBundle")
+                .build(TinyBundles.rawBuilder());
         new File("target/bundles").mkdirs();
         IOUtils.copy(bundle2, new FileOutputStream("target/bundles/sample-bundle2.jar"));
     }
