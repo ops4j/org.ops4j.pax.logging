@@ -37,7 +37,7 @@ The goal of this project is to allow users and bundles to use well known Logging
 |2.18.0
 |2.18.0
 |2.25.1
-|2.25.1
+|2.25.3
 
 |Logback version
 |no
@@ -47,7 +47,7 @@ The goal of this project is to allow users and bundles to use well known Logging
 |1.2.11
 |1.2.11
 |1.3.15
-|1.5.18
+|1.5.27
 
 |JDK
 |~
