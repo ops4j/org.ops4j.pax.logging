@@ -1,18 +1,18 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements. See the NOTICE file distributed with
+ * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache license, Version 2.0
+ * The ASF licenses this file to you under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
+ * the License.  You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the license for the specific language governing permissions and
- * limitations under the license.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.logging.log4j.util;
 
@@ -22,7 +22,9 @@ import java.util.Deque;
 import java.util.function.Predicate;
 
 /**
- * <em>Consider this class private.</em> Provides various methods to determine the caller class. <h3>Background</h3>
+ * <em>Consider this class private.</em> Provides various methods to determine the caller class.
+ *
+ * <h2>Background</h2>
  * <p>
  * This method, available only in the Oracle/Sun/OpenJDK implementations of the Java Virtual Machine, is a much more
  * efficient mechanism for determining the {@link Class} of the caller of a particular method. When it is not available,
@@ -45,7 +47,10 @@ import java.util.function.Predicate;
  * environments may fall back to using {@link Throwable#getStackTrace()} which is significantly slower due to
  * examination of every virtual frame of execution.
  * </p>
+ *
+ * @since 2.9.0
  */
+@InternalApi
 public final class StackLocator implements IStackLocator {
 
     /** TODO Consider removing now that we require Java 8. */
@@ -54,7 +59,7 @@ public final class StackLocator implements IStackLocator {
     private static final Method GET_CALLER_CLASS_METHOD;
 
     private static final StackLocator INSTANCE;
-    
+
     /** TODO: Use Object.class. */
     private static final Class<?> DEFAULT_CALLER_CLASS = null;
 
@@ -62,7 +67,10 @@ public final class StackLocator implements IStackLocator {
         Method getCallerClassMethod;
         int java7u25CompensationOffset = 0;
         try {
-            final Class<?> sunReflectionClass = LoaderUtil.loadClass("sun.reflect.Reflection");
+            // Do not use `LoaderUtil` here, since it causes a cycle of dependencies:
+            // LoaderUtil -> PropertiesUtil -> ServiceLoaderUtil -> StackLocator
+            final Class<?> sunReflectionClass =
+                    Class.forName("sun.reflect.Reflection", true, ClassLoader.getSystemClassLoader());
             getCallerClassMethod = sunReflectionClass.getDeclaredMethod("getCallerClass", int.class);
             Object o = getCallerClassMethod.invoke(null, 0);
             getCallerClassMethod.invoke(null, 0);
@@ -72,12 +80,17 @@ public final class StackLocator implements IStackLocator {
             } else {
                 o = getCallerClassMethod.invoke(null, 1);
                 if (o == sunReflectionClass) {
-                    System.out.println("WARNING: Unexpected result from sun.reflect.Reflection.getCallerClass(int), adjusting offset for future calls.");
+                    System.out.println(
+                            "WARNING: Unexpected result from `sun.reflect.Reflection.getCallerClass(int)`, adjusting offset for future calls.");
                     java7u25CompensationOffset = 1;
                 }
             }
         } catch (final Exception | LinkageError e) {
-            System.out.println("WARNING: sun.reflect.Reflection.getCallerClass is not supported. This will impact performance.");
+            // We can not use `Constants` here, since they depend on `PropertiesUtil`.
+            System.out.println(
+                    System.getProperty("java.version", "").startsWith("1.8")
+                            ? "WARNING: `sun.reflect.Reflection.getCallerClass(int)` is not supported. This will impact location-based features."
+                            : "WARNING: Runtime environment or build system does not support multi-release JARs. This will impact location-based features.");
             getCallerClassMethod = null;
             java7u25CompensationOffset = -1;
         }
@@ -96,8 +109,7 @@ public final class StackLocator implements IStackLocator {
         return INSTANCE;
     }
 
-    private StackLocator() {
-    }
+    private StackLocator() {}
 
     // TODO: return Object.class instead of null (though it will have a null ClassLoader)
     // (MS) I believe this would work without any modifications elsewhere, but I could be wrong
@@ -192,6 +204,9 @@ public final class StackLocator implements IStackLocator {
         return Object.class;
     }
 
+    /**
+     * @since 2.17.2
+     */
     // migrated from ThrowableProxy
     @PerformanceSensitive
     public Deque<Class<?>> getCurrentStackTrace() {
@@ -203,7 +218,7 @@ public final class StackLocator implements IStackLocator {
         final Deque<Class<?>> classes = new ArrayDeque<>();
         Class<?> clazz;
         for (int i = 1; null != (clazz = getCallerClass(i)); i++) {
-            classes.push(clazz);
+            classes.addLast(clazz);
         }
         return classes;
     }

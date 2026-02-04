@@ -19,13 +19,14 @@ package org.apache.logging.log4j.util;
 import java.util.Deque;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
-
 import org.apache.logging.log4j.status.StatusLogger;
 import org.ops4j.pax.logging.spi.support.OsgiUtil;
 import org.osgi.framework.Version;
 
 /**
- * <em>Consider this class private.</em> Provides various methods to determine the caller class. <h3>Background</h3>
+ * <em>Consider this class private.</em> Provides various methods to determine the caller class.
+ *
+ * @since 2.9.0
  */
 public final class StackLocatorUtil {
     private static IStackLocator stackLocator = null;
@@ -48,8 +49,7 @@ public final class StackLocatorUtil {
         }
     }
 
-    private StackLocatorUtil() {
-    }
+    private StackLocatorUtil() {}
 
     // TODO: return Object.class instead of null (though it will have a null ClassLoader)
     // (MS) I believe this would work without any modifications elsewhere, but I could be wrong
@@ -100,6 +100,7 @@ public final class StackLocatorUtil {
      * @param depth The stack frame count to walk.
      * @return A class or null.
      * @throws IndexOutOfBoundsException if depth is negative.
+     * @since 2.17.2
      */
     @PerformanceSensitive
     public static ClassLoader getCallerClassLoader(final int depth) {
@@ -113,6 +114,7 @@ public final class StackLocatorUtil {
      * @param sentinelClass Sentinel class at which to begin searching
      * @param callerPredicate Predicate checked after the sentinelClass is found
      * @return the first matching class after <code>sentinelClass</code> is found.
+     * @since 2.15.0
      */
     @PerformanceSensitive
     public static Class<?> getCallerClass(final Class<?> sentinelClass, final Predicate<Class<?>> callerPredicate) {
@@ -125,6 +127,9 @@ public final class StackLocatorUtil {
         return stackLocator.getCallerClass(anchor);
     }
 
+    /**
+     * @since 2.17.2
+     */
     // migrated from ThrowableProxy
     @PerformanceSensitive
     public static Deque<Class<?>> getCurrentStackTrace() {

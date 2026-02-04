@@ -46,10 +46,6 @@ import org.apache.logging.log4j.message.ParameterizedNoReferenceMessageFactory;
 import org.apache.logging.log4j.spi.AbstractLogger;
 import org.apache.logging.log4j.util.Constants;
 import org.jspecify.annotations.Nullable;
-import org.ops4j.pax.logging.PaxLogger;
-import org.ops4j.pax.logging.spi.support.DefaultServiceLog;
-import org.ops4j.pax.logging.spi.support.FallbackLogFactory;
-import org.osgi.framework.FrameworkUtil;
 
 /**
  * Records events that occur in the logging system.
