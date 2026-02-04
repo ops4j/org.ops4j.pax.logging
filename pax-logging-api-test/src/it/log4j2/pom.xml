@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.ops4j.pax</groupId>
         <artifactId>logging</artifactId>
-        <version>1.12.15-SNAPSHOT</version>
+        <version>1.12.16-SNAPSHOT</version>
     </parent>
 
     <groupId>org.ops4j.pax.logging.test</groupId>
