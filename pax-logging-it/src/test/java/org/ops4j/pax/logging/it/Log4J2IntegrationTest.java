@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -79,6 +80,17 @@ public class Log4J2IntegrationTest extends AbstractStdoutInterceptingIntegration
 
         assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - simplestUsage - INFO"));
         assertTrue("Line should be printed without MDC", lines.stream().noneMatch(l -> l.contains("Equestria")));
+    }
+
+    @Test
+    public void logManager() {
+        org.apache.logging.log4j.Logger log4j2Logger = LogManager.getLogger();
+        log4j2Logger.atInfo().log("INFO through Log4J v2 API main logger");
+
+        List<String> lines = readLines();
+        lines = lines.stream().map(l -> l.substring(13)).collect(Collectors.toList());
+
+        assertTrue(lines.contains("[main] INFO  org.ops4j.pax.logging.it.Log4J2IntegrationTest - INFO through Log4J v2 API main logger"));
     }
 
     @Test
