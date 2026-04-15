@@ -91,6 +91,7 @@ public class EventAdminIntegrationTest extends AbstractControlledIntegrationTest
 
         logger.info("when log4j2 available (info)");
         logger.error("when log4j2 available (error)", new Exception("exception 3"));
+        Thread.sleep(200);
 
         Event e22 = ev(events, "when logback available (info)");
         Event e23 = ev(events, "when logback available (error)");
