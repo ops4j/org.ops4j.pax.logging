@@ -231,14 +231,14 @@
         <version.junit>4.13.2</version.junit>
         <version.org.apache.directory.api>2.1.7</version.org.apache.directory.api>
         <!-- Karaf 4.4.9 maven plugin requires ... JDK 22 -->
-        <version.org.apache.karaf>4.4.8</version.org.apache.karaf>
+        <version.org.apache.karaf>4.4.10</version.org.apache.karaf>
         <version.org.apache.felix.eventadmin>1.6.4</version.org.apache.felix.eventadmin>
         <version.org.apache.felix.fileinstall>3.6.4</version.org.apache.felix.fileinstall>
         <version.org.apache.felix.cm.json>1.0.8</version.org.apache.felix.cm.json>
         <version.org.apache.felix.configadmin>1.9.26</version.org.apache.felix.configadmin>
         <version.org.apache.felix7.framework>7.0.5</version.org.apache.felix7.framework>
         <version.org.apache.logging.log4j>2.25.3</version.org.apache.logging.log4j>
-        <version.org.apache.maven>3.9.12</version.org.apache.maven>
+        <version.org.apache.maven>3.9.14</version.org.apache.maven>
         <version.org.apache.maven.plugin-tools>3.15.2</version.org.apache.maven.plugin-tools>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
         <version.org.apache.sling.commons.johnzon>1.2.14</version.org.apache.sling.commons.johnzon>
@@ -250,7 +250,7 @@
         <version.org.ops4j.pax.swissbox>1.8.5</version.org.ops4j.pax.swissbox>
         <!-- Pax URL 2.6.x is only for Karaf itests -->
         <version.org.ops4j.pax.url2>2.6.17</version.org.ops4j.pax.url2>
-        <version.org.ops4j.pax.url>3.0.1</version.org.ops4j.pax.url>
+        <version.org.ops4j.pax.url>3.0.2</version.org.ops4j.pax.url>
         <version.org.osgi>7.0.0</version.org.osgi>
         <version.org.osgi.service.jdbc>1.1.0</version.org.osgi.service.jdbc>
         <version.org.osgi.util.converter>1.0.9</version.org.osgi.util.converter>
