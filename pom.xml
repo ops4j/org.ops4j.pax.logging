@@ -236,7 +236,7 @@
         <version.org.apache.felix.configadmin>1.9.26</version.org.apache.felix.configadmin>
         <version.org.apache.felix.framework>5.6.12</version.org.apache.felix.framework>
         <version.org.apache.logging.log4j>2.25.3</version.org.apache.logging.log4j>
-        <version.org.apache.maven>3.9.12</version.org.apache.maven>
+        <version.org.apache.maven>3.9.14</version.org.apache.maven>
         <version.org.apache.maven.plugin-tools>3.15.2</version.org.apache.maven.plugin-tools>
         <version.org.apache.servicemix.bundles.javax-inject>1_3</version.org.apache.servicemix.bundles.javax-inject>
         <!-- 3.5.0.Final is JDK11 only, but we'll export 3.5.3 and 3.6.2 package version anyway -->
