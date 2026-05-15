@@ -104,7 +104,7 @@
                     </startupFeatures>
                     <installedBundles>
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-log4j2-extra/${project.version}</bundle>
-                        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${version.com.fasterxml.jackson}</bundle>
+                        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${version.com.fasterxml.jackson.annotations}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${version.com.fasterxml.jackson}</bundle>
                         <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${version.com.fasterxml.jackson}</bundle>
                     </installedBundles>
