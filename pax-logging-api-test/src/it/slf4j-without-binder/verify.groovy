@@ -19,4 +19,4 @@
 
 File surefireOutput = new File(basedir, "target/surefire-reports/org.ops4j.pax.logging.test.slf4j.Slf4JApiTest-output.txt")
 List<String> lines = surefireOutput.readLines()
-assert lines.get(0) == "SLF4J: No SLF4J providers were found."
+assert lines.get(0) == "SLF4J(W): No SLF4J providers were found."
