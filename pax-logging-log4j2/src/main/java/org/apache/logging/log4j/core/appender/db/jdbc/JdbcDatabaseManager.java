@@ -49,6 +49,7 @@ import org.apache.logging.log4j.core.appender.db.ColumnMapping;
 import org.apache.logging.log4j.core.appender.db.DbAppenderLoggingException;
 import org.apache.logging.log4j.core.config.plugins.convert.DateTypeConverter;
 import org.apache.logging.log4j.core.config.plugins.convert.TypeConverters;
+import org.apache.logging.log4j.core.internal.annotation.SuppressFBWarnings;
 import org.apache.logging.log4j.core.util.Closer;
 import org.apache.logging.log4j.core.util.Log4jThread;
 import org.apache.logging.log4j.message.MapMessage;
@@ -710,6 +711,9 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
         return true;
     }
 
+    @SuppressFBWarnings(
+            value = "SQL_INJECTION_JDBC",
+            justification = "The SQL statement is generated based on the configuration file.")
     private void connectAndPrepare() throws SQLException {
         logger().debug("Acquiring JDBC connection from {}", this.getConnectionSource());
         this.connection = getConnectionSource().getConnection();
@@ -785,6 +789,9 @@ public final class JdbcDatabaseManager extends AbstractDatabaseManager {
         return factoryData.tableName;
     }
 
+    @SuppressFBWarnings(
+            value = "SQL_INJECTION_JDBC",
+            justification = "The SQL statement is generated based on the configuration file.")
     private void initColumnMetaData() throws SQLException {
         // Could use:
         // this.connection.getMetaData().getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern);

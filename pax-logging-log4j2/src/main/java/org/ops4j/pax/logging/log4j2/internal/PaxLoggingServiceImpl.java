@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -541,7 +542,7 @@ public class PaxLoggingServiceImpl implements PaxLoggingService, ServiceFactory<
                     PaxPropertySource.updateFileConfiguration(configFileName);
                     // reload() is needed to let the source apply the settings
                     PropertiesUtil.getProperties().reload();
-                    Configuration config = factory.getConfiguration(m_log4jContext, LOGGER_CONTEXT_NAME, null);
+                    Configuration config = factory.getConfiguration(m_log4jContext, LOGGER_CONTEXT_NAME, (URI) null);
 
                     m_log4jContext.start(config);
 
