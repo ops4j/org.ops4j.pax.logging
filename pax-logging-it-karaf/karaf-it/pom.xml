@@ -57,6 +57,7 @@
                     </includes>
                     <systemPropertyVariables>
                         <version.jackson>${version.com.fasterxml.jackson}</version.jackson>
+                        <version.jackson.annotations>${version.com.fasterxml.jackson.annotations}</version.jackson.annotations>
                         <version.pax-logging>${project.version}</version.pax-logging>
                     </systemPropertyVariables>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>

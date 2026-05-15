@@ -56,7 +56,7 @@ public class JacksonWithLog4J2ExtraIntegrationTest extends AbstractControlledInt
 //                mavenBundle("com.fasterxml.jackson.core", "jackson-databind").versionAsInProject(),
 
                 editConfigurationFilePut("etc/startup.properties", "mvn:org.ops4j.pax.logging/pax-logging-log4j2-extra/" + System.getProperty("version.pax-logging"), "11"),
-                editConfigurationFilePut("etc/startup.properties", "mvn:com.fasterxml.jackson.core/jackson-annotations/" + System.getProperty("version.jackson"), "11"),
+                editConfigurationFilePut("etc/startup.properties", "mvn:com.fasterxml.jackson.core/jackson-annotations/" + System.getProperty("version.jackson.annotations"), "11"),
                 editConfigurationFilePut("etc/startup.properties", "mvn:com.fasterxml.jackson.core/jackson-core/" + System.getProperty("version.jackson"), "11"),
                 editConfigurationFilePut("etc/startup.properties", "mvn:com.fasterxml.jackson.core/jackson-databind/" + System.getProperty("version.jackson"), "11")
         );
